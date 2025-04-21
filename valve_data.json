@@ -1,0 +1,537 @@
+{
+  "manufacturer": [
+    "Masoneilon",
+    "Samson",
+    "Fisher",
+    "Flowserve",
+    "ЛГ-Автоматика",
+    "РУСТ-95",
+    "НТ Вэлв",
+    "Ручной ввод"
+  ],
+  "valveSeries": [
+    "35002", 
+    "28000",
+    "21000",
+    "41000",
+    "Ручной ввод"
+  ],
+  "valveModel": [
+    "35-35112", 
+    "35-35122",
+    "35-35212",
+    "35-35222",
+    "35-35312",
+    "35-35322",
+    "35-35412",
+    "35-35422",
+    "35-35512",
+    "35-35522",
+    "35-35612",
+    "35-35622",
+    "35-35712",
+    "35-35722",
+    "35-35812",
+    "35-35822",
+    "Ручной ввод"
+  ],
+  "driveModel": [
+    "35 (4.5\")", 
+    "35 (6.0\")", 
+    "35 (7.0\")", 
+    "35 (9.0\")",
+    "Ручной ввод"
+  ],
+  "saddleMaterials": [
+    "316", 
+    "316 стел", 
+    "316 PTFE"
+  ],
+  "bodyMaterials": [
+    "Нерж сталь (CF3M)", 
+    "Угл. сталь (WCC)"
+  ],
+  "DN": {
+    "25": [
+      {
+        "CV": 15,
+        "manufacturer": "SomeManufacturer",
+        "materials": {
+          "plunger": "BM-1",
+          "saddle": "BM-2",
+          "bushing1": "BM-3",
+          "bushing2": "BM-4",
+          "oRingSealingRing1": "BM-5",
+          "oRingSealingRing2": "BM-6",
+          "stuffingBoxSeal": "BM-7",
+          "driveDiaphragm": "BM-8",
+          "setOfCovers": "BM-9",
+          "shaft": "BM-10",
+          "saddleLock": "BM-11"
+        }
+      },
+      {
+        "CV": 9,
+        "manufacturer": "SomeManufacturer",
+        "materials": {
+          "plunger": "BM-1",
+          "saddle": "BM-12",
+          "bushing1": "BM-3",
+          "bushing2": "BM-4",
+          "oRingSealingRing1": "BM-5",
+          "oRingSealingRing2": "BM-6",
+          "stuffingBoxSeal": "BM-7",
+          "driveDiaphragm": "BM-8",
+          "setOfCovers": "BM-9",
+          "shaft": "BM-10",
+          "saddleLock": "BM-11"
+        }
+      },
+      {
+        "CV": 6,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ],
+    "40": [
+      {
+          "CV": 39,
+          "manufacturer": "",
+          "materials": {
+            "plunger": "",
+            "saddle": "",
+            "bushing1": "",
+            "bushing2": "",
+            "oRingSealingRing1": "",
+            "oRingSealingRing2": "",
+            "stuffingBoxSeal": "",
+            "driveDiaphragm": "",
+            "setOfCovers": "",
+            "shaft": "",
+            "saddleLock": ""
+          }
+      },
+      {
+        "CV": 23.4,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 31.8,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ],
+    "50": [
+      {
+        "CV": 53,
+        "manufacturer": "AnotherManufacturer",
+        "materials": {
+          "plunger": "BM-13",
+          "saddle": "BM-14",
+          "bushing1": "BM-17",
+          "bushing2": "BM-18",
+          "oRingSealingRing1": "BM-5",
+          "oRingSealingRing2": "BM-6",
+          "stuffingBoxSeal": "BM-7",
+          "driveDiaphragm": "BM-8",
+          "setOfCovers": "BM-9",
+          "shaft": "BM-15",
+          "saddleLock": "BM-16"
+        }
+      },
+      {
+        "CV": 31.8,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 21.2,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ],
+    "80": [
+      {
+        "CV": 145,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 87,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 58,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ],
+    "100": [
+      {
+        "CV": 230,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+
+      },
+      {
+        "CV": 138,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 92,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ],
+    "150": [
+      {
+        "CV": 500,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+
+      },
+      {
+        "CV": 300,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+
+      },
+      {
+        "CV": 200,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+
+      }
+    ],
+    "200": [
+      {
+        "CV": 850,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 510,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 780,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ],
+    "250": [
+      {
+        "CV": 1300,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 340,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": 520,
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ],
+    "300": [
+      {
+        "CV": "?",
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": "?",
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      },
+      {
+        "CV": "?",
+        "manufacturer": "",
+        "materials": {
+          "plunger": "",
+          "saddle": "",
+          "bushing1": "",
+          "bushing2": "",
+          "oRingSealingRing1": "",
+          "oRingSealingRing2": "",
+          "stuffingBoxSeal": "",
+          "driveDiaphragm": "",
+          "setOfCovers": "",
+          "shaft": "",
+          "saddleLock": ""
+        }
+      }
+    ]
+  }
+}
