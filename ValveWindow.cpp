@@ -35,7 +35,6 @@ ValveWindow::ValveWindow(QWidget *parent)
     ui->lineEdit_material_guide_sleeve->setValidator(validator);
 
 
-
     ui->doubleSpinBox_diameter_pulley->setValue(diameter_[0]);
 
     connect(ui->comboBox_stroke_movement,
@@ -55,90 +54,6 @@ ValveWindow::ValveWindow(QWidget *parent)
     connect(ui->pushButton_clear, &QPushButton::clicked, this, &ValveWindow::Clear);
 
     DiameterChanged(ui->doubleSpinBox_diameter->value());
-    loadDNValues();
-    connect(ui->comboBox_DN, &QComboBox::currentTextChanged,
-            this, &ValveWindow::on_comboBox_DN_currentIndexChanged);
-}
-
-void ValveWindow::loadDNValues()
-{
-    QFile file(":/db_valve_data/valve_data.json");
-    if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Не удалось открыть valve_data.json";
-        return;
-    }
-    QByteArray jsonData = file.readAll();
-    file.close();
-
-    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
-    if (doc.isNull() || !doc.isObject()) {
-        qWarning() << "Ошибка парсинга JSON";
-        return;
-    }
-
-    QJsonObject rootObj = doc.object();
-
-    // Добавление произодителей
-    QJsonArray manufacturerArray = rootObj.value("manufacturer").toArray();
-    ui->comboBox_manufacturer->clear();
-    for (const QJsonValue &value : manufacturerArray) {
-        ui->comboBox_manufacturer->addItem(value.toString());
-    }
-
-    // Добавление серии клапана
-    QJsonArray valveSerialArray = rootObj.value("valveSeries").toArray();
-    ui->comboBox_valve_serie->clear();
-    for (const QJsonValue &value : valveSerialArray) {
-        ui->comboBox_valve_serie->addItem(value.toString());
-    }
-
-    // Добавление модель клапана
-    QJsonArray valveModelArray = rootObj.value("valveModel").toArray();
-    ui->comboBox_valve_model->clear();
-    for (const QJsonValue &value : valveModelArray) {
-        ui->comboBox_valve_model->addItem(value.toString());
-    }
-
-    // Добавление модель привода
-    QJsonArray driveModelArray = rootObj.value("driveModel").toArray();
-    ui->comboBox_drive_model->clear();
-    for (const QJsonValue &value : driveModelArray) {
-        ui->comboBox_drive_model->addItem(value.toString());
-    }
-
-    // Добавление материалов седла
-    QJsonArray saddleMaterialsArray = rootObj.value("saddleMaterials").toArray();
-    ui->comboBox_saddle_materials->clear();
-    for (const QJsonValue &value : saddleMaterialsArray) {
-        ui->comboBox_saddle_materials->addItem(value.toString());
-    }
-
-    // Добавление материалов корпуса
-    QJsonArray bodyMaterialsArray = rootObj.value("bodyMaterials").toArray();
-    ui->comboBox_material_body->clear();
-    for (const QJsonValue &value : bodyMaterialsArray) {
-        ui->comboBox_material_body->addItem(value.toString());
-    }
-
-    // Параметры клапана
-    QJsonObject valveDataObj = rootObj.value("DN").toObject();
-    // Получаем список ключей DN и сортируем их по числовому значению
-    QStringList dnKeys = valveDataObj.keys();
-    std::sort(dnKeys.begin(), dnKeys.end(), [](const QString &a, const QString &b) {
-        return a.toInt() < b.toInt();
-    });
-
-    ui->comboBox_DN->clear();
-    ui->comboBox_DN->addItems(dnKeys);
-    // ui->comboBox_DN->addItem(manual_input_);
-
-    // Сохраняем объект valve_data в члене класса для дальнейшего использования
-    m_valveDataObj = valveDataObj;
-    // Гарант, что для первого элемента valveDataObj сразу заполнится comboBox_CV.
-    if (ui->comboBox_DN->count() > 0) {
-        ui->comboBox_DN->setCurrentIndex(0);
-        on_comboBox_DN_currentIndexChanged(ui->comboBox_DN->currentText());
-    }
 }
 
 void ValveWindow::on_comboBox_DN_currentIndexChanged(const QString &selectedDN)
@@ -168,31 +83,31 @@ void ValveWindow::SetRegistry(Registry *registry)
 {
     registry_ = registry;
 
-    ui->comboBox_position->clear();
-    ui->comboBox_position->addItems(registry_->GetPositions());
-    ui->comboBox_position->addItem(manual_input_);
+    // ui->comboBox_position->clear();
+    // ui->comboBox_position->addItems(registry_->GetPositions());
+    // ui->comboBox_position->addItem(manual_input_);
 
-    QString last_position = registry_->GetLastPosition();
-    if (last_position == "") {
-        ui->comboBox_position->setCurrentIndex(ui->comboBox_position->count() - 1);
-    } else {
-        ui->comboBox_position->setCurrentIndex(ui->comboBox_position->findText(last_position));
-        PositionChanged(last_position);
-    }
+    // QString last_position = registry_->GetLastPosition();
+    // if (last_position == "") {
+    //     ui->comboBox_position->setCurrentIndex(ui->comboBox_position->count() - 1);
+    // } else {
+    //     ui->comboBox_position->setCurrentIndex(ui->comboBox_position->findText(last_position));
+    //     PositionChanged(last_position);
+    // }
 
-    connect(ui->comboBox_position,
-            &QComboBox::currentTextChanged,
-            this,
-            &ValveWindow::PositionChanged);
+    // connect(ui->comboBox_position,
+    //         &QComboBox::currentTextChanged,
+    //         this,
+    //         &ValveWindow::PositionChanged);
 }
 
 void ValveWindow::SaveValveInfo()
 {
-    if (ui->comboBox_position->currentText() == "Ручной ввод")
-        valve_info_ = registry_->GetValveInfo(ui->lineEdit_position->text());
+    // if (ui->comboBox_position->currentText() == "Ручной ввод")
+    //     valve_info_ = registry_->GetValveInfo(ui->lineEdit_position->text());
 
-    if (ui->comboBox_position->currentText() == "Ручной ввод")
-        valve_info_->manufacturer = ui->lineEdit_manufacturer->text();
+    // if (ui->comboBox_position->currentText() == "Ручной ввод")
+    //     valve_info_->manufacturer = ui->lineEdit_manufacturer->text();
 
 
     // valve_info_->model = ui->lineEdit_valve_model->text();
@@ -248,22 +163,22 @@ void ValveWindow::PositionChanged(const QString &position)
     // });
 
     ui->lineEdit_valve_serie->setEnabled(false);
-    connect(ui->comboBox_valve_model, &QComboBox::currentTextChanged,
-            this, [this](const QString &text) {
-                ui->lineEdit_valve_serie->setEnabled(text == manual_input_);
-            });
+    // connect(ui->comboBox_valve_model, &QComboBox::currentTextChanged,
+    //         this, [this](const QString &text) {
+    //             ui->lineEdit_valve_serie->setEnabled(text == manual_input_);
+    //         });
 
     ui->lineEdit_valve_serie->setEnabled(false);
-    connect(ui->comboBox_valve_serie, &QComboBox::currentTextChanged,
-            this, [this](const QString &text) {
-            ui->lineEdit_valve_serie->setEnabled(text == manual_input_);
-    });
+    // connect(ui->comboBox_valve_serie, &QComboBox::currentTextChanged,
+    //         this, [this](const QString &text) {
+    //         ui->lineEdit_valve_serie->setEnabled(text == manual_input_);
+    // });
 
     ui->lineEdit_DN->setEnabled(false);
-    connect(ui->comboBox_DN, &QComboBox::currentTextChanged,
-            this, [this](const QString &text) {
-                ui->lineEdit_DN->setEnabled(text == manual_input_);
-            });
+    // connect(ui->comboBox_DN, &QComboBox::currentTextChanged,
+    //         this, [this](const QString &text) {
+    //             ui->lineEdit_DN->setEnabled(text == manual_input_);
+    //         });
 
     // connect(ui->comboBox_position, &QComboBox::currentTextChanged,
     //         this, [this](const QString &text) {
