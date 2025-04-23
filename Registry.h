@@ -35,17 +35,17 @@ struct ValveInfo
     qreal pulley; // Диаметр Шкива
     QString material; // Материал сальникового уплотнения
 
-    // Материалы деталей
-    QString corpus; // Корпус
-    QString cap; // Крышка
-    QString saddle_materials; // Материал седла
-    QString saddle_cv; // CV
-    QString ball; // Шар
-    QString disk; // Диск
-    QString plunger; // Плунжер
-    QString shaft; // Вал
-    QString stock; // Шток
-    QString guide_sleeve; // Направляющаяя втулка
+    // // Материалы деталей
+    // QString corpus; // Корпус
+    // QString cap; // Крышка
+    // QString saddle_materials; // Материал седла
+    // QString saddle_cv; // CV
+    // QString ball; // Шар
+    // QString disk; // Диск
+    // QString plunger; // Плунжер
+    // QString shaft; // Вал
+    // QString stock; // Шток
+    // QString guide_sleeve; // Направляющаяя втулка
 };
 
 struct OtherParameters

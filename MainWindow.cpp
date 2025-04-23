@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton_init, &QPushButton::clicked, m_program, &Program::button_init);
     connect(ui->pushButton_set, &QPushButton::clicked, m_program, &Program::button_set_position);
-    connect(ui->checkBox_autoinit, &QCheckBox::stateChanged, m_program, &Program::checkbox_autoinit);
+    connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged, m_program, &Program::checkbox_autoinit);
 
     connect(this, &MainWindow::SetDO, m_program, &Program::button_DO);
 
@@ -235,7 +235,7 @@ MainWindow::MainWindow(QWidget *parent)
             QUrl::fromLocalFile(m_fileSaver->Directory().filePath("report.xlsx")));
     });
 
-    connect(ui->checkBox_autoinit, &QCheckBox::stateChanged, this, [&](int state) {
+    connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged, this, [&](int state) {
         ui->pushButton_set->setEnabled(!state);
     });
 
@@ -270,29 +270,21 @@ void MainWindow::SetRegistry(Registry *registry)
     ui->lineEdit_FIO->setText(object_info->FIO);
     ui->lineEdit_data->setText(other_parameters->data);
 
-    ui->lineEdit_position->setText(valve_info->position);
-    ui->lineEdit_serial->setText(valve_info->serial);
-    //ui->lineEdit_model->setText(valve_info->model);
+    ui->lineEdit_positionNumber->setText(valve_info->position);
     ui->lineEdit_manufacturer->setText(valve_info->manufacturer);
+    ui->lineEdit_serial->setText(valve_info->serial);
     ui->lineEdit_DNPN->setText(valve_info->DN + "/" + valve_info->PN);
     ui->lineEdit_positioner->setText(valve_info->positioner);
-    // ui->lineEdit_normal_position->setText(other_parameters->normal_position);
-    //ui->lineEdit_model_drive->setText(valve_info->model_drive);
     ui->lineEdit_movement->setText(other_parameters->movement);
-    //ui->lineEdit_material->setText(valve_info->material);
     ui->lineEdit_dinamic_recomend->setText(valve_info->dinamic_error);
     ui->lineEdit_stroke_recomend->setText(valve_info->stroke);
     ui->lineEdit_range_recomend->setText(valve_info->range);
-    ui->lineEdit_material_corpus->setText(valve_info->corpus);
-    ui->lineEdit_material_cap->setText(valve_info->cap);
-    ui->lineEdit_saddle_materials->setText(valve_info->saddle_materials);
-    ui->lineEdit_material_cv->setText(valve_info->saddle_cv);
-    ui->lineEdit_material_ball->setText(valve_info->ball);
-    ui->lineEdit_material_disk->setText(valve_info->disk);
-    ui->lineEdit_material_plunger->setText(valve_info->plunger);
-    ui->lineEdit_material_shaft->setText(valve_info->shaft);
-    ui->lineEdit_material_stock->setText(valve_info->stock);
-    ui->lineEdit_material_guide_sleeve->setText(valve_info->guide_sleeve);
+
+
+    ui->lineEdit_valveModel->setText(valve_info->position);
+
+
+
 
     if (valve_info->normal_position != 0) {
         m_stepTestSettings->reverse();
@@ -827,27 +819,27 @@ void MainWindow::InitCharts()
     connect(m_program, &Program::SetRegressionEnable, this, &MainWindow::SetRegressionEnable);
     connect(m_program, &Program::ShowDots, this, &MainWindow::ShowDots);
 
-    connect(ui->checkBox_task, &QCheckBox::stateChanged, this, [&](int k) {
+    connect(ui->checkBox_task, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Main_task]->visible(0, k != 0);
     });
 
-    connect(ui->checkBox_line, &QCheckBox::stateChanged, this, [&](int k) {
+    connect(ui->checkBox_line, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Main_task]->visible(1, k != 0);
     });
 
-    connect(ui->checkBox_pressure1, &QCheckBox::stateChanged, this, [&](int k) {
+    connect(ui->checkBox_pressure1, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Main_task]->visible(2, k != 0);
     });
 
-    connect(ui->checkBox_pressure2, &QCheckBox::stateChanged, this, [&](int k) {
+    connect(ui->checkBox_pressure2, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Main_task]->visible(3, k != 0);
     });
 
-    connect(ui->checkBox_pressure3, &QCheckBox::stateChanged, this, [&](int k) {
+    connect(ui->checkBox_pressure3, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Main_task]->visible(4, k != 0);
     });
 
-    connect(ui->checkBox_regression, &QCheckBox::stateChanged, this, [&](int k) {
+    connect(ui->checkBox_regression, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Main_pressure]->visible(1, k != 0);
     });
 
@@ -882,6 +874,38 @@ void MainWindow::InitCharts()
 void MainWindow::SaveChart(Charts chart)
 {
     m_fileSaver->SaveImage(m_charts[chart]);
+
+    QPixmap pix = m_charts[chart]->grab();
+
+    // Вставляем в нужный label
+    switch (chart) {
+    case Charts::Main_task:
+        ui->label_pixmap1->setPixmap(pix);
+        break;
+    case Charts::Stroke:
+        ui->label_pixmap2->setPixmap(pix);
+        break;
+    case Charts::Response:
+        ui->label_pixmap3->setPixmap(pix);
+    case Charts::Resolution:
+    case Charts::Step:
+    case Charts::Main_pressure:
+    case Charts::Main_friction:
+    case Charts::Trend:
+    case Charts::Cyclic:
+    case Charts::Cyclic_solenoid:
+        // // если у вас для разных графиков несколько лейблов,
+        // // перечислите их здесь:
+        // ui->label_pixmap3->setPixmap(pix);
+        break;
+    default:
+        break;
+    }
+
+    // 4. подгоняем размер лейбла (опционально)
+    ui->label_pixmap1->setScaledContents(true);
+    ui->label_pixmap2->setScaledContents(true);
+    ui->label_pixmap3->setScaledContents(true);
 }
 
 void MainWindow::GetImage(QLabel *label, QImage *image)
@@ -904,7 +928,7 @@ void MainWindow::InitReport()
     m_report.data.push_back({6, 4, ui->lineEdit_manufacture});
     m_report.data.push_back({7, 4, ui->lineEdit_department});
 
-    m_report.data.push_back({5, 13, ui->lineEdit_position});
+    m_report.data.push_back({5, 13, ui->lineEdit_positionNumber});
     m_report.data.push_back({6, 13, ui->lineEdit_serial});
     // m_report.data.push_back({7, 13, ui->lineEdit_model});
     m_report.data.push_back({8, 13, ui->lineEdit_manufacturer});
@@ -934,20 +958,6 @@ void MainWindow::InitReport()
 
     m_report.data.push_back({66, 12, ui->lineEdit_data});
     m_report.data.push_back({161, 12, ui->lineEdit_data});
-
-    m_report.data.push_back({11, 4, ui->lineEdit_material_corpus});
-    m_report.data.push_back({12, 4, ui->lineEdit_material_cap});
-    // m_report.data.push_back({13, 4, ui->lineEdit_material_cv_kv});
-
-    //m_report.data.push_back({13, 13, ui->lineEdit_model_drive});
-    m_report.data.push_back({13, 4, ui->lineEdit_material_cv});
-
-    m_report.data.push_back({14, 4, ui->lineEdit_material_ball});
-    m_report.data.push_back({15, 4, ui->lineEdit_material_disk});
-    m_report.data.push_back({16, 4, ui->lineEdit_material_plunger});
-    m_report.data.push_back({17, 4, ui->lineEdit_material_shaft});
-    m_report.data.push_back({18, 4, ui->lineEdit_material_stock});
-    m_report.data.push_back({19, 4, ui->lineEdit_material_guide_sleeve});
 
     m_report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     m_report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});

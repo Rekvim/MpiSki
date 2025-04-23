@@ -50,17 +50,6 @@ ValveInfo *Registry::GetValveInfo(const QString &position)
     valve_info_.tool_number = settings_.value("tool_number", "").toInt();
     valve_info_.pulley = settings_.value("pulley", "").toInt();
 
-    valve_info_.corpus = settings_.value("Корпус", "").toString();
-    valve_info_.cap = settings_.value("Крышка", "").toString();
-    valve_info_.saddle_materials = settings_.value("Материал седла", "").toString();
-    valve_info_.saddle_cv = settings_.value("CV", "").toString();
-    valve_info_.ball = settings_.value("Шар", "").toString();
-    valve_info_.disk = settings_.value("Диск", "").toString();
-    valve_info_.plunger = settings_.value("Плунжер", "").toString();
-    valve_info_.shaft = settings_.value("Вал", "").toString();
-    valve_info_.stock = settings_.value("Шток", "").toString();
-    valve_info_.guide_sleeve = settings_.value("Направляющаяя втулка", "").toString();
-
     settings_.endGroup();
     settings_.endGroup();
     settings_.endGroup();
@@ -102,16 +91,16 @@ void Registry::SaveValveInfo()
     settings_.setValue("tool_number", valve_info_.tool_number);
     settings_.setValue("pulley", valve_info_.pulley);
 
-    settings_.setValue("Корпус", valve_info_.corpus);
-    settings_.setValue("Крышка", valve_info_.cap);
-    settings_.setValue("Материал седла", valve_info_.saddle_materials);
-    settings_.setValue("CV", valve_info_.saddle_cv);
-    settings_.setValue("Шар", valve_info_.ball);
-    settings_.setValue("Диск", valve_info_.disk);
-    settings_.setValue("Плунжер", valve_info_.plunger);
-    settings_.setValue("Вал", valve_info_.shaft);
-    settings_.setValue("Шток", valve_info_.stock);
-    settings_.setValue("Направляющаяя втулка", valve_info_.guide_sleeve);
+    // settings_.setValue("Корпус", valve_info_.corpus);
+    // settings_.setValue("Крышка", valve_info_.cap);
+    // settings_.setValue("Материал седла", valve_info_.saddle_materials);
+    // settings_.setValue("CV", valve_info_.saddle_cv);
+    // settings_.setValue("Шар", valve_info_.ball);
+    // settings_.setValue("Диск", valve_info_.disk);
+    // settings_.setValue("Плунжер", valve_info_.plunger);
+    // settings_.setValue("Вал", valve_info_.shaft);
+    // settings_.setValue("Шток", valve_info_.stock);
+    // settings_.setValue("Направляющаяя втулка", valve_info_.guide_sleeve);
 
     settings_.endGroup();
     settings_.endGroup();

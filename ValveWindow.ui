@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>1008</height>
+    <width>674</width>
+    <height>756</height>
    </rect>
   </property>
   <property name="font">
@@ -41,11 +41,14 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QSplitter" name="splitter_7">
+        <widget class="QSplitter" name="splitter_positionNumber">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_4">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_positionNumber">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -65,79 +68,34 @@
            </size>
           </property>
           <property name="text">
-           <string>Номер позиции:</string>
+           <string>Номер позиции</string>
           </property>
          </widget>
-         <widget class="QSplitter" name="splitter_31">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
+         <widget class="QLineEdit" name="lineEdit_positionNumber">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <widget class="QLineEdit" name="lineEdit_position">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_8">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_47">
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Производитель ЗРА (торговая марка):</string>
-          </property>
-         </widget>
-         <widget class="QSplitter" name="splitter_32">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <widget class="QLineEdit" name="lineEdit_manufacturer">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
          </widget>
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_12">
+        <widget class="QSplitter" name="splitter_serial">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_series_valve">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_serial">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -157,105 +115,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Серия клапана</string>
-          </property>
-         </widget>
-         <widget class="QSplitter" name="splitter_33">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <widget class="QLineEdit" name="lineEdit_valve_serie">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_13">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_49">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Модель клапана:</string>
-          </property>
-         </widget>
-         <widget class="QSplitter" name="splitter_34">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <widget class="QLineEdit" name="lineEdit_model">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_14">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Серийный номер:</string>
+           <string>Серийный номер</string>
           </property>
          </widget>
          <widget class="QLineEdit" name="lineEdit_serial">
@@ -275,17 +135,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_15">
+        <widget class="QSplitter" name="splitter_manufacturer">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_5">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_manufacturer">
           <property name="minimumSize">
            <size>
             <width>330</width>
@@ -299,36 +156,34 @@
            </size>
           </property>
           <property name="text">
-           <string>ДУ (DN):</string>
+           <string>Производитель ЗРА (торговая марка)</string>
           </property>
          </widget>
-         <widget class="QSplitter" name="splitter_35">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
+         <widget class="QLineEdit" name="lineEdit_manufacturer">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <widget class="QLineEdit" name="lineEdit_DN">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
          </widget>
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_16">
+        <widget class="QSplitter" name="splitter_valveModel">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_7">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_valveModel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -348,7 +203,101 @@
            </size>
           </property>
           <property name="text">
-           <string>РУ (PN):</string>
+           <string>Модель клапана</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_valveModel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_DN">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_DN">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>ДУ (DN)</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_DN">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_PN">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_PN">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>РУ (PN)</string>
           </property>
          </widget>
          <widget class="QLineEdit" name="lineEdit_PN">
@@ -368,11 +317,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_17">
+        <widget class="QSplitter" name="splitter_positionerModel">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_8">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_positionerModel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -392,10 +344,10 @@
            </size>
           </property>
           <property name="text">
-           <string>Ход клапана:</string>
+           <string>Модель позиционера</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="lineEdit_stroke">
+         <widget class="QLineEdit" name="lineEdit_positionerModel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -412,99 +364,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_18">
+        <widget class="QSplitter" name="splitter_modelDrive">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_9">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Модель позиционера:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_positioner">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_19">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
+         <property name="handleWidth">
+          <number>10</number>
          </property>
-         <widget class="QLabel" name="label_16">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Динамическая ошибка:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_dinamic_error">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_20">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_23">
+         <widget class="QLabel" name="label_modelDrive">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -527,33 +394,31 @@
            <string>Модель привода</string>
           </property>
          </widget>
-         <widget class="QSplitter" name="splitter_30">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
+         <widget class="QLineEdit" name="lineEdit_modelDrive">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <widget class="QLineEdit" name="lineEdit_model_drive">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
          </widget>
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_21">
+        <widget class="QSplitter" name="splitter_safePosition">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_11">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_safePosition">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -576,7 +441,7 @@
            <string>Безопасное положение привода:</string>
           </property>
          </widget>
-         <widget class="QComboBox" name="comboBox_normal_position">
+         <widget class="QComboBox" name="comboBox_safePosition">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -603,11 +468,61 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_22">
+        <widget class="QSplitter" name="splitter_materialStuffingBoxSeal">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_12">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_materialStuffingBoxSeal">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Материал сальникового уплотнения:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_materialStuffingBoxSeal">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_typeDrive">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_typeDrive">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -630,7 +545,7 @@
            <string>Тип привода:</string>
           </property>
          </widget>
-         <widget class="QComboBox" name="comboBox_type_of_drive">
+         <widget class="QComboBox" name="comboBox_typeDrive">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -657,11 +572,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_23">
+        <widget class="QSplitter" name="splitter_rangeDrive">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_13">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_rangeDrive">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -684,7 +602,7 @@
            <string>Диапазон привода:</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="lineEdit_range">
+         <widget class="QLineEdit" name="lineEdit_rangeDrive">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -701,111 +619,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_24">
+        <widget class="QSplitter" name="splitter_strokeMovement">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_14">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Диаметр привода (в см):</string>
-          </property>
-         </widget>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_diameter">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="buttonSymbols">
-           <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-          </property>
-          <property name="minimum">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>100.000000000000000</double>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_25">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
+         <property name="handleWidth">
+          <number>10</number>
          </property>
-         <widget class="QLabel" name="label_15">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Эффективная площадь привода:</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_square">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>0 см</string>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_26">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_17">
+         <widget class="QLabel" name="label_strokeMovement">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -828,7 +649,7 @@
            <string>Движение хода клапана:</string>
           </property>
          </widget>
-         <widget class="QComboBox" name="comboBox_stroke_movement">
+         <widget class="QComboBox" name="comboBox_strokeMovement">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -855,11 +676,214 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_27">
+        <widget class="QSplitter" name="splitter_valveStroke">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_19">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_valveStroke">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Ход клапана</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_valveStroke">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_dinamicError">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_dinamicError">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Динамическая ошибка:</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_dinamicError">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_diameterDrive">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_diameterDrive">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Диаметр привода (в см):</string>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_diameterDrive">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+          </property>
+          <property name="minimum">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_square">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_square">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Эффективная площадь привода:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_valueSquare">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>0 см</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_toolNumber">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_toolNumber">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -882,7 +906,7 @@
            <string>Номер поворотного шкива:</string>
           </property>
          </widget>
-         <widget class="QComboBox" name="comboBox_tool_number">
+         <widget class="QComboBox" name="comboBox_toolNumber">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -927,11 +951,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QSplitter" name="splitter_28">
+        <widget class="QSplitter" name="splitter_diameterPulley">
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
-         <widget class="QLabel" name="label_21">
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_diameterPulley">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -954,7 +981,7 @@
            <string>Диаметр шкива (мм):</string>
           </property>
          </widget>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_diameter_pulley">
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_diameterPulley">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -984,421 +1011,6 @@
           </property>
          </widget>
         </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_29">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_18">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Материал сальникового уплотнения:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_materials">
-      <attribute name="title">
-       <string>35002</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QSplitter" name="splitter">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_cv_2">
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Корпус:</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="comboBox_material_body">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_corpus">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_corpus">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Ручной ввод корпуса:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_corpus">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_cap">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_cap">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Крышка:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_cap">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_2">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_saddle">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Материал седла:</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="comboBox_saddle_materials">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-          <item>
-           <property name="text">
-            <string>Ручной ввод</string>
-           </property>
-          </item>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_saddle_cv_kv">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_cv_kv">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>CV</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="comboBox_CV">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_ball">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_ball">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Шар:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_ball">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_disk">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_disk">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Диск:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_disk">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_plunger">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_plunger">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Плунжер:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_plunger">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_shaft">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_shaft">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Вал:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_shaft">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="material_stock">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_stock">
-          <property name="minimumSize">
-           <size>
-            <width>180</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Шток:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_stock">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_9">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <widget class="QLabel" name="label_material_guide_sleeve">
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Направляющая втулка:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_material_guide_sleeve">
-          <property name="minimumSize">
-           <size>
-            <width>326</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
@@ -1439,33 +1051,20 @@
  </widget>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>lineEdit_position</tabstop>
-  <tabstop>lineEdit_manufacturer</tabstop>
-  <tabstop>lineEdit_model</tabstop>
   <tabstop>lineEdit_serial</tabstop>
-  <tabstop>lineEdit_DN</tabstop>
-  <tabstop>lineEdit_stroke</tabstop>
-  <tabstop>lineEdit_positioner</tabstop>
-  <tabstop>lineEdit_dinamic_error</tabstop>
-  <tabstop>lineEdit_model_drive</tabstop>
-  <tabstop>comboBox_normal_position</tabstop>
-  <tabstop>comboBox_type_of_drive</tabstop>
-  <tabstop>lineEdit_range</tabstop>
-  <tabstop>doubleSpinBox_diameter</tabstop>
-  <tabstop>comboBox_stroke_movement</tabstop>
-  <tabstop>comboBox_tool_number</tabstop>
-  <tabstop>doubleSpinBox_diameter_pulley</tabstop>
-  <tabstop>lineEdit_material</tabstop>
+  <tabstop>lineEdit_valveStroke</tabstop>
+  <tabstop>lineEdit_positionerModel</tabstop>
+  <tabstop>lineEdit_dinamicError</tabstop>
+  <tabstop>comboBox_safePosition</tabstop>
+  <tabstop>comboBox_typeDrive</tabstop>
+  <tabstop>lineEdit_rangeDrive</tabstop>
+  <tabstop>doubleSpinBox_diameterDrive</tabstop>
+  <tabstop>comboBox_strokeMovement</tabstop>
+  <tabstop>comboBox_toolNumber</tabstop>
+  <tabstop>doubleSpinBox_diameterPulley</tabstop>
+  <tabstop>lineEdit_materialStuffingBoxSeal</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>pushButton_clear</tabstop>
-  <tabstop>lineEdit_material_cap</tabstop>
-  <tabstop>lineEdit_material_ball</tabstop>
-  <tabstop>lineEdit_material_disk</tabstop>
-  <tabstop>lineEdit_material_plunger</tabstop>
-  <tabstop>lineEdit_material_shaft</tabstop>
-  <tabstop>lineEdit_material_stock</tabstop>
-  <tabstop>lineEdit_material_guide_sleeve</tabstop>
-  <tabstop>lineEdit_material_corpus</tabstop>
  </tabstops>
  <resources/>
  <connections/>

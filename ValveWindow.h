@@ -21,7 +21,6 @@ public:
     explicit ValveWindow(QWidget *parent = nullptr);
     ~ValveWindow();
     void SetRegistry(Registry *registry);
-    void on_comboBox_DN_currentIndexChanged(const QString &selectedDN);
 private:
     Ui::ValveWindow *ui;
     Registry *registry_;
@@ -31,7 +30,6 @@ private:
     static constexpr qreal diameter_[] = {50.0, 86.0, 108.0, 125.0};
     QJsonObject m_valveDataObj;
 private slots:
-    void loadDNValues();
     void PositionChanged(const QString &position);
     void ButtonClick();
     void StrokeChanged(quint16 n);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1051</width>
-    <height>791</height>
+    <width>1035</width>
+    <height>721</height>
    </rect>
   </property>
   <property name="font">
@@ -31,7 +31,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1042,7 +1042,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_maintest">
           <property name="currentIndex">
-           <number>4</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_task">
            <attribute name="title">
@@ -2032,479 +2032,251 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
             <string>Общие данные</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_21" stretch="2,3">
+           <layout class="QHBoxLayout" name="horizontalLayout_22">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_37">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_36" stretch="0,0">
-                <item>
-                 <widget class="QGroupBox" name="groupBox_12">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                    <horstretch>2</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>11</pointsize>
-                    <stylestrategy>PreferDefault</stylestrategy>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>Данные по объекту</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_37">
+               <widget class="QGroupBox" name="groupBox_12">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>2</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                  <stylestrategy>PreferDefault</stylestrategy>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>Данные по объекту</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_36">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_7">
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_22">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_38">
-                       <item>
-                        <widget class="QLabel" name="label_54">
-                         <property name="text">
-                          <string>Объект</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_55">
-                         <property name="text">
-                          <string>Цех</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_56">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="text">
-                          <string>Отделение/установка</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_64">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="text">
-                          <string>ФИО специалиста</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_67">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="text">
-                          <string>Дата</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_39">
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_object">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="clearButtonEnabled">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_manufacture">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="clearButtonEnabled">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_department">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="clearButtonEnabled">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_FIO">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="clearButtonEnabled">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_data">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="clearButtonEnabled">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
+                    <widget class="QLabel" name="label_object">
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Объект</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_object">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_4">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_8">
+                   <item>
+                    <widget class="QLabel" name="label_manufacture">
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Цех</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_manufacture">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <item>
+                    <widget class="QLabel" name="label_department">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Отделение/установка</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_department">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_10">
+                   <item>
+                    <widget class="QLabel" name="label_FIO">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>ФИО специалиста</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_FIO">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_21">
+                   <item>
+                    <widget class="QLabel" name="label_data">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Дата</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_data">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_40">
-                <item>
-                 <widget class="QTabWidget" name="tabWidget_2">
-                  <property name="currentIndex">
-                   <number>1</number>
-                  </property>
-                  <widget class="QWidget" name="tab">
-                   <attribute name="title">
-                    <string>Спецификация на клапан</string>
-                   </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_41">
+               <spacer name="verticalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_40">
+              <item>
+               <widget class="QTabWidget" name="tabWidget_2">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tab">
+                 <attribute name="title">
+                  <string>Спецификация на клапан</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_41">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_position">
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_23">
-                      <item>
-                       <layout class="QVBoxLayout" name="verticalLayout_42">
-                        <item>
-                         <widget class="QLabel" name="label_57">
-                          <property name="text">
-                           <string>Позиция</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_58">
-                          <property name="text">
-                           <string>Серийный номер</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_88">
-                          <property name="text">
-                           <string>Производитель ЗВА</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_59">
-                          <property name="text">
-                           <string>Модель клапана</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_60">
-                          <property name="text">
-                           <string>DN/PN (ANSI)</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_61">
-                          <property name="text">
-                           <string>Модель позиционера</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_62">
-                          <property name="text">
-                           <string>Давление питания, bar</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_73">
-                          <property name="text">
-                           <string>Модель привода</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_63">
-                          <property name="text">
-                           <string>Безопасное положение привода</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_71">
-                          <property name="text">
-                           <string>Движение хода клапана</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_materialStuffingBoxSeal">
-                          <property name="text">
-                           <string>Материал сальникового уплотнения</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item>
-                       <layout class="QVBoxLayout" name="verticalLayout_43">
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_position">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_serial">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_manufacturer">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_valveModel">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_DNPN">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_positioner">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_pressure">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_modelDrive">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_safePosition">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_movement">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="lineEdit_materialStuffingBoxSeal">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="readOnly">
-                           <bool>true</bool>
-                          </property>
-                          <property name="clearButtonEnabled">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                     </layout>
-                    </item>
-                   </layout>
-                  </widget>
-                  <widget class="QWidget" name="tab_materials">
-                   <attribute name="title">
-                    <string>Материал деталей</string>
-                   </attribute>
-                   <layout class="QFormLayout" name="formLayout">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_material_body">
+                     <widget class="QLabel" name="label_positionNumber">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
                       <property name="text">
-                       <string>Корпус</string>
+                       <string>Номер позиции</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_corpus">
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_positionNumber">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                         <horstretch>0</horstretch>
@@ -2516,246 +2288,357 @@
                       </property>
                       <property name="clearButtonEnabled">
                        <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_material_cap">
-                      <property name="text">
-                       <string>Крышка</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_cap">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_material_saddle_cv">
-                      <property name="text">
-                       <string>CV</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QWidget" name="widget" native="true">
-                      <layout class="QHBoxLayout" name="horizontalLayout_7">
-                       <property name="spacing">
-                        <number>10</number>
-                       </property>
-                       <property name="leftMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_material_cv">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="readOnly">
-                          <bool>true</bool>
-                         </property>
-                         <property name="clearButtonEnabled">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_material_ball">
-                      <property name="text">
-                       <string>Шар</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_ball">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="0">
-                     <widget class="QLabel" name="label_material_disk">
-                      <property name="text">
-                       <string>Диск</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_disk">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="0">
-                     <widget class="QLabel" name="label_material_plunger">
-                      <property name="text">
-                       <string>Плунжер</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_plunger">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_material_shaft">
-                      <property name="text">
-                       <string>Вал</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_shaft">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="0">
-                     <widget class="QLabel" name="label_material_stock">
-                      <property name="text">
-                       <string>Шток</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_stock">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="0">
-                     <widget class="QLabel" name="label_material_guide_sleeve">
-                      <property name="text">
-                       <string>Направляющая втулка</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="1">
-                     <widget class="QLineEdit" name="lineEdit_material_guide_sleeve">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QLineEdit" name="lineEdit_saddle_materials">
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_material_saddle">
-                      <property name="text">
-                       <string>Материал седла</string>
                       </property>
                      </widget>
                     </item>
                    </layout>
-                  </widget>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_serial">
+                    <item>
+                     <widget class="QLabel" name="label_serial">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Серийный номер</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_serial">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_manufacturer">
+                    <item>
+                     <widget class="QLabel" name="label_manufacturer">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Производитель ЗРА (торговая марка)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_manufacturer">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_valveModel">
+                    <item>
+                     <widget class="QLabel" name="label_valveModel">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Модель клапана</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_valveModel">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_DNPN">
+                    <item>
+                     <widget class="QLabel" name="label_DNPN">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>DN/PN (ANSI)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_DNPN">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_positioner">
+                    <item>
+                     <widget class="QLabel" name="label_positioner">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Модель позиционера</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_positioner">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_modelDrive">
+                    <item>
+                     <widget class="QLabel" name="label_modelDrive">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Модель привода</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_modelDrive">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_safePosition">
+                    <item>
+                     <widget class="QLabel" name="label_safePosition">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Безопасное положение привода</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_safePosition">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_materialStuffingBoxSe">
+                    <item>
+                     <widget class="QLabel" name="label_materialStuffingBoxSeal">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Материал сальникового уплотнения</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_materialStuffingBoxSeal">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_pressure">
+                    <item>
+                     <widget class="QLabel" name="label_pressure">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Давление питания, bar</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_pressure">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_movement">
+                    <item>
+                     <widget class="QLabel" name="label_movement">
+                      <property name="minimumSize">
+                       <size>
+                        <width>272</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Движение хода клапана</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="lineEdit_movement">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_3">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
               </item>
              </layout>
             </item>
@@ -2798,7 +2681,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Предпросмотр</string>
+                    <string>TASKI</string>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
@@ -2865,7 +2748,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Предпросмотр</string>
+                    <string>PRESSURE</string>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
@@ -2926,7 +2809,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Предпросмотр</string>
+                    <string>FRICTION</string>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
@@ -3229,6 +3112,19 @@
         <item row="2" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_28">
           <item>
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <widget class="QPushButton" name="pushButton_report">
             <property name="font">
              <font>
@@ -3318,7 +3214,6 @@
   <tabstop>lineEdit_department</tabstop>
   <tabstop>lineEdit_FIO</tabstop>
   <tabstop>lineEdit_data</tabstop>
-  <tabstop>lineEdit_position</tabstop>
   <tabstop>lineEdit_serial</tabstop>
   <tabstop>lineEdit_valveModel</tabstop>
   <tabstop>lineEdit_DNPN</tabstop>
