@@ -21,7 +21,7 @@ ValveWindow::ValveWindow(QWidget *parent)
     auto *noBadVal = new QRegularExpressionValidator(reNoBad, this);
 
 
-    ui->lineEdit_positionNumber->setValidator(numVal);
+    ui->lineEdit_positionNumber->setValidator(noBadVal);
 
     ui->lineEdit_manufacturer  ->setValidator(alphaRusVal);
 
@@ -195,7 +195,7 @@ void ValveWindow::ToolChanged(quint16 n)
 
 void ValveWindow::DiameterChanged(qreal value)
 {
-    ui->label_square->setText(QString().asprintf("%.2f", M_PI * value * value / 4));
+    ui->label_valueSquare->setText(QString().asprintf("%.2f", M_PI * value * value / 4));
 }
 
 void ValveWindow::Clear()

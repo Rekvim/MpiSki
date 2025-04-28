@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>674</width>
-    <height>756</height>
+    <height>763</height>
    </rect>
   </property>
   <property name="font">
@@ -72,53 +72,6 @@
           </property>
          </widget>
          <widget class="QLineEdit" name="lineEdit_positionNumber">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_serial">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <property name="handleWidth">
-          <number>10</number>
-         </property>
-         <widget class="QLabel" name="label_serial">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Серийный номер</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_serial">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -207,6 +160,53 @@
           </property>
          </widget>
          <widget class="QLineEdit" name="lineEdit_valveModel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_serial">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_serial">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Серийный номер</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_serial">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -438,7 +438,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Безопасное положение привода:</string>
+           <string>Безопасное положение привода</string>
           </property>
          </widget>
          <widget class="QComboBox" name="comboBox_safePosition">
@@ -464,53 +464,6 @@
             <string>Нормально открыт</string>
            </property>
           </item>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSplitter" name="splitter_materialStuffingBoxSeal">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <property name="handleWidth">
-          <number>10</number>
-         </property>
-         <widget class="QLabel" name="label_materialStuffingBoxSeal">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>330</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>330</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Материал сальникового уплотнения:</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit_materialStuffingBoxSeal">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
          </widget>
         </widget>
        </item>
@@ -542,7 +495,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Тип привода:</string>
+           <string>Тип привода</string>
           </property>
          </widget>
          <widget class="QComboBox" name="comboBox_typeDrive">
@@ -599,7 +552,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Диапазон привода:</string>
+           <string>Диапазон привода</string>
           </property>
          </widget>
          <widget class="QLineEdit" name="lineEdit_rangeDrive">
@@ -646,7 +599,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Движение хода клапана:</string>
+           <string>Движение хода клапана</string>
           </property>
          </widget>
          <widget class="QComboBox" name="comboBox_strokeMovement">
@@ -750,7 +703,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Динамическая ошибка:</string>
+           <string>Динамическая ошибка</string>
           </property>
          </widget>
          <widget class="QLineEdit" name="lineEdit_dinamicError">
@@ -797,7 +750,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Диаметр привода (в см):</string>
+           <string>Диаметр привода (в см)</string>
           </property>
          </widget>
          <widget class="QDoubleSpinBox" name="doubleSpinBox_diameterDrive">
@@ -853,7 +806,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Эффективная площадь привода:</string>
+           <string>Эффективная площадь привода</string>
           </property>
          </widget>
          <widget class="QLabel" name="label_valueSquare">
@@ -903,7 +856,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Номер поворотного шкива:</string>
+           <string>Номер поворотного шкива</string>
           </property>
          </widget>
          <widget class="QComboBox" name="comboBox_toolNumber">
@@ -978,7 +931,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Диаметр шкива (мм):</string>
+           <string>Диаметр шкива (мм)</string>
           </property>
          </widget>
          <widget class="QDoubleSpinBox" name="doubleSpinBox_diameterPulley">
@@ -1008,6 +961,53 @@
           </property>
           <property name="value">
            <double>10.000000000000000</double>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_materialStuffingBoxSeal">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
+         </property>
+         <widget class="QLabel" name="label_materialStuffingBoxSeal">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>330</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>330</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Материал сальникового уплотнения</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_materialStuffingBoxSeal">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
          </widget>
         </widget>

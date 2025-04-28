@@ -880,17 +880,18 @@ void MainWindow::SaveChart(Charts chart)
     // Вставляем в нужный label
     switch (chart) {
     case Charts::Main_task:
-        ui->label_pixmap1->setPixmap(pix);
+        ui->label_pixmap3->setPixmap(pix);
         break;
     case Charts::Stroke:
-        ui->label_pixmap2->setPixmap(pix);
         break;
     case Charts::Response:
-        ui->label_pixmap3->setPixmap(pix);
     case Charts::Resolution:
     case Charts::Step:
     case Charts::Main_pressure:
+        ui->label_pixmap2->setPixmap(pix);
     case Charts::Main_friction:
+        ui->label_pixmap1->setPixmap(pix);
+
     case Charts::Trend:
     case Charts::Cyclic:
     case Charts::Cyclic_solenoid:
