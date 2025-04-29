@@ -28,10 +28,10 @@ public:
 
 private:
     Ui::StepTestSettings *ui;
-    const QTime max_time = QTime(0, 4, 0, 0);
-    const QTime min_time = QTime(0, 0, 5, 0);
-    const int min_T_value = 1;
-    const int max_T_value = 99;
+    const QTime m_maxTime = QTime(0, 4, 0, 0);
+    const QTime m_minTime = QTime(0, 0, 5, 0);
+    const int m_minTValue = 1;
+    const int m_maxTValue = 99;
 };
 
 #endif // STEPTESTSETTINGS_H

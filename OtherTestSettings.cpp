@@ -1,5 +1,3 @@
-#include <QInputDialog>
-
 #include "OtherTestSettings.h"
 #include "ui_OtherTestSettings.h"
 
@@ -82,11 +80,11 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
     });
 
     connect(ui->timeEdit, &QTimeEdit::timeChanged, this, [&](QTime time) {
-        if (time > max_time) {
-            ui->timeEdit->setTime(max_time);
+        if (time > m_maxTime) {
+            ui->timeEdit->setTime(m_maxTime);
         }
-        if (time < min_time) {
-            ui->timeEdit->setTime(min_time);
+        if (time < m_minTime) {
+            ui->timeEdit->setTime(m_minTime);
         }
     });
 }

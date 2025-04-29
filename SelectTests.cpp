@@ -55,61 +55,61 @@ SelectTests::~SelectTests()
 
 SelectTests::BlockCTS SelectTests::getCTS() const
 {
-    return block_cts_;
+    return m_blockCts;
 }
 
 bool SelectTests::isValidPattern(const BlockCTS& block_cts) {
     // Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический
-    if (block_cts_.usb &&
-        block_cts_.imit_switch_0_3 &&
-        block_cts_.imit_switch_3_0 &&
-        (block_cts_.do_1 || block_cts_.do_2 || block_cts_.do_3 || block_cts_.do_4)
+    if (m_blockCts.usb &&
+        m_blockCts.imit_switch_0_3 &&
+        m_blockCts.imit_switch_3_0 &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
         )
     {
         return true;
     }
     // Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический
-    else if (block_cts_.usb &&
-             block_cts_.input_4_20_mA &&
-             block_cts_.output_4_20_mA &&
-             block_cts_.imit_switch_0_3 &&
-             block_cts_.imit_switch_3_0 &&
-             (block_cts_.do_1 || block_cts_.do_2 || block_cts_.do_3 || block_cts_.do_4)
+    else if (m_blockCts.usb &&
+             m_blockCts.input_4_20_mA &&
+             m_blockCts.output_4_20_mA &&
+             m_blockCts.imit_switch_0_3 &&
+             m_blockCts.imit_switch_3_0 &&
+             (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
              )
     {
         return true;
     }
     // Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-    else if (block_cts_.usb &&
-             block_cts_.pressure_1 &&
-             block_cts_.pressure_2 &&
-             block_cts_.pressure_3 &&
-             block_cts_.moving &&
-             block_cts_.input_4_20_mA &&
-             block_cts_.output_4_20_mA &&
-             block_cts_.imit_switch_0_3 &&
-             block_cts_.imit_switch_3_0 &&
-             (block_cts_.do_1 || block_cts_.do_2 || block_cts_.do_3 || block_cts_.do_4)
+    else if (m_blockCts.usb &&
+             m_blockCts.pressure_1 &&
+             m_blockCts.pressure_2 &&
+             m_blockCts.pressure_3 &&
+             m_blockCts.moving &&
+             m_blockCts.input_4_20_mA &&
+             m_blockCts.output_4_20_mA &&
+             m_blockCts.imit_switch_0_3 &&
+             m_blockCts.imit_switch_3_0 &&
+             (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
              )
     {
         return true;
     }
     // Базовых; Регулирующей Арматуры; Тесты: полного ходад, циклический
-    else if (block_cts_.usb &&
-             block_cts_.input_4_20_mA &&
-             block_cts_.output_4_20_mA
+    else if (m_blockCts.usb &&
+             m_blockCts.input_4_20_mA &&
+             m_blockCts.output_4_20_mA
              )
     {
         return true;
     }
     // Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-    else if (block_cts_.usb &&
-             block_cts_.pressure_1 &&
-             block_cts_.pressure_2 &&
-             block_cts_.pressure_3 &&
-             block_cts_.moving &&
-             block_cts_.input_4_20_mA &&
-             block_cts_.output_4_20_mA
+    else if (m_blockCts.usb &&
+             m_blockCts.pressure_1 &&
+             m_blockCts.pressure_2 &&
+             m_blockCts.pressure_3 &&
+             m_blockCts.moving &&
+             m_blockCts.input_4_20_mA &&
+             m_blockCts.output_4_20_mA
              )
     {
         return true;
@@ -121,22 +121,22 @@ bool SelectTests::isValidPattern(const BlockCTS& block_cts) {
 void SelectTests::onCheckBoxChanged()
 {
     // Обновляем значения в block_cts на основе текущих состояний чекбоксов
-    block_cts_.pressure_1 = ui->check_box_pressure_1->isChecked();
-    block_cts_.pressure_2 = ui->check_box_pressure_2->isChecked();
-    block_cts_.pressure_3 = ui->check_box_pressure_3->isChecked();
-    block_cts_.moving = ui->check_box_moving->isChecked();
-    block_cts_.input_4_20_mA = ui->check_box_input_4_20_mA->isChecked();
-    block_cts_.output_4_20_mA = ui->check_box_output_4_20_mA->isChecked();
-    block_cts_.usb = ui->check_box_usb->isChecked();
-    block_cts_.imit_switch_0_3 = ui->check_box_imit_switch_0_3->isChecked();
-    block_cts_.imit_switch_3_0 = ui->check_box_imit_switch_3_0->isChecked();
-    block_cts_.do_1 = ui->check_box_do_1->isChecked();
-    block_cts_.do_2 = ui->check_box_do_2->isChecked();
-    block_cts_.do_3 = ui->check_box_do_3->isChecked();
-    block_cts_.do_4 = ui->check_box_do_4->isChecked();
+    m_blockCts.pressure_1 = ui->check_box_pressure_1->isChecked();
+    m_blockCts.pressure_2 = ui->check_box_pressure_2->isChecked();
+    m_blockCts.pressure_3 = ui->check_box_pressure_3->isChecked();
+    m_blockCts.moving = ui->check_box_moving->isChecked();
+    m_blockCts.input_4_20_mA = ui->check_box_input_4_20_mA->isChecked();
+    m_blockCts.output_4_20_mA = ui->check_box_output_4_20_mA->isChecked();
+    m_blockCts.usb = ui->check_box_usb->isChecked();
+    m_blockCts.imit_switch_0_3 = ui->check_box_imit_switch_0_3->isChecked();
+    m_blockCts.imit_switch_3_0 = ui->check_box_imit_switch_3_0->isChecked();
+    m_blockCts.do_1 = ui->check_box_do_1->isChecked();
+    m_blockCts.do_2 = ui->check_box_do_2->isChecked();
+    m_blockCts.do_3 = ui->check_box_do_3->isChecked();
+    m_blockCts.do_4 = ui->check_box_do_4->isChecked();
 
 
-    if (isValidPattern(block_cts_)) {
+    if (isValidPattern(m_blockCts)) {
         ui->entry_testing->setEnabled(true);  // Включаем кнопку, если паттерн выбран
     } else {
         ui->entry_testing->setEnabled(false); // Выключаем кнопку, если паттерн не выбран

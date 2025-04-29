@@ -13,7 +13,7 @@ public:
     ~Uart();
 
 private:
-    QSerialPort *serial_port_;
+    QSerialPort *m_serialPort;
 
 public slots:
     void Connect(const QString &port_name);

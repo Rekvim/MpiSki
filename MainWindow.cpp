@@ -1,14 +1,14 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "CyclicTestSettings.h"
-#include <QDateTime>
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->tabWidget->setCurrentIndex(0);
 
     m_testing = false;
 
@@ -95,11 +95,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton_main_save, &QPushButton::clicked, this, [&] {
         if (ui->tabWidget_maintest->currentWidget() == ui->tab_task) {
-            SaveChart(Charts::Main_task);
+            SaveChart(Charts::Task);
         } else if (ui->tabWidget_maintest->currentWidget() == ui->tab_pressure) {
-            SaveChart(Charts::Main_pressure);
+            SaveChart(Charts::Pressure);
         } else if (ui->tabWidget_maintest->currentWidget() == ui->tab_friction) {
-            SaveChart(Charts::Main_friction);
+            SaveChart(Charts::Friction);
         }
     });
 
@@ -116,6 +116,13 @@ MainWindow::MainWindow(QWidget *parent)
             &QPushButton::clicked,
             this,
             &MainWindow::ButtonStartOptional);
+
+    connect(
+        this,
+        &MainWindow::StartCyclicSolenoidTest,
+        m_program,
+        &Program::CyclicSolenoidTestStart
+        );
 
     connect(ui->pushButton_stroke_save, &QPushButton::clicked, this, [&] {
         SaveChart(Charts::Stroke);
@@ -205,6 +212,16 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::GetResponseTestParameters,
             Qt::BlockingQueuedConnection);
 
+
+    connect(m_program,
+            &Program::GetCyclicTestParameters,
+            this,
+            &MainWindow::GetCyclicTestParameters,
+            Qt::BlockingQueuedConnection);
+
+    connect(ui->pushButton_cyclicSolenoidStart, &QPushButton::clicked,
+            this, &MainWindow::ButtonStartCyclicSolenoid);
+
     connect(m_program, &Program::Question, this, &MainWindow::Question, Qt::BlockingQueuedConnection);
 
     connect(m_fileSaver, &FileSaver::Question, this, &MainWindow::Question, Qt::DirectConnection);
@@ -249,6 +266,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::SetSolenoidResults, this, &MainWindow::SetSolenoidResults);
 }
 
+void MainWindow::ButtonStartCyclicSolenoid() {
+    if (m_testing) {
+        if (QMessageBox::question(this, "Внимание!", "Завершить циклический тест?")
+            == QMessageBox::Yes) {
+            emit StopTest();
+        }
+    } else {
+        emit StartCyclicSolenoidTest();
+        StartTest();
+    }
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -260,33 +289,30 @@ void MainWindow::SetRegistry(Registry *registry)
 {
     m_registry = registry;
 
-    ObjectInfo *object_info = m_registry->GetObjectInfo();
-    ValveInfo *valve_info = m_registry->GetValveInfo();
-    OtherParameters *other_parameters = m_registry->GetOtherParameters();
+    ObjectInfo *objectInfo = m_registry->GetObjectInfo();
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    OtherParameters *otherParameters = m_registry->GetOtherParameters();
 
-    ui->lineEdit_object->setText(object_info->object);
-    ui->lineEdit_manufacture->setText(object_info->manufactory);
-    ui->lineEdit_department->setText(object_info->department);
-    ui->lineEdit_FIO->setText(object_info->FIO);
-    ui->lineEdit_data->setText(other_parameters->data);
+    ui->lineEdit_object->setText(objectInfo->object);
+    ui->lineEdit_manufacture->setText(objectInfo->manufactory);
+    ui->lineEdit_department->setText(objectInfo->department);
+    ui->lineEdit_FIO->setText(objectInfo->FIO);
+    ui->lineEdit_date->setText(otherParameters->date);
 
-    ui->lineEdit_positionNumber->setText(valve_info->position);
-    ui->lineEdit_manufacturer->setText(valve_info->manufacturer);
-    ui->lineEdit_serial->setText(valve_info->serial);
-    ui->lineEdit_DNPN->setText(valve_info->DN + "/" + valve_info->PN);
-    ui->lineEdit_positioner->setText(valve_info->positioner);
-    ui->lineEdit_movement->setText(other_parameters->movement);
-    ui->lineEdit_dinamic_recomend->setText(valve_info->dinamic_error);
-    ui->lineEdit_stroke_recomend->setText(valve_info->stroke);
-    ui->lineEdit_range_recomend->setText(valve_info->range);
-
-
-    ui->lineEdit_valveModel->setText(valve_info->position);
+    ui->lineEdit_positionNumber->setText(valveInfo->positionNumber);
+    ui->lineEdit_manufacturer->setText(valveInfo->manufacturer);
+    ui->lineEdit_serial->setText(valveInfo->serial);
+    ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
+    ui->lineEdit_positioner->setText(valveInfo->positioner);
+    ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
+    ui->lineEdit_dinamic_recomend->setText(valveInfo->dinamicError);
+    ui->lineEdit_stroke_recomend->setText(valveInfo->valveStroke);
+    ui->lineEdit_range_recomend->setText(valveInfo->range);
 
 
+    ui->lineEdit_valveModel->setText(valveInfo->valveModel);
 
-
-    if (valve_info->normal_position != 0) {
+    if (valveInfo->safePosition != 0) {
         m_stepTestSettings->reverse();
         m_responseTestSettings->reverse();
         m_resolutionTestSettings->reverse();
@@ -352,12 +378,17 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     ui->tableWidget_step_results->resizeColumnsToContents();
 }
 
-void MainWindow::SetSolenoidResults(qint64 forward, qint64 backward, quint16 cycles, double range_percent, double total_time_sec)
+void MainWindow::SetSolenoidResults(qint64 forwardSec, qint64 backwardSec, quint16 cycles, double rangePercent, double totalTimeSec)
 {
-    ui->lineEdit_time_forward->setText(QString::number(forward / 1000.0, 'f', 2));  // сек
-    ui->lineEdit_time_backward->setText(QString::number(backward / 1000.0, 'f', 2)); // сек
-    ui->lineEdit_range_real->setText(QString::number(range_percent, 'f', 1));        // %
-    ui->lineEdit_range_pressure->setText(QString::number(total_time_sec, 'f', 1));   // сек
+    ui->lineEdit_time_forward->setText(QString::number(forwardSec / 1000.0, 'f', 2)); // сек
+    ui->lineEdit_time_backward->setText(QString::number(backwardSec / 1000.0, 'f', 2)); // сек
+    ui->lineEdit_range_real->setText(QString::number(rangePercent, 'f', 1)); // %
+    ui->lineEdit_range_pressure->setText(QString::number(totalTimeSec, 'f', 1)); // сек
+
+    // ui->lineEdit_time_forward->setText("1.23");  // секунды
+    // ui->lineEdit_time_backward->setText("2.34");
+    // ui->lineEdit_range_real->setText("50.0");  // %
+    // ui->lineEdit_range_pressure->setText("10.0");  // сек
 }
 
 void MainWindow::SetBlockCTS(const SelectTests::BlockCTS &blockCTS)
@@ -373,21 +404,6 @@ void MainWindow::SetSensorsNumber(quint8 num, bool apply_logic)
 
     // По умолчанию все вкладки включены
     std::array<bool, 6> tabState = {true, true, true, true, true, true};
-
-    qDebug() << "[BlockCTS]";
-    qDebug() << "  pressure_1:" << m_blockCTS.pressure_1;
-    qDebug() << "  pressure_2:" << m_blockCTS.pressure_2;
-    qDebug() << "  pressure_3:" << m_blockCTS.pressure_3;
-    qDebug() << "  moving:" << m_blockCTS.moving;
-    qDebug() << "  input_4_20_mA:" << m_blockCTS.input_4_20_mA;
-    qDebug() << "  output_4_20_mA:" << m_blockCTS.output_4_20_mA;
-    qDebug() << "  usb:" << m_blockCTS.usb;
-    qDebug() << "  imit_switch_0_3:" << m_blockCTS.imit_switch_0_3;
-    qDebug() << "  imit_switch_3_0:" << m_blockCTS.imit_switch_3_0;
-    qDebug() << "  do_1:" << m_blockCTS.do_1;
-    qDebug() << "  do_2:" << m_blockCTS.do_2;
-    qDebug() << "  do_3:" << m_blockCTS.do_3;
-    qDebug() << "  do_4:" << m_blockCTS.do_4;
 
     if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) { // new
         ui->groupBox_DO->setVisible(true);
@@ -532,17 +548,17 @@ void MainWindow::SetChartVisible(Charts chart, quint16 series, bool visible)
 
 void MainWindow::ShowDots(bool visible)
 {
-    m_charts[Charts::Main_task]->showdots(visible);
-    m_charts[Charts::Main_pressure]->showdots(visible);
+    m_charts[Charts::Task]->showdots(visible);
+    m_charts[Charts::Pressure]->showdots(visible);
 }
 
 void MainWindow::DublSeries()
 {
-    m_charts[Charts::Main_task]->dublSeries(1);
-    m_charts[Charts::Main_task]->dublSeries(2);
-    m_charts[Charts::Main_task]->dublSeries(3);
-    m_charts[Charts::Main_task]->dublSeries(4);
-    m_charts[Charts::Main_pressure]->dublSeries(0);
+    m_charts[Charts::Task]->dublSeries(1);
+    m_charts[Charts::Task]->dublSeries(2);
+    m_charts[Charts::Task]->dublSeries(3);
+    m_charts[Charts::Task]->dublSeries(4);
+    m_charts[Charts::Pressure]->dublSeries(0);
 }
 
 void MainWindow::EnableSetTask(bool enable)
@@ -554,10 +570,10 @@ void MainWindow::EnableSetTask(bool enable)
 void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
-    if (chart == Charts::Main_task) {
-        QPair<QList<QPointF>, QList<QPointF>> points_linear = m_charts[Charts::Main_task]->getpoints(
+    if (chart == Charts::Task) {
+        QPair<QList<QPointF>, QList<QPointF>> points_linear = m_charts[Charts::Task]->getpoints(
             1);
-        QPair<QList<QPointF>, QList<QPointF>> points_pressure = m_charts[Charts::Main_pressure]
+        QPair<QList<QPointF>, QList<QPointF>> points_pressure = m_charts[Charts::Pressure]
                                                                     ->getpoints(0);
 
         points.push_back({points_linear.first.begin(), points_linear.first.end()});
@@ -603,10 +619,11 @@ void MainWindow::GetStepTestParameters(StepTestSettings::TestParameters &paramet
 
 void MainWindow::GetCyclicTestParameters(CyclicTestSettings::TestParameters &parameters)
 {
-    // parameters.points.clear();
-
     if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
         parameters = m_cyclicTestSettings->getParameters();
+    }
+    else {
+        parameters = {};
     }
 }
 
@@ -717,60 +734,60 @@ void MainWindow::SetCheckboxDIChecked(quint8 status)
 
 void MainWindow::InitCharts()
 {
-    ValveInfo *valve_info = m_registry->GetValveInfo();
-    bool rotate = (valve_info->stroke_movement != 0);
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    bool rotate = (valveInfo->strokeMovement != 0);
 
-    m_charts[Charts::Main_task] = ui->Chart_task;
-    m_charts[Charts::Main_friction] = ui->Chart_friction;
-    m_charts[Charts::Main_pressure] = ui->Chart_pressure;
+    m_charts[Charts::Task] = ui->Chart_task;
+    m_charts[Charts::Friction] = ui->Chart_friction;
+    m_charts[Charts::Pressure] = ui->Chart_pressure;
     m_charts[Charts::Resolution] = ui->Chart_resolution;
     m_charts[Charts::Response] = ui->Chart_response;
     m_charts[Charts::Stroke] = ui->Chart_stroke;
     m_charts[Charts::Step] = ui->Chart_step;
     m_charts[Charts::Trend] = ui->Chart_trend;
     m_charts[Charts::Cyclic] = ui->Chart_cyclic;
-    m_charts[Charts::Cyclic_solenoid] = ui->Chart_cyclic_solenoid; // new
+    m_charts[Charts::CyclicSolenoid] = ui->Chart_cyclic_solenoid; // new
 
 
-    m_charts[Charts::Main_task]->setname("Task");
-    m_charts[Charts::Main_friction]->setname("Friction");
-    m_charts[Charts::Main_pressure]->setname("Pressure");
+    m_charts[Charts::Task]->setname("Task");
+    m_charts[Charts::Friction]->setname("Friction");
+    m_charts[Charts::Pressure]->setname("Pressure");
     m_charts[Charts::Resolution]->setname("Resolution");
     m_charts[Charts::Response]->setname("Response");
     m_charts[Charts::Stroke]->setname("Stroke");
     m_charts[Charts::Step]->setname("Step");
     m_charts[Charts::Cyclic]->setname("Cyclic");
-    m_charts[Charts::Cyclic_solenoid]->setname("Cyclic_solenoid"); // new
+    m_charts[Charts::CyclicSolenoid]->setname("Cyclic_solenoid"); // new
 
-    m_charts[Charts::Main_task]->useTimeaxis(false);
-    m_charts[Charts::Main_task]->addAxis("%.2f bar");
+    m_charts[Charts::Task]->useTimeaxis(false);
+    m_charts[Charts::Task]->addAxis("%.2f bar");
 
     if (!rotate)
-        m_charts[Charts::Main_task]->addAxis("%.2f mm");
+        m_charts[Charts::Task]->addAxis("%.2f mm");
     else
-        m_charts[Charts::Main_task]->addAxis("%.2f deg");
+        m_charts[Charts::Task]->addAxis("%.2f deg");
 
-    m_charts[Charts::Main_task]->addSeries(1, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Main_task]->addSeries(1,
+    m_charts[Charts::Task]->addSeries(1, "Задание", QColor::fromRgb(0, 0, 0));
+    m_charts[Charts::Task]->addSeries(1,
                                           "Датчик линейных перемещений",
                                           QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Main_task]->addSeries(0, "Датчик давления 1", QColor::fromRgb(0, 0, 255));
-    m_charts[Charts::Main_task]->addSeries(0, "Датчик давления 2", QColor::fromRgb(0, 200, 0));
-    m_charts[Charts::Main_task]->addSeries(0, "Датчик давления 3", QColor::fromRgb(150, 0, 200));
+    m_charts[Charts::Task]->addSeries(0, "Датчик давления 1", QColor::fromRgb(0, 0, 255));
+    m_charts[Charts::Task]->addSeries(0, "Датчик давления 2", QColor::fromRgb(0, 200, 0));
+    m_charts[Charts::Task]->addSeries(0, "Датчик давления 3", QColor::fromRgb(150, 0, 200));
 
-    m_charts[Charts::Main_pressure]->useTimeaxis(false);
-    m_charts[Charts::Main_pressure]->setLabelXformat("%.2f bar");
+    m_charts[Charts::Pressure]->useTimeaxis(false);
+    m_charts[Charts::Pressure]->setLabelXformat("%.2f bar");
     if (!rotate)
-        m_charts[Charts::Main_pressure]->addAxis("%.2f mm");
+        m_charts[Charts::Pressure]->addAxis("%.2f mm");
     else
-        m_charts[Charts::Main_pressure]->addAxis("%.2f deg");
+        m_charts[Charts::Pressure]->addAxis("%.2f deg");
 
-    m_charts[Charts::Main_pressure]->addSeries(0,
+    m_charts[Charts::Pressure]->addSeries(0,
                                               "Перемещение от давления",
                                               QColor::fromRgb(255, 0, 0));
 
-    m_charts[Charts::Main_pressure]->addSeries(0, "Линейная регрессия", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Main_pressure]->visible(1, false);
+    m_charts[Charts::Pressure]->addSeries(0, "Линейная регрессия", QColor::fromRgb(0, 0, 0));
+    m_charts[Charts::Pressure]->visible(1, false);
 
     m_charts[Charts::Stroke]->useTimeaxis(true);
     m_charts[Charts::Stroke]->addAxis("%.2f%%");
@@ -807,10 +824,10 @@ void MainWindow::InitCharts()
     m_charts[Charts::Cyclic]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Cyclic]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
 
-    m_charts[Charts::Cyclic_solenoid]->useTimeaxis(true); // new
-    m_charts[Charts::Cyclic_solenoid]->addAxis("%.2f%%");
-    m_charts[Charts::Cyclic_solenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Cyclic_solenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::CyclicSolenoid]->useTimeaxis(true); // new
+    m_charts[Charts::CyclicSolenoid]->addAxis("%.2f%%");
+    m_charts[Charts::CyclicSolenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
+    m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
 
     connect(m_program, &Program::AddPoints, this, &MainWindow::AddPoints);
     connect(m_program, &Program::ClearPoints, this, &MainWindow::ClearPoints);
@@ -820,27 +837,27 @@ void MainWindow::InitCharts()
     connect(m_program, &Program::ShowDots, this, &MainWindow::ShowDots);
 
     connect(ui->checkBox_task, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Main_task]->visible(0, k != 0);
+        m_charts[Charts::Task]->visible(0, k != 0);
     });
 
     connect(ui->checkBox_line, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Main_task]->visible(1, k != 0);
+        m_charts[Charts::Task]->visible(1, k != 0);
     });
 
     connect(ui->checkBox_pressure1, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Main_task]->visible(2, k != 0);
+        m_charts[Charts::Task]->visible(2, k != 0);
     });
 
     connect(ui->checkBox_pressure2, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Main_task]->visible(3, k != 0);
+        m_charts[Charts::Task]->visible(3, k != 0);
     });
 
     connect(ui->checkBox_pressure3, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Main_task]->visible(4, k != 0);
+        m_charts[Charts::Task]->visible(4, k != 0);
     });
 
     connect(ui->checkBox_regression, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Main_pressure]->visible(1, k != 0);
+        m_charts[Charts::Pressure]->visible(1, k != 0);
     });
 
     connect(m_program,
@@ -849,14 +866,14 @@ void MainWindow::InitCharts()
             &MainWindow::GetPoints,
             Qt::BlockingQueuedConnection);
 
-    m_charts[Charts::Main_friction]->addAxis("%.2f H");
-    m_charts[Charts::Main_friction]->addSeries(0,
+    m_charts[Charts::Friction]->addAxis("%.2f H");
+    m_charts[Charts::Friction]->addSeries(0,
                                               "Трение от перемещения",
                                               QColor::fromRgb(255, 0, 0));
     if (!rotate)
-        m_charts[Charts::Main_friction]->setLabelXformat("%.2f mm");
+        m_charts[Charts::Friction]->setLabelXformat("%.2f mm");
     else
-        m_charts[Charts::Main_friction]->setLabelXformat("%.2f deg");
+        m_charts[Charts::Friction]->setLabelXformat("%.2f deg");
 
     ui->checkBox_task->setCheckState(Qt::Unchecked);
     ui->checkBox_line->setCheckState(Qt::Unchecked);
@@ -877,9 +894,8 @@ void MainWindow::SaveChart(Charts chart)
 
     QPixmap pix = m_charts[chart]->grab();
 
-    // Вставляем в нужный label
     switch (chart) {
-    case Charts::Main_task:
+    case Charts::Task:
         ui->label_pixmap3->setPixmap(pix);
         break;
     case Charts::Stroke:
@@ -887,23 +903,19 @@ void MainWindow::SaveChart(Charts chart)
     case Charts::Response:
     case Charts::Resolution:
     case Charts::Step:
-    case Charts::Main_pressure:
+    case Charts::Pressure:
         ui->label_pixmap2->setPixmap(pix);
-    case Charts::Main_friction:
+    case Charts::Friction:
         ui->label_pixmap1->setPixmap(pix);
 
     case Charts::Trend:
     case Charts::Cyclic:
-    case Charts::Cyclic_solenoid:
-        // // если у вас для разных графиков несколько лейблов,
-        // // перечислите их здесь:
-        // ui->label_pixmap3->setPixmap(pix);
+    case Charts::CyclicSolenoid:
         break;
     default:
         break;
     }
 
-    // 4. подгоняем размер лейбла (опционально)
     ui->label_pixmap1->setScaledContents(true);
     ui->label_pixmap2->setScaledContents(true);
     ui->label_pixmap3->setScaledContents(true);
@@ -931,14 +943,13 @@ void MainWindow::InitReport()
 
     m_report.data.push_back({5, 13, ui->lineEdit_positionNumber});
     m_report.data.push_back({6, 13, ui->lineEdit_serial});
-    // m_report.data.push_back({7, 13, ui->lineEdit_model});
+    m_report.data.push_back({7, 13, ui->lineEdit_valveModel});
     m_report.data.push_back({8, 13, ui->lineEdit_manufacturer});
     m_report.data.push_back({9, 13, ui->lineEdit_DNPN});
     m_report.data.push_back({10, 13, ui->lineEdit_positioner});
     m_report.data.push_back({11, 13, ui->lineEdit_pressure});
-    // m_report.data.push_back({12, 13, ui->lineEdit_normal_position});
-    m_report.data.push_back({14, 13, ui->lineEdit_movement});
-    // m_report.data.push_back({15, 13, ui->lineEdit_material});
+    m_report.data.push_back({12, 13, ui->lineEdit_safePosition});
+    m_report.data.push_back({14, 13, ui->lineEdit_strokeMovement});
 
     m_report.data.push_back({26, 5, ui->lineEdit_dinamic_real});
     m_report.data.push_back({26, 8, ui->lineEdit_dinamic_recomend});
@@ -957,8 +968,14 @@ void MainWindow::InitReport()
 
     m_report.data.push_back({74, 4, ui->lineEdit_FIO});
 
-    m_report.data.push_back({66, 12, ui->lineEdit_data});
-    m_report.data.push_back({161, 12, ui->lineEdit_data});
+    m_report.data.push_back({66, 12, ui->lineEdit_date});
+    m_report.data.push_back({161, 12, ui->lineEdit_date});
+
+    m_report.data.push_back({10, 5, ui->lineEdit_time_forward});
+    m_report.data.push_back({10, 5, ui->lineEdit_time_backward});
+    m_report.data.push_back({10, 5, ui->lineEdit_range_real});
+    m_report.data.push_back({10, 5, ui->lineEdit_range_pressure});
+    m_report.data.push_back({10, 5, ui->lineEdit_date});
 
     m_report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     m_report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});

@@ -17,6 +17,11 @@ public:
         QLineEdit *line_edit;
     };
 
+    struct ValueBinding {
+        int row, col;
+        QString value;
+    };
+
     struct ValidationData
     {
         QString formula;
@@ -40,9 +45,9 @@ public:
 
 private:
     void CreateDir();
-    QDir dir_;
-    bool created_;
-    Registry *registry_;
+    QDir m_dir;
+    bool m_created;
+    Registry *m_registry;
 signals:
     void Question(QString title, QString text, bool &result);
     void GetDirectory(QString current_path, QString &result);

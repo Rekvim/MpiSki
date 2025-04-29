@@ -7,24 +7,24 @@ using namespace QXlsx;
 FileSaver::FileSaver(QObject *parent)
     : QObject{parent}
 {
-    created_ = false;
+    m_created = false;
 }
 
 void FileSaver::SetRegistry(Registry *registry)
 {
-    registry_ = registry;
+    m_registry = registry;
 }
 
 void FileSaver::SaveImage(MyChart *chart)
 {
-    if (!created_)
+    if (!m_created)
         CreateDir();
 
-    static QMap<QString, quint16> chart_num;
+    static QMap<QString, quint16> chartNum;
 
     QString name = chart->getname();
 
-    ++chart_num[name];
+    ++chartNum[name];
 
     QPixmap p = chart->grab();
     QOpenGLWidget *glWidget = chart->findChild<QOpenGLWidget *>();
@@ -37,9 +37,9 @@ void FileSaver::SaveImage(MyChart *chart)
         painter.end();
     }
 
-    p.save(dir_.filePath(name + "_" + QString::number(chart_num[name]) + ".bmp"));
+    p.save(m_dir.filePath(name + "_" + QString::number(chartNum[name]) + ".bmp"));
 
-    QFile out(dir_.filePath(name + "_" + QString::number(chart_num[name]) + ".data"));
+    QFile out(m_dir.filePath(name + "_" + QString::number(chartNum[name]) + ".data"));
 
     if (out.open(QIODevice::WriteOnly)) {
         QDataStream stream(&out);
@@ -52,12 +52,12 @@ void FileSaver::SaveImage(MyChart *chart)
 
 QDir FileSaver::Directory()
 {
-    return dir_.path();
+    return m_dir.path();
 }
 
 bool FileSaver::SaveReport(const Report &report)
 {
-    if (!created_)
+    if (!m_created)
         CreateDir();
 
     Document xlsx(":/excel/report.xlsx");
@@ -85,49 +85,49 @@ bool FileSaver::SaveReport(const Report &report)
         xlsx.addDataValidation(validation);
     }
 
-    xlsx.saveAs(dir_.filePath("report.xlsx"));
+    xlsx.saveAs(m_dir.filePath("report.xlsx"));
 
-    return QFile::exists(dir_.filePath("report.xlsx"));
+    return QFile::exists(m_dir.filePath("report.xlsx"));
 }
 
 void FileSaver::CreateDir()
 {
-    ObjectInfo *object_info = registry_->GetObjectInfo();
-    ValveInfo *valve_info = registry_->GetValveInfo();
+    ObjectInfo *objectInfo = m_registry->GetObjectInfo();
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
 
-    QString path = object_info->object + "/" + object_info->manufactory + "/"
-                   + object_info->department + "/" + valve_info->position;
+    QString path = objectInfo->object + "/" + objectInfo->manufactory + "/"
+                   + objectInfo->department + "/" + valveInfo->positionNumber;
     QString date = QDate::currentDate().toString("dd_MM_yyyy");
 
-    dir_.setPath(QCoreApplication::applicationDirPath());
+    m_dir.setPath(QCoreApplication::applicationDirPath());
 
-    if (dir_.mkpath(path)) {
-        dir_.cd(path);
+    if (m_dir.mkpath(path)) {
+        m_dir.cd(path);
 
-        if (dir_.exists(date)) {
+        if (m_dir.exists(date)) {
             for (int i = 2; i < 50; i++) {
                 QString folder = date + "_" + QString::number(i);
 
-                if (dir_.mkdir(folder)) {
-                    created_ = dir_.cd(folder);
+                if (m_dir.mkdir(folder)) {
+                    m_created = m_dir.cd(folder);
                     break;
                 }
             }
-        } else if (dir_.mkdir(date)) {
-            created_ = dir_.cd(date);
+        } else if (m_dir.mkdir(date)) {
+            m_created = m_dir.cd(date);
         }
     }
 
-    while (!created_) {
+    while (!m_created) {
         QString folder;
 
         do {
-            emit GetDirectory(dir_.path(), folder);
+            emit GetDirectory(m_dir.path(), folder);
         } while (folder.isEmpty());
 
-        if (dir_.cd(folder)) {
-            if (dir_.isEmpty()) {
-                created_ = dir_.cd(folder);
+        if (m_dir.cd(folder)) {
+            if (m_dir.isEmpty()) {
+                m_created = m_dir.cd(folder);
             } else {
                 bool answer;
                 emit Question("Внимание!",
@@ -135,7 +135,7 @@ void FileSaver::CreateDir()
                               answer);
 
                 if (answer) {
-                    created_ = dir_.cd(folder);
+                    m_created = m_dir.cd(folder);
                 }
             }
         }

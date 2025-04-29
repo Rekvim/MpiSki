@@ -2,9 +2,7 @@
 #include <QEventLoop>
 #include <QThread>
 
-#include "CyclicTestSettings.h"
 #include "Test.h"
-#include "Program.h"
 
 Test::Test(QObject *parent)
     : QObject{parent}
@@ -630,63 +628,63 @@ void CyclicTest::Process()
     emit EndTest();
 }
 
-CyclicTestSolenoid::CyclicTestSolenoid(QObject *parent) // new
-    : MainTest(parent, false)
-{}
+// CyclicTestSolenoid::CyclicTestSolenoid(QObject *parent) // new
+//     : MainTest(parent, false)
+// {}
 
-void CyclicTestSolenoid::Process()
-{
-    // emit SetStartTime();                        // обнулим таймер начала
+// void CyclicTestSolenoid::Process()
+// {
+//     // emit SetStartTime();                        // обнулим таймер начала
 
-    // CyclicTestSettings::TestParameters params;
+//     // CyclicTestSettings::TestParameters params;
 
-    // QElapsedTimer total_timer;
-    // total_timer.start();
+//     // QElapsedTimer total_timer;
+//     // total_timer.start();
 
-    // quint64 forward_time = 0;
-    // quint64 backward_time = 0;
+//     // quint64 forward_time = 0;
+//     // quint64 backward_time = 0;
 
-    // for (quint16 cycle = 0; cycle < params.num_cycles && !terminate_; ++cycle) {
-    //     QElapsedTimer cycle_timer;
-    //     cycle_timer.start();
+//     // for (quint16 cycle = 0; cycle < params.num_cycles && !terminate_; ++cycle) {
+//     //     QElapsedTimer cycle_timer;
+//     //     cycle_timer.start();
 
-    //     // Проход по шагам — вперед
-    //     for (int i = 0; i < params.points.size(); ++i) {
-    //         const qreal value = params.points[i];
-    //         const quint16 dac = static_cast<quint16>(value * 10); // 100% → 1000 DAC
+//     //     // Проход по шагам — вперед
+//     //     for (int i = 0; i < params.points.size(); ++i) {
+//     //         const qreal value = params.points[i];
+//     //         const quint16 dac = static_cast<quint16>(value * 10); // 100% → 1000 DAC
 
-    //         SetDACBlocked(dac, 10000); // пауза 10 сек
+//     //         SetDACBlocked(dac, 10000); // пауза 10 сек
 
-    //         qreal elapsed_sec = total_timer.elapsed() / 1000.0;
-    //         emit AddPoints(Charts::Cyclic_solenoid, {{0, elapsed_sec, value}});
-    //     }
+//     //         qreal elapsed_sec = total_timer.elapsed() / 1000.0;
+//     //         emit AddPoints(Charts::Cyclic_solenoid, {{0, elapsed_sec, value}});
+//     //     }
 
-    //     // Проход по шагам — обратно
-    //     for (int i = params.points.size() - 2; i >= 0; --i) { // -2 чтобы не дублировать центральную точку
-    //         const qreal value = params.points[i];
-    //         const quint16 dac = static_cast<quint16>(value * 10);Хоро
+//     //     // Проход по шагам — обратно
+//     //     for (int i = params.points.size() - 2; i >= 0; --i) { // -2 чтобы не дублировать центральную точку
+//     //         const qreal value = params.points[i];
+//     //         const quint16 dac = static_cast<quint16>(value * 10);Хоро
 
-    //         SetDACBlocked(dac, 10000);
+//     //         SetDACBlocked(dac, 10000);
 
-    //         qreal elapsed_sec = total_timer.elapsed() / 1000.0;
-    //         emit AddPoints(Charts::Cyclic_solenoid, {{0, elapsed_sec, value}});
-    //     }
+//     //         qreal elapsed_sec = total_timer.elapsed() / 1000.0;
+//     //         emit AddPoints(Charts::Cyclic_solenoid, {{0, elapsed_sec, value}});
+//     //     }
 
-    //     forward_time += cycle_timer.elapsed(); // пока считаем всё как forward
-    // }
+//     //     forward_time += cycle_timer.elapsed(); // пока считаем всё как forward
+//     // }
 
-    // // Итоги
-    // params.time_forward_last = forward_time;
-    // params.time_backward_last = backward_time;  // можешь потом сделать раздельный замер
-    // params.total_time = total_timer.elapsed();
-    // params.num_cycles_done = params.num_cycles;
-    // params.range_percent = params.points.last() - params.points.first();
+//     // // Итоги
+//     // params.time_forward_last = forward_time;
+//     // params.time_backward_last = backward_time;  // можешь потом сделать раздельный замер
+//     // params.total_time = total_timer.elapsed();
+//     // params.num_cycles_done = params.num_cycles;
+//     // params.range_percent = params.points.last() - params.points.first();
 
-    // emit SetSolenoidResults(forward_time,
-    //                         backward_time,
-    //                         params.num_cycles_done,
-    //                         params.range_percent,
-    //                         params.total_time / 1000.0);
+//     // emit SetSolenoidResults(forward_time,
+//     //                         backward_time,
+//     //                         params.num_cycles_done,
+//     //                         params.range_percent,
+//     //                         params.total_time / 1000.0);
 
-    // emit EndTest();
-}
+//     // emit EndTest();
+// }

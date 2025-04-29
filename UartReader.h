@@ -41,9 +41,9 @@ public:
 
 private:
     QByteArray CRC16() const;
-    Command command_;
-    QByteArray data_;
-    QByteArray crc_;
+    Command m_command;
+    QByteArray m_data;
+    QByteArray m_crc;
 };
 
 class UartReader : public QObject
@@ -53,12 +53,12 @@ public:
     explicit UartReader(QObject *parent = nullptr);
 
 private:
-    Uart *uart_;
-    QString port_name_;
-    bool is_connected_ = false;
-    const quint8 max_attemps_ = 5;
-    quint8 version_;
-    QTimer *adc_timer_;
+    Uart *m_uart;
+    QString m_portName;
+    bool m_isConnected = false;
+    const quint8 m_maxAttemps = 5;
+    quint8 m_version;
+    QTimer *m_adcTimer;
 
     QByteArray SendMessage(const Message &data);
 
@@ -83,12 +83,12 @@ private slots:
 signals:
     void Connect(const QString &port_name);
     void Disconnect();
-    void Write_Read(const QByteArray &data_to_write, QByteArray &read_data);
+    void Write_Read(const QByteArray &m_datato_write, QByteArray &read_data);
 
     void ADC(QVector<quint16> adc);
-    void UART_connected(const QString port_name);
-    void UART_disconnected();
-    void UART_error(QSerialPort::SerialPortError err);
+    void UartConnected(const QString port_name);
+    void UartDisconnected();
+    void UartError(QSerialPort::SerialPortError err);
 };
 
 #endif // UARTREADER_H

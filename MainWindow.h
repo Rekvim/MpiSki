@@ -6,6 +6,8 @@
 #include <QMainWindow>
 #include <QPointF>
 #include <QThread>
+#include <QDateTime>
+#include <QDebug>
 
 #include "FileSaver.h"
 #include "Program.h"
@@ -61,7 +63,7 @@ private slots:
     void SetTask(qreal task);
     void SetTextColor(const TextObjects object, const QColor color);
     void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
-    void SetSolenoidResults(qint64 forward, qint64 backward, quint16 cycles, double range_percent, double total_time_sec);
+    void SetSolenoidResults(qint64 forwardSec, qint64 backwardSec, quint16 cycles, double rangePercent, double totalTimeSec);
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
@@ -71,6 +73,7 @@ private slots:
     void ButtonStartMain();
     void ButtonStartStroke();
     void ButtonStartOptional();
+    void ButtonStartCyclicSolenoid();
 
 private:
     Ui::MainWindow *ui;
@@ -100,6 +103,7 @@ private:
     void GetImage(QLabel *label, QImage *image);
     void InitReport();
 signals:
+    void StartCyclicSolenoidTest();
     void SetDAC(qreal value);
     void StartMainTest();
     void StartStrokeTest();

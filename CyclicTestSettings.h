@@ -2,7 +2,8 @@
 #define CYCLICTESTSETTINGS_H
 
 #include <QDialog>
-#include <QDateTime>
+#include <QTime>
+#include <QVector>
 
 namespace Ui {
 class CyclicTestSettings;
@@ -15,28 +16,23 @@ class CyclicTestSettings : public QDialog
 public:
     explicit CyclicTestSettings(QWidget *parent = nullptr);
     ~CyclicTestSettings();
-    void reverse();
 
     struct TestParameters {
-        quint32 delay;
-        quint32 test_value;
-        quint16 num_cycles;
-        QVector<qreal> points;
-        QVector<qreal> steps;
-
-        quint64 time_forward_last = 0;
-        quint64 time_backward_last = 0;
-        quint16 num_cycles_done = 0;
-        qreal range_percent = 0;
-        quint64 total_time = 0;
+        quint32          holdTimeMs;  // время удержания первого значения (мс)
+        QVector<quint16> values;      // DAC-значения
+        QVector<quint32> delaysMs;    // задержки между ними (мс)
+        quint32          numCycles;   // сколько циклов
     };
 
-    TestParameters getParameters();
+    TestParameters getParameters() const { return m_parameters; }
+
+private slots:
+    void onPushButtonStartClicked();
+    void onPushButtonCancelClicked();
 
 private:
     Ui::CyclicTestSettings *ui;
-    const QTime m_maxTime = QTime(0, 4, 0, 0);
-    const QTime m_minTime = QTime(0, 0, 5, 0);
+    TestParameters m_parameters;
 };
 
 #endif // CYCLICTESTSETTINGS_H

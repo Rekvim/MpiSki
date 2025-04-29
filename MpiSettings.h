@@ -1,6 +1,8 @@
 #ifndef MPI_SETTINGS_H
 #define MPI_SETTINGS_H
 
+#include <QApplication>
+#include <QSettings>
 #include <QObject>
 
 class MPI_Settings : public QObject
@@ -27,11 +29,10 @@ public:
     DAC GetDAC() const;
 
 private:
-    QVector<qreal> ADC_;
-    QVector<MinMax> Sensors_;
-    DAC DAC_;
-signals:
+    QVector<qreal> m_ADC;
+    DAC m_DAC;
 
+    QVector<MinMax> m_sensors;
 };
 
 #endif // MPI_SETTINGS_H

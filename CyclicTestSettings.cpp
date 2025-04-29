@@ -1,16 +1,21 @@
 #include "CyclicTestSettings.h"
 #include "ui_CyclicTestSettings.h"
-#include <QStringList>
-#include <QString>
 
-CyclicTestSettings::CyclicTestSettings(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::CyclicTestSettings)
+#include <QMessageBox>
+
+CyclicTestSettings::CyclicTestSettings(QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::CyclicTestSettings)
 {
     ui->setupUi(this);
 
-    connect(ui->pushButton, &QPushButton::clicked, this, &CyclicTestSettings::accept);
-    connect(ui->pushButton_2, &QPushButton::clicked, this, &CyclicTestSettings::reject);
+
+
+    ui->timeEdit->setMinimumTime(QTime(0, 0, 5));
+    ui->timeEdit->setMaximumTime(QTime(0, 4, 0));
+
+    connect(ui->pushButton_start, &QPushButton::clicked,
+            this, &CyclicTestSettings::onPushButtonStartClicked);
 }
 
 CyclicTestSettings::~CyclicTestSettings()
@@ -18,29 +23,54 @@ CyclicTestSettings::~CyclicTestSettings()
     delete ui;
 }
 
-CyclicTestSettings::TestParameters CyclicTestSettings::getParameters()
+void CyclicTestSettings::onPushButtonStartClicked()
 {
-    TestParameters params;
+    m_parameters.holdTimeMs = ui->timeEdit->time().msecsSinceStartOfDay();
 
-    params.delay = 10000;
+    auto *itemVals = ui->listWidget_value->currentItem();
+    if (!itemVals) {
+        QMessageBox::warning(this, "Ошибка", "Выберите строку со значениями.");
+        return;
+    }
+    m_parameters.values.clear();
+    for (auto s : itemVals->text().split('-', Qt::SkipEmptyParts)) {
+        bool ok;
+        quint16 v = s.toUShort(&ok);
+        if (!ok) {
+            QMessageBox::warning(this, "Ошибка", "Неверный формат значений.");
+            return;
+        }
+        m_parameters.values.append(v);
+    }
+
+    auto *itemSteps = ui->listWidget_step->currentItem();
+    if (!itemSteps) {
+        QMessageBox::warning(this, "Ошибка", "Выберите строку с задержками.");
+        return;
+    }
+    m_parameters.delaysMs.clear();
+    for (auto s : itemSteps->text().split('-', Qt::SkipEmptyParts)) {
+        bool ok;
+        quint32 sec = s.toUInt(&ok);
+        if (!ok) {
+            QMessageBox::warning(this, "Ошибка", "Неверный формат задержек.");
+            return;
+        }
+        m_parameters.delaysMs.append(sec * 1000u);
+    }
 
     bool ok;
-    params.num_cycles = ui->lineEdit_number_cycles->text().toUInt(&ok);
-    if (!ok) {
-        params.num_cycles = 1;
+    quint32 cycles = ui->lineEdit_number_cycles->text().toUInt(&ok);
+    if (!ok || cycles == 0) {
+        QMessageBox::warning(this, "Ошибка", "Введите корректное число циклов (>0).");
+        return;
     }
+    m_parameters.numCycles = cycles;
 
-    if (QListWidgetItem *item = ui->listWidget_value->currentItem()) {
-        QStringList value_strs = item->text().split("-", Qt::SkipEmptyParts);
-        for (const QString &val : value_strs) {
-            params.points.append(val.toDouble());
-        }
-    }
+    accept();
+}
 
-    for (int i = 0; i < ui->listWidget_step->count(); ++i) {
-        QString val = ui->listWidget_step->item(i)->text();
-        params.steps.append(val.toDouble());
-    }
-
-    return params;
+void CyclicTestSettings::onPushButtonCancelClicked()
+{
+    reject();
 }

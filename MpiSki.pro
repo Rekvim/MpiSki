@@ -16,6 +16,7 @@ include(./QXlsx.pri)
 
 SOURCES += \
     CyclicTestSettings.cpp \
+    Src/Tests/CyclicTestSolenoid.cpp \
     main.cpp \
     MainWindow.cpp \
     FileSaver.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     Registry.h \
     SelectTests.h \
     Sensor.h \
+    Src/Tests/CyclicTestSolenoid.h \
     StepTestSettings.h \
     Test.h \
     Uart.h \
@@ -74,5 +76,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     excel.qrc \
-    json.qrc \
     translations.qrc

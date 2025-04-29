@@ -113,20 +113,6 @@ signals:
     void SetStartTime();
 };
 
-class CyclicTestSolenoid : public MainTest // new
-{
-    Q_OBJECT
-public:
-    explicit CyclicTestSolenoid(QObject *parent = nullptr);
-    void Process() override;
-
-private:
-    QTimer *cyclic_graph_timer_;
-signals:
-    void UpdateCyclicTred();
-    void SetStartTime();
-};
-
 class StrokeTest : public Test
 {
     Q_OBJECT

@@ -3,14 +3,14 @@
 Uart::Uart(QObject *parent)
     : QObject{parent}
 {
-    serial_port_ = new QSerialPort(this);
-    serial_port_->setBaudRate(QSerialPort::Baud115200);
-    serial_port_->setDataBits(QSerialPort::Data8);
-    serial_port_->setParity(QSerialPort::NoParity);
-    serial_port_->setStopBits(QSerialPort::OneStop);
-    serial_port_->setReadBufferSize(1);
+    m_serialPort = new QSerialPort(this);
+    m_serialPort->setBaudRate(QSerialPort::Baud115200);
+    m_serialPort->setDataBits(QSerialPort::Data8);
+    m_serialPort->setParity(QSerialPort::NoParity);
+    m_serialPort->setStopBits(QSerialPort::OneStop);
+    m_serialPort->setReadBufferSize(1);
 
-    connect(serial_port_,
+    connect(m_serialPort,
             &QSerialPort::errorOccurred,
             this,
             [this](QSerialPort::SerialPortError err) { emit Error(err); });
@@ -23,21 +23,21 @@ Uart::~Uart()
 
 void Uart::Connect(const QString &port_name)
 {
-    if (serial_port_->isOpen() && serial_port_->portName() == port_name)
+    if (m_serialPort->isOpen() && m_serialPort->portName() == port_name)
         return;
 
     Disconnect();
 
-    serial_port_->setPortName(port_name);
-    if (serial_port_->open(QSerialPort::ReadWrite)) {
+    m_serialPort->setPortName(port_name);
+    if (m_serialPort->open(QSerialPort::ReadWrite)) {
         emit Connected(port_name);
     }
 }
 
 void Uart::Disconnect()
 {
-    if (serial_port_->isOpen()) {
-        serial_port_->close();
+    if (m_serialPort->isOpen()) {
+        m_serialPort->close();
         emit Disconnected();
     }
 }
@@ -46,17 +46,17 @@ void Uart::Write_Read(const QByteArray &data_to_write, QByteArray &read_data)
 {
     read_data.clear();
 
-    serial_port_->write(data_to_write);
+    m_serialPort->write(data_to_write);
 
-    if (!serial_port_->waitForBytesWritten(10)) {
+    if (!m_serialPort->waitForBytesWritten(10)) {
         return;
     }
 
-    if (serial_port_->waitForReadyRead(500)) {
-        read_data.push_back(serial_port_->readAll());
+    if (m_serialPort->waitForReadyRead(500)) {
+        read_data.push_back(m_serialPort->readAll());
     }
 
-    while (serial_port_->waitForReadyRead(10)) {
-        read_data.push_back(serial_port_->readAll());
+    while (m_serialPort->waitForReadyRead(10)) {
+        read_data.push_back(m_serialPort->readAll());
     }
 }

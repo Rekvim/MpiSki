@@ -50,7 +50,7 @@ private slots:
 
 private:
     Ui::SelectTests *ui;
-    BlockCTS block_cts_;
+    BlockCTS m_blockCts;
 };
 
 #endif // SELECTTESTS_H

@@ -4,6 +4,9 @@
 #include <QColor>
 #include <QObject>
 #include <QPointF>
+#include <QEventLoop>
+#include <QMessageBox>
+#include <QTimer>
 
 #include "Mpi.h"
 #include "OtherTestSettings.h"
@@ -57,16 +60,16 @@ enum class TextObjects {
 };
 
 enum class Charts {
-    Main_task,
-    Main_pressure,
-    Main_friction,
+    Task,
+    Pressure,
+    Friction,
     Response,
     Resolution,
     Stroke,
     Step,
     Trend,
     Cyclic,
-    Cyclic_solenoid
+    CyclicSolenoid
 };
 
 struct Point
@@ -85,17 +88,17 @@ public:
     void SetBlockCTS(const SelectTests::BlockCTS &blockCTS);
 
 private:
-    Registry *registry_;
-    MPI mpi_;
-    QTimer *timer_sensors_;
-    QTimer *timer_DI_;
-    quint64 start_time_;
-    quint64 init_time_;
-    bool testing_;
-    QEventLoop *dac_eventloop_;
-    bool stop_set_dac_;
-    bool wait_for_button_ = false;
-    SelectTests::BlockCTS block_cts_;
+    Registry *m_registry;
+    MPI m_mpi;
+    QTimer *m_timerSensors;
+    QTimer *m_timerDI;
+    quint64 m_startTime;
+    quint64 m_initTime;
+    bool m_testing;
+    QEventLoop *m_dacEventloop;
+    bool m_stopSetDac;
+    bool m_waitForButton = false;
+    SelectTests::BlockCTS m_blockCts;
 
 signals:
     void SetText(const TextObjects object, const QString &text);
@@ -123,7 +126,7 @@ signals:
     void GetStepTestParameters(StepTestSettings::TestParameters &parameters);
     void GetResolutionTestParameters(OtherTestSettings::TestParameters &parameters);
     void GetResponseTestParameters(OtherTestSettings::TestParameters &parameters);
-    void GetCyclicTestParameters(OtherTestSettings::TestParameters &parameters);
+    void GetCyclicTestParameters(CyclicTestSettings::TestParameters &parameters);
 
     void Question(QString title, QString text, bool &result);
     void SetStepResults(QVector<StepTest::TestResult> results, quint32 T_value);
@@ -131,12 +134,15 @@ signals:
     void SetCheckboxDIChecked(quint8 status);
 
 private slots:
+
     void UpdateSensors();
     void UpdateCharts_maintest();
     void UpdateCharts_stroketest();
     void UpdateCharts_optiontest(Charts chart);
     void UpdateCharts_CyclicTred();
+    void UpdateCharts_CyclicSolenoid();
     void MainTestResults(MainTest::TestResults results);
+
     void StepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
     void SetDAC(quint16 dac,
                 quint32 sleep_ms = 0,
@@ -156,6 +162,8 @@ public slots:
     void MainTestStart();
     void StrokeTestStart();
     void OptionalTestStart(quint8 test_num);
+    void CyclicSolenoidTestStart();
+
     void TerminateTest();
     void button_open();
     void button_report();

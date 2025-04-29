@@ -1,4 +1,3 @@
-#include <QtCharts>
 #include "MyChart.h"
 
 MySeries::MySeries(QObject *parent, quint8 axN)

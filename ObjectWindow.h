@@ -2,6 +2,8 @@
 #define OBJECT_WINDOW_H
 
 #include <QDialog>
+#include <QMessageBox>
+#include <QScreen>
 #include "Registry.h"
 
 namespace Ui {
@@ -18,8 +20,8 @@ public:
     ~ObjectWindow();
 
 private:
-    Registry *registry_;
-    ObjectInfo *object_info_;
+    Registry *m_registry;
+    ObjectInfo *m_objectInfo;
     Ui::ObjectWindow *ui;
     void SaveObjectInfo();
 private slots:

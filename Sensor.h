@@ -23,13 +23,12 @@ public:
     void SetUnit(QString unit);
 
 private:
-    quint16 value_;
-    quint16 min_value_;
-    quint16 max_value_;
-    QString unit_ = "%.2f";
-    qreal k_ = 1;
-    qreal b_ = 0;
-signals:
+    quint16 m_value;
+    quint16 m_minValue;
+    quint16 m_maxValue;
+    QString m_unit = "%.2f";
+    qreal m_k = 1;
+    qreal m_b = 0;
 
 };
 

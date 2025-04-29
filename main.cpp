@@ -19,29 +19,29 @@ int main(int argc, char *argv[])
 
     Registry registry;
 
-    MainWindow main_window;
+    MainWindow mainWindow;
 
-    ObjectWindow object_window; // Окно данных об объекте
-    object_window.LoadFromReg(&registry);
-    if (object_window.exec() == QDialog::Rejected)
+    ObjectWindow objectWindow;
+    objectWindow.LoadFromReg(&registry);
+    if (objectWindow.exec() == QDialog::Rejected)
         return 0;
 
-    SelectTests select_tests;
-    if (select_tests.exec() == QDialog::Rejected) {
+    SelectTests selectTests;
+    if (selectTests.exec() == QDialog::Rejected) {
         return 0;
     }
 
-    ValveWindow valve_window; // Окно данных об объекте
-    valve_window.SetRegistry(&registry);
+    ValveWindow valveWindow;
+    valveWindow.SetRegistry(&registry);
 
-    if (valve_window.exec() == QDialog::Rejected)
+    if (valveWindow.exec() == QDialog::Rejected)
         return 0;
 
-    SelectTests::BlockCTS blockCTS = select_tests.getCTS();
-    main_window.SetBlockCTS(blockCTS);
-    main_window.SetSensorsNumber(3); // !!!
-    main_window.SetRegistry(&registry);
-    main_window.show();
+    SelectTests::BlockCTS blockCTS = selectTests.getCTS();
+    mainWindow.SetBlockCTS(blockCTS);
+    mainWindow.SetSensorsNumber(3);
+    mainWindow.SetRegistry(&registry);
+    mainWindow.show();
 
     return a.exec();
 }
