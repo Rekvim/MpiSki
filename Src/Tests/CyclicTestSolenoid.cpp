@@ -40,11 +40,11 @@ void CyclicTestSolenoid::Process()
     if (!m_values.isEmpty()) {
         qDebug() << "  initial hold of" << m_values.first();
         SetDACBlocked(m_values.first(), m_holdTimeMs, true, false);
-        if (terminate_) { qDebug() << "  terminated early"; emit EndTest(); return; }
+        if (m_terminate) { qDebug() << "  terminated early"; emit EndTest(); return; }
     }
 
     for (quint32 cycle = 0; cycle < m_numCycles; ++cycle) {
-        if (terminate_) { qDebug() << "  terminated in cycle" << cycle; emit EndTest(); return; }
+        if (m_terminate) { qDebug() << "  terminated in cycle" << cycle; emit EndTest(); return; }
 
         if (m_values.size() >= 2) {
             QElapsedTimer sw; sw.start();
@@ -54,7 +54,7 @@ void CyclicTestSolenoid::Process()
                           false, true);
             lastForwardMs = sw.elapsed();
             qDebug() << "    forward took" << lastForwardMs << "ms";
-            if (terminate_) { emit EndTest(); return; }
+            if (m_terminate) { emit EndTest(); return; }
         }
 
         {
@@ -65,7 +65,7 @@ void CyclicTestSolenoid::Process()
                           false, true);
             lastBackwardMs = sw.elapsed();
             qDebug() << "    backward took" << lastBackwardMs << "ms";
-            if (terminate_) { emit EndTest(); return; }
+            if (m_terminate) { emit EndTest(); return; }
         }
     }
 

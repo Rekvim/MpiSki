@@ -1,6 +1,6 @@
 #include "MpiSettings.h"
 
-MPI_Settings::MPI_Settings(QObject *parent)
+MpiSettings::MpiSettings(QObject *parent)
     : QObject{parent}
 {
     QSettings settings(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);
@@ -47,19 +47,19 @@ MPI_Settings::MPI_Settings(QObject *parent)
 }
 
 
-qreal MPI_Settings::GetADC(quint8 num) const
+qreal MpiSettings::GetADC(quint8 num) const
 {
     assert(num < m_ADC.size());
     return m_ADC.at(num);
 }
 
-MPI_Settings::MinMax MPI_Settings::GetSensor(quint8 num) const
+MpiSettings::MinMax MpiSettings::GetSensor(quint8 num) const
 {
     assert(num < m_sensors.size());
     return m_sensors.at(num);
 }
 
-MPI_Settings::DAC MPI_Settings::GetDAC() const
+MpiSettings::DAC MpiSettings::GetDAC() const
 {
     return m_DAC;
 }

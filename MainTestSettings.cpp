@@ -21,7 +21,7 @@ MainTestSettings::TestParameters MainTestSettings::getParameters() const
         parameters.continuous = true;
         parameters.delay = 50;
         parameters.response = 50;
-        parameters.point_numbers = qreal(ui->timeEdit->time().msecsSinceStartOfDay()) / 50;
+        parameters.pointNumbers = qreal(ui->timeEdit->time().msecsSinceStartOfDay()) / 50;
         parameters.signal_min = 3.0;
         parameters.signal_max = 21.0;
         parameters.is_cyclic = ui->checkBox_cyclic_test->isChecked();
@@ -30,7 +30,7 @@ MainTestSettings::TestParameters MainTestSettings::getParameters() const
     } else {
         parameters.continuous = false;
         parameters.delay = ui->doubleSpinBox_delay->value() * 1000;
-        parameters.point_numbers = ui->doubleSpinBox_points->value();
+        parameters.pointNumbers = ui->doubleSpinBox_points->value();
         parameters.signal_min = ui->doubleSpinBox_signal_min->value();
         parameters.signal_max = ui->doubleSpinBox_signal_max->value();
         parameters.response = ui->doubleSpinBox_response->value() * 1000;

@@ -14,7 +14,8 @@
 #include "CyclicTestSettings.h"
 
 #include "Registry.h"
-#include "Test.h"
+#include "./Src/Tests/StepTest.h"
+#include "./Src/Tests/MainTest.h"
 #include "SelectTests.h"
 
 enum class TextObjects {

@@ -28,7 +28,7 @@ class Message
 public:
     Message() = default;
     Message(const Command command);
-    Message(const Command command, const QByteArray data);
+    Message(const Command command, const QByteArray &data);
     Message(const Command command, quint16 data);
     Message(const Command command, quint8 data);
     Message(const QByteArray data);

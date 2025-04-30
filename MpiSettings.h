@@ -1,15 +1,15 @@
-#ifndef MPI_SETTINGS_H
-#define MPI_SETTINGS_H
+#ifndef MPISETTINGS_H
+#define MPISETTINGS_H
 
 #include <QApplication>
 #include <QSettings>
 #include <QObject>
 
-class MPI_Settings : public QObject
+class MpiSettings : public QObject
 {
     Q_OBJECT
 public:
-    explicit MPI_Settings(QObject *parent = nullptr);
+    explicit MpiSettings(QObject *parent = nullptr);
 
     struct MinMax
     {
@@ -35,4 +35,4 @@ private:
     QVector<MinMax> m_sensors;
 };
 
-#endif // MPI_SETTINGS_H
+#endif // MPISETTINGS_H

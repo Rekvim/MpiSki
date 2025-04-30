@@ -16,7 +16,13 @@ include(./QXlsx.pri)
 
 SOURCES += \
     CyclicTestSettings.cpp \
+    Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTestSolenoid.cpp \
+    Src/Tests/MainTest.cpp \
+    Src/Tests/OptionTest.cpp \
+    Src/Tests/StepTest.cpp \
+    Src/Tests/StrokeTest.cpp \
+    Src/Tests/Test.cpp \
     main.cpp \
     MainWindow.cpp \
     FileSaver.cpp \
@@ -31,7 +37,6 @@ SOURCES += \
     SelectTests.cpp \
     Sensor.cpp \
     StepTestSettings.cpp \
-    Test.cpp \
     Uart.cpp \
     UartReader.cpp \
     ValveWindow.cpp
@@ -50,9 +55,14 @@ HEADERS += \
     Registry.h \
     SelectTests.h \
     Sensor.h \
+    Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTestSolenoid.h \
+    Src/Tests/MainTest.h \
+    Src/Tests/OptionTest.h \
+    Src/Tests/StepTest.h \
+    Src/Tests/StrokeTest.h \
+    Src/Tests/Test.h \
     StepTestSettings.h \
-    Test.h \
     Uart.h \
     UartReader.h \
     ValveWindow.h \

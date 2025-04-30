@@ -22,7 +22,7 @@ public:
         QList<qreal> points;
         QList<qreal> steps;
         quint64 delay;
-        quint16 point_numbers;
+        quint16 pointNumbers;
         qreal signal_min;
         qreal signal_max;
         quint16 response;

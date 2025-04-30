@@ -23,9 +23,9 @@ UartReader::UartReader(QObject *parent)
 QByteArray UartReader::SendMessage(const Message &data)
 {
     for (quint8 attempt = 0; attempt < m_maxAttemps; ++attempt) {
-        QByteArray read_data;
-        emit Write_Read(data.ToByteArray(), read_data);
-        Message message(read_data);
+        QByteArray readData;
+        emit Write_Read(data.ToByteArray(), readData);
+        Message message(readData);
         if (message.CheckCRC() && message.GetCommand() == Command::OK)
             return message.GetData();
         else
@@ -172,7 +172,7 @@ void UartReader::SendADC()
     emit ADC(result);
 }
 
-Message::Message(const Command command, const QByteArray data)
+Message::Message(const Command command, const QByteArray &data)
     : m_command(command)
     , m_data(data)
 {}

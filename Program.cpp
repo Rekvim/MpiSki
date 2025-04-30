@@ -1,5 +1,11 @@
 #include "Program.h"
+
+#include "./Src/Tests/CyclicTestPositioner.h"
 #include "./Src/Tests/CyclicTestSolenoid.h"
+#include "./Src/Tests/StepTest.h"
+#include "./Src/Tests/StrokeTest.h"
+#include "./Src/Tests/MainTest.h"
+
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -469,12 +475,12 @@ void Program::button_init()
     emit SetText(TextObjects::Label_end_value, m_mpi[0]->GetFormatedValue());
     emit SetTextColor(TextObjects::Label_end_value, Qt::darkGreen);
 
-    qreal correct_coefficient = 1;
+    qreal correctCoefficient = 1;
     if (valveInfo->strokeMovement != 0) {
-        correct_coefficient = qRadiansToDegrees(2 / valveInfo->pulley);
+        correctCoefficient = qRadiansToDegrees(2 / valveInfo->pulley);
         m_mpi[0]->SetUnit("°");
     }
-    m_mpi[0]->CorrectCoefficients(correct_coefficient);
+    m_mpi[0]->CorrectCoefficients(correctCoefficient);
 
     if (normalClosed) {
         emit SetText(TextObjects::Label_range, m_mpi[0]->GetFormatedValue());
@@ -513,7 +519,7 @@ void Program::MainTestStart()
 
     emit SetButtonInitEnabled(false);
 
-    MainTest *main_test = parameters.is_cyclic ? new CyclicTest : new MainTest;
+    MainTest *main_test = parameters.is_cyclic ? new CyclicTestPositioner : new MainTest;
 
     main_test->SetParameters(parameters);
 
@@ -521,12 +527,12 @@ void Program::MainTestStart()
     main_test->moveToThread(thread_test);
 
     if (parameters.is_cyclic) {
-        connect(dynamic_cast<CyclicTest *>(main_test),
-                &CyclicTest::UpdateCyclicTred,
+        connect(dynamic_cast<CyclicTestPositioner *>(main_test),
+                &CyclicTestPositioner::UpdateCyclicTred,
                 this,
                 &Program::UpdateCharts_CyclicTred);
-        connect(dynamic_cast<CyclicTest *>(main_test),
-                &CyclicTest::SetStartTime,
+        connect(dynamic_cast<CyclicTestPositioner *>(main_test),
+                &CyclicTestPositioner::SetStartTime,
                 this,
                 &Program::SetTimeStart);
     }
