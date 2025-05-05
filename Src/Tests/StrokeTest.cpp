@@ -24,7 +24,7 @@ void StrokeTest::Process()
         return;
     }
 
-    quint64 start_time = QDateTime::currentMSecsSinceEpoch();
+    quint64 startTime = QDateTime::currentMSecsSinceEpoch();
 
     SetDACBlocked(0xFFFF, 0, true, true);
 
@@ -33,9 +33,9 @@ void StrokeTest::Process()
         return;
     }
 
-    quint64 forward_time = QDateTime::currentMSecsSinceEpoch() - start_time - 2500;
+    quint64 forwardTime = QDateTime::currentMSecsSinceEpoch() - startTime - 2500;
 
-    start_time = QDateTime::currentMSecsSinceEpoch();
+    startTime = QDateTime::currentMSecsSinceEpoch();
 
     SetDACBlocked(0, 0, true, true);
 
@@ -44,9 +44,9 @@ void StrokeTest::Process()
         return;
     }
 
-    quint64 backward_time = QDateTime::currentMSecsSinceEpoch() - start_time - 2500;
+    quint64 backwardTime = QDateTime::currentMSecsSinceEpoch() - startTime - 2500;
 
-    emit Results(forward_time, backward_time);
+    emit Results(forwardTime, backwardTime);
 
     emit EndTest();
 }

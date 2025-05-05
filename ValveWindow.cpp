@@ -1,5 +1,6 @@
 #include "ValveWindow.h"
 #include "ui_ValveWindow.h"
+#include "./Src/ValidatorFactory/ValidatorFactory.h"
 
 ValveWindow::ValveWindow(QWidget *parent)
     : QDialog(parent)
@@ -7,31 +8,20 @@ ValveWindow::ValveWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Позволяет вводить только цифры (0–9), пустая строка тоже валидна
-    // auto *numVal = new QRegularExpressionValidator(
-    //     QRegularExpression(R"(^[0-9]*$)"), this);
+    auto* validatorDigits = ValidatorFactory::create(ValidatorFactory::Type::Digits, this);
 
-    // A–Z, a–z, А–Я, а–я, Ёё, пустая строка тоже валидна
-    auto *alphaRusVal = new QRegularExpressionValidator(
-        QRegularExpression(R"(^[A-Za-zА-Яа-яЁё]*$)"), this);
+    auto* noSpecialChars = ValidatorFactory::create(ValidatorFactory::Type::NoSpecialChars, this);
 
-    // Убераем символы
-    QRegularExpression reNoBad(R"(^[^@!^\/\?\*\:\;\{\}\\]*$)");
-    auto *noBadVal = new QRegularExpressionValidator(reNoBad, this);
-
-
-    ui->lineEdit_positionNumber->setValidator(noBadVal);
-
-    ui->lineEdit_manufacturer->setValidator(alphaRusVal);
-
-    ui->lineEdit_serial->setValidator(noBadVal);
-    ui->lineEdit_DN->setValidator(noBadVal);
-    ui->lineEdit_PN->setValidator(noBadVal);
-    ui->lineEdit_valveStroke->setValidator(noBadVal);
-    ui->lineEdit_dinamicError->setValidator(noBadVal);
-    ui->lineEdit_modelDrive->setValidator(noBadVal);
-    ui->lineEdit_rangeDrive->setValidator(noBadVal);
-    ui->lineEdit_materialStuffingBoxSeal->setValidator(noBadVal);
+    ui->lineEdit_positionNumber->setValidator(noSpecialChars);
+    ui->lineEdit_manufacturer->setValidator(noSpecialChars);
+    ui->lineEdit_serial->setValidator(noSpecialChars);
+    ui->lineEdit_DN->setValidator(validatorDigits);
+    ui->lineEdit_PN->setValidator(validatorDigits);
+    ui->lineEdit_valveStroke->setValidator(noSpecialChars);
+    ui->lineEdit_dinamicError->setValidator(noSpecialChars);
+    ui->lineEdit_modelDrive->setValidator(noSpecialChars);
+    ui->lineEdit_rangeDrive->setValidator(noSpecialChars);
+    ui->lineEdit_materialStuffingBoxSeal->setValidator(noSpecialChars);
 
     ui->doubleSpinBox_diameterPulley->setValue(m_diameter[0]);
 
@@ -116,8 +106,6 @@ void ValveWindow::PositionChanged(const QString &position)
         ui->lineEdit_positionNumber->setEnabled(true);
         return;
     }
-
-    ui->lineEdit_DN->setEnabled(false);
 
     m_valveInfo = m_registry->GetValveInfo(position);
 

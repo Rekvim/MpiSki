@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#pragma once
 #include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
@@ -32,7 +33,7 @@ public:
     ~MainWindow();
     void SetRegistry(Registry *registry);
     void SetBlockCTS(const SelectTests::BlockCTS &blockCTS);
-    void SetSensorsNumber(quint8 num, bool apply_logic = true);
+    void SetSensorsNumber(quint8 num);
     // void SetSensorsNumber(quint8 num);
 
 private slots:

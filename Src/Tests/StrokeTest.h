@@ -18,7 +18,7 @@ public:
     void Process() override;
 signals:
     void SetStartTime();
-    void Results(quint64 forward_time, quint64 backward_time);
+    void Results(quint64 forwardTime, quint64 backwardTime);
 };
 
 #endif // STROKETEST_H

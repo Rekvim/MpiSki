@@ -21,16 +21,16 @@ Uart::~Uart()
     Disconnect();
 }
 
-void Uart::Connect(const QString &port_name)
+void Uart::Connect(const QString &portName)
 {
-    if (m_serialPort->isOpen() && m_serialPort->portName() == port_name)
+    if (m_serialPort->isOpen() && m_serialPort->portName() == portName)
         return;
 
     Disconnect();
 
-    m_serialPort->setPortName(port_name);
+    m_serialPort->setPortName(portName);
     if (m_serialPort->open(QSerialPort::ReadWrite)) {
-        emit Connected(port_name);
+        emit Connected(portName);
     }
 }
 
@@ -42,21 +42,21 @@ void Uart::Disconnect()
     }
 }
 
-void Uart::Write_Read(const QByteArray &data_to_write, QByteArray &read_data)
+void Uart::Write_Read(const QByteArray &dataToWrite, QByteArray &readData)
 {
-    read_data.clear();
+    readData.clear();
 
-    m_serialPort->write(data_to_write);
+    m_serialPort->write(dataToWrite);
 
     if (!m_serialPort->waitForBytesWritten(10)) {
         return;
     }
 
     if (m_serialPort->waitForReadyRead(500)) {
-        read_data.push_back(m_serialPort->readAll());
+        readData.push_back(m_serialPort->readAll());
     }
 
     while (m_serialPort->waitForReadyRead(10)) {
-        read_data.push_back(m_serialPort->readAll());
+        readData.push_back(m_serialPort->readAll());
     }
 }

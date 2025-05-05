@@ -1,6 +1,7 @@
 #ifndef REGISTRY_H
 #define REGISTRY_H
 
+#pragma once
 #include <QDate>
 #include <QObject>
 #include <QSettings>
@@ -15,25 +16,27 @@ struct ObjectInfo
 
 struct ValveInfo
 {
-    // Данные о ЗРА
-    QString positionNumber; // Номер позиции
-    QString manufacturer; // Производитель ЗРА
-    QString valveModel; // Модель клапана
-    QString serial; // Серийный номер
-    QString DN; // ДУ
-    QString PN; // РУ
-    QString valveStroke; // Ход клапана
-    QString positioner; // Модель позиционера
-    QString dinamicError; // Динамическая ошибка
-    QString modelDrive; // Модель привода
-    quint32 safePosition; // Базовое положение привода
-    quint32 driveType; // Тип привода
-    QString range; // Диапазон привода
-    qreal diameter; // Диаметр привода (в см)
-    quint32 strokeMovement; // Движение ход клапана
-    quint32 toolNumber; // Номер поворотного шкива
-    qreal pulley; // Диаметр Шкива
-    QString materialStuffingBoxSeal; // Материал сальникового уплотнения
+    QString positionNumber;
+    QString serial;
+
+    QString manufacturer;
+    QString valveModel;
+
+    QString DN;
+    QString PN;
+
+    QString valveStroke;
+    QString positioner;
+    QString dinamicError;
+    QString modelDrive;
+    quint32 safePosition;
+    quint32 driveType;
+    QString range;
+    qreal diameter;
+    quint32 strokeMovement;
+    quint32 toolNumber;
+    qreal pulley;
+    QString materialStuffingBoxSeal;
 };
 
 struct OtherParameters

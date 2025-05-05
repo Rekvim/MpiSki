@@ -1,6 +1,7 @@
 #ifndef SELECTTESTS_H
 #define SELECTTESTS_H
 
+#pragma once
 #include <QDialog>
 #include <QCheckBox>
 
@@ -36,7 +37,7 @@ public:
 
 private slots:
     void onCheckBoxChanged();
-    bool isValidPattern(const BlockCTS& block_cts);
+    bool isValidPattern();
 
     void resetCheckBoxes();
 

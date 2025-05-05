@@ -1,12 +1,14 @@
 #ifndef MPI_H
 #define MPI_H
 
+#pragma once
 #include <QObject>
 #include <QDebug>
 #include <QEventLoop>
+#include <QThread>
 
 #include "Sensor.h"
-#include "UartReader.h"
+#include "./Src/Uart/UartReader.h"
 
 class MPI : public QObject
 {

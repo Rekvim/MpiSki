@@ -89,32 +89,32 @@ void MainTest::Process()
 
     qreal y_mean = (regression_limits.maxY + regression_limits.minY) / 2.0;
 
-    test_results.pressure_diff = qAbs((y_mean - regression_forward.b) / regression_forward.k
+    test_results.pressureDiff = qAbs((y_mean - regression_forward.b) / regression_forward.k
                                       - (y_mean - regression_backward.b) / regression_backward.k);
 
     auto [mean, max] = GetMeanMax(points[0], points[1]);
 
-    test_results.din_error_mean = mean / 2;
-    test_results.din_error_max = max;
+    test_results.dinErrorMean = mean / 2;
+    test_results.dinErrorMax = max;
 
     qreal range = qAbs((regression_limits.minY - regression_forward.b) / regression_forward.k
                        - (regression_limits.maxY - regression_forward.b) / regression_forward.k);
 
-    test_results.friction = 50.0 * test_results.pressure_diff / range;
+    test_results.friction = 50.0 * test_results.pressureDiff / range;
 
     auto [low_limit, high_limit] = GetRangeLimits(regression_forward,
                                                   regression_backward,
                                                   regression_limits);
 
-    test_results.low_limit = low_limit;
-    test_results.high_limit = high_limit;
+    test_results.lowLimit = low_limit;
+    test_results.highLimit = high_limit;
 
     auto [spring_low, spring_high] = GetSpringLimits(regression_forward,
                                                      regression_backward,
                                                      regression_limits);
 
-    test_results.spring_low = spring_low;
-    test_results.spring_high = spring_high;
+    test_results.springLow = spring_low;
+    test_results.springHigh = spring_high;
 
     emit Results(test_results);
     if (m_endTestAfterProcess) {

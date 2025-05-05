@@ -11,18 +11,18 @@ void CyclicTestSolenoid::SetParameters(quint32 holdTimeMs,
                                        quint32 numCycles)
 {
     m_holdTimeMs = holdTimeMs;
-    m_values     = values;
-    m_delaysMs   = delaysMs;
-    m_numCycles  = numCycles;
+    m_values = values;
+    m_delaysMs = delaysMs;
+    m_numCycles = numCycles;
 }
 
 void CyclicTestSolenoid::Process()
 {
     qDebug() << "@CyclicSolenoid::Process():"
              << "holdTimeMs=" << m_holdTimeMs
-             << "values="     << m_values
-             << "delaysMs="   << m_delaysMs
-             << "numCycles="  << m_numCycles;
+             << "values=" << m_values
+             << "delaysMs=" << m_delaysMs
+             << "numCycles=" << m_numCycles;
 
     emit ClearGraph();
     emit ShowDots(true);
@@ -71,13 +71,11 @@ void CyclicTestSolenoid::Process()
 
     m_cyclicGraphTimer->stop();
 
-    // вычисляем диапазон (макс–мин)
     auto [minIt, maxIt] = std::minmax_element(m_values.begin(), m_values.end());
     double rangePercent = double(*maxIt - *minIt);
 
     double totalTimeSec = totalTimer.elapsed() / 1000.0;
 
-    // 3) шлём результаты
     emit SolenoidResults(
         lastForwardMs   / 1000.0,
         lastBackwardMs  / 1000.0,

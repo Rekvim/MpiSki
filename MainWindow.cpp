@@ -184,7 +184,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_program, &Program::SetTask, this, &MainWindow::SetTask);
     connect(m_program, &Program::SetSensorNumber, this, [=](quint8 num) {
-        SetSensorsNumber(num, true);
+        SetSensorsNumber(num);
     });    connect(m_program, &Program::SetButtonInitEnabled, this, &MainWindow::SetButtonInitEnabled);
     connect(m_program, &Program::EnableSetTask, this, &MainWindow::EnableSetTask);
     connect(m_program, &Program::SetStepResults, this, &MainWindow::SetStepTestResults);
@@ -397,7 +397,7 @@ void MainWindow::SetBlockCTS(const SelectTests::BlockCTS &blockCTS)
     m_program->SetBlockCTS(blockCTS);
 }
 
-void MainWindow::SetSensorsNumber(quint8 num, bool apply_logic)
+void MainWindow::SetSensorsNumber(quint8 num)
 {
     num = 1;
     bool no_sensors = (num == 0);
@@ -427,7 +427,6 @@ void MainWindow::SetSensorsNumber(quint8 num, bool apply_logic)
         // ui->label_end_positio_sensor->setVisible(false);
     }
 
-    // Условия и соответствующие им паттерны tabState
     std::vector<CTSRule> rules = {
         // 3) Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
         {
@@ -489,10 +488,8 @@ void MainWindow::SetSensorsNumber(quint8 num, bool apply_logic)
             },
             {true, false, true, false, true, true}
         }
-
     };
 
-    // Применяем первое подходящее правило
     for (const auto& rule : rules) {
         if (rule.condition(m_blockCTS)) {
             tabState = rule.pattern;
@@ -500,11 +497,9 @@ void MainWindow::SetSensorsNumber(quint8 num, bool apply_logic)
         }
     }
 
-    // Обновление вкладок
     for (size_t i = 0; i < tabState.size(); ++i)
         ui->tabWidget->setTabEnabled(i, tabState[i]);
 
-    // Обновление остальных UI элементов
     ui->verticalSlider_task->setEnabled(!no_sensors);
     ui->doubleSpinBox_task->setEnabled(!no_sensors);
     ui->pushButton_stroke_start->setEnabled(!no_sensors);

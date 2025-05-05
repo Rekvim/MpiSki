@@ -7,7 +7,6 @@ SelectTests::SelectTests(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Цвет виджетов (если это необходимо)
     ui->pressure_1_color->setStyleSheet("background-color: #2A689F;");
     ui->pressure_2_color->setStyleSheet("background-color: #457448;");
     ui->pressure_3_color->setStyleSheet("background-color: #D3BB2A;");
@@ -24,7 +23,6 @@ SelectTests::SelectTests(QWidget *parent)
 
     ui->entry_testing->setEnabled(false);
 
-    // Подключаем сигналы для чекбоксов
     connect(ui->check_box_pressure_1, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
     connect(ui->check_box_pressure_2, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
     connect(ui->check_box_pressure_3, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
@@ -58,7 +56,7 @@ SelectTests::BlockCTS SelectTests::getCTS() const
     return m_blockCts;
 }
 
-bool SelectTests::isValidPattern(const BlockCTS& block_cts) {
+bool SelectTests::isValidPattern() {
     // Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический
     if (m_blockCts.usb &&
         m_blockCts.imit_switch_0_3 &&
@@ -136,10 +134,10 @@ void SelectTests::onCheckBoxChanged()
     m_blockCts.do_4 = ui->check_box_do_4->isChecked();
 
 
-    if (isValidPattern(m_blockCts)) {
-        ui->entry_testing->setEnabled(true);  // Включаем кнопку, если паттерн выбран
+    if (isValidPattern()) {
+        ui->entry_testing->setEnabled(true);
     } else {
-        ui->entry_testing->setEnabled(false); // Выключаем кнопку, если паттерн не выбран
+        ui->entry_testing->setEnabled(false);
     }
 }
 

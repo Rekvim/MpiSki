@@ -14,7 +14,7 @@ class OptionTest : public Test
     Q_OBJECT
 
 public:
-    explicit OptionTest(QObject *parent = nullptr, bool end_test_after_process = true);
+    explicit OptionTest(QObject *parent = nullptr, bool endTestAfterProcess = true);
     virtual void Process() override;
 
     struct Task
@@ -26,8 +26,8 @@ public:
     void SetTask(Task task);
 
 private:
-    Task task_;
-    const bool end_test_after_process_;
+    Task m_task;
+    const bool m_endTestAfterProcess;
 signals:
     void SetStartTime();
 };

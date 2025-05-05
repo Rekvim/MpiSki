@@ -1,6 +1,7 @@
 #ifndef MPISETTINGS_H
 #define MPISETTINGS_H
 
+#pragma once
 #include <QApplication>
 #include <QSettings>
 #include <QObject>

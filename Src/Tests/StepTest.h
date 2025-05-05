@@ -29,7 +29,7 @@ public:
 
 private:
     QVector<TestResult> CalculateResult(const QVector<QVector<QPointF>> &points) const;
-    quint32 T_value_;
+    quint32 m_TValue;
 signals:
     void GetPoints(QVector<QVector<QPointF>> &points);
     void Results(QVector<TestResult> result, quint32 T_value);

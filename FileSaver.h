@@ -1,6 +1,7 @@
 #ifndef FILESAVER_H
 #define FILESAVER_H
 
+#pragma once
 #include <QDir>
 #include <QObject>
 #include "MyChart.h"

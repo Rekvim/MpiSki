@@ -1,6 +1,7 @@
 #ifndef STEPTESTSETTINGS_H
 #define STEPTESTSETTINGS_H
 
+#pragma once
 #include <QDialog>
 #include "qdatetime.h"
 

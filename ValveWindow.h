@@ -1,6 +1,7 @@
 #ifndef VALVE_WINDOW_H
 #define VALVE_WINDOW_H
 
+#pragma once
 #include <QDialog>
 #include <QJsonDocument>
 #include <QJsonObject>

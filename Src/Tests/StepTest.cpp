@@ -13,13 +13,13 @@ void StepTest::Process()
     }
     QVector<QVector<QPointF>> points;
     emit GetPoints(points);
-    emit Results(CalculateResult(points), T_value_);
+    emit Results(CalculateResult(points), m_TValue);
     emit EndTest();
 }
 
 void StepTest::Set_T_value(quint32 T_value)
 {
-    T_value_ = T_value;
+    m_TValue = T_value;
 }
 
 QVector<StepTest::TestResult> StepTest::CalculateResult(const QVector<QVector<QPointF>> &points) const
@@ -29,48 +29,48 @@ QVector<StepTest::TestResult> StepTest::CalculateResult(const QVector<QVector<QP
     const QVector<QPointF> &task = points.at(1);
 
     qreal from = 0;
-    qreal prev_task = task.first().y();
-    qreal time_start;
-    quint64 t86_time = 0;
+    qreal prevTask = task.first().y();
+    qreal timeStart;
+    quint64 t86Time = 0;
     qreal threshold;
     qreal overshoot = 0;
-    bool have_t86 = false;
+    bool t86Have = false;
     bool first = true;
     bool up;
     for (int i = 0; i < line.size(); ++i) {
-        qreal curr_task = task.at(i).y();
-        if (!qFuzzyCompare(curr_task, prev_task)) {
+        qreal currTask = task.at(i).y();
+        if (!qFuzzyCompare(currTask, prevTask)) {
             if (first) {
                 first = false;
             } else {
                 result.push_back({static_cast<quint16>(qRound(from)),
-                                  static_cast<quint16>(qRound(prev_task)),
-                                  have_t86 ? t86_time : 0,
+                                  static_cast<quint16>(qRound(prevTask)),
+                                  t86Have ? t86Time : 0,
                                   overshoot});
             }
-            from = prev_task;
-            time_start = task.at(i).x();
-            threshold = (curr_task - prev_task) * T_value_ / 100 + prev_task;
-            up = (curr_task > prev_task);
+            from = prevTask;
+            timeStart = task.at(i).x();
+            threshold = (currTask - prevTask) * m_TValue / 100 + prevTask;
+            up = (currTask > prevTask);
             overshoot = -1000;
-            have_t86 = false;
-            prev_task = curr_task;
+            t86Have = false;
+            prevTask = currTask;
         } else {
             if (first) {
                 continue;
             }
-            overshoot = qMax(overshoot, (line.at(i).y() - curr_task) / (curr_task - from) * 100);
-            if (!have_t86) {
+            overshoot = qMax(overshoot, (line.at(i).y() - currTask) / (currTask - from) * 100);
+            if (!t86Have) {
                 if ((line.at(i).y() - threshold) * (up ? 1 : -1) > 0) {
-                    t86_time = qRound(line.at(i).x() - time_start);
-                    have_t86 = true;
+                    t86Time = qRound(line.at(i).x() - timeStart);
+                    t86Have = true;
                 }
             }
         }
     }
     result.push_back({static_cast<quint16>(qRound(from)),
-                      static_cast<quint16>(qRound(prev_task)),
-                      have_t86 ? t86_time : 0,
+                      static_cast<quint16>(qRound(prevTask)),
+                      t86Have ? t86Time : 0,
                       overshoot});
     return result;
 }

@@ -1,6 +1,7 @@
 #ifndef OTHERTESTSETTINGS_H
 #define OTHERTESTSETTINGS_H
 
+#pragma once
 #include <QInputDialog>
 #include <QDialog>
 #include "qdatetime.h"

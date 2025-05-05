@@ -17,8 +17,9 @@ public:
 protected:
     QTimer *m_graphTimer;
     QEventLoop *m_eventLoop;
-    void Sleep(quint16 msecs);
     bool m_terminate;
+
+    void Sleep(quint16 msecs);
     void SetDACBlocked(quint16 value,
                        quint32 sleepMs = 0,
                        bool waitForStop = false,
@@ -28,6 +29,7 @@ public slots:
     virtual void Process() = 0;
     void Stop();
     void ReleaseBlock();
+
 signals:
     void SetDAC(quint16 value,
                 quint32 sleepMs = 0,

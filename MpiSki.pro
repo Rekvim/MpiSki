@@ -23,6 +23,10 @@ SOURCES += \
     Src/Tests/StepTest.cpp \
     Src/Tests/StrokeTest.cpp \
     Src/Tests/Test.cpp \
+    Src/Uart/Uart.cpp \
+    Src/Uart/UartMessage.cpp \
+    Src/Uart/UartReader.cpp \
+    Src/ValidatorFactory/ValidatorFactory.cpp \
     main.cpp \
     MainWindow.cpp \
     FileSaver.cpp \
@@ -37,8 +41,6 @@ SOURCES += \
     SelectTests.cpp \
     Sensor.cpp \
     StepTestSettings.cpp \
-    Uart.cpp \
-    UartReader.cpp \
     ValveWindow.cpp
 
 HEADERS += \
@@ -62,9 +64,11 @@ HEADERS += \
     Src/Tests/StepTest.h \
     Src/Tests/StrokeTest.h \
     Src/Tests/Test.h \
+    Src/Uart/Uart.h \
+    Src/Uart/UartMessage.h \
+    Src/Uart/UartReader.h \
+    Src/ValidatorFactory/ValidatorFactory.h \
     StepTestSettings.h \
-    Uart.h \
-    UartReader.h \
     ValveWindow.h \
 
 FORMS += \

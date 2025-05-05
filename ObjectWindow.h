@@ -1,6 +1,7 @@
 #ifndef OBJECT_WINDOW_H
 #define OBJECT_WINDOW_H
 
+#pragma once
 #include <QDialog>
 #include <QMessageBox>
 #include <QScreen>

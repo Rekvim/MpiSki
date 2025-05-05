@@ -1,18 +1,18 @@
 #include "OptionTest.h"
 
-OptionTest::OptionTest(QObject *parent, bool end_test_after_process)
+OptionTest::OptionTest(QObject *parent, bool endTestAfterProcess)
     : Test(parent)
-    , end_test_after_process_(end_test_after_process)
+    , m_endTestAfterProcess(endTestAfterProcess)
 {}
 
 void OptionTest::Process()
 {
-    if (task_.value.empty()) {
+    if (m_task.value.empty()) {
         emit EndTest();
         return;
     }
 
-    SetDACBlocked(task_.value.first(), 10000, true);
+    SetDACBlocked(m_task.value.first(), 10000, true);
 
     if (m_terminate) {
         emit EndTest();
@@ -23,20 +23,20 @@ void OptionTest::Process()
 
     m_graphTimer->start(50);
 
-    for (const auto value : task_.value) {
-        SetDACBlocked(value, task_.delay);
+    for (const auto value : m_task.value) {
+        SetDACBlocked(value, m_task.delay);
 
         if (m_terminate) {
             emit EndTest();
             return;
         }
     }
-    if (end_test_after_process_) {
+    if (m_endTestAfterProcess) {
         emit EndTest();
     }
 }
 
 void OptionTest::SetTask(Task task)
 {
-    task_ = task;
+    m_task = task;
 }

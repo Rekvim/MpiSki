@@ -304,31 +304,31 @@ void Program::MainTestResults(MainTest::TestResults results)
     qreal k = 5 * M_PI * valveInfo->diameter * valveInfo->diameter / 4;
 
     emit SetText(TextObjects::Label_pressure_diff,
-                 QString::asprintf("%.3f bar", results.pressure_diff));
+                 QString::asprintf("%.3f bar", results.pressureDiff));
     emit SetText(TextObjects::Label_friction,
-                 QString::asprintf("%.3f H", results.pressure_diff * k));
+                 QString::asprintf("%.3f H", results.pressureDiff * k));
     emit SetText(TextObjects::Label_din_error_mean,
-                 QString::asprintf("%.3f mA", results.din_error_mean));
+                 QString::asprintf("%.3f mA", results.dinErrorMean));
     emit SetText(TextObjects::Label_din_error_max,
-                 QString::asprintf("%.3f mA", results.din_error_max));
+                 QString::asprintf("%.3f mA", results.dinErrorMax));
     emit SetText(TextObjects::Label_din_error_mean_percent,
-                 QString::asprintf("%.2f %%", results.din_error_mean / 0.16));
+                 QString::asprintf("%.2f %%", results.dinErrorMean / 0.16));
     emit SetText(TextObjects::Label_din_error_max_percent,
-                 QString::asprintf("%.2f %%", results.din_error_max / 0.16));
+                 QString::asprintf("%.2f %%", results.dinErrorMax / 0.16));
     emit SetText(TextObjects::Label_friction_percent,
                  QString::asprintf("%.2f %%", results.friction));
-    emit SetText(TextObjects::Label_low_limit, QString::asprintf("%.2f bar", results.low_limit));
-    emit SetText(TextObjects::Label_high_limit, QString::asprintf("%.2f bar", results.high_limit));
+    emit SetText(TextObjects::Label_low_limit, QString::asprintf("%.2f bar", results.lowLimit));
+    emit SetText(TextObjects::Label_high_limit, QString::asprintf("%.2f bar", results.highLimit));
 
     emit SetText(TextObjects::LineEdit_dinamic_error,
-                 QString::asprintf("%.2f", results.din_error_mean / 0.16));
+                 QString::asprintf("%.2f", results.dinErrorMean / 0.16));
     emit SetText(TextObjects::LineEdit_range_pressure,
-                 QString::asprintf("%.2f - %.2f", results.low_limit, results.high_limit));
+                 QString::asprintf("%.2f - %.2f", results.lowLimit, results.highLimit));
     emit SetText(TextObjects::LineEdit_range,
-                 QString::asprintf("%.2f - %.2f", results.spring_low, results.spring_high));
+                 QString::asprintf("%.2f - %.2f", results.springLow, results.springHigh));
 
     emit SetText(TextObjects::LineEdit_friction,
-                 QString::asprintf("%.3f", results.pressure_diff * k));
+                 QString::asprintf("%.3f", results.pressureDiff * k));
     emit SetText(TextObjects::LineEdit_friction_percent,
                  QString::asprintf("%.2f", results.friction));
 }

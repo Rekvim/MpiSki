@@ -21,14 +21,14 @@ public:
 
     struct TestResults
     {
-        qreal pressure_diff;
+        qreal pressureDiff;
         qreal friction;
-        qreal din_error_mean;
-        qreal din_error_max;
-        qreal low_limit;
-        qreal high_limit;
-        qreal spring_low;
-        qreal spring_high;
+        qreal dinErrorMean;
+        qreal dinErrorMax;
+        qreal lowLimit;
+        qreal highLimit;
+        qreal springLow;
+        qreal springHigh;
     };
 
 protected:

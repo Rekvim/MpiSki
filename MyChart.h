@@ -1,6 +1,7 @@
 #ifndef MYCHART_H
 #define MYCHART_H
 
+#pragma once
 #include <QObject>
 #include <QtCharts>
 

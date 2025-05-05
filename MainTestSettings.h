@@ -1,6 +1,7 @@
 #ifndef MAINTESTSETTINGS_H
 #define MAINTESTSETTINGS_H
 
+#pragma once
 #include <QDialog>
 
 namespace Ui {

@@ -1,3 +1,6 @@
+#ifndef CYCLICTESTSOLINOID_H
+#define CYCLICTESTSOLINOID_H
+
 #pragma once
 #include "MainTest.h"
 #include <QTimer>
@@ -29,3 +32,5 @@ private:
     QVector<quint16> m_values;
     QVector<quint32> m_delaysMs;
 };
+
+#endif // CYCLICTESTSOLINOID_H

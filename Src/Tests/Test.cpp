@@ -27,7 +27,8 @@ void Test::Stop()
     m_terminate = true;
     m_eventLoop->quit();
     m_graphTimer->stop();
-    //emit EndTest();
+    // emit EndTest();
+    emit EndTest();
 }
 
 void Test::ReleaseBlock()

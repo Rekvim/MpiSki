@@ -1,6 +1,7 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
+#pragma once
 #include <QObject>
 
 class Sensor : public QObject
