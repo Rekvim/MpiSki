@@ -24,9 +24,11 @@ MainTestSettings::TestParameters MainTestSettings::getParameters() const
         parameters.pointNumbers = qreal(ui->timeEdit->time().msecsSinceStartOfDay()) / 50;
         parameters.signal_min = 3.0;
         parameters.signal_max = 21.0;
-        parameters.is_cyclic = ui->checkBox_cyclic_test->isChecked();
-        parameters.num_cycles = ui->spinBox_num_cycles->value();
-        parameters.cycle_time = ui->timeEdit_cycle_time->time().msecsSinceStartOfDay() / 1000;
+
+        // parameters.is_cyclic = ui->checkBox_cyclic_test->isChecked();
+        // parameters.num_cycles = ui->spinBox_num_cycles->value();
+        // parameters.cycle_time = ui->timeEdit_cycle_time->time().msecsSinceStartOfDay() / 1000;
+
     } else {
         parameters.continuous = false;
         parameters.delay = ui->doubleSpinBox_delay->value() * 1000;

@@ -23,6 +23,7 @@
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <bold>true</bold>
           </font>
          </property>
          <property name="title">
@@ -55,10 +56,16 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <underline>true</underline>
+                <fontweight>DemiBold</fontweight>
                </font>
               </property>
               <property name="mouseTracking">
                <bool>true</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">text-decoration: underline;
+font-weight: 600;</string>
               </property>
               <property name="text">
                <string>Давление 1</string>
@@ -93,6 +100,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -128,6 +136,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -163,6 +172,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -198,6 +208,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -233,6 +244,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -271,6 +283,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="mouseTracking">
@@ -315,6 +328,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -362,6 +376,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -397,6 +412,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -438,6 +454,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -473,6 +490,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -508,6 +526,7 @@
               <property name="font">
                <font>
                 <pointsize>16</pointsize>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
@@ -531,12 +550,29 @@
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <bold>true</bold>
           </font>
          </property>
          <property name="title">
           <string>Выбор программы испытаний</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="spacing">
+           <number>15</number>
+          </property>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item>
            <widget class="QToolButton" name="button_CTV">
             <property name="sizePolicy">
@@ -548,6 +584,7 @@
             <property name="font">
              <font>
               <pointsize>16</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -566,6 +603,7 @@
             <property name="font">
              <font>
               <pointsize>16</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -584,6 +622,7 @@
             <property name="font">
              <font>
               <pointsize>16</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -602,6 +641,7 @@
             <property name="font">
              <font>
               <pointsize>16</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -620,6 +660,7 @@
             <property name="font">
              <font>
               <pointsize>16</pointsize>
+              <bold>true</bold>
              </font>
             </property>
             <property name="text">

@@ -149,7 +149,7 @@ void ValveWindow::ButtonClick()
         QMessageBox::StandardButton button
             = QMessageBox::question(this,
                                     "Предупреждение",
-                                    "Введены не все данные, вы действительно хотети продолжить?");
+                                    "Введены не все данные, вы действительно хотите продолжить?");
 
         if (button == QMessageBox::StandardButton::No) {
             return;

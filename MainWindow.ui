@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1048,7 +1048,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_maintest">
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_task">
            <attribute name="title">
@@ -1555,49 +1555,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_tred">
-           <attribute name="title">
-            <string>График циклического теста</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_53">
-            <item>
-             <widget class="QFrame" name="frame_8">
-              <property name="autoFillBackground">
-               <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: rgb(152, 118, 84);</string>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Shape::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Shadow::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_51">
-               <property name="spacing">
-                <number>3</number>
-               </property>
-               <property name="leftMargin">
-                <number>1</number>
-               </property>
-               <property name="topMargin">
-                <number>1</number>
-               </property>
-               <property name="rightMargin">
-                <number>1</number>
-               </property>
-               <property name="bottomMargin">
-                <number>1</number>
-               </property>
-               <item>
-                <widget class="MyChart" name="Chart_cyclic"/>
-               </item>
-              </layout>
-             </widget>
             </item>
            </layout>
           </widget>

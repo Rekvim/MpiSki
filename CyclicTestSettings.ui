@@ -81,12 +81,12 @@
         </property>
         <item>
          <property name="text">
-          <string>0-50-0</string>
+          <string>0-100-0</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>0-100-0</string>
+          <string>0-50-100-50-0</string>
          </property>
         </item>
         <item>

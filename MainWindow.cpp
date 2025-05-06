@@ -504,7 +504,7 @@ void MainWindow::SetSensorsNumber(quint8 num)
     ui->doubleSpinBox_task->setEnabled(!no_sensors);
     ui->pushButton_stroke_start->setEnabled(!no_sensors);
     ui->pushButton_tests_start->setEnabled(!no_sensors);
-    ui->pushButton_main_start->setEnabled(num > 1);
+    // ui->pushButton_main_start->setEnabled(num > 1);
 
     if (num > 0) {
         ui->checkBox_task->setVisible(num > 1);
@@ -740,7 +740,6 @@ void MainWindow::InitCharts()
     m_charts[Charts::Stroke] = ui->Chart_stroke;
     m_charts[Charts::Step] = ui->Chart_step;
     m_charts[Charts::Trend] = ui->Chart_trend;
-    m_charts[Charts::Cyclic] = ui->Chart_cyclic;
     m_charts[Charts::CyclicSolenoid] = ui->Chart_cyclic_solenoid; // new
 
 
@@ -751,7 +750,6 @@ void MainWindow::InitCharts()
     m_charts[Charts::Response]->setname("Response");
     m_charts[Charts::Stroke]->setname("Stroke");
     m_charts[Charts::Step]->setname("Step");
-    m_charts[Charts::Cyclic]->setname("Cyclic");
     m_charts[Charts::CyclicSolenoid]->setname("Cyclic_solenoid"); // new
 
     m_charts[Charts::Task]->useTimeaxis(false);
@@ -813,11 +811,6 @@ void MainWindow::InitCharts()
     m_charts[Charts::Trend]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Trend]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Trend]->setMaxRange(60000);
-
-    m_charts[Charts::Cyclic]->useTimeaxis(true);
-    m_charts[Charts::Cyclic]->addAxis("%.2f%%");
-    m_charts[Charts::Cyclic]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Cyclic]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
 
     m_charts[Charts::CyclicSolenoid]->useTimeaxis(true); // new
     m_charts[Charts::CyclicSolenoid]->addAxis("%.2f%%");
@@ -904,7 +897,6 @@ void MainWindow::SaveChart(Charts chart)
         ui->label_pixmap1->setPixmap(pix);
 
     case Charts::Trend:
-    case Charts::Cyclic:
     case Charts::CyclicSolenoid:
         break;
     default:
