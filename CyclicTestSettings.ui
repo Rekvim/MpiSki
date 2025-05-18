@@ -106,16 +106,16 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_delete_value">
+         <widget class="QPushButton" name="pushButton_edit_value">
           <property name="text">
-           <string>Удалить</string>
+           <string>Изменить</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_change_value">
+         <widget class="QPushButton" name="pushButton_remove_value">
           <property name="text">
-           <string>Изменить</string>
+           <string>Удалить</string>
           </property>
          </widget>
         </item>
@@ -155,23 +155,23 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QPushButton" name="pushButton_add_step">
+         <widget class="QPushButton" name="pushButton_add_delay">
           <property name="text">
            <string>Добавить</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_delete_step">
+         <widget class="QPushButton" name="pushButton_edit_delay">
           <property name="text">
-           <string>Удалить</string>
+           <string>Изменить</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_change_step">
+         <widget class="QPushButton" name="pushButton_remove_delay">
           <property name="text">
-           <string>Изменить</string>
+           <string>Удалить</string>
           </property>
          </widget>
         </item>

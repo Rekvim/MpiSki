@@ -7,6 +7,7 @@
 #include <QPointF>
 #include <QTimer>
 #include <QDateTime>
+
 #include "MainTest.h"
 
 class CyclicTestPositioner : public MainTest

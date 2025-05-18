@@ -583,61 +583,65 @@ void Program::StrokeTestStart()
     emit SetButtonInitEnabled(false);
     emit ClearPoints(Charts::Stroke);
 
-    StrokeTest *stroke_test = new StrokeTest;
-    QThread *thread_test = new QThread(this);
-    stroke_test->moveToThread(thread_test);
+    StrokeTest *strokeTest = new StrokeTest;
+    QThread *threadTest = new QThread(this);
+    strokeTest->moveToThread(threadTest);
 
-    connect(thread_test, &QThread::started, stroke_test, &StrokeTest::Process);
-    connect(stroke_test, &StrokeTest::EndTest, thread_test, &QThread::quit);
+    connect(threadTest, &QThread::started, strokeTest, &StrokeTest::Process);
+    connect(strokeTest, &StrokeTest::EndTest, threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest, stroke_test, &StrokeTest::Stop);
-    connect(thread_test, &QThread::finished, thread_test, &QThread::deleteLater);
-    connect(thread_test, &QThread::finished, stroke_test, &StrokeTest::deleteLater);
+    connect(this, &Program::StopTest, strokeTest, &StrokeTest::Stop);
+    connect(threadTest, &QThread::finished, threadTest, &QThread::deleteLater);
+    connect(threadTest, &QThread::finished, strokeTest, &StrokeTest::deleteLater);
 
-    connect(this, &Program::ReleaseBlock, stroke_test, &MainTest::ReleaseBlock);
+    connect(this, &Program::ReleaseBlock, strokeTest, &MainTest::ReleaseBlock);
 
-    connect(stroke_test, &StrokeTest::EndTest, this, &Program::EndTest);
+    connect(strokeTest, &StrokeTest::EndTest, this, &Program::EndTest);
 
-    connect(stroke_test, &StrokeTest::UpdateGraph, this, &Program::UpdateCharts_stroketest);
-    connect(stroke_test, &StrokeTest::SetDAC, this, &Program::SetDAC);
-    connect(stroke_test, &StrokeTest::SetStartTime, this, &Program::SetTimeStart);
-    connect(stroke_test, &StrokeTest::Results, this, &Program::StrokeTestResults);
+    connect(strokeTest, &StrokeTest::UpdateGraph, this, &Program::UpdateCharts_stroketest);
+    connect(strokeTest, &StrokeTest::SetDAC, this, &Program::SetDAC);
+    connect(strokeTest, &StrokeTest::SetStartTime, this, &Program::SetTimeStart);
+    connect(strokeTest, &StrokeTest::Results, this, &Program::StrokeTestResults);
     m_testing = true;
     emit EnableSetTask(false);
-    thread_test->start();
+    threadTest->start();
 }
 
 void Program::CyclicSolenoidTestStart() {
 
     CyclicTestSettings::TestParameters p;
     emit GetCyclicTestParameters(p);
-    if (p.values.isEmpty() || p.delaysMs.isEmpty() || p.numCycles==0) {
+    if (p.sequence.isEmpty() || p.delay_sec <= 0 || p.num_cycles <= 0) {
         emit StopTest();
         return;
     }
 
     auto *solTest = new CyclicTestSolenoid;
-    solTest->SetParameters(p.holdTimeMs, p.values, p.delaysMs, p.numCycles);
-
+    solTest->SetParameters(p.sequence, p.delay_sec, p.num_cycles);
     connect(solTest, &CyclicTestSolenoid::SetStartTime,
             this, &Program::SetTimeStart);
 
-    QThread *th = new QThread(this);
-    solTest->moveToThread(th);
+    QThread *threadTest = new QThread(this);
+    solTest->moveToThread(threadTest);
 
-    connect(th, &QThread::started, solTest, &CyclicTestSolenoid::Process);
+    connect(threadTest, &QThread::started, solTest, &CyclicTestSolenoid::Process);
     connect(solTest, &CyclicTestSolenoid::UpdateGraph, this, &Program::UpdateCharts_CyclicSolenoid);
     connect(solTest, &CyclicTestSolenoid::SetDAC, this, &Program::SetDAC);
-    connect(solTest, &CyclicTestSolenoid::SolenoidResults, this,  &Program::SetSolenoidResults);
-    connect(solTest, &CyclicTestSolenoid::EndTest, th, &QThread::quit);
+
+    connect(solTest, &CyclicTestSolenoid::SetStartTime, this, &Program::SetTimeStart);
+    connect(solTest, &CyclicTestSolenoid::UpdateCyclicTred, this, &Program::UpdateCharts_CyclicSolenoid);
+    connect(solTest, &CyclicTestSolenoid::SetDAC, this, &Program::SetDAC);
+    connect(this, &Program::ReleaseBlock, solTest, &MainTest::ReleaseBlock);
+
+    connect(solTest, &CyclicTestSolenoid::EndTest, threadTest, &QThread::quit);
     connect(solTest, &CyclicTestSolenoid::EndTest, this, &Program::EndTest);
-    connect(th, &QThread::finished, solTest, &QObject::deleteLater);
-    connect(th, &QThread::finished, th, &QObject::deleteLater);
+    connect(threadTest, &QThread::finished, solTest, &QObject::deleteLater);
+    connect(threadTest, &QThread::finished, threadTest, &QObject::deleteLater);
     connect(this, &Program::StopTest, solTest, &CyclicTestSolenoid::Stop);
 
     m_testing = true;
     emit EnableSetTask(false);
-    th->start();
+    threadTest->start();
 }
 
 
@@ -816,6 +820,7 @@ void Program::OptionalTestStart(quint8 test_num)
 
     m_testing = true;
     emit EnableSetTask(false);
+    emit ClearPoints(Charts::CyclicSolenoid);
     thread_test->start();
 }
 

@@ -1,27 +1,53 @@
 #include "SelectTests.h"
 #include "ui_SelectTests.h"
 
+#include <QGraphicsDropShadowEffect>
+
 SelectTests::SelectTests(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::SelectTests)
 {
     ui->setupUi(this);
 
-    ui->pressure_1_color->setStyleSheet("background-color: #2A689F;");
-    ui->pressure_2_color->setStyleSheet("background-color: #457448;");
-    ui->pressure_3_color->setStyleSheet("background-color: #D3BB2A;");
-    ui->moving_color->setStyleSheet("background-color: #CC9546;");
-    ui->input_4_20_mA_color->setStyleSheet("background-color: #A83240;");
-    ui->output_4_20_mA_color->setStyleSheet("background-color: #A83240;");
-    ui->usb_color->setStyleSheet("background-color: #25262B;");
-    ui->imit_switch_0_3_color->setStyleSheet("background-color: #463564;");
-    ui->imit_switch_3_0_color->setStyleSheet("background-color: #463564;");
-    ui->do_1_color->setStyleSheet("background-color: #25262B;");
-    ui->do_2_color->setStyleSheet("background-color: #25262B;");
-    ui->do_3_color->setStyleSheet("background-color: #25262B;");
-    ui->do_4_color->setStyleSheet("background-color: #25262B;");
+
 
     ui->entry_testing->setEnabled(false);
+
+    QMap<QCheckBox*, QFrame*> checkToFrame = {
+        { ui->check_box_pressure_1, ui->frame_pressure_1 },
+        { ui->check_box_pressure_2, ui->frame_pressure_2 },
+        { ui->check_box_pressure_3, ui->frame_pressure_3 },
+        { ui->check_box_moving, ui->frame_moving },
+        { ui->check_box_input_4_20_mA, ui->frame_input_4_20_mA },
+        { ui->check_box_output_4_20_mA, ui->frame_output_4_20_mA },
+        { ui->check_box_usb, ui->frame_usb },
+        { ui->check_box_imit_switch_0_3, ui->frame_imit_switch_0_3 },
+        { ui->check_box_imit_switch_3_0, ui->frame_imit_switch_3_0 },
+        { ui->check_box_do_1, ui->frame_do_1 },
+        { ui->check_box_do_2, ui->frame_do_2 },
+        { ui->check_box_do_3, ui->frame_do_3 },
+        { ui->check_box_do_4, ui->frame_do_4 }
+    };
+
+    for (auto it = checkToFrame.begin(); it != checkToFrame.end(); ++it) {
+        QCheckBox* cb = it.key();
+        QFrame* frame = it.value();
+
+        connect(cb, &QCheckBox::toggled, this, [cb, frame](bool checked) {
+            QFont font = cb->font();
+            font.setWeight(checked ? QFont::DemiBold : QFont::Normal);
+            cb->setFont(font);
+
+            if (checked) {
+                frame->setStyleSheet("background-color: #E1E1E1; border-radius: 6px;");
+            } else {
+                frame->setStyleSheet("");
+            }
+        });
+
+        cb->setChecked(cb->isChecked());
+    }
+
 
     connect(ui->check_box_pressure_1, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
     connect(ui->check_box_pressure_2, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);

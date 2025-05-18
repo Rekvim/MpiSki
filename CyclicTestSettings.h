@@ -6,6 +6,8 @@
 #include <QTime>
 #include <QVector>
 
+
+
 namespace Ui {
 class CyclicTestSettings;
 }
@@ -19,17 +21,24 @@ public:
     ~CyclicTestSettings();
 
     struct TestParameters {
-        quint32 holdTimeMs;
-        QVector<quint16> values;
-        QVector<quint32> delaysMs;
-        quint32 numCycles;
+        QString sequence;
+        int delay_sec;
+        int num_cycles;
     };
 
-    TestParameters getParameters() const { return m_parameters; }
+    TestParameters getParameters() const;
 
 private slots:
     void onPushButtonStartClicked();
     void onPushButtonCancelClicked();
+
+    void onAddValueClicked();
+    void onEditValueClicked();
+    void onRemoveValueClicked();
+
+    void onAddDelayClicked();
+    void onEditDelayClicked();
+    void onRemoveDelayClicked();
 
 private:
     Ui::CyclicTestSettings *ui;

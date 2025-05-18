@@ -66,13 +66,13 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
     connect(ui->pushButton_change_step, &QPushButton::clicked, this, [=]() {
         bool ok;
         double d = QInputDialog::getDouble(this,
-                                           "Ввод числа",
-                                           "Значение:",
-                                           ui->listWidget_step->currentItem()->text().toDouble(),
-                                           0.0,
-                                           100.0,
-                                           1,
-                                           &ok);
+            "Ввод числа",
+            "Значение:",
+            ui->listWidget_step->currentItem()->text().toDouble(),
+            0.0,
+            100.0,
+            1,
+            &ok);
 
         if (ok) {
             ui->listWidget_step->currentItem()->setText(QString::asprintf("%.1f", d));
@@ -104,17 +104,17 @@ void OtherTestSettings::reverse()
 
 OtherTestSettings::TestParameters OtherTestSettings::getParameters()
 {
-    TestParameters test_parameters;
+    TestParameters testParameters;
 
-    test_parameters.delay = ui->timeEdit->time().msecsSinceStartOfDay();
+    testParameters.delay = ui->timeEdit->time().msecsSinceStartOfDay();
 
     for (int i = 0; i < ui->listWidget_value->count(); i++) {
-        test_parameters.points.append(ui->listWidget_value->item(i)->text().toDouble());
+        testParameters.points.append(ui->listWidget_value->item(i)->text().toDouble());
     }
 
     for (int i = 0; i < ui->listWidget_step->count(); i++) {
-        test_parameters.steps.append(ui->listWidget_step->item(i)->text().toDouble());
+        testParameters.steps.append(ui->listWidget_step->item(i)->text().toDouble());
     }
 
-    return test_parameters;
+    return testParameters;
 }

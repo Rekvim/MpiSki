@@ -25,30 +25,34 @@ void Registry::SaveObjectInfo()
 
 ValveInfo *Registry::GetValveInfo(const QString &position)
 {
-
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
     m_settings.beginGroup(m_objectInfo.department);
     m_settings.beginGroup(position);
 
     m_valveInfo.positionNumber = position;
+
+    m_valveInfo.materialStuffingBoxSeal = m_settings.value("materialStuffingBoxSeal", "").toString();
     m_valveInfo.manufacturer = m_settings.value("manufacturer", "").toString();
+    m_valveInfo.valveStroke = m_settings.value("valveStroke", "").toString();
     m_valveInfo.valveModel = m_settings.value("valveModel", "").toString();
+    m_valveInfo.positioner = m_settings.value("positioner", "").toString();
+    m_valveInfo.modelDrive = m_settings.value("modelDrive", "").toString();
     m_valveInfo.serial = m_settings.value("serial", "").toString();
+
+    m_valveInfo.range = m_settings.value("range", "").toString();
     m_valveInfo.DN = m_settings.value("DN", "").toString();
     m_valveInfo.PN = m_settings.value("PN", "").toString();
-    m_valveInfo.valveStroke = m_settings.value("valveStroke", "").toString();
-    m_valveInfo.positioner = m_settings.value("positioner", "").toString();
-    m_valveInfo.dinamicError = m_settings.value("dinamicError", "").toString();
-    m_valveInfo.modelDrive = m_settings.value("modelDrive", "").toString();
-    m_valveInfo.range = m_settings.value("range", "").toString();
-    m_valveInfo.materialStuffingBoxSeal = m_settings.value("materialStuffingBoxSeal", "").toString();
-    m_valveInfo.diameter = m_settings.value("diameter", "").toDouble();
-    m_valveInfo.safePosition = m_settings.value("safePosition", "").toInt();
-    m_valveInfo.driveType = m_settings.value("driveType", "").toInt();
+
     m_valveInfo.strokeMovement = m_settings.value("strokeMovement", "").toInt();
+    m_valveInfo.safePosition = m_settings.value("safePosition", "").toInt();
     m_valveInfo.toolNumber = m_settings.value("toolNumber", "").toInt();
+    m_valveInfo.driveType = m_settings.value("driveType", "").toInt();
     m_valveInfo.pulley = m_settings.value("pulley", "").toInt();
+
+    m_valveInfo.dinamicError = m_settings.value("dinamicError", "").toDouble();
+    m_valveInfo.diameter = m_settings.value("diameter", "").toDouble();
+
 
     m_settings.endGroup();
     m_settings.endGroup();

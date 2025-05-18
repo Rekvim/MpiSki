@@ -27,15 +27,18 @@ struct ValveInfo
 
     QString valveStroke;
     QString positioner;
-    QString dinamicError;
+
     QString modelDrive;
     quint32 safePosition;
     quint32 driveType;
     QString range;
+
+    qreal dinamicError;
     qreal diameter;
+    qreal pulley;
+
     quint32 strokeMovement;
     quint32 toolNumber;
-    qreal pulley;
     QString materialStuffingBoxSeal;
 };
 

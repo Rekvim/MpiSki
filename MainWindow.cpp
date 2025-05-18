@@ -293,23 +293,24 @@ void MainWindow::SetRegistry(Registry *registry)
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     OtherParameters *otherParameters = m_registry->GetOtherParameters();
 
+    ui->lineEdit_date->setText(otherParameters->date);
+    ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
+
     ui->lineEdit_object->setText(objectInfo->object);
     ui->lineEdit_manufacture->setText(objectInfo->manufactory);
     ui->lineEdit_department->setText(objectInfo->department);
     ui->lineEdit_FIO->setText(objectInfo->FIO);
-    ui->lineEdit_date->setText(otherParameters->date);
+
+    qDebug() << valveInfo->dinamicError;
 
     ui->lineEdit_positionNumber->setText(valveInfo->positionNumber);
     ui->lineEdit_manufacturer->setText(valveInfo->manufacturer);
     ui->lineEdit_serial->setText(valveInfo->serial);
     ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
     ui->lineEdit_positioner->setText(valveInfo->positioner);
-    ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
-    ui->lineEdit_dinamic_recomend->setText(valveInfo->dinamicError);
+    ui->lineEdit_dinamic_recomend->setText(QString::number(valveInfo->dinamicError, 'f', 2));
     ui->lineEdit_stroke_recomend->setText(valveInfo->valveStroke);
     ui->lineEdit_range_recomend->setText(valveInfo->range);
-
-
     ui->lineEdit_valveModel->setText(valveInfo->valveModel);
 
     if (valveInfo->safePosition != 0) {
@@ -363,18 +364,20 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
         {QString("T%1").arg(T_value), "Перерегулирование"});
 
     ui->tableWidget_step_results->setRowCount(results.size());
-    QStringList row_names;
+    QStringList rowNames;
     for (int i = 0; i < results.size(); ++i) {
+
         QString time = results.at(i).T_value == 0
                            ? "Ошибка"
                            : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
+
         ui->tableWidget_step_results->setItem(i, 0, new QTableWidgetItem(time));
         QString overshoot = QString("%1%").arg(results.at(i).overshoot, 4, 'f', 2);
         ui->tableWidget_step_results->setItem(i, 1, new QTableWidgetItem(overshoot));
-        QString row_name = QString("%1-%2").arg(results.at(i).from).arg(results.at(i).to);
-        row_names << row_name;
+        QString rowName = QString("%1-%2").arg(results.at(i).from).arg(results.at(i).to);
+        rowNames << rowName;
     }
-    ui->tableWidget_step_results->setVerticalHeaderLabels(row_names);
+    ui->tableWidget_step_results->setVerticalHeaderLabels(rowNames);
     ui->tableWidget_step_results->resizeColumnsToContents();
 }
 
@@ -566,23 +569,22 @@ void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
     if (chart == Charts::Task) {
-        QPair<QList<QPointF>, QList<QPointF>> points_linear = m_charts[Charts::Task]->getpoints(
-            1);
-        QPair<QList<QPointF>, QList<QPointF>> points_pressure = m_charts[Charts::Pressure]
-                                                                    ->getpoints(0);
+        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Task]->getpoints(1);
 
-        points.push_back({points_linear.first.begin(), points_linear.first.end()});
-        points.push_back({points_linear.second.begin(), points_linear.second.end()});
-        points.push_back({points_pressure.first.begin(), points_pressure.first.end()});
-        points.push_back({points_pressure.second.begin(), points_pressure.second.end()});
+        QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_charts[Charts::Pressure]->getpoints(0);
+
+        points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+        points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
+        points.push_back({pointsPressure.first.begin(), pointsPressure.first.end()});
+        points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
     }
     if (chart == Charts::Step) {
-        QPair<QList<QPointF>, QList<QPointF>> points_linear = m_charts[Charts::Step]->getpoints(1);
-        QPair<QList<QPointF>, QList<QPointF>> points_task = m_charts[Charts::Step]->getpoints(0);
+        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Step]->getpoints(1);
+        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getpoints(0);
 
         points.clear();
-        points.push_back({points_linear.first.begin(), points_linear.first.end()});
-        points.push_back({points_task.first.begin(), points_task.first.end()});
+        points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+        points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
     }
 }
 
@@ -648,8 +650,8 @@ void MainWindow::Question(QString title, QString text, bool &result)
 void MainWindow::GetDirectory(QString current_path, QString &result)
 {
     result = QFileDialog::getExistingDirectory(this,
-                                               "Выберите папку для сохранения изображений",
-                                               current_path);
+        "Выберите папку для сохранения изображений",
+        current_path);
 }
 
 void MainWindow::StartTest()
@@ -910,13 +912,13 @@ void MainWindow::SaveChart(Charts chart)
 
 void MainWindow::GetImage(QLabel *label, QImage *image)
 {
-    QString img_path = QFileDialog::getOpenFileName(this,
+    QString imgPath = QFileDialog::getOpenFileName(this,
                                                     "Выберите файл",
                                                     m_fileSaver->Directory().absolutePath(),
                                                     "Изображения (*.jpg *.png *.bmp)");
 
-    if (!img_path.isEmpty()) {
-        QImage img(img_path);
+    if (!imgPath.isEmpty()) {
+        QImage img(imgPath);
         *image = img.scaled(1000, 430, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(img));
     }
