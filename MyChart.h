@@ -55,7 +55,7 @@ public:
 
     ~MyChart();
     QString getname() const;
-    void setname(QString name);
+    void setName(QString name);
     void setMaxRange(qreal value);
     QPair<QList<QPointF>, QList<QPointF>> getpoints(quint8 seriesN) const;
     void savetostream(QDataStream &stream) const;

@@ -16,6 +16,7 @@ include(./QXlsx.pri)
 
 SOURCES += \
     CyclicTestSettings.cpp \
+    Src/ReportBuilders/ReportSaver.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTestSolenoid.cpp \
     Src/Tests/MainTest.cpp \
@@ -29,7 +30,6 @@ SOURCES += \
     Src/ValidatorFactory/ValidatorFactory.cpp \
     main.cpp \
     MainWindow.cpp \
-    FileSaver.cpp \
     MainTestSettings.cpp \
     Mpi.cpp \
     MpiSettings.cpp \
@@ -46,7 +46,6 @@ SOURCES += \
 HEADERS += \
     CyclicTestSettings.h \
     MainWindow.h \
-    FileSaver.h \
     MainTestSettings.h \
     Mpi.h \
     MpiSettings.h \
@@ -57,6 +56,7 @@ HEADERS += \
     Registry.h \
     SelectTests.h \
     Sensor.h \
+    Src/ReportBuilders/ReportSaver.h \
     Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTestSolenoid.h \
     Src/Tests/MainTest.h \
@@ -67,6 +67,7 @@ HEADERS += \
     Src/Uart/Uart.h \
     Src/Uart/UartMessage.h \
     Src/Uart/UartReader.h \
+    Src/ValidatorFactory/RegexPatterns.h \
     Src/ValidatorFactory/ValidatorFactory.h \
     StepTestSettings.h \
     ValveWindow.h \

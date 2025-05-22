@@ -1,21 +1,21 @@
-#include "FileSaver.h"
+#include "ReportSaver.h"
 #include "xlsxdatavalidation.h"
 #include "xlsxdocument.h"
 
 using namespace QXlsx;
 
-FileSaver::FileSaver(QObject *parent)
+ReportSaver::ReportSaver(QObject *parent)
     : QObject{parent}
 {
     m_created = false;
 }
 
-void FileSaver::SetRegistry(Registry *registry)
+void ReportSaver::SetRegistry(Registry *registry)
 {
     m_registry = registry;
 }
 
-void FileSaver::SaveImage(MyChart *chart)
+void ReportSaver::SaveImage(MyChart *chart)
 {
     if (!m_created)
         CreateDir();
@@ -50,12 +50,12 @@ void FileSaver::SaveImage(MyChart *chart)
     }
 }
 
-QDir FileSaver::Directory()
+QDir ReportSaver::Directory()
 {
     return m_dir.path();
 }
 
-bool FileSaver::SaveReport(const Report &report)
+bool ReportSaver::SaveReport(const Report &report)
 {
     if (!m_created)
         CreateDir();
@@ -90,7 +90,7 @@ bool FileSaver::SaveReport(const Report &report)
     return QFile::exists(m_dir.filePath("report.xlsx"));
 }
 
-void FileSaver::CreateDir()
+void ReportSaver::CreateDir()
 {
     ObjectInfo *objectInfo = m_registry->GetObjectInfo();
     ValveInfo *valveInfo = m_registry->GetValveInfo();

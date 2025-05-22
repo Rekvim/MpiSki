@@ -4,6 +4,7 @@
 #pragma once
 #include <QDialog>
 #include <QCheckBox>
+#include <QDebug>
 
 namespace Ui {
 class SelectTests;
@@ -16,6 +17,21 @@ class SelectTests : public QDialog
 public:
     explicit SelectTests(QWidget *parent = nullptr);
     ~SelectTests();
+
+    enum PatternType {
+        Pattern_None,
+        Pattern_CTV,
+        Pattern_BTSV,
+        Pattern_CTSV,
+        Pattern_BTCV,
+        Pattern_CTCV
+    };
+
+    struct PatternSetup {
+        QList<QCheckBox*> checksOn;
+        QList<QCheckBox*> checksOff;
+    };
+
     struct BlockCTS
     {
         bool pressure_1;
@@ -34,10 +50,12 @@ public:
     };
 
     BlockCTS getCTS() const;
+    PatternType currentPattern() const;
 
 private slots:
     void onCheckBoxChanged();
     bool isValidPattern();
+    void setPattern(const PatternSetup& setup);
 
     void resetCheckBoxes();
 
@@ -52,6 +70,10 @@ private slots:
 private:
     Ui::SelectTests *ui;
     BlockCTS m_blockCts;
+    QList<QCheckBox*> allCheckBoxes() const;
+    PatternType m_currentPattern = Pattern_None;
+    PatternType detectCurrentPattern() const;
+    bool m_suppressDebugOutput = false;
 };
 
 #endif // SELECTTESTS_H

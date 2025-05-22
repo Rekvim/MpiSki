@@ -25,8 +25,8 @@ MainTestSettings::TestParameters MainTestSettings::getParameters() const
         parameters.signal_min = 3.0;
         parameters.signal_max = 21.0;
 
-        // parameters.is_cyclic = ui->checkBox_cyclic_test->isChecked();
-        // parameters.num_cycles = ui->spinBox_num_cycles->value();
+        // parameters.is_cyclic = true;
+        // parameters.num_cycles = 1;
         // parameters.cycle_time = ui->timeEdit_cycle_time->time().msecsSinceStartOfDay() / 1000;
 
     } else {

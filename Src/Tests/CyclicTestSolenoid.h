@@ -1,30 +1,42 @@
+// CyclicTestSolenoid.h
 #ifndef CYCLICTESTSOLENOID_H
 #define CYCLICTESTSOLENOID_H
 
 #pragma once
+
 #include "MainTest.h"
-#include <QTimer>
-#include <QStringList>
+#include <QThread>
+#include <QDateTime>
 
 class CyclicTestSolenoid : public MainTest
 {
     Q_OBJECT
 public:
     explicit CyclicTestSolenoid(QObject *parent = nullptr);
-    void SetParameters(const QString &sequence, int delay_sec, int num_cycles);
+
+    void SetParameters(const QString &sequence,
+                       int delaySec,
+                       int holdTimeSec,
+                       int numCycles);
 
 public slots:
+
     void Process() override;
 
 signals:
-    void SetStartTime();
+    void ClearGraph();
+    void TaskPoint(quint64 timeMs, int percent);
     void UpdateCyclicTred();
+    void SetStartTime();
+
+    void SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
 
 private:
     QList<int> m_dacValues;
-    int m_holdTimeMs;
-    int m_numCycles;
-    QTimer *m_cyclicGraphTimer = nullptr;
+    int m_stepDelayMs = 0;
+    int m_holdTimeMs  = 0;
+    int m_numCycles   = 0;
+    quint64 m_startTime = 0;
 };
 
 #endif // CYCLICTESTSOLENOID_H

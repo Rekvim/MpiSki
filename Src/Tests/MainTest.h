@@ -66,6 +66,7 @@ private:
                                         Regression regression2,
                                         Limits limits);
 signals:
+    void RequestSensorRawValue(quint16 &value);
     void DublSeries();
     void GetPoints(QVector<QVector<QPointF>> &points);
     void AddRegression(const QVector<QPointF> &points);

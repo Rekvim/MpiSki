@@ -275,7 +275,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_serial">
+         <widget class="QLineEdit" name="lineEdit_serialNumber">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -643,7 +643,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_valveStroke">
+         <widget class="QLineEdit" name="lineEdit_strokValve">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -703,7 +703,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_modelDrive">
+         <widget class="QLineEdit" name="lineEdit_driveModel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -833,7 +833,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_typeDrive">
+         <widget class="QComboBox" name="comboBox_driveType">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -903,7 +903,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_rangeDrive">
+         <widget class="QLineEdit" name="lineEdit_driveRange">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -963,7 +963,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_diameterDrive">
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_driveDiameter">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>

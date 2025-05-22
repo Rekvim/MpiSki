@@ -32,27 +32,23 @@ ValveInfo *Registry::GetValveInfo(const QString &position)
 
     m_valveInfo.positionNumber = position;
 
-    m_valveInfo.materialStuffingBoxSeal = m_settings.value("materialStuffingBoxSeal", "").toString();
     m_valveInfo.manufacturer = m_settings.value("manufacturer", "").toString();
-    m_valveInfo.valveStroke = m_settings.value("valveStroke", "").toString();
     m_valveInfo.valveModel = m_settings.value("valveModel", "").toString();
-    m_valveInfo.positioner = m_settings.value("positioner", "").toString();
-    m_valveInfo.modelDrive = m_settings.value("modelDrive", "").toString();
-    m_valveInfo.serial = m_settings.value("serial", "").toString();
-
-    m_valveInfo.range = m_settings.value("range", "").toString();
+    m_valveInfo.serialNumber = m_settings.value("serialNumber", "").toString();
     m_valveInfo.DN = m_settings.value("DN", "").toString();
     m_valveInfo.PN = m_settings.value("PN", "").toString();
-
-    m_valveInfo.strokeMovement = m_settings.value("strokeMovement", "").toInt();
-    m_valveInfo.safePosition = m_settings.value("safePosition", "").toInt();
-    m_valveInfo.toolNumber = m_settings.value("toolNumber", "").toInt();
-    m_valveInfo.driveType = m_settings.value("driveType", "").toInt();
-    m_valveInfo.pulley = m_settings.value("pulley", "").toInt();
-
+    m_valveInfo.positionerModel = m_settings.value("positionerModel", "").toString();
     m_valveInfo.dinamicError = m_settings.value("dinamicError", "").toDouble();
-    m_valveInfo.diameter = m_settings.value("diameter", "").toDouble();
-
+    m_valveInfo.strokeMovement = m_settings.value("strokeMovement", "").toInt();
+    m_valveInfo.strokValve = m_settings.value("strokValve", "").toString();
+    m_valveInfo.driveModel = m_settings.value("driveModel", "").toString();
+    m_valveInfo.safePosition = m_settings.value("safePosition", "").toInt();
+    m_valveInfo.driveType = m_settings.value("driveType", "").toInt();
+    m_valveInfo.driveRange = m_settings.value("driveRange", "").toString();
+    m_valveInfo.driveDiameter = m_settings.value("driveDiameter", "").toDouble();
+    m_valveInfo.toolNumber = m_settings.value("toolNumber", "").toInt();
+    m_valveInfo.diameterPulley = m_settings.value("diameterPulley", "").toInt();
+    m_valveInfo.materialStuffingBoxSeal = m_settings.value("materialStuffingBoxSeal", "").toString();
 
     m_settings.endGroup();
     m_settings.endGroup();
@@ -61,7 +57,6 @@ ValveInfo *Registry::GetValveInfo(const QString &position)
 
     return &m_valveInfo;
 }
-
 ValveInfo *Registry::GetValveInfo()
 {
     return &m_valveInfo;
@@ -79,32 +74,21 @@ void Registry::SaveValveInfo()
 
     m_settings.setValue("manufacturer", m_valveInfo.manufacturer);
     m_settings.setValue("valveModel", m_valveInfo.valveModel);
-    m_settings.setValue("serial", m_valveInfo.serial);
+    m_settings.setValue("serialNumber", m_valveInfo.serialNumber);
     m_settings.setValue("DN", m_valveInfo.DN);
     m_settings.setValue("PN", m_valveInfo.PN);
-    m_settings.setValue("stroke", m_valveInfo.valveStroke);
-    m_settings.setValue("positioner", m_valveInfo.positioner);
+    m_settings.setValue("positionerModel", m_valveInfo.positionerModel);
     m_settings.setValue("dinamicError", m_valveInfo.dinamicError);
-    m_settings.setValue("modelDrive", m_valveInfo.modelDrive);
-    m_settings.setValue("range", m_valveInfo.range);
-    m_settings.setValue("materialStuffingBoxSeal", m_valveInfo.materialStuffingBoxSeal);
-    m_settings.setValue("diameter", m_valveInfo.diameter);
-    m_settings.setValue("safePosition", m_valveInfo.safePosition);
-    m_settings.setValue("type_of_drive", m_valveInfo.driveType);
     m_settings.setValue("strokeMovement", m_valveInfo.strokeMovement);
+    m_settings.setValue("strokValve", m_valveInfo.strokValve);
+    m_settings.setValue("driveModel", m_valveInfo.driveModel);
+    m_settings.setValue("safePosition", m_valveInfo.safePosition);
+    m_settings.setValue("driveType", m_valveInfo.driveType);
+    m_settings.setValue("driveRange", m_valveInfo.driveRange);
+    m_settings.setValue("driveDiameter", m_valveInfo.driveDiameter);
     m_settings.setValue("toolNumber", m_valveInfo.toolNumber);
-    m_settings.setValue("pulley", m_valveInfo.pulley);
-
-    // m_settings.setValue("Корпус", m_valveInfo.corpus);
-    // m_settings.setValue("Крышка", m_valveInfo.cap);
-    // m_settings.setValue("Материал седла", m_valveInfo.saddle_materials);
-    // m_settings.setValue("CV", m_valveInfo.saddle_cv);
-    // m_settings.setValue("Шар", m_valveInfo.ball);
-    // m_settings.setValue("Диск", m_valveInfo.disk);
-    // m_settings.setValue("Плунжер", m_valveInfo.plunger);
-    // m_settings.setValue("Вал", m_valveInfo.shaft);
-    // m_settings.setValue("Шток", m_valveInfo.stock);
-    // m_settings.setValue("Направляющаяя втулка", m_valveInfo.guide_sleeve);
+    m_settings.setValue("diameterPulley", m_valveInfo.diameterPulley);
+    m_settings.setValue("materialStuffingBoxSeal", m_valveInfo.materialStuffingBoxSeal);
 
     m_settings.endGroup();
     m_settings.endGroup();

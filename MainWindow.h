@@ -10,7 +10,7 @@
 #include <QDateTime>
 #include <QDebug>
 
-#include "FileSaver.h"
+#include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
 #include "Registry.h"
 #include "SelectTests.h"
@@ -64,7 +64,7 @@ private slots:
     void SetTask(qreal task);
     void SetTextColor(const TextObjects object, const QColor color);
     void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
-    void SetSolenoidResults(qint64 forwardSec, qint64 backwardSec, quint16 cycles, double rangePercent, double totalTimeSec);
+    void SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
@@ -80,11 +80,11 @@ private:
     Ui::MainWindow *ui;
 
     Registry *m_registry = nullptr;
-    FileSaver *m_fileSaver = nullptr;
+    ReportSaver *m_reportSaver = nullptr;
     Program *m_program;
     QThread *m_programthread;
 
-    FileSaver::Report m_report;
+    ReportSaver::Report m_report;
     SelectTests::BlockCTS m_blockCTS;
 
     QHash<TextObjects, QLabel *> m_labels;
@@ -104,11 +104,11 @@ private:
     void GetImage(QLabel *label, QImage *image);
     void InitReport();
 signals:
-    void StartCyclicSolenoidTest();
+    void StartCyclicSolenoidTest(const CyclicTestSettings::TestParameters &p);
     void SetDAC(qreal value);
     void StartMainTest();
     void StartStrokeTest();
-    void StartOptionalTest(quint8 test_num);
+    void StartOptionalTest(quint8 testNum);
     void StopTest();
     void SetDO(quint8 DO_num, bool state);
 };

@@ -6,31 +6,31 @@ CyclicTestPositioner::CyclicTestPositioner(QObject *parent)
 
 void CyclicTestPositioner::Process()
 {
-    m_cyclicGraphTimer = new QTimer(this);
-    connect(m_cyclicGraphTimer, &QTimer::timeout, this, [&] { emit UpdateCyclicTred(); });
+    // m_cyclicGraphTimer = new QTimer(this);
+    // connect(m_cyclicGraphTimer, &QTimer::timeout, this, [&] { emit UpdateCyclicTred(); });
 
-    emit SetStartTime();
-    m_cyclicGraphTimer->start(500);
-    MainTest::Process();
+    // emit SetStartTime();
+    // m_cyclicGraphTimer->start(500);
+    // MainTest::Process();
 
-    for (int i = 0; i < m_parameters.num_cycles; ++i) {
-        if (m_terminate) {
-            emit EndTest();
-            return;
-        }
-        SetDACBlocked(0xFFFF, 0, true, true);
-        if (m_terminate) {
-            emit EndTest();
-            return;
-        }
-        SetDACBlocked(0, 0, true, true);
-    }
+    // for (int i = 0; i < m_parameters.num_cycles; ++i) {
+    //     if (m_terminate) {
+    //         emit EndTest();
+    //         return;
+    //     }
+    //     SetDACBlocked(0xFFFF, 0, true, true);
+    //     if (m_terminate) {
+    //         emit EndTest();
+    //         return;
+    //     }
+    //     SetDACBlocked(0, 0, true, true);
+    // }
 
-    if (m_terminate) {
-        emit EndTest();
-        return;
-    }
+    // if (m_terminate) {
+    //     emit EndTest();
+    //     return;
+    // }
 
-    MainTest::Process();
-    emit EndTest();
+    // MainTest::Process();
+    // emit EndTest();
 }

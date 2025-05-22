@@ -17,28 +17,25 @@ struct ObjectInfo
 struct ValveInfo
 {
     QString positionNumber;
-    QString serial;
 
     QString manufacturer;
     QString valveModel;
-
+    QString serialNumber;
     QString DN;
     QString PN;
-
-    QString valveStroke;
-    QString positioner;
-
-    QString modelDrive;
-    quint32 safePosition;
-    quint32 driveType;
-    QString range;
+    QString positionerModel;
 
     qreal dinamicError;
-    qreal diameter;
-    qreal pulley;
-
     quint32 strokeMovement;
+    QString strokValve;
+    QString driveModel;
+    quint32 safePosition;
+    quint32 driveType;
+    QString driveRange;
+    qreal driveDiameter;
+
     quint32 toolNumber;
+    qreal diameterPulley;
     QString materialStuffingBoxSeal;
 };
 

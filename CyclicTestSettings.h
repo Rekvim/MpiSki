@@ -4,9 +4,6 @@
 #pragma once
 #include <QDialog>
 #include <QTime>
-#include <QVector>
-
-
 
 namespace Ui {
 class CyclicTestSettings;
@@ -23,14 +20,14 @@ public:
     struct TestParameters {
         QString sequence;
         int delay_sec;
+        int hold_time_sec;
         int num_cycles;
     };
 
-    TestParameters getParameters() const;
+    TestParameters getParameters() const { return m_parameters; }
 
 private slots:
     void onPushButtonStartClicked();
-    void onPushButtonCancelClicked();
 
     void onAddValueClicked();
     void onEditValueClicked();

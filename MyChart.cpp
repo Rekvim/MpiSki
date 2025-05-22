@@ -534,7 +534,7 @@ void MyChart::ZoomOut()
     autoscale(min, max);
 }
 
-void MyChart::setname(QString n)
+void MyChart::setName(QString n)
 {
     name = n;
 }
@@ -589,7 +589,7 @@ void MyChart::loadfromstream(QDataStream &stream)
 {
     QString str;
     stream >> str;
-    setname(str);
+    setName(str);
 
     bool value_axis;
     stream >> value_axis;

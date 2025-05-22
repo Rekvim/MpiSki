@@ -1,10 +1,10 @@
+// CyclicTestSettings.cpp
 #include "CyclicTestSettings.h"
 #include "ui_CyclicTestSettings.h"
 
-#include "./src/Tests/CyclicTestSolenoid.h"
-
 #include <QMessageBox>
 #include <QInputDialog>
+#include "./Src/ValidatorFactory/RegexPatterns.h"
 
 CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     : QDialog(parent)
@@ -14,11 +14,17 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 
     connect(ui->pushButton_add_value, &QPushButton::clicked, this, &CyclicTestSettings::onAddValueClicked);
     connect(ui->pushButton_edit_value, &QPushButton::clicked, this, &CyclicTestSettings::onEditValueClicked);
-    connect(ui->pushButton_remove_value, &QPushButton::clicked, this, &CyclicTestSettings::onRemoveValueClicked);
+    connect(ui->pushButton_remove_value,&QPushButton::clicked, this, &CyclicTestSettings::onRemoveValueClicked);
 
     connect(ui->pushButton_add_delay, &QPushButton::clicked, this, &CyclicTestSettings::onAddDelayClicked);
     connect(ui->pushButton_edit_delay, &QPushButton::clicked, this, &CyclicTestSettings::onEditDelayClicked);
     connect(ui->pushButton_remove_delay, &QPushButton::clicked, this, &CyclicTestSettings::onRemoveDelayClicked);
+
+    connect(ui->pushButton_cancel, &QPushButton::clicked,
+            this, &QDialog::reject);
+
+    connect(ui->pushButton_start, &QPushButton::clicked,
+            this, &CyclicTestSettings::onPushButtonStartClicked);
 }
 
 CyclicTestSettings::~CyclicTestSettings()
@@ -26,99 +32,125 @@ CyclicTestSettings::~CyclicTestSettings()
     delete ui;
 }
 
-CyclicTestSettings::TestParameters CyclicTestSettings::getParameters() const {
-    TestParameters p;
-    if (ui->listWidget_value->currentItem())
-        p.sequence = ui->listWidget_value->currentItem()->text();
-    if (ui->listWidget_step->currentItem())
-        p.delay_sec = ui->listWidget_step->currentItem()->text().toInt();
-    p.num_cycles = ui->lineEdit_number_cycles->text().toInt();
-    return p;
+void CyclicTestSettings::onAddValueClicked()
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, "Добавить последовательность",
+                                         "Введите значения (через «-»):",
+                                         QLineEdit::Normal, "", &ok);
+
+    if (ok && !text.trimmed().isEmpty()) {
+        ui->listWidget_value->addItem(text.trimmed());
+        ui->listWidget_value->setCurrentRow(ui->listWidget_value->count()-1);
+    }
+}
+
+void CyclicTestSettings::onEditValueClicked()
+{
+    auto *item = ui->listWidget_value->currentItem();
+    if (!item) return;
+    bool ok;
+    QString txt = QInputDialog::getText(this, "Изменить последовательность",
+                                        "Новое значение:", QLineEdit::Normal,
+                                        item->text(), &ok);
+
+    if (ok && !txt.trimmed().isEmpty()) {
+        item->setText(txt.trimmed());
+    }
+}
+
+void CyclicTestSettings::onRemoveValueClicked()
+{
+    delete ui->listWidget_value->currentItem();
+}
+
+void CyclicTestSettings::onAddDelayClicked()
+{
+    bool ok;
+    int v = QInputDialog::getInt(this, "Добавить задержку",
+                                 "Введите значение в секундах:", 10, 1, 3600, 1, &ok);
+
+    if (ok) {
+        ui->listWidget_step->addItem(QString::number(v));
+        ui->listWidget_step->setCurrentRow(ui->listWidget_step->count()-1);
+    }
+}
+
+void CyclicTestSettings::onEditDelayClicked()
+{
+    auto *item = ui->listWidget_step->currentItem();
+    if (!item) return;
+
+    bool ok;
+    int v = QInputDialog::getInt(this, "Изменить задержку",
+                                 "Новое значение (сек):",
+                                 item->text().toInt(), 1, 3600, 1, &ok);
+    if (ok) {
+        item->setText(QString::number(v));
+    }
+}
+
+void CyclicTestSettings::onRemoveDelayClicked()
+{
+    delete ui->listWidget_step->currentItem();
 }
 
 void CyclicTestSettings::onPushButtonStartClicked()
 {
-    QListWidgetItem *valueItem = ui->listWidget_value->currentItem();
-    if (!valueItem) {
-        QMessageBox::warning(this, "Ошибка", "Выберите значения для испытания.");
+    auto *sequenceItem = ui->listWidget_value->currentItem();
+    if (!sequenceItem) {
+        QMessageBox::warning(this, "Ошибка", "Выберите или добавьте хотя бы одну последовательность.");
         return;
     }
-    QString sequence = valueItem->text();
+    QString sequenceValue = sequenceItem->text().trimmed();
+    {
+        auto m = RegexPatterns::digitsHyphens().match(sequenceValue);
+        if (!m.hasMatch() || m.capturedLength() != sequenceValue.length()) {
+            QMessageBox::warning(this, "Ошибка",
+                                 "Последовательность должна состоять только из цифр и дефисов, без пробелов и других символов.");
+            return;
+        }
+    }
+    m_parameters.sequence = sequenceValue;
 
-    QListWidgetItem *delayItem = ui->listWidget_step->currentItem();
+    auto *delayItem = ui->listWidget_step->currentItem();
     if (!delayItem) {
         QMessageBox::warning(this, "Ошибка", "Выберите время задержки.");
         return;
     }
-    int delaySec = delayItem->text().toInt();
+    QString delayStr = delayItem->text().trimmed();
+    {
+        auto m = RegexPatterns::digits().match(delayStr);
+        if (!m.hasMatch() || m.capturedLength() != delayStr.length()) {
+            QMessageBox::warning(this, "Ошибка",
+                                 "Время задержки должно быть положительным числом в секундах.");
+            return;
+        }
+    }
+    m_parameters.delay_sec = delayStr.toInt();
 
-    bool ok = false;
-    int numCycles = ui->lineEdit_number_cycles->text().toInt(&ok);
-    if (!ok || numCycles <= 0) {
-        QMessageBox::warning(this, "Ошибка", "Введите корректное количество циклов.");
+    QTime retentionTime = ui->timeEdit->time();
+    int holdSec = retentionTime.minute() * 60 + retentionTime.second();
+    if (holdSec <= 0) {
+        QMessageBox::warning(this, "Ошибка", "Время удержания должно быть больше 00:00.");
         return;
     }
+    m_parameters.hold_time_sec = holdSec;
 
-    auto *test = new CyclicTestSolenoid(this);
-    test->SetParameters(sequence, delaySec, numCycles);
+    QString cyclesStr = ui->lineEdit_number_cycles->text().trimmed();
+    {
+        auto m = RegexPatterns::digits().match(cyclesStr);
+        if (!m.hasMatch() || m.capturedLength() != cyclesStr.length() || cyclesStr.isEmpty()) {
+            QMessageBox::warning(this, "Ошибка", "Введите корректное положительное целое число циклов.");
+            return;
+        }
+    }
+    int cycles = cyclesStr.toInt();
+    if (cycles <= 0) {
+        QMessageBox::warning(this, "Ошибка", "Число циклов должно быть больше нуля.");
+        return;
+    }
+    m_parameters.num_cycles = cycles;
 
     accept();
-}
-
-void CyclicTestSettings::onAddValueClicked() {
-    bool ok;
-    QString text = QInputDialog::getText(this, "Добавить последовательность", "Введите значения:", QLineEdit::Normal, "", &ok);
-    if (ok && !text.trimmed().isEmpty()) {
-        ui->listWidget_value->addItem(text.trimmed());
-    }
-}
-
-void CyclicTestSettings::onEditValueClicked() {
-    auto *item = ui->listWidget_value->currentItem();
-    if (!item) return;
-
-    bool ok;
-    QString text = QInputDialog::getText(this, "Изменить последовательность", "Измените значения:", QLineEdit::Normal, item->text(), &ok);
-    if (ok && !text.trimmed().isEmpty()) {
-        item->setText(text.trimmed());
-    }
-}
-
-void CyclicTestSettings::onRemoveValueClicked() {
-    auto *item = ui->listWidget_value->currentItem();
-    if (item) {
-        delete item;
-    }
-}
-
-
-void CyclicTestSettings::onAddDelayClicked() {
-    bool ok;
-    int value = QInputDialog::getInt(this, "Добавить задержку", "Введите значение (сек):", 10, 1, 3600, 1, &ok);
-    if (ok) {
-        ui->listWidget_step->addItem(QString::number(value));
-    }
-}
-
-void CyclicTestSettings::onEditDelayClicked() {
-    auto *item = ui->listWidget_step->currentItem();
-    if (!item) return;
-
-    bool ok;
-    int value = QInputDialog::getInt(this, "Изменить задержку", "Введите новое значение (сек):", item->text().toInt(), 1, 3600, 1, &ok);
-    if (ok) {
-        item->setText(QString::number(value));
-    }
-}
-
-void CyclicTestSettings::onRemoveDelayClicked() {
-    auto *item = ui->listWidget_step->currentItem();
-    if (item) {
-        delete item;
-    }
-}
-
-void CyclicTestSettings::onPushButtonCancelClicked()
-{
-    reject();
 }

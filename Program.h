@@ -111,7 +111,7 @@ signals:
     void SetGroupDOVisible(bool visible);
     void SetVisible(Charts chart, quint16 series, bool visible);
     void SetRegressionEnable(bool enable);
-    void SetSolenoidResults(qint64 forward, qint64 backward, quint16 cycles, double range_percent, double total_time_sec);
+    void SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
 
     void GetPoints(QVector<QVector<QPointF>> &points, Charts chart);
 
@@ -141,7 +141,7 @@ private slots:
     void UpdateCharts_maintest();
     void UpdateCharts_stroketest();
     void UpdateCharts_optiontest(Charts chart);
-    void UpdateCharts_CyclicTred();
+    // void UpdateCharts_CyclicTred();
     void UpdateCharts_CyclicSolenoid();
     void MainTestResults(MainTest::TestResults results);
 
@@ -152,6 +152,8 @@ private slots:
                 bool wait_for_start = false);
     void SetTimeStart();
     void StrokeTestResults(quint64 forward_time, quint64 backward_time);
+    void SolenoidResults(double forward, double backward, quint16 cycles, double range_percent, double total_time_sec);
+
 public slots:
     void AddRegression(const QVector<QPointF> &points);
     void AddFriction(const QVector<QPointF> &points);
@@ -163,8 +165,8 @@ public slots:
     void button_init();
     void MainTestStart();
     void StrokeTestStart();
-    void OptionalTestStart(quint8 test_num);
-    void CyclicSolenoidTestStart();
+    void StartOptionalTest(quint8 testNum);
+    void CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p);
 
     void TerminateTest();
     void button_open();

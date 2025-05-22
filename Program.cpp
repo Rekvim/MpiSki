@@ -1,6 +1,6 @@
 #include "Program.h"
 
-#include "./Src/Tests/CyclicTestPositioner.h"
+// #include "./Src/Tests/CyclicTestPositioner.h"
 #include "./Src/Tests/CyclicTestSolenoid.h"
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/StrokeTest.h"
@@ -16,12 +16,17 @@ Program::Program(QObject *parent)
     m_testing = false;
     m_dacEventloop = new QEventLoop(this);
 
+
+
     m_timerDI = new QTimer(this);
     m_timerDI->setInterval(1000);
     connect(m_timerDI, &QTimer::timeout, this, [&]() {
         quint8 DI = m_mpi.GetDIStatus();
         emit SetCheckboxDIChecked(DI);
     });
+
+    connect(m_timerSensors, &QTimer::timeout,
+            this, &Program::UpdateCharts_CyclicSolenoid);
 }
 
 void Program::SetRegistry(Registry *registry)
@@ -138,7 +143,7 @@ void Program::AddFriction(const QVector<QPointF> &points)
 
     ValveInfo *valveInfo = m_registry->GetValveInfo();
 
-    qreal k = 5 * M_PI * valveInfo->diameter * valveInfo->diameter / 4;
+    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
 
     for (QPointF point : points) {
         chartPoints.push_back({0, point.x(), point.y() * k});
@@ -164,13 +169,13 @@ void Program::UpdateSensors()
             }
             break;
         case 2:
-            if (m_blockCts.pressure_1) {
+            if (m_blockCts.pressure_2) {
                 emit SetText(TextObjects::LineEdit_pressure_sensor2, m_mpi[i]->GetFormatedValue());
                 break;
             }
             break;
         case 3:
-            if (m_blockCts.pressure_1) {
+            if (m_blockCts.pressure_3) {
                 emit SetText(TextObjects::LineEdit_pressure_sensor3, m_mpi[i]->GetFormatedValue());
                 break;
             }
@@ -224,39 +229,6 @@ void Program::UpdateCharts_maintest()
     emit AddPoints(Charts::Pressure, points);
 }
 
-void Program::UpdateCharts_stroketest()
-{
-    QVector<Point> points;
-
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
-
-    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-
-    points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
-
-    emit AddPoints(Charts::Stroke, points);
-}
-
-void Program::UpdateCharts_CyclicSolenoid()
-{
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
-
-    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-
-    QVector<Point> pts;
-    pts.push_back({0, qreal(time), percent});
-
-    emit AddPoints(Charts::CyclicSolenoid, pts);
-}
-
 void Program::UpdateCharts_optiontest(Charts chart)
 {
     QVector<Point> points;
@@ -277,31 +249,11 @@ void Program::UpdateCharts_optiontest(Charts chart)
     emit AddPoints(chart, points);
 }
 
-void Program::UpdateCharts_CyclicTred()
-{
-    QVector<Point> points;
-
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
-
-    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-
-    points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
-
-    emit AddPoints(Charts::Cyclic, points);
-}
-
 void Program::MainTestResults(MainTest::TestResults results)
 {
     ValveInfo *valveInfo = m_registry->GetValveInfo();
 
-    qreal k = 5 * M_PI * valveInfo->diameter * valveInfo->diameter / 4;
+    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
 
     emit SetText(TextObjects::Label_pressure_diff,
                  QString::asprintf("%.3f bar", results.pressureDiff));
@@ -356,6 +308,7 @@ void Program::EndTest()
     SetDAC_int(0);
     emit StopTest();
     emit SetTask(m_mpi.GetDAC()->GetValue());
+    m_timerSensors->stop();
 }
 
 void Program::SetDAC_real(qreal value)
@@ -365,7 +318,15 @@ void Program::SetDAC_real(qreal value)
 
 void Program::SetDAC_int(quint16 value)
 {
-    m_mpi.SetDAC_Raw(value);
+    qreal mA = 4.0 + (16.0 * value / 100.0);
+
+    quint16 raw = m_mpi.GetDAC()->GetRawFromValue(mA);
+
+
+    m_mpi.SetDAC_Raw(raw);
+
+
+    emit ReleaseBlock();
 }
 void Program::SetBlockCTS(const SelectTests::BlockCTS &blockCTS)
 {
@@ -477,7 +438,7 @@ void Program::button_init()
 
     qreal correctCoefficient = 1;
     if (valveInfo->strokeMovement != 0) {
-        correctCoefficient = qRadiansToDegrees(2 / valveInfo->pulley);
+        correctCoefficient = qRadiansToDegrees(2 / valveInfo->diameterPulley);
         m_mpi[0]->SetUnit("°");
     }
     m_mpi[0]->CorrectCoefficients(correctCoefficient);
@@ -519,30 +480,32 @@ void Program::MainTestStart()
 
     emit SetButtonInitEnabled(false);
 
-    MainTest *main_test = parameters.is_cyclic ? new CyclicTestPositioner : new MainTest;
+    // MainTest *main_test = parameters.is_cyclic ? new CyclicTestPositioner : new MainTest;
+
+    MainTest *main_test = new MainTest;
 
     main_test->SetParameters(parameters);
 
-    QThread *thread_test = new QThread(this);
-    main_test->moveToThread(thread_test);
+    QThread *threadTest = new QThread(this);
+    main_test->moveToThread(threadTest);
 
-    if (parameters.is_cyclic) {
-        connect(dynamic_cast<CyclicTestPositioner *>(main_test),
-                &CyclicTestPositioner::UpdateCyclicTred,
-                this,
-                &Program::UpdateCharts_CyclicTred);
-        connect(dynamic_cast<CyclicTestPositioner *>(main_test),
-                &CyclicTestPositioner::SetStartTime,
-                this,
-                &Program::SetTimeStart);
-    }
+    // if (parameters.is_cyclic) {
+    //     connect(dynamic_cast<CyclicTestPositioner *>(main_test),
+    //             &CyclicTestPositioner::UpdateCyclicTred,
+    //             this,
+    //             &Program::UpdateCharts_CyclicTred);
+    //     connect(dynamic_cast<CyclicTestPositioner *>(main_test),
+    //             &CyclicTestPositioner::SetStartTime,
+    //             this,
+    //             &Program::SetTimeStart);
+    // }
 
-    connect(thread_test, &QThread::started, main_test, &MainTest::Process);
-    connect(main_test, &MainTest::EndTest, thread_test, &QThread::quit);
+    connect(threadTest, &QThread::started, main_test, &MainTest::Process);
+    connect(main_test, &MainTest::EndTest, threadTest, &QThread::quit);
 
     connect(this, &Program::StopTest, main_test, &MainTest::Stop);
-    connect(thread_test, &QThread::finished, thread_test, &QThread::deleteLater);
-    connect(thread_test, &QThread::finished, main_test, &MainTest::deleteLater);
+    connect(threadTest, &QThread::finished, threadTest, &QThread::deleteLater);
+    connect(threadTest, &QThread::finished, main_test, &MainTest::deleteLater);
 
     connect(main_test, &MainTest::EndTest, this, &Program::EndTest);
 
@@ -571,11 +534,11 @@ void Program::MainTestStart()
         emit SetRegressionEnable(false);
     });
 
-    emit ClearPoints(Charts::Cyclic);
+    // emit ClearPoints(Charts::Cyclic);
 
     m_testing = true;
     emit EnableSetTask(false);
-    thread_test->start();
+    threadTest->start();
 }
 
 void Program::StrokeTestStart()
@@ -607,59 +570,142 @@ void Program::StrokeTestStart()
     threadTest->start();
 }
 
-void Program::CyclicSolenoidTestStart() {
+void Program::UpdateCharts_stroketest()
+{
+    QVector<Point> points;
 
-    CyclicTestSettings::TestParameters p;
-    emit GetCyclicTestParameters(p);
-    if (p.sequence.isEmpty() || p.delay_sec <= 0 || p.num_cycles <= 0) {
+    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
+    percent = qMin(qMax(percent, 0.0), 100.0);
+
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    if (valveInfo->safePosition != 0) {
+        percent = 100 - percent;
+    }
+
+    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
+
+    points.push_back({0, qreal(time), percent});
+    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+
+    emit AddPoints(Charts::Stroke, points);
+}
+
+void Program::UpdateCharts_CyclicSolenoid()
+{
+    if (!m_testing)
+        return;
+
+    qreal task = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
+    task = qBound<qreal>(0.0, task, 100.0);
+
+
+    qreal measured = m_mpi[0]->GetPersent();
+
+
+    quint64 t = QDateTime::currentMSecsSinceEpoch() - m_startTime;
+
+    QVector<Point> pts;
+
+    pts.push_back({0, qreal(t), task});
+    pts.push_back({1, qreal(t), measured});
+
+    emit AddPoints(Charts::CyclicSolenoid, pts);
+}
+
+void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p)
+{
+    if (p.sequence.isEmpty()
+        || p.delay_sec <= 0
+        || p.hold_time_sec < 0
+        || p.num_cycles <= 0)
+    {
         emit StopTest();
         return;
     }
 
-    auto *solTest = new CyclicTestSolenoid;
-    solTest->SetParameters(p.sequence, p.delay_sec, p.num_cycles);
-    connect(solTest, &CyclicTestSolenoid::SetStartTime,
+    auto *sol = new CyclicTestSolenoid;
+    sol->SetParameters(p.sequence,
+                       p.delay_sec,
+                       p.hold_time_sec,
+                       p.num_cycles);
+
+    QThread *thr = new QThread(this);
+    sol->moveToThread(thr);
+
+
+    connect(thr, &QThread::started, sol, &CyclicTestSolenoid::Process);
+
+
+    connect(sol, &CyclicTestSolenoid::RequestSensorRawValue,
+            this, [&](quint16 &value) {
+                value = m_mpi[0]->GetRawValue();
+            },
+            Qt::BlockingQueuedConnection);
+
+    // connect(sol, &CyclicTestSolenoid::UpdateCyclicTred,
+    //         this, &Program::UpdateCharts_CyclicSolenoid);
+
+    connect(sol, &CyclicTestSolenoid::EndTest, thr, &QThread::quit);
+    connect(sol, &CyclicTestSolenoid::EndTest, this, &Program::EndTest);
+
+
+    connect(thr, &QThread::finished, sol, &QObject::deleteLater);
+    connect(thr, &QThread::finished, thr, &QObject::deleteLater);
+
+    connect(sol, &CyclicTestSolenoid::ClearGraph, this,
+            [&]{ emit ClearPoints(Charts::CyclicSolenoid); });
+
+    // в Program::CyclicSolenoidTestStart()
+    connect(sol, &CyclicTestSolenoid::TaskPoint, this,
+            [&](qint64 t, int pct){
+                QVector<Point> pts;
+                pts.push_back({0, qreal(t), qreal(pct)});
+                emit AddPoints(Charts::CyclicSolenoid, pts);
+            });
+
+
+    connect(sol, &CyclicTestSolenoid::SetStartTime,
             this, &Program::SetTimeStart);
 
-    QThread *threadTest = new QThread(this);
-    solTest->moveToThread(threadTest);
+    connect(sol, &CyclicTestSolenoid::SetSolenoidResults,
+            this, &Program::SolenoidResults);
 
-    connect(threadTest, &QThread::started, solTest, &CyclicTestSolenoid::Process);
-    connect(solTest, &CyclicTestSolenoid::UpdateGraph, this, &Program::UpdateCharts_CyclicSolenoid);
-    connect(solTest, &CyclicTestSolenoid::SetDAC, this, &Program::SetDAC);
+    connect(sol, &CyclicTestSolenoid::SetDAC,
+            this, &Program::SetDAC_int);
 
-    connect(solTest, &CyclicTestSolenoid::SetStartTime, this, &Program::SetTimeStart);
-    connect(solTest, &CyclicTestSolenoid::UpdateCyclicTred, this, &Program::UpdateCharts_CyclicSolenoid);
-    connect(solTest, &CyclicTestSolenoid::SetDAC, this, &Program::SetDAC);
-    connect(this, &Program::ReleaseBlock, solTest, &MainTest::ReleaseBlock);
-
-    connect(solTest, &CyclicTestSolenoid::EndTest, threadTest, &QThread::quit);
-    connect(solTest, &CyclicTestSolenoid::EndTest, this, &Program::EndTest);
-    connect(threadTest, &QThread::finished, solTest, &QObject::deleteLater);
-    connect(threadTest, &QThread::finished, threadTest, &QObject::deleteLater);
-    connect(this, &Program::StopTest, solTest, &CyclicTestSolenoid::Stop);
-
+    emit ClearPoints(Charts::CyclicSolenoid);
     m_testing = true;
     emit EnableSetTask(false);
-    threadTest->start();
+
+
+    thr->start();
+
+    m_timerSensors->start();
 }
 
+void Program::SolenoidResults(double forwardSec,
+                              double backwardSec,
+                              quint16 cycles,
+                              double rangePercent,
+                              double totalTimeSec)
+{
+    emit SetSolenoidResults(forwardSec, backwardSec, cycles, rangePercent, totalTimeSec);
+}
 
-void Program::OptionalTestStart(quint8 test_num)
+void Program::StartOptionalTest(quint8 testNum)
 {
     OptionTest::Task task;
-    OptionTest *optional_test;
-    ;
+    OptionTest *optionalTest;
 
-    switch (test_num) {
+    switch (testNum) {
     case 0: {
-        optional_test = new OptionTest;
+        optionalTest = new OptionTest;
 
         OtherTestSettings::TestParameters parameters;
         emit GetResponseTestParameters(parameters);
 
         if (parameters.points.empty()) {
-            delete optional_test;
+            delete optionalTest;
             emit StopTest();
             return;
         }
@@ -668,27 +714,27 @@ void Program::OptionalTestStart(quint8 test_num)
 
         ValveInfo *valveInfo = m_registry->GetValveInfo();
 
-        bool normal_open = (valveInfo->safePosition != 0);
+        bool normalOpen = (valveInfo->safePosition != 0);
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));
 
         for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
             for (quint8 i = 0; i < 2; i++) {
-                qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
-                qreal dac_value = m_mpi.GetDAC()->GetRawFromValue(current);
-                task.value.push_back(dac_value);
+                qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
+                qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
+                task.value.push_back(dacValue);
 
                 for (auto it_s = parameters.steps.begin(); it_s < parameters.steps.end(); ++it_s) {
-                    current += (16 * *it_s / 100) * (i == 0 ? 1 : -1) * (normal_open ? -1 : 1);
-                    dac_value = m_mpi.GetDAC()->GetRawFromValue(current);
-                    task.value.push_back(dac_value);
+                    current += (16 * *it_s / 100) * (i == 0 ? 1 : -1) * (normalOpen ? -1 : 1);
+                    dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
+                    task.value.push_back(dacValue);
                 }
             }
         }
 
-        optional_test->SetTask(task);
+        optionalTest->SetTask(task);
 
-        connect(optional_test, &OptionTest::UpdateGraph, this, [&] {
+        connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
             UpdateCharts_optiontest(Charts::Response);
         });
 
@@ -697,12 +743,12 @@ void Program::OptionalTestStart(quint8 test_num)
         break;
     }
     case 1: {
-        optional_test = new OptionTest;
+        optionalTest = new OptionTest;
         OtherTestSettings::TestParameters parameters;
         emit GetResolutionTestParameters(parameters);
 
         if (parameters.points.empty()) {
-            delete optional_test;
+            delete optionalTest;
             emit StopTest();
             return;
         }
@@ -711,25 +757,25 @@ void Program::OptionalTestStart(quint8 test_num)
 
         ValveInfo *valveInfo = m_registry->GetValveInfo();
 
-        bool normal_open = (valveInfo->safePosition != 0);
+        bool normalOpen = (valveInfo->safePosition != 0);
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));
 
         for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
-            qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
+            qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
             qreal dac_value = m_mpi.GetDAC()->GetRawFromValue(current);
 
             for (auto it_s = parameters.steps.begin(); it_s < parameters.steps.end(); ++it_s) {
                 task.value.push_back(dac_value);
-                current = (16 * (normal_open ? 100 - *it - *it_s : *it + *it_s) / 100 + 4.0);
+                current = (16 * (normalOpen ? 100 - *it - *it_s : *it + *it_s) / 100 + 4.0);
                 qreal dac_value_step = m_mpi.GetDAC()->GetRawFromValue(current);
                 task.value.push_back(dac_value_step);
             }
         }
 
-        optional_test->SetTask(task);
+        optionalTest->SetTask(task);
 
-        connect(optional_test, &OptionTest::UpdateGraph, this, [&] {
+        connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
             UpdateCharts_optiontest(Charts::Resolution);
         });
 
@@ -739,12 +785,12 @@ void Program::OptionalTestStart(quint8 test_num)
     }
 
     case 2: {
-        optional_test = new StepTest;
+        optionalTest = new StepTest;
         StepTestSettings::TestParameters parameters;
         emit GetStepTestParameters(parameters);
 
         if (parameters.points.empty()) {
-            delete optional_test;
+            delete optionalTest;
             emit StopTest();
             return;
         }
@@ -752,12 +798,12 @@ void Program::OptionalTestStart(quint8 test_num)
         task.delay = parameters.delay;
         ValveInfo *valveInfo = m_registry->GetValveInfo();
 
-        qreal start_value = 4.0;
-        qreal end_value = 20.0;
+        qreal startValue = 4.0;
+        qreal endValue = 20.0;
 
         bool normal_open = (valveInfo->safePosition != 0);
 
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(start_value));
+        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
 
         for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
             qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
@@ -765,7 +811,7 @@ void Program::OptionalTestStart(quint8 test_num)
             task.value.push_back(dac_value);
         }
 
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(end_value));
+        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(endValue));
 
         for (auto it = parameters.points.rbegin(); it != parameters.points.rend(); ++it) {
             qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
@@ -773,20 +819,20 @@ void Program::OptionalTestStart(quint8 test_num)
             task.value.push_back(dac_value);
         }
 
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(start_value));
+        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
 
-        optional_test->SetTask(task);
-        dynamic_cast<StepTest *>(optional_test)->Set_T_value(parameters.test_value);
+        optionalTest->SetTask(task);
+        dynamic_cast<StepTest *>(optionalTest)->Set_T_value(parameters.test_value);
 
-        connect(optional_test, &OptionTest::UpdateGraph, this, [&] {
+        connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
             UpdateCharts_optiontest(Charts::Step);
         });
-        connect(dynamic_cast<StepTest *>(optional_test),
+        connect(dynamic_cast<StepTest *>(optionalTest),
                 &StepTest::GetPoints,
                 this,
                 &Program::GetPoints_steptest,
                 Qt::BlockingQueuedConnection);
-        connect(dynamic_cast<StepTest *>(optional_test),
+        connect(dynamic_cast<StepTest *>(optionalTest),
                 &StepTest::Results,
                 this,
                 &Program::StepTestResults);
@@ -799,29 +845,29 @@ void Program::OptionalTestStart(quint8 test_num)
         return;
     }
 
-    QThread *thread_test = new QThread(this);
-    optional_test->moveToThread(thread_test);
+    QThread *threadTest = new QThread(this);
+    optionalTest->moveToThread(threadTest);
 
     emit SetButtonInitEnabled(false);
 
-    connect(thread_test, &QThread::started, optional_test, &OptionTest::Process);
-    connect(optional_test, &OptionTest::EndTest, thread_test, &QThread::quit);
+    connect(threadTest, &QThread::started, optionalTest, &OptionTest::Process);
+    connect(optionalTest, &OptionTest::EndTest, threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest, optional_test, &OptionTest::Stop);
-    connect(thread_test, &QThread::finished, thread_test, &QThread::deleteLater);
-    connect(thread_test, &QThread::finished, optional_test, &OptionTest::deleteLater);
+    connect(this, &Program::StopTest, optionalTest, &OptionTest::Stop);
+    connect(threadTest, &QThread::finished, threadTest, &QThread::deleteLater);
+    connect(threadTest, &QThread::finished, optionalTest, &OptionTest::deleteLater);
 
-    connect(this, &Program::ReleaseBlock, optional_test, &MainTest::ReleaseBlock);
+    connect(this, &Program::ReleaseBlock, optionalTest, &MainTest::ReleaseBlock);
 
-    connect(optional_test, &OptionTest::EndTest, this, &Program::EndTest);
+    connect(optionalTest, &OptionTest::EndTest, this, &Program::EndTest);
 
-    connect(optional_test, &OptionTest::SetDAC, this, &Program::SetDAC);
-    connect(optional_test, &OptionTest::SetStartTime, this, &Program::SetTimeStart);
+    connect(optionalTest, &OptionTest::SetDAC, this, &Program::SetDAC);
+    connect(optionalTest, &OptionTest::SetStartTime, this, &Program::SetTimeStart);
 
     m_testing = true;
     emit EnableSetTask(false);
     emit ClearPoints(Charts::CyclicSolenoid);
-    thread_test->start();
+    threadTest->start();
 }
 
 void Program::TerminateTest()

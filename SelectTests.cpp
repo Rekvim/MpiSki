@@ -3,13 +3,20 @@
 
 #include <QGraphicsDropShadowEffect>
 
+QList<QCheckBox*> SelectTests::allCheckBoxes() const {
+    return {
+        ui->check_box_pressure_1, ui->check_box_pressure_2, ui->check_box_pressure_3,
+        ui->check_box_moving, ui->check_box_input_4_20_mA, ui->check_box_output_4_20_mA, ui->check_box_usb,
+        ui->check_box_imit_switch_0_3, ui->check_box_imit_switch_3_0,
+        ui->check_box_do_1, ui->check_box_do_2, ui->check_box_do_3, ui->check_box_do_4
+    };
+}
+
 SelectTests::SelectTests(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::SelectTests)
 {
     ui->setupUi(this);
-
-
 
     ui->entry_testing->setEnabled(false);
 
@@ -48,20 +55,8 @@ SelectTests::SelectTests(QWidget *parent)
         cb->setChecked(cb->isChecked());
     }
 
-
-    connect(ui->check_box_pressure_1, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_pressure_2, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_pressure_3, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_moving, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_input_4_20_mA, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_output_4_20_mA, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_usb, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_imit_switch_0_3, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_imit_switch_3_0, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_do_1, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_do_2, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_do_3, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
-    connect(ui->check_box_do_4, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
+    for (QCheckBox* cb : allCheckBoxes())
+        connect(cb, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
 
     connect(ui->button_CTV, &QPushButton::clicked, this, &SelectTests::ButtonClick_CTV);
     connect(ui->button_BTSV, &QPushButton::clicked, this, &SelectTests::ButtonClick_BTSV);
@@ -82,69 +77,141 @@ SelectTests::BlockCTS SelectTests::getCTS() const
     return m_blockCts;
 }
 
+void SelectTests::resetCheckBoxes() {
+    for (QCheckBox* cb : allCheckBoxes()) {
+        QSignalBlocker blocker(cb);
+        cb->setChecked(false);
+    }
+}
+
+void SelectTests::setPattern(const PatternSetup& setup) {
+    for (QCheckBox* cb : allCheckBoxes()) {
+        QSignalBlocker blocker(cb);
+        cb->setChecked(false);
+    }
+    for (QCheckBox* cb : setup.checksOn) {
+        QSignalBlocker blocker(cb);
+        cb->setChecked(true);
+    }
+    for (QCheckBox* cb : setup.checksOff) {
+        QSignalBlocker blocker(cb);
+        cb->setChecked(false);
+    }
+    onCheckBoxChanged();
+}
+
 bool SelectTests::isValidPattern() {
     // Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический
-    if (m_blockCts.usb &&
-        m_blockCts.imit_switch_0_3 &&
-        m_blockCts.imit_switch_3_0 &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
-        )
-    {
-        return true;
-    }
+    if (m_blockCts.usb && m_blockCts.imit_switch_0_3 && m_blockCts.imit_switch_3_0 &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)) return true;
     // Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический
-    else if (m_blockCts.usb &&
-             m_blockCts.input_4_20_mA &&
-             m_blockCts.output_4_20_mA &&
-             m_blockCts.imit_switch_0_3 &&
-             m_blockCts.imit_switch_3_0 &&
-             (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
-             )
-    {
-        return true;
-    }
+    if (m_blockCts.usb && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA &&
+        m_blockCts.imit_switch_0_3 && m_blockCts.imit_switch_3_0 &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)) return true;
     // Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-    else if (m_blockCts.usb &&
-             m_blockCts.pressure_1 &&
-             m_blockCts.pressure_2 &&
-             m_blockCts.pressure_3 &&
-             m_blockCts.moving &&
-             m_blockCts.input_4_20_mA &&
-             m_blockCts.output_4_20_mA &&
-             m_blockCts.imit_switch_0_3 &&
-             m_blockCts.imit_switch_3_0 &&
-             (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
-             )
-    {
-        return true;
-    }
-    // Базовых; Регулирующей Арматуры; Тесты: полного ходад, циклический
-    else if (m_blockCts.usb &&
-             m_blockCts.input_4_20_mA &&
-             m_blockCts.output_4_20_mA
-             )
-    {
-        return true;
-    }
+    if (m_blockCts.usb && m_blockCts.pressure_1 && m_blockCts.pressure_2 && m_blockCts.pressure_3 &&
+        m_blockCts.moving && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA &&
+        m_blockCts.imit_switch_0_3 && m_blockCts.imit_switch_3_0 &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)) return true;
+    // Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический
+    if (m_blockCts.usb && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA) return true;
     // Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-    else if (m_blockCts.usb &&
-             m_blockCts.pressure_1 &&
-             m_blockCts.pressure_2 &&
-             m_blockCts.pressure_3 &&
-             m_blockCts.moving &&
-             m_blockCts.input_4_20_mA &&
-             m_blockCts.output_4_20_mA
-             )
-    {
-        return true;
-    }
+    if (m_blockCts.usb && m_blockCts.pressure_1 && m_blockCts.pressure_2 && m_blockCts.pressure_3 &&
+        m_blockCts.moving && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA) return true;
     return false;
 }
 
+SelectTests::PatternType SelectTests::detectCurrentPattern() const
+{
+    // Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
+    if (ui->check_box_usb->isChecked() &&
+        ui->check_box_pressure_1->isChecked() &&
+        ui->check_box_pressure_2->isChecked() &&
+        ui->check_box_pressure_3->isChecked() &&
+        ui->check_box_moving->isChecked() &&
+        ui->check_box_input_4_20_mA->isChecked() &&
+        ui->check_box_output_4_20_mA->isChecked() &&
+        ui->check_box_imit_switch_0_3->isChecked() &&
+        ui->check_box_imit_switch_3_0->isChecked() &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
+        )
+    {
+        return Pattern_CTSV;
+    }
+
+    // Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
+    if (ui->check_box_usb->isChecked() &&
+        ui->check_box_pressure_1->isChecked() &&
+        ui->check_box_pressure_2->isChecked() &&
+        ui->check_box_pressure_3->isChecked() &&
+        ui->check_box_moving->isChecked() &&
+        ui->check_box_input_4_20_mA->isChecked() &&
+        ui->check_box_output_4_20_mA->isChecked() &&
+        !ui->check_box_imit_switch_0_3->isChecked() &&
+        !ui->check_box_imit_switch_3_0->isChecked() &&
+        !ui->check_box_do_1->isChecked() &&
+        !ui->check_box_do_2->isChecked() &&
+        !ui->check_box_do_3->isChecked() &&
+        !ui->check_box_do_4->isChecked())
+    {
+        return Pattern_CTCV;
+    }
+
+    // Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический
+    if (ui->check_box_usb->isChecked() &&
+        ui->check_box_input_4_20_mA->isChecked() &&
+        ui->check_box_output_4_20_mA->isChecked() &&
+        ui->check_box_imit_switch_0_3->isChecked() &&
+        ui->check_box_imit_switch_3_0->isChecked() &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4) &&
+        !ui->check_box_pressure_1->isChecked() &&
+        !ui->check_box_pressure_2->isChecked() &&
+        !ui->check_box_pressure_3->isChecked() &&
+        !ui->check_box_moving->isChecked() &&
+        !ui->check_box_do_2->isChecked() &&
+        !ui->check_box_do_3->isChecked() &&
+        !ui->check_box_do_4->isChecked())
+    {
+        return Pattern_BTSV;
+    }
+
+    // Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический
+    if (ui->check_box_usb->isChecked() &&
+        ui->check_box_moving->isChecked() &&
+        ui->check_box_imit_switch_3_0->isChecked() &&
+        ui->check_box_imit_switch_0_3->isChecked() &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4) &&
+        !ui->check_box_pressure_1->isChecked() &&
+        !ui->check_box_pressure_2->isChecked() &&
+        !ui->check_box_pressure_3->isChecked() &&
+        !ui->check_box_input_4_20_mA->isChecked() &&
+        !ui->check_box_output_4_20_mA->isChecked()
+        )
+    {
+        return Pattern_CTV;
+    }
+
+    // Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический
+    if (ui->check_box_usb->isChecked() &&
+        ui->check_box_input_4_20_mA->isChecked() &&
+        ui->check_box_output_4_20_mA->isChecked() &&
+        !ui->check_box_pressure_1->isChecked() &&
+        !ui->check_box_pressure_2->isChecked() &&
+        !ui->check_box_pressure_3->isChecked() &&
+        !ui->check_box_moving->isChecked() &&
+        !ui->check_box_imit_switch_0_3->isChecked() &&
+        !ui->check_box_imit_switch_3_0->isChecked() &&
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
+        )
+    {
+        return Pattern_BTCV;
+    }
+
+    return Pattern_None;
+}
 
 void SelectTests::onCheckBoxChanged()
 {
-    // Обновляем значения в block_cts на основе текущих состояний чекбоксов
     m_blockCts.pressure_1 = ui->check_box_pressure_1->isChecked();
     m_blockCts.pressure_2 = ui->check_box_pressure_2->isChecked();
     m_blockCts.pressure_3 = ui->check_box_pressure_3->isChecked();
@@ -159,88 +226,80 @@ void SelectTests::onCheckBoxChanged()
     m_blockCts.do_3 = ui->check_box_do_3->isChecked();
     m_blockCts.do_4 = ui->check_box_do_4->isChecked();
 
+    m_currentPattern = detectCurrentPattern();
 
     if (isValidPattern()) {
         ui->entry_testing->setEnabled(true);
     } else {
         ui->entry_testing->setEnabled(false);
     }
-}
 
-void SelectTests::resetCheckBoxes() {
-    // Отключаем все чекбоксы
-    ui->check_box_pressure_1->setChecked(false);
-    ui->check_box_pressure_2->setChecked(false);
-    ui->check_box_pressure_3->setChecked(false);
-    ui->check_box_moving->setChecked(false);
-    ui->check_box_input_4_20_mA->setChecked(false);
-    ui->check_box_output_4_20_mA->setChecked(false);
-    ui->check_box_usb->setChecked(false);
-    ui->check_box_imit_switch_0_3->setChecked(false);
-    ui->check_box_imit_switch_3_0->setChecked(false);
-    ui->check_box_do_1->setChecked(false);
-    ui->check_box_do_2->setChecked(false);
-    ui->check_box_do_3->setChecked(false);
-    ui->check_box_do_4->setChecked(false);
+    if (!m_suppressDebugOutput) {
+        switch (m_currentPattern) {
+        case Pattern_CTV:
+            qDebug() << "Текущий паттерн: Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический";
+            break;
+        case Pattern_BTSV:
+            qDebug() << "Текущий паттерн: Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический";
+            break;
+        case Pattern_CTSV:
+            qDebug() << "Текущий паттерн: Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический";
+            break;
+        case Pattern_BTCV:
+            qDebug() << "Текущий паттерн: Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический";
+            break;
+        case Pattern_CTCV:
+            qDebug() << "Текущий паттерн: Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический";
+            break;
+        default:
+            qDebug() << "Текущий паттерн: (кастомная/неизвестная комбинация)";
+            break;
+        }
+    }
 }
 
 void SelectTests::ButtonClick_CTV() {
-    resetCheckBoxes();
-    ui->check_box_usb->setChecked(true);
-    ui->check_box_moving->setChecked(true);
-    ui->check_box_imit_switch_3_0->setChecked(true);
-    ui->check_box_imit_switch_0_3->setChecked(true);
-    ui->check_box_do_1->setChecked(true);
-    onCheckBoxChanged();
+    setPattern({
+        {ui->check_box_usb, ui->check_box_moving, ui->check_box_imit_switch_3_0, ui->check_box_imit_switch_0_3, ui->check_box_do_1},
+        {}
+    });
 }
 
 void SelectTests::ButtonClick_BTSV() {
-    resetCheckBoxes();
-    ui->check_box_usb->setChecked(true);
-    ui->check_box_output_4_20_mA->setChecked(true);
-    ui->check_box_input_4_20_mA->setChecked(true);
-    ui->check_box_imit_switch_0_3->setChecked(true);
-    ui->check_box_imit_switch_3_0->setChecked(true);
-    ui->check_box_do_1->setChecked(true);
-    onCheckBoxChanged();
+    setPattern({
+        {ui->check_box_usb, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA,
+         ui->check_box_imit_switch_0_3, ui->check_box_imit_switch_3_0, ui->check_box_do_1},
+        {}
+    });
 }
 
 void SelectTests::ButtonClick_CTSV() {
-    resetCheckBoxes();
-    ui->check_box_usb->setChecked(true);
-    ui->check_box_pressure_1->setChecked(true);
-    ui->check_box_pressure_2->setChecked(true);
-    ui->check_box_pressure_3->setChecked(true);
-    ui->check_box_moving->setChecked(true);
-    ui->check_box_output_4_20_mA->setChecked(true);
-    ui->check_box_input_4_20_mA->setChecked(true);
-    ui->check_box_imit_switch_0_3->setChecked(true);
-    ui->check_box_imit_switch_3_0->setChecked(true);
-    ui->check_box_do_1->setChecked(true);
-    onCheckBoxChanged();
+    setPattern({
+        {ui->check_box_usb, ui->check_box_pressure_1, ui->check_box_pressure_2, ui->check_box_pressure_3,
+         ui->check_box_moving, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA,
+         ui->check_box_imit_switch_0_3, ui->check_box_imit_switch_3_0, ui->check_box_do_1},
+        {}
+    });
 }
 
 void SelectTests::ButtonClick_BTCV() {
-    resetCheckBoxes();
-    ui->check_box_usb->setChecked(true);
-    ui->check_box_output_4_20_mA->setChecked(true);
-    ui->check_box_input_4_20_mA->setChecked(true);
-    onCheckBoxChanged();
+    setPattern({
+        {ui->check_box_usb, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA, ui->check_box_do_1},
+        {}
+    });
 }
 
 void SelectTests::ButtonClick_CTCV() {
-    resetCheckBoxes();
-    ui->check_box_usb->setChecked(true);
-    ui->check_box_pressure_1->setChecked(true);
-    ui->check_box_pressure_2->setChecked(true);
-    ui->check_box_pressure_3->setChecked(true);
-    ui->check_box_moving->setChecked(true);
-    ui->check_box_output_4_20_mA->setChecked(true);
-    ui->check_box_input_4_20_mA->setChecked(true);
-    onCheckBoxChanged();
+    setPattern({
+        {ui->check_box_usb, ui->check_box_pressure_1, ui->check_box_pressure_2, ui->check_box_pressure_3,
+         ui->check_box_moving, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA},
+        {}
+    });
 }
 
-
+SelectTests::PatternType SelectTests::currentPattern() const {
+    return m_currentPattern;
+}
 void SelectTests::ButtonClick() {
     accept();
 }

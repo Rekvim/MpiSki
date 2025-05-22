@@ -12,13 +12,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_testing = false;
 
+
+
     m_mainTestSettings = new MainTestSettings(this);
     m_stepTestSettings = new StepTestSettings(this);
     m_responseTestSettings = new OtherTestSettings(this);
     m_resolutionTestSettings = new OtherTestSettings(this);
     m_cyclicTestSettings = new CyclicTestSettings(this);
 
-    m_fileSaver = new FileSaver(this);
+    m_reportSaver = new ReportSaver(this);
 
     ui->groupBox_DO->setVisible(false);
 
@@ -77,21 +79,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this, &MainWindow::SetDO, m_program, &Program::button_DO);
 
-    connect(ui->pushButton_DO0, &QPushButton::clicked, this, [&](bool checked) {
-        emit SetDO(0, checked);
-    });
-
-    connect(ui->pushButton_DO1, &QPushButton::clicked, this, [&](bool checked) {
-        emit SetDO(1, checked);
-    });
-
-    connect(ui->pushButton_DO2, &QPushButton::clicked, this, [&](bool checked) {
-        emit SetDO(2, checked);
-    });
-
-    connect(ui->pushButton_DO3, &QPushButton::clicked, this, [&](bool checked) {
-        emit SetDO(3, checked);
-    });
+    for (int i = 0; i < 4; ++i) {
+        auto btn = findChild<QPushButton*>(QString("pushButton_DO%1").arg(i));
+        if (!btn) continue;
+        connect(btn, &QPushButton::clicked, this, [this, i](bool checked){
+            emit SetDO(i, checked);
+        });
+    }
 
     connect(ui->pushButton_main_save, &QPushButton::clicked, this, [&] {
         if (ui->tabWidget_maintest->currentWidget() == ui->tab_task) {
@@ -122,7 +116,7 @@ MainWindow::MainWindow(QWidget *parent)
         &MainWindow::StartCyclicSolenoidTest,
         m_program,
         &Program::CyclicSolenoidTestStart
-        );
+    );
 
     connect(ui->pushButton_stroke_save, &QPushButton::clicked, this, [&] {
         SaveChart(Charts::Stroke);
@@ -138,6 +132,10 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
+    connect(ui->pushButton_cyclic_solenoid_save, &QPushButton::clicked, this, [&](){
+        SaveChart(Charts::CyclicSolenoid);
+    });
+
     connect(ui->pushButton_open, &QPushButton::clicked, m_program, &Program::button_open);
     connect(ui->pushButton_report, &QPushButton::clicked, m_program, &Program::button_report);
     connect(ui->pushButton_pixmap1, &QPushButton::clicked, m_program, &Program::button_pixmap1);
@@ -146,13 +144,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this, &MainWindow::StartMainTest, m_program, &Program::MainTestStart);
     connect(this, &MainWindow::StartStrokeTest, m_program, &Program::StrokeTestStart);
-    connect(this, &MainWindow::StartOptionalTest, m_program, &Program::OptionalTestStart);
+    connect(this, &MainWindow::StartOptionalTest, m_program, &Program::StartOptionalTest);
     connect(this, &MainWindow::StopTest, m_program, &Program::TerminateTest);
 
     connect(m_program, &Program::StopTest, this, &MainWindow::EndTest);
 
     connect(m_program, &Program::SetText, this, &MainWindow::SetText);
     connect(m_program, &Program::SetTextColor, this, &MainWindow::SetTextColor);
+    connect(m_program, &Program::SetSolenoidResults, this, &MainWindow::SetSolenoidResults);
+
 
     connect(m_program, &Program::SetGroupDOVisible, this, [&](bool visible) {
         ui->groupBox_DO->setVisible(visible);
@@ -164,15 +164,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::SetDAC, m_program, &Program::SetDAC_real);
 
     connect(ui->doubleSpinBox_task,
-            qOverload<double>(&QDoubleSpinBox::valueChanged),
-            this,
-            [&](double value) {
-                if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
-                    if (ui->verticalSlider_task->isEnabled())
-                        emit SetDAC(value);
-                    ui->verticalSlider_task->setValue(qRound(value * 1000));
-                }
-            });
+        qOverload<double>(&QDoubleSpinBox::valueChanged),
+        this,
+        [&](double value) {
+            if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
+                if (ui->verticalSlider_task->isEnabled())
+                    emit SetDAC(value);
+                ui->verticalSlider_task->setValue(qRound(value * 1000));
+            }
+        }
+    );
 
     connect(ui->verticalSlider_task, &QSlider::valueChanged, this, [&](int value) {
         if (qRound(ui->doubleSpinBox_task->value() * 1000) != value) {
@@ -224,9 +225,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_program, &Program::Question, this, &MainWindow::Question, Qt::BlockingQueuedConnection);
 
-    connect(m_fileSaver, &FileSaver::Question, this, &MainWindow::Question, Qt::DirectConnection);
-    connect(m_fileSaver,
-            &FileSaver::GetDirectory,
+    connect(m_reportSaver, &ReportSaver::Question, this, &MainWindow::Question, Qt::DirectConnection);
+    connect(m_reportSaver,
+            &ReportSaver::GetDirectory,
             this,
             &MainWindow::GetDirectory,
             Qt::DirectConnection);
@@ -244,12 +245,12 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(ui->pushButton_report, &QPushButton::clicked, this, [&] {
-        ui->pushButton_open->setEnabled(m_fileSaver->SaveReport(m_report));
+        ui->pushButton_open->setEnabled(m_reportSaver->SaveReport(m_report));
     });
 
     connect(ui->pushButton_open, &QPushButton::clicked, this, [&] {
         QDesktopServices::openUrl(
-            QUrl::fromLocalFile(m_fileSaver->Directory().filePath("report.xlsx")));
+            QUrl::fromLocalFile(m_reportSaver->Directory().filePath("report.xlsx")));
     });
 
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged, this, [&](int state) {
@@ -264,18 +265,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_step_results->resizeColumnsToContents();
 
     connect(m_program, &Program::SetSolenoidResults, this, &MainWindow::SetSolenoidResults);
-}
-
-void MainWindow::ButtonStartCyclicSolenoid() {
-    if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Завершить циклический тест?")
-            == QMessageBox::Yes) {
-            emit StopTest();
-        }
-    } else {
-        emit StartCyclicSolenoidTest();
-        StartTest();
-    }
 }
 
 MainWindow::~MainWindow()
@@ -301,16 +290,14 @@ void MainWindow::SetRegistry(Registry *registry)
     ui->lineEdit_department->setText(objectInfo->department);
     ui->lineEdit_FIO->setText(objectInfo->FIO);
 
-    qDebug() << valveInfo->dinamicError;
-
     ui->lineEdit_positionNumber->setText(valveInfo->positionNumber);
     ui->lineEdit_manufacturer->setText(valveInfo->manufacturer);
-    ui->lineEdit_serial->setText(valveInfo->serial);
+    ui->lineEdit_serialNumber->setText(valveInfo->serialNumber);
     ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
-    ui->lineEdit_positioner->setText(valveInfo->positioner);
+    ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
     ui->lineEdit_dinamic_recomend->setText(QString::number(valveInfo->dinamicError, 'f', 2));
-    ui->lineEdit_stroke_recomend->setText(valveInfo->valveStroke);
-    ui->lineEdit_range_recomend->setText(valveInfo->range);
+    ui->lineEdit_stroke_recomend->setText(valveInfo->strokValve);
+    ui->lineEdit_range_recomend->setText(valveInfo->driveRange);
     ui->lineEdit_valveModel->setText(valveInfo->valveModel);
 
     if (valveInfo->safePosition != 0) {
@@ -324,7 +311,7 @@ void MainWindow::SetRegistry(Registry *registry)
     m_program->SetRegistry(registry);
     m_programthread->start();
 
-    m_fileSaver->SetRegistry(registry);
+    m_reportSaver->SetRegistry(registry);
 }
 
 void MainWindow::SetText(TextObjects object, const QString &text)
@@ -368,8 +355,8 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     for (int i = 0; i < results.size(); ++i) {
 
         QString time = results.at(i).T_value == 0
-                           ? "Ошибка"
-                           : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
+            ? "Ошибка"
+            : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
 
         ui->tableWidget_step_results->setItem(i, 0, new QTableWidgetItem(time));
         QString overshoot = QString("%1%").arg(results.at(i).overshoot, 4, 'f', 2);
@@ -381,17 +368,16 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     ui->tableWidget_step_results->resizeColumnsToContents();
 }
 
-void MainWindow::SetSolenoidResults(qint64 forwardSec, qint64 backwardSec, quint16 cycles, double rangePercent, double totalTimeSec)
+void MainWindow::SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec)
 {
-    ui->lineEdit_time_forward->setText(QString::number(forwardSec / 1000.0, 'f', 2)); // сек
-    ui->lineEdit_time_backward->setText(QString::number(backwardSec / 1000.0, 'f', 2)); // сек
-    ui->lineEdit_range_real->setText(QString::number(rangePercent, 'f', 1)); // %
-    ui->lineEdit_range_pressure->setText(QString::number(totalTimeSec, 'f', 1)); // сек
+    QString forwardText = QTime(0, 0).addMSecs(forwardSec).toString("mm:ss.zzz");
+    QString backwardText = QTime(0, 0).addMSecs(backwardSec).toString("mm:ss.zzz");
+    ui->lineEdit_forwardSec->setText(QString::number(forwardSec, 'f', 2));
+    ui->lineEdit_backwardSec->setText(QString::number(backwardSec, 'f', 2));
+    ui->lineEdit_rangePercent->setText(QString::number(rangePercent, 'f', 1));
+    ui->lineEdit_totalTimeSec->setText(QString::number(totalTimeSec, 'f', 1));
+    ui->lineEdit_cycles->setText(QString::number(cycles));
 
-    // ui->lineEdit_time_forward->setText("1.23");  // секунды
-    // ui->lineEdit_time_backward->setText("2.34");
-    // ui->lineEdit_range_real->setText("50.0");  // %
-    // ui->lineEdit_range_pressure->setText("10.0");  // сек
 }
 
 void MainWindow::SetBlockCTS(const SelectTests::BlockCTS &blockCTS)
@@ -403,16 +389,15 @@ void MainWindow::SetBlockCTS(const SelectTests::BlockCTS &blockCTS)
 void MainWindow::SetSensorsNumber(quint8 num)
 {
     num = 1;
-    bool no_sensors = (num == 0);
+    bool noSensors = (num == 0);
 
-    // По умолчанию все вкладки включены
     std::array<bool, 6> tabState = {true, true, true, true, true, true};
 
-    if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) { // new
+    if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) {
         ui->groupBox_DO->setVisible(true);
     }
 
-    if (m_blockCTS.moving) { // new
+    if (m_blockCTS.moving) {
         // ui->groupBox_linear_motion_sensor->setVisible(true);
 
         ui->label_start_value->setVisible(true);
@@ -503,10 +488,10 @@ void MainWindow::SetSensorsNumber(quint8 num)
     for (size_t i = 0; i < tabState.size(); ++i)
         ui->tabWidget->setTabEnabled(i, tabState[i]);
 
-    ui->verticalSlider_task->setEnabled(!no_sensors);
-    ui->doubleSpinBox_task->setEnabled(!no_sensors);
-    ui->pushButton_stroke_start->setEnabled(!no_sensors);
-    ui->pushButton_tests_start->setEnabled(!no_sensors);
+    ui->verticalSlider_task->setEnabled(!noSensors);
+    ui->doubleSpinBox_task->setEnabled(!noSensors);
+    ui->pushButton_stroke_start->setEnabled(!noSensors);
+    ui->pushButton_tests_start->setEnabled(!noSensors);
     // ui->pushButton_main_start->setEnabled(num > 1);
 
     if (num > 0) {
@@ -669,7 +654,7 @@ void MainWindow::EndTest()
 void MainWindow::ButtonStartMain()
 {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест")
+        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
             emit StopTest();
         }
@@ -682,7 +667,7 @@ void MainWindow::ButtonStartMain()
 void MainWindow::ButtonStartStroke()
 {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест")
+        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
             emit StopTest();
         }
@@ -695,13 +680,32 @@ void MainWindow::ButtonStartStroke()
 void MainWindow::ButtonStartOptional()
 {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест")
+        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
             emit StopTest();
         }
     } else {
         emit StartOptionalTest(ui->tabWidget_tests->currentIndex());
         StartTest();
+    }
+}
+
+void MainWindow::ButtonStartCyclicSolenoid() {
+    if (m_testing) {
+        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
+            == QMessageBox::Yes) {
+            emit StopTest();
+        }
+    } else {
+        if (m_cyclicTestSettings->exec() != QDialog::Accepted)
+            return;
+
+        auto params = m_cyclicTestSettings->getParameters();
+        qDebug() << "[CyclicTest] sequence=" << params.sequence
+                 << " delay_sec=" << params.delay_sec
+                 << " num_cycles=" << params.num_cycles;
+        StartTest();
+        emit StartCyclicSolenoidTest(params);
     }
 }
 
@@ -735,25 +739,7 @@ void MainWindow::InitCharts()
     bool rotate = (valveInfo->strokeMovement != 0);
 
     m_charts[Charts::Task] = ui->Chart_task;
-    m_charts[Charts::Friction] = ui->Chart_friction;
-    m_charts[Charts::Pressure] = ui->Chart_pressure;
-    m_charts[Charts::Resolution] = ui->Chart_resolution;
-    m_charts[Charts::Response] = ui->Chart_response;
-    m_charts[Charts::Stroke] = ui->Chart_stroke;
-    m_charts[Charts::Step] = ui->Chart_step;
-    m_charts[Charts::Trend] = ui->Chart_trend;
-    m_charts[Charts::CyclicSolenoid] = ui->Chart_cyclic_solenoid; // new
-
-
-    m_charts[Charts::Task]->setname("Task");
-    m_charts[Charts::Friction]->setname("Friction");
-    m_charts[Charts::Pressure]->setname("Pressure");
-    m_charts[Charts::Resolution]->setname("Resolution");
-    m_charts[Charts::Response]->setname("Response");
-    m_charts[Charts::Stroke]->setname("Stroke");
-    m_charts[Charts::Step]->setname("Step");
-    m_charts[Charts::CyclicSolenoid]->setname("Cyclic_solenoid"); // new
-
+    m_charts[Charts::Task]->setName("Task");
     m_charts[Charts::Task]->useTimeaxis(false);
     m_charts[Charts::Task]->addAxis("%.2f bar");
 
@@ -763,57 +749,75 @@ void MainWindow::InitCharts()
         m_charts[Charts::Task]->addAxis("%.2f deg");
 
     m_charts[Charts::Task]->addSeries(1, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Task]->addSeries(1,
-                                          "Датчик линейных перемещений",
-                                          QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Task]->addSeries(1,"Датчик линейных перемещений",QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Task]->addSeries(0, "Датчик давления 1", QColor::fromRgb(0, 0, 255));
     m_charts[Charts::Task]->addSeries(0, "Датчик давления 2", QColor::fromRgb(0, 200, 0));
     m_charts[Charts::Task]->addSeries(0, "Датчик давления 3", QColor::fromRgb(150, 0, 200));
 
+
+    m_charts[Charts::Friction] = ui->Chart_friction;
+    m_charts[Charts::Friction]->setName("Friction");
+    m_charts[Charts::Friction]->addAxis("%.2f H");
+    m_charts[Charts::Friction]->addSeries(0, "Трение от перемещения", QColor::fromRgb(255, 0, 0));
+    if (!rotate)
+        m_charts[Charts::Friction]->setLabelXformat("%.2f mm");
+    else
+        m_charts[Charts::Friction]->setLabelXformat("%.2f deg");
+
+
+    m_charts[Charts::Pressure] = ui->Chart_pressure;
+    m_charts[Charts::Pressure]->setName("Pressure");
     m_charts[Charts::Pressure]->useTimeaxis(false);
     m_charts[Charts::Pressure]->setLabelXformat("%.2f bar");
+
     if (!rotate)
         m_charts[Charts::Pressure]->addAxis("%.2f mm");
     else
         m_charts[Charts::Pressure]->addAxis("%.2f deg");
 
-    m_charts[Charts::Pressure]->addSeries(0,
-                                              "Перемещение от давления",
-                                              QColor::fromRgb(255, 0, 0));
-
+    m_charts[Charts::Pressure]->addSeries(0, "Перемещение от давления", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Pressure]->addSeries(0, "Линейная регрессия", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Pressure]->visible(1, false);
 
+    m_charts[Charts::Resolution] = ui->Chart_resolution;
+    m_charts[Charts::Resolution]->setName("Resolution");
+    m_charts[Charts::Resolution]->useTimeaxis(true);
+    m_charts[Charts::Resolution]->addAxis("%.2f%%");
+    m_charts[Charts::Resolution]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
+    m_charts[Charts::Resolution]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
+
+    m_charts[Charts::Response] = ui->Chart_response;
+    m_charts[Charts::Response]->setName("Response");
+    m_charts[Charts::Response]->useTimeaxis(true);
+    m_charts[Charts::Response]->addAxis("%.2f%%");
+    m_charts[Charts::Response]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
+    m_charts[Charts::Response]->addSeries(0,
+                                          "Датчик линейных перемещений",
+                                          QColor::fromRgb(255, 0, 0));
+
+    m_charts[Charts::Stroke] = ui->Chart_stroke;
+    m_charts[Charts::Stroke]->setName("Stroke");
     m_charts[Charts::Stroke]->useTimeaxis(true);
     m_charts[Charts::Stroke]->addAxis("%.2f%%");
     m_charts[Charts::Stroke]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Stroke]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
 
+    m_charts[Charts::Step] = ui->Chart_step;
+    m_charts[Charts::Step]->setName("Step");
     m_charts[Charts::Step]->useTimeaxis(true);
     m_charts[Charts::Step]->addAxis("%.2f%%");
     m_charts[Charts::Step]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Step]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
 
-    m_charts[Charts::Response]->useTimeaxis(true);
-    m_charts[Charts::Response]->addAxis("%.2f%%");
-    m_charts[Charts::Response]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Response]->addSeries(0,
-                                         "Датчик линейных перемещений",
-                                         QColor::fromRgb(255, 0, 0));
-
-    m_charts[Charts::Resolution]->useTimeaxis(true);
-    m_charts[Charts::Resolution]->addAxis("%.2f%%");
-    m_charts[Charts::Resolution]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Resolution]->addSeries(0,
-                                           "Датчик линейных перемещений",
-                                           QColor::fromRgb(255, 0, 0));
-
+    m_charts[Charts::Trend] = ui->Chart_trend;
     m_charts[Charts::Trend]->useTimeaxis(true);
     m_charts[Charts::Trend]->addAxis("%.2f%%");
     m_charts[Charts::Trend]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Trend]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Trend]->setMaxRange(60000);
 
+    m_charts[Charts::CyclicSolenoid] = ui->Chart_cyclic_solenoid;
+    m_charts[Charts::CyclicSolenoid]->setName("Cyclic_solenoid");
     m_charts[Charts::CyclicSolenoid]->useTimeaxis(true); // new
     m_charts[Charts::CyclicSolenoid]->addAxis("%.2f%%");
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
@@ -856,15 +860,6 @@ void MainWindow::InitCharts()
             &MainWindow::GetPoints,
             Qt::BlockingQueuedConnection);
 
-    m_charts[Charts::Friction]->addAxis("%.2f H");
-    m_charts[Charts::Friction]->addSeries(0,
-                                              "Трение от перемещения",
-                                              QColor::fromRgb(255, 0, 0));
-    if (!rotate)
-        m_charts[Charts::Friction]->setLabelXformat("%.2f mm");
-    else
-        m_charts[Charts::Friction]->setLabelXformat("%.2f deg");
-
     ui->checkBox_task->setCheckState(Qt::Unchecked);
     ui->checkBox_line->setCheckState(Qt::Unchecked);
     ui->checkBox_pressure1->setCheckState(Qt::Unchecked);
@@ -880,7 +875,7 @@ void MainWindow::InitCharts()
 
 void MainWindow::SaveChart(Charts chart)
 {
-    m_fileSaver->SaveImage(m_charts[chart]);
+    m_reportSaver->SaveImage(m_charts[chart]);
 
     QPixmap pix = m_charts[chart]->grab();
 
@@ -914,7 +909,7 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
 {
     QString imgPath = QFileDialog::getOpenFileName(this,
                                                     "Выберите файл",
-                                                    m_fileSaver->Directory().absolutePath(),
+                                                    m_reportSaver->Directory().absolutePath(),
                                                     "Изображения (*.jpg *.png *.bmp)");
 
     if (!imgPath.isEmpty()) {
@@ -931,11 +926,11 @@ void MainWindow::InitReport()
     m_report.data.push_back({7, 4, ui->lineEdit_department});
 
     m_report.data.push_back({5, 13, ui->lineEdit_positionNumber});
-    m_report.data.push_back({6, 13, ui->lineEdit_serial});
+    m_report.data.push_back({6, 13, ui->lineEdit_serialNumber});
     m_report.data.push_back({7, 13, ui->lineEdit_valveModel});
     m_report.data.push_back({8, 13, ui->lineEdit_manufacturer});
     m_report.data.push_back({9, 13, ui->lineEdit_DNPN});
-    m_report.data.push_back({10, 13, ui->lineEdit_positioner});
+    m_report.data.push_back({10, 13, ui->lineEdit_positionerModel});
     m_report.data.push_back({11, 13, ui->lineEdit_pressure});
     m_report.data.push_back({12, 13, ui->lineEdit_safePosition});
     m_report.data.push_back({14, 13, ui->lineEdit_strokeMovement});
@@ -960,11 +955,11 @@ void MainWindow::InitReport()
     m_report.data.push_back({66, 12, ui->lineEdit_date});
     m_report.data.push_back({161, 12, ui->lineEdit_date});
 
-    m_report.data.push_back({10, 5, ui->lineEdit_time_forward});
-    m_report.data.push_back({10, 5, ui->lineEdit_time_backward});
+    m_report.data.push_back({10, 5, ui->lineEdit_forwardSec});
+    m_report.data.push_back({10, 5, ui->lineEdit_backwardSec});
     m_report.data.push_back({10, 5, ui->lineEdit_range_real});
-    m_report.data.push_back({10, 5, ui->lineEdit_range_pressure});
-    m_report.data.push_back({10, 5, ui->lineEdit_date});
+    m_report.data.push_back({10, 5, ui->lineEdit_rangePercent});
+    m_report.data.push_back({10, 5, ui->lineEdit_totalTimeSec});
 
     m_report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     m_report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});

@@ -1,13 +1,14 @@
 #include "ValidatorFactory.h"
+#include "RegexPatterns.h"
 
 QValidator* ValidatorFactory::create(Type type, QObject* parent)
 {
     static const QHash<Type, QRegularExpression> patterns = {
-        { Type::Digits,         QRegularExpression(QStringLiteral("^[0-9]*$")) },
-        { Type::LettersRusLat,  QRegularExpression(QStringLiteral("^[A-Za-zА-Яа-яЁё]*$")) },
-        { Type::NoSpecialChars, QRegularExpression(QStringLiteral("^[^@!^\\/\\?\\*\\:\\;\\{\\}\\\\]*$")) },
-        { Type::DigitsHyphens,  QRegularExpression(QStringLiteral("^[0-9-]*$")) },
-        { Type::LettersHyphens, QRegularExpression(QStringLiteral("^[A-Za-zА-Яа-яЁё-]*$")) }
+        { Type::Digits,         QRegularExpression(RegexPatterns::digits()) },
+        { Type::DigitsHyphens,  QRegularExpression(RegexPatterns::digitsHyphens()) },
+        { Type::LettersHyphens, QRegularExpression(RegexPatterns::lettersHyphens()) },
+        { Type::NoSpecialChars, QRegularExpression(RegexPatterns::noSpecialChars()) },
+
     };
 
     auto it = patterns.find(type);

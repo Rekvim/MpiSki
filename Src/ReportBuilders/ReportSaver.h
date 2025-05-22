@@ -1,5 +1,5 @@
-#ifndef FILESAVER_H
-#define FILESAVER_H
+#ifndef REPORTSAVER_H
+#define REPORTSAVER_H
 
 #pragma once
 #include <QDir>
@@ -7,7 +7,7 @@
 #include "MyChart.h"
 #include "Registry.h"
 
-class FileSaver : public QObject
+class ReportSaver : public QObject
 {
     Q_OBJECT
 public:
@@ -38,7 +38,7 @@ public:
         QImage image3;
     };
 
-    explicit FileSaver(QObject *parent = nullptr);
+    explicit ReportSaver(QObject *parent = nullptr);
     void SetRegistry(Registry *registry);
     void SaveImage(MyChart *chart);
     QDir Directory();
@@ -54,4 +54,4 @@ signals:
     void GetDirectory(QString current_path, QString &result);
 };
 
-#endif // FILESAVER_H
+#endif // ReportSaver_H
