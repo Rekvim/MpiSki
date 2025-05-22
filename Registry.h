@@ -39,6 +39,34 @@ struct ValveInfo
     QString materialStuffingBoxSeal;
 };
 
+struct TestTelemetryData {
+    double dinamicReal;
+    double dinamicRecomend;
+    double dinamicIpReal;
+    double dinamicIpRecomend;
+
+    double strokeReal;
+    double strokeRecomend;
+
+    double rangeReal;
+    double rangeRecomend;
+    double rangePressure;
+
+    double frictionPercent;
+    double friction;
+
+    double strokeTest_timeForward;
+    double strokeTest_timeBackward;
+
+    double cyclicTest_timeForward;
+    double cyclicTest_timeBackward;
+    double cyclicTest_rangePercent;
+    double cyclicTest_totalTime;
+    quint32 cyclicTest_cycles;
+
+    double supplyPressure;
+};
+
 struct OtherParameters
 {
     QString date;

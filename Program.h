@@ -20,23 +20,27 @@
 #include "SelectTests.h"
 
 enum class TextObjects {
-    LineEdit_linear_sensor,
-    LineEdit_linear_sensor_percent,
-    LineEdit_pressure_sensor1,
-    LineEdit_pressure_sensor2,
-    LineEdit_pressure_sensor3,
+
+    LineEdit_linearSensor,
+    LineEdit_linearSensorPercent,
+
+    LineEdit_pressureSensor_1,
+    LineEdit_pressureSensor_2,
+    LineEdit_pressureSensor_3,
+
     LineEdit_feedback_4_20mA,
     Label_status,
     Label_init,
     Label_sensors,
-    Label_start_value,
-    Label_end_value,
-    Label_L_limit,
-    Label_H_limit,
+    Label_startValue,
+    Label_endValue,
 
-    Label_pressure_diff,
+    Label_lowLimit,
+    Label_highLimit,
+
+    Label_pressureDiff,
     Label_friction,
-    Label_friction_percent,
+    Label_frictionPercent,
 
     Label_din_error_mean,
     Label_din_error_mean_percent,
@@ -47,17 +51,17 @@ enum class TextObjects {
     Label_low_limit,
     Label_high_limit,
 
-    Label_forward,
-    Label_backward,
+    Label_strokeTest_forwardTime,
+    Label_strokeTest_backwardTime,
 
-    LineEdit_dinamic_error,
+    LineEdit_dinamicError,
     LineEdit_stroke,
     LineEdit_range,
     LineEdit_friction,
-    LineEdit_friction_percent,
-    LineEdit_forward,
-    LineEdit_backward,
-    LineEdit_range_pressure
+    LineEdit_frictionPercent,
+    LineEdit_strokeTest_forwardTime,
+    LineEdit_strokeTest_backwardTime,
+    LineEdit_rangePressure
 
 };
 

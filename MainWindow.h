@@ -80,6 +80,9 @@ private:
     Ui::MainWindow *ui;
 
     Registry *m_registry = nullptr;
+    TestTelemetryData collectTestTelemetryData() const;
+
+
     ReportSaver *m_reportSaver = nullptr;
     Program *m_program;
     QThread *m_programthread;
@@ -98,7 +101,6 @@ private:
     CyclicTestSettings *m_cyclicTestSettings;
 
     bool m_testing;
-
     void InitCharts();
     void SaveChart(Charts chart);
     void GetImage(QLabel *label, QImage *image);

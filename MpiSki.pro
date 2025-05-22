@@ -16,6 +16,11 @@ include(./QXlsx.pri)
 
 SOURCES += \
     CyclicTestSettings.cpp \
+    Src/ReportBuilders/BTCVReportBuilder.cpp \
+    Src/ReportBuilders/BTSVReportBuilder.cpp \
+    Src/ReportBuilders/CTCVReportBuilder.cpp \
+    Src/ReportBuilders/CTSVReportBuilder.cpp \
+    Src/ReportBuilders/CTVReportBuilder.cpp \
     Src/ReportBuilders/ReportSaver.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTestSolenoid.cpp \
@@ -56,6 +61,12 @@ HEADERS += \
     Registry.h \
     SelectTests.h \
     Sensor.h \
+    Src/ReportBuilders/BTCVReportBuilder.h \
+    Src/ReportBuilders/BTSVReportBuilder.h \
+    Src/ReportBuilders/CTCVReportBuilder.h \
+    Src/ReportBuilders/CTSVReportBuilder.h \
+    Src/ReportBuilders/CTVReportBuilder.h \
+    Src/ReportBuilders/ReportBuilder.h \
     Src/ReportBuilders/ReportSaver.h \
     Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTestSolenoid.h \

@@ -409,14 +409,14 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
-               <widget class="QLineEdit" name="lineEdit_linear_sensor">
+               <widget class="QLineEdit" name="lineEdit_linearSensor">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_linear_sensor_percent">
+               <widget class="QLineEdit" name="lineEdit_linearSensorPercent">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -437,7 +437,7 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
-               <widget class="QLineEdit" name="lineEdit_pressure_sensor1">
+               <widget class="QLineEdit" name="lineEdit_pressureSensor_1">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -458,7 +458,7 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <widget class="QLineEdit" name="lineEdit_pressure_sensor2">
+               <widget class="QLineEdit" name="LineEdit_pressureSensor_2">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -479,7 +479,7 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
-               <widget class="QLineEdit" name="lineEdit_pressure_sensor3">
+               <widget class="QLineEdit" name="LineEdit_pressureSensor_3">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -883,7 +883,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_start_value">
+              <widget class="QLabel" name="label_startValue">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -942,7 +942,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_end_value">
+              <widget class="QLabel" name="label_endValue">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1048,7 +1048,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_maintest">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_task">
            <attribute name="title">
@@ -1339,7 +1339,7 @@
                  <item>
                   <layout class="QVBoxLayout" name="verticalLayout_20">
                    <item>
-                    <widget class="QLabel" name="label_pressure_diff">
+                    <widget class="QLabel" name="label_pressureDiff">
                      <property name="text">
                       <string>0.000 bar</string>
                      </property>
@@ -1353,7 +1353,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLabel" name="label_friction_percent">
+                    <widget class="QLabel" name="label_frictionPercent">
                      <property name="text">
                       <string>0.00 %</string>
                      </property>
@@ -1512,14 +1512,14 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLabel" name="label_low_limit">
+                  <widget class="QLabel" name="label_lowLimit">
                    <property name="text">
                     <string>0.00 bar</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLabel" name="label_high_limit">
+                  <widget class="QLabel" name="label_highLimit">
                    <property name="text">
                     <string>0.00 bar</string>
                    </property>
@@ -1640,7 +1640,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_19">
              <item>
-              <widget class="QLabel" name="label_forward">
+              <widget class="QLabel" name="label_strokeTest_forwardTime">
                <property name="text">
                 <string/>
                </property>
@@ -1656,7 +1656,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_20">
              <item>
-              <widget class="QLabel" name="label_backward">
+              <widget class="QLabel" name="label_strokeTest_backwardTime">
                <property name="text">
                 <string/>
                </property>
@@ -1704,7 +1704,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_tests">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_response">
            <attribute name="title">
@@ -1922,7 +1922,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_9">
              <item>
-              <widget class="QLineEdit" name="lineEdit_forwardSec">
+              <widget class="QLineEdit" name="lineEdit_cyclicTest_forwardTime">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -1944,7 +1944,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_10">
              <item>
-              <widget class="QLineEdit" name="lineEdit_backwardSec">
+              <widget class="QLineEdit" name="lineEdit_cyclicTest_backwardTime">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -1966,7 +1966,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_21">
              <item>
-              <widget class="QLineEdit" name="lineEdit_rangePercent">
+              <widget class="QLineEdit" name="lineEdit_cyclicTest_rangePercent">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -1988,7 +1988,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_22">
              <item>
-              <widget class="QLineEdit" name="lineEdit_totalTimeSec">
+              <widget class="QLineEdit" name="lineEdit_cyclicTest_totalTime">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -2010,7 +2010,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_29">
              <item>
-              <widget class="QLineEdit" name="lineEdit_cycles">
+              <widget class="QLineEdit" name="lineEdit_cyclicTest_cycles">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -2115,7 +2115,7 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -2733,7 +2733,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="lineEdit_pressure">
+                    <widget class="QLineEdit" name="supplyPressure">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -3084,7 +3084,7 @@
             <item>
              <layout class="QGridLayout" name="gridLayout">
               <item row="3" column="2">
-               <widget class="QLineEdit" name="lineEdit_stroke_recomend"/>
+               <widget class="QLineEdit" name="lineEdit_strokeRecomend"/>
               </item>
               <item row="6" column="0">
                <widget class="QLabel" name="label_75">
@@ -3100,10 +3100,10 @@
                </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QLineEdit" name="lineEdit_dinamic_ip_recomend"/>
+               <widget class="QLineEdit" name="lineEdit_dinamicIpRecomend"/>
               </item>
               <item row="4" column="1">
-               <widget class="QLineEdit" name="lineEdit_range_real"/>
+               <widget class="QLineEdit" name="lineEdit_rangeReal"/>
               </item>
               <item row="0" column="3" rowspan="10">
                <spacer name="horizontalSpacer_19">
@@ -3139,10 +3139,10 @@
                </widget>
               </item>
               <item row="4" column="2">
-               <widget class="QLineEdit" name="lineEdit_range_recomend"/>
+               <widget class="QLineEdit" name="lineEdit_rangeRecomend"/>
               </item>
               <item row="8" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_time_forward"/>
+               <widget class="QLineEdit" name="lineEdit_strokeTest_forwardTime"/>
               </item>
               <item row="0" column="1">
                <widget class="QLabel" name="label_76">
@@ -3171,10 +3171,10 @@
                </widget>
               </item>
               <item row="3" column="1">
-               <widget class="QLineEdit" name="lineEdit_stroke_real"/>
+               <widget class="QLineEdit" name="lineEdit_strokeReal"/>
               </item>
               <item row="9" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_time_backward"/>
+               <widget class="QLineEdit" name="lineEdit_strokeTest_backwardTime"/>
               </item>
               <item row="0" column="2">
                <widget class="QLabel" name="label_68">
@@ -3214,7 +3214,7 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEdit_dinamic_real"/>
+               <widget class="QLineEdit" name="lineEdit_dinamicReal"/>
               </item>
               <item row="7" column="0">
                <widget class="QLabel" name="label_72">
@@ -3261,7 +3261,7 @@
                </widget>
               </item>
               <item row="7" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_friction_percent"/>
+               <widget class="QLineEdit" name="lineEdit_frictionPercent"/>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_89">
@@ -3278,10 +3278,10 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_dinamic_ip_real"/>
+               <widget class="QLineEdit" name="lineEdit_dinamicIpReal"/>
               </item>
               <item row="1" column="2">
-               <widget class="QLineEdit" name="lineEdit_dinamic_recomend"/>
+               <widget class="QLineEdit" name="lineEdit_dinamicRecomend"/>
               </item>
               <item row="5" column="0">
                <widget class="QLabel" name="label_90">
@@ -3298,7 +3298,7 @@
                </widget>
               </item>
               <item row="5" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_range_pressure"/>
+               <widget class="QLineEdit" name="lineEdit_rangePressure"/>
               </item>
              </layout>
             </item>
@@ -3343,11 +3343,11 @@
  <tabstops>
   <tabstop>verticalSlider_task</tabstop>
   <tabstop>doubleSpinBox_task</tabstop>
-  <tabstop>lineEdit_linear_sensor</tabstop>
-  <tabstop>lineEdit_linear_sensor_percent</tabstop>
-  <tabstop>lineEdit_pressure_sensor1</tabstop>
-  <tabstop>lineEdit_pressure_sensor2</tabstop>
-  <tabstop>lineEdit_pressure_sensor3</tabstop>
+  <tabstop>lineEdit_linearSensor</tabstop>
+  <tabstop>lineEdit_linearSensorPercent</tabstop>
+  <tabstop>lineEdit_pressureSensor_1</tabstop>
+  <tabstop>LineEdit_pressureSensor_2</tabstop>
+  <tabstop>LineEdit_pressureSensor_3</tabstop>
   <tabstop>pushButton_init</tabstop>
   <tabstop>tabWidget_maintest</tabstop>
   <tabstop>Chart_task</tabstop>
@@ -3371,17 +3371,17 @@
   <tabstop>pushButton_pixmap1</tabstop>
   <tabstop>pushButton_pixmap2</tabstop>
   <tabstop>pushButton_pixmap3</tabstop>
-  <tabstop>lineEdit_dinamic_real</tabstop>
-  <tabstop>lineEdit_stroke_real</tabstop>
-  <tabstop>lineEdit_range_real</tabstop>
+  <tabstop>lineEdit_dinamicReal</tabstop>
+  <tabstop>lineEdit_strokeReal</tabstop>
+  <tabstop>lineEdit_rangeReal</tabstop>
   <tabstop>lineEdit_friction</tabstop>
-  <tabstop>lineEdit_friction_percent</tabstop>
-  <tabstop>lineEdit_time_forward</tabstop>
-  <tabstop>lineEdit_time_backward</tabstop>
-  <tabstop>lineEdit_range_recomend</tabstop>
-  <tabstop>lineEdit_dinamic_recomend</tabstop>
+  <tabstop>lineEdit_frictionPercent</tabstop>
+  <tabstop>lineEdit_strokeTest_forwardTime</tabstop>
+  <tabstop>lineEdit_strokeTest_backwardTime</tabstop>
+  <tabstop>lineEdit_rangeRecomend</tabstop>
+  <tabstop>lineEdit_dinamicRecomend</tabstop>
   <tabstop>Chart_step</tabstop>
-  <tabstop>lineEdit_stroke_recomend</tabstop>
+  <tabstop>lineEdit_strokeRecomend</tabstop>
   <tabstop>Chart_resolution</tabstop>
   <tabstop>Chart_pressure</tabstop>
   <tabstop>Chart_friction</tabstop>

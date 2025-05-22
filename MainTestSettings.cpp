@@ -15,27 +15,23 @@ MainTestSettings::~MainTestSettings()
 
 MainTestSettings::TestParameters MainTestSettings::getParameters() const
 {
-    TestParameters parameters;
+    TestParameters testParameters;
 
     if (ui->tabWidget->currentIndex() == 0) {
-        parameters.continuous = true;
-        parameters.delay = 50;
-        parameters.response = 50;
-        parameters.pointNumbers = qreal(ui->timeEdit->time().msecsSinceStartOfDay()) / 50;
-        parameters.signal_min = 3.0;
-        parameters.signal_max = 21.0;
-
-        // parameters.is_cyclic = true;
-        // parameters.num_cycles = 1;
-        // parameters.cycle_time = ui->timeEdit_cycle_time->time().msecsSinceStartOfDay() / 1000;
+        testParameters.continuous = true;
+        testParameters.delay = 50;
+        testParameters.response = 50;
+        testParameters.pointNumbers = qreal(ui->timeEdit->time().msecsSinceStartOfDay()) / 50;
+        testParameters.signal_min = 3.0;
+        testParameters.signal_max = 21.0;
 
     } else {
-        parameters.continuous = false;
-        parameters.delay = ui->doubleSpinBox_delay->value() * 1000;
-        parameters.pointNumbers = ui->doubleSpinBox_points->value();
-        parameters.signal_min = ui->doubleSpinBox_signal_min->value();
-        parameters.signal_max = ui->doubleSpinBox_signal_max->value();
-        parameters.response = ui->doubleSpinBox_response->value() * 1000;
+        testParameters.continuous = false;
+        testParameters.delay = ui->doubleSpinBox_delay->value() * 1000;
+        testParameters.pointNumbers = ui->doubleSpinBox_points->value();
+        testParameters.signal_min = ui->doubleSpinBox_signal_min->value();
+        testParameters.signal_max = ui->doubleSpinBox_signal_max->value();
+        testParameters.response = ui->doubleSpinBox_response->value() * 1000;
     }
-    return parameters;
+    return testParameters;
 }

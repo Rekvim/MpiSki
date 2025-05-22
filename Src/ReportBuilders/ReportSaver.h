@@ -4,18 +4,26 @@
 #pragma once
 #include <QDir>
 #include <QObject>
+#include <QImage>    // Добавь для QImage
 #include "MyChart.h"
 #include "Registry.h"
+
+// Добавь это здесь:
+struct ImageCell {
+    int row;
+    int col;
+    QImage image;
+};
 
 class ReportSaver : public QObject
 {
     Q_OBJECT
 public:
-    struct ExcelData
-    {
+
+    struct ReportData {
         quint8 x;
         quint8 y;
-        QLineEdit *line_edit;
+        QString value;
     };
 
     struct ValueBinding {
@@ -23,19 +31,15 @@ public:
         QString value;
     };
 
-    struct ValidationData
-    {
+    struct ValidationData {
         QString formula;
         QString range;
     };
 
-    struct Report
-    {
-        QVector<ExcelData> data;
+    struct Report {
+        QVector<ReportData> data;
         QVector<ValidationData> validation;
-        QImage image1;
-        QImage image2;
-        QImage image3;
+        QVector<ImageCell> images;
     };
 
     explicit ReportSaver(QObject *parent = nullptr);
@@ -54,4 +58,4 @@ signals:
     void GetDirectory(QString current_path, QString &result);
 };
 
-#endif // ReportSaver_H
+#endif // REPORTSAVER_H

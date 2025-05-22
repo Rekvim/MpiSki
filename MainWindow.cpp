@@ -12,8 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_testing = false;
 
-
-
     m_mainTestSettings = new MainTestSettings(this);
     m_stepTestSettings = new StepTestSettings(this);
     m_responseTestSettings = new OtherTestSettings(this);
@@ -36,37 +34,37 @@ MainWindow::MainWindow(QWidget *parent)
     m_labels[TextObjects::Label_status] = ui->label_status;
     m_labels[TextObjects::Label_init] = ui->label_init;
     m_labels[TextObjects::Label_sensors] = ui->label_sensors;
-    m_labels[TextObjects::Label_start_value] = ui->label_start_value;
-    m_labels[TextObjects::Label_end_value] = ui->label_end_value;
-    m_labels[TextObjects::Label_L_limit] = ui->label_low_limit;
-    m_labels[TextObjects::Label_H_limit] = ui->label_high_limit;
-    m_labels[TextObjects::Label_pressure_diff] = ui->label_pressure_diff;
+    m_labels[TextObjects::Label_startValue] = ui->label_startValue;
+    m_labels[TextObjects::Label_endValue] = ui->label_endValue;
+    m_labels[TextObjects::Label_lowLimit] = ui->label_lowLimit;
+    m_labels[TextObjects::Label_highLimit] = ui->label_highLimit;
+    m_labels[TextObjects::Label_pressureDiff] = ui->label_pressureDiff;
     m_labels[TextObjects::Label_friction] = ui->label_friction;
-    m_labels[TextObjects::Label_friction_percent] = ui->label_friction_percent;
+    m_labels[TextObjects::Label_frictionPercent] = ui->label_frictionPercent;
     m_labels[TextObjects::Label_din_error_mean] = ui->label_din_error_mean;
     m_labels[TextObjects::Label_din_error_mean_percent] = ui->label_din_error_mean_percent;
     m_labels[TextObjects::Label_din_error_max] = ui->label_din_error_max;
     m_labels[TextObjects::Label_din_error_max_percent] = ui->label_din_error_max_percent;
     m_labels[TextObjects::Label_range] = ui->label_range;
-    m_labels[TextObjects::Label_low_limit] = ui->label_low_limit;
-    m_labels[TextObjects::Label_high_limit] = ui->label_high_limit;
-    m_labels[TextObjects::Label_forward] = ui->label_forward;
-    m_labels[TextObjects::Label_backward] = ui->label_backward;
+    m_labels[TextObjects::Label_low_limit] = ui->label_lowLimit;
+    m_labels[TextObjects::Label_high_limit] = ui->label_highLimit;
+    m_labels[TextObjects::Label_strokeTest_forwardTime] = ui->label_strokeTest_forwardTime;
+    m_labels[TextObjects::Label_strokeTest_backwardTime] = ui->label_strokeTest_backwardTime;
 
-    m_lineEdits[TextObjects::LineEdit_linear_sensor] = ui->lineEdit_linear_sensor;
-    m_lineEdits[TextObjects::LineEdit_linear_sensor_percent] = ui->lineEdit_linear_sensor_percent;
-    m_lineEdits[TextObjects::LineEdit_pressure_sensor1] = ui->lineEdit_pressure_sensor1;
-    m_lineEdits[TextObjects::LineEdit_pressure_sensor2] = ui->lineEdit_pressure_sensor2;
-    m_lineEdits[TextObjects::LineEdit_pressure_sensor3] = ui->lineEdit_pressure_sensor3;
+    m_lineEdits[TextObjects::LineEdit_linearSensor] = ui->lineEdit_linearSensor;
+    m_lineEdits[TextObjects::LineEdit_linearSensorPercent] = ui->lineEdit_linearSensorPercent;
+    m_lineEdits[TextObjects::LineEdit_pressureSensor_1] = ui->lineEdit_pressureSensor_1;
+    m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->LineEdit_pressureSensor_2;
+    m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->LineEdit_pressureSensor_3;
     m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
-    m_lineEdits[TextObjects::LineEdit_dinamic_error] = ui->lineEdit_dinamic_real;
-    m_lineEdits[TextObjects::LineEdit_stroke] = ui->lineEdit_stroke_real;
-    m_lineEdits[TextObjects::LineEdit_range] = ui->lineEdit_range_real;
+    m_lineEdits[TextObjects::LineEdit_dinamicError] = ui->lineEdit_dinamicReal;
+    m_lineEdits[TextObjects::LineEdit_stroke] = ui->lineEdit_strokeReal;
+    m_lineEdits[TextObjects::LineEdit_range] = ui->lineEdit_rangeReal;
     m_lineEdits[TextObjects::LineEdit_friction] = ui->lineEdit_friction;
-    m_lineEdits[TextObjects::LineEdit_friction_percent] = ui->lineEdit_friction_percent;
-    m_lineEdits[TextObjects::LineEdit_forward] = ui->lineEdit_time_forward;
-    m_lineEdits[TextObjects::LineEdit_backward] = ui->lineEdit_time_backward;
-    m_lineEdits[TextObjects::LineEdit_range_pressure] = ui->lineEdit_range_pressure;
+    m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercent;
+    m_lineEdits[TextObjects::LineEdit_strokeTest_forwardTime] = ui->lineEdit_strokeTest_forwardTime;
+    m_lineEdits[TextObjects::LineEdit_strokeTest_backwardTime] = ui->lineEdit_strokeTest_backwardTime;
+    m_lineEdits[TextObjects::LineEdit_rangePressure] = ui->lineEdit_rangePressure;
 
     m_program = new Program;
     m_programthread = new QThread(this);
@@ -232,16 +230,16 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::GetDirectory,
             Qt::DirectConnection);
 
+    QImage image1, image2, image3;
+
     connect(ui->pushButton_pixmap1, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap1, &m_report.image1);
+        GetImage(ui->label_pixmap1, &image1);
     });
-
     connect(ui->pushButton_pixmap2, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap2, &m_report.image2);
+        GetImage(ui->label_pixmap2, &image2);
     });
-
     connect(ui->pushButton_pixmap3, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap3, &m_report.image3);
+        GetImage(ui->label_pixmap3, &image3);
     });
 
     connect(ui->pushButton_report, &QPushButton::clicked, this, [&] {
@@ -295,9 +293,9 @@ void MainWindow::SetRegistry(Registry *registry)
     ui->lineEdit_serialNumber->setText(valveInfo->serialNumber);
     ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
     ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
-    ui->lineEdit_dinamic_recomend->setText(QString::number(valveInfo->dinamicError, 'f', 2));
-    ui->lineEdit_stroke_recomend->setText(valveInfo->strokValve);
-    ui->lineEdit_range_recomend->setText(valveInfo->driveRange);
+    ui->lineEdit_dinamicRecomend->setText(QString::number(valveInfo->dinamicError, 'f', 2));
+    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
+    ui->lineEdit_rangeRecomend->setText(valveInfo->driveRange);
     ui->lineEdit_valveModel->setText(valveInfo->valveModel);
 
     if (valveInfo->safePosition != 0) {
@@ -372,12 +370,11 @@ void MainWindow::SetSolenoidResults(double forwardSec, double backwardSec, quint
 {
     QString forwardText = QTime(0, 0).addMSecs(forwardSec).toString("mm:ss.zzz");
     QString backwardText = QTime(0, 0).addMSecs(backwardSec).toString("mm:ss.zzz");
-    ui->lineEdit_forwardSec->setText(QString::number(forwardSec, 'f', 2));
-    ui->lineEdit_backwardSec->setText(QString::number(backwardSec, 'f', 2));
-    ui->lineEdit_rangePercent->setText(QString::number(rangePercent, 'f', 1));
-    ui->lineEdit_totalTimeSec->setText(QString::number(totalTimeSec, 'f', 1));
-    ui->lineEdit_cycles->setText(QString::number(cycles));
-
+    ui->lineEdit_cyclicTest_forwardTime->setText(QString::number(forwardSec, 'f', 2));
+    ui->lineEdit_cyclicTest_backwardTime->setText(QString::number(backwardSec, 'f', 2));
+    ui->lineEdit_cyclicTest_rangePercent->setText(QString::number(rangePercent, 'f', 1));
+    ui->lineEdit_cyclicTest_totalTime->setText(QString::number(totalTimeSec, 'f', 1));
+    ui->lineEdit_cyclicTest_cycles->setText(QString::number(cycles));
 }
 
 void MainWindow::SetBlockCTS(const SelectTests::BlockCTS &blockCTS)
@@ -400,16 +397,16 @@ void MainWindow::SetSensorsNumber(quint8 num)
     if (m_blockCTS.moving) {
         // ui->groupBox_linear_motion_sensor->setVisible(true);
 
-        ui->label_start_value->setVisible(true);
-        ui->label_end_value->setVisible(true);
+        ui->label_startValue->setVisible(true);
+        ui->label_endValue->setVisible(true);
 
         ui->label_start_positio_sensor->setVisible(true);
         ui->label_end_positio_sensor->setVisible(true);
     } else {
         // ui->groupBox_linear_motion_sensor->setVisible(false);
 
-        ui->label_start_value->setVisible(false);
-        ui->label_end_value->setVisible(false);
+        ui->label_startValue->setVisible(false);
+        ui->label_endValue->setVisible(false);
 
         // ui->label_start_positio_sensor->setVisible(false);
         // ui->label_end_positio_sensor->setVisible(false);
@@ -701,9 +698,6 @@ void MainWindow::ButtonStartCyclicSolenoid() {
             return;
 
         auto params = m_cyclicTestSettings->getParameters();
-        qDebug() << "[CyclicTest] sequence=" << params.sequence
-                 << " delay_sec=" << params.delay_sec
-                 << " num_cycles=" << params.num_cycles;
         StartTest();
         emit StartCyclicSolenoidTest(params);
     }
@@ -791,9 +785,7 @@ void MainWindow::InitCharts()
     m_charts[Charts::Response]->useTimeaxis(true);
     m_charts[Charts::Response]->addAxis("%.2f%%");
     m_charts[Charts::Response]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Response]->addSeries(0,
-                                          "Датчик линейных перемещений",
-                                          QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Response]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
 
     m_charts[Charts::Stroke] = ui->Chart_stroke;
     m_charts[Charts::Stroke]->setName("Stroke");
@@ -919,52 +911,73 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
     }
 }
 
+TestTelemetryData MainWindow::collectTestTelemetryData() const {
+    TestTelemetryData data;
+    data.dinamicReal = ui->lineEdit_dinamicReal->text().toDouble();
+    data.strokeReal = ui->lineEdit_strokeReal->text().toDouble();
+    data.rangeReal = ui->lineEdit_rangeReal->text().toDouble();
+    data.friction = ui->lineEdit_friction->text().toDouble();
+    data.frictionPercent = ui->lineEdit_frictionPercent->text().toDouble();
+    data.strokeTest_timeForward = ui->lineEdit_strokeTest_forwardTime->text().toDouble();
+    data.strokeTest_timeBackward = ui->lineEdit_strokeTest_backwardTime->text().toDouble();
+
+    data.strokeTest_timeForward = ui->lineEdit_cyclicTest_forwardTime->text().toDouble();
+    data.strokeTest_timeBackward = ui->lineEdit_cyclicTest_backwardTime->text().toDouble();
+    data.cyclicTest_rangePercent = ui->lineEdit_cyclicTest_rangePercent->text().toDouble();
+    data.cyclicTest_totalTime = ui->lineEdit_cyclicTest_totalTime->text().toDouble();
+    data.cyclicTest_cycles = ui->lineEdit_cyclicTest_cycles->text().toInt();
+
+    data.rangePressure = ui->lineEdit_rangePressure->text().toDouble();
+    return data;
+}
+
 void MainWindow::InitReport()
 {
-    m_report.data.push_back({5, 4, ui->lineEdit_object});
-    m_report.data.push_back({6, 4, ui->lineEdit_manufacture});
-    m_report.data.push_back({7, 4, ui->lineEdit_department});
+    // m_report.data.push_back({5, 4, ui->lineEdit_object});
+    // m_report.data.push_back({6, 4, ui->lineEdit_manufacture});
+    // m_report.data.push_back({7, 4, ui->lineEdit_department});
 
-    m_report.data.push_back({5, 13, ui->lineEdit_positionNumber});
-    m_report.data.push_back({6, 13, ui->lineEdit_serialNumber});
-    m_report.data.push_back({7, 13, ui->lineEdit_valveModel});
-    m_report.data.push_back({8, 13, ui->lineEdit_manufacturer});
-    m_report.data.push_back({9, 13, ui->lineEdit_DNPN});
-    m_report.data.push_back({10, 13, ui->lineEdit_positionerModel});
-    m_report.data.push_back({11, 13, ui->lineEdit_pressure});
-    m_report.data.push_back({12, 13, ui->lineEdit_safePosition});
-    m_report.data.push_back({14, 13, ui->lineEdit_strokeMovement});
+    // m_report.data.push_back({5, 13, ui->lineEdit_positionNumber});
+    // m_report.data.push_back({6, 13, ui->lineEdit_serialNumber});
+    // m_report.data.push_back({7, 13, ui->lineEdit_valveModel});
+    // m_report.data.push_back({8, 13, ui->lineEdit_manufacturer});
+    // m_report.data.push_back({9, 13, ui->lineEdit_DNPN});
+    // m_report.data.push_back({10, 13, ui->lineEdit_positionerModel});
+    // m_report.data.push_back({11, 13, ui->lineEdit_pressure});
+    // m_report.data.push_back({12, 13, ui->lineEdit_safePosition});
+    // m_report.data.push_back({14, 13, ui->lineEdit_strokeMovement});
 
-    m_report.data.push_back({26, 5, ui->lineEdit_dinamic_real});
-    m_report.data.push_back({26, 8, ui->lineEdit_dinamic_recomend});
-    m_report.data.push_back({28, 5, ui->lineEdit_dinamic_ip_real});
-    m_report.data.push_back({28, 8, ui->lineEdit_dinamic_ip_recomend});
-    m_report.data.push_back({30, 5, ui->lineEdit_stroke_real});
-    m_report.data.push_back({30, 8, ui->lineEdit_stroke_recomend});
-    m_report.data.push_back({32, 5, ui->lineEdit_range_real});
-    m_report.data.push_back({32, 8, ui->lineEdit_range_recomend});
-    m_report.data.push_back({34, 5, ui->lineEdit_range_pressure});
-    m_report.data.push_back({36, 5, ui->lineEdit_friction_percent});
-    m_report.data.push_back({38, 5, ui->lineEdit_friction});
+    // m_report.data.push_back({26, 5, ui->lineEdit_dinamicReal});
+    // m_report.data.push_back({26, 8, ui->lineEdit_dinamicRecomend});
+    // m_report.data.push_back({28, 5, ui->lineEdit_dinamicIpReal});
+    // m_report.data.push_back({28, 8, ui->lineEdit_dinamicIpRecomend});
+    // m_report.data.push_back({30, 5, ui->lineEdit_strokeReal});
+    // m_report.data.push_back({30, 8, ui->lineEdit_strokeRecomend});
+    // m_report.data.push_back({32, 5, ui->lineEdit_rangeReal});
+    // m_report.data.push_back({32, 8, ui->lineEdit_rangeRecomend});
+    // m_report.data.push_back({34, 5, ui->lineEdit_rangePressure});
 
-    m_report.data.push_back({52, 5, ui->lineEdit_time_forward});
-    m_report.data.push_back({52, 8, ui->lineEdit_time_backward});
+    // m_report.data.push_back({36, 5, ui->lineEdit_frictionPercent});
+    // m_report.data.push_back({38, 5, ui->lineEdit_friction});
 
-    m_report.data.push_back({74, 4, ui->lineEdit_FIO});
+    // m_report.data.push_back({52, 5, ui->lineEdit_timeForward});
+    // m_report.data.push_back({52, 8, ui->lineEdit_timeBackward});
 
-    m_report.data.push_back({66, 12, ui->lineEdit_date});
-    m_report.data.push_back({161, 12, ui->lineEdit_date});
+    // m_report.data.push_back({74, 4, ui->lineEdit_FIO});
 
-    m_report.data.push_back({10, 5, ui->lineEdit_forwardSec});
-    m_report.data.push_back({10, 5, ui->lineEdit_backwardSec});
-    m_report.data.push_back({10, 5, ui->lineEdit_range_real});
-    m_report.data.push_back({10, 5, ui->lineEdit_rangePercent});
-    m_report.data.push_back({10, 5, ui->lineEdit_totalTimeSec});
+    // m_report.data.push_back({66, 12, ui->lineEdit_date});
+    // m_report.data.push_back({161, 12, ui->lineEdit_date});
 
-    m_report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
-    m_report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
-    m_report.validation.push_back({"=Заключение!$C$1:$C$3", "E44"});
-    m_report.validation.push_back({"=Заключение!$E$1:$E$4", "E46"});
-    m_report.validation.push_back({"=Заключение!$D$1:$D$5", "E48"});
-    m_report.validation.push_back({"=Заключение!$F$3", "E50"});
+    // m_report.data.push_back({10, 5, ui->lineEdit_forwardSec});
+    // m_report.data.push_back({10, 5, ui->lineEdit_backwardSec});
+    // m_report.data.push_back({10, 5, ui->lineEdit_rangeReal});
+    // m_report.data.push_back({10, 5, ui->lineEdit_rangePercent});
+    // m_report.data.push_back({10, 5, ui->lineEdit_totalTimeSec});
+
+    // m_report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
+    // m_report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
+    // m_report.validation.push_back({"=Заключение!$C$1:$C$3", "E44"});
+    // m_report.validation.push_back({"=Заключение!$E$1:$E$4", "E46"});
+    // m_report.validation.push_back({"=Заключение!$D$1:$D$5", "E48"});
+    // m_report.validation.push_back({"=Заключение!$F$3", "E50"});
 }

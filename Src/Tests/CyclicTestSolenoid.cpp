@@ -38,8 +38,6 @@ void CyclicTestSolenoid::Process()
 
     quint64 forwardDuration = 0;
     quint64 backwardDuration = 0;
-    bool forwardMeasured = false;
-    bool backwardMeasured = false;
 
     for (int cycle = 0; cycle < m_numCycles && !m_terminate; ++cycle) {
         for (int idx = 0; idx < m_dacValues.size() && !m_terminate; ++idx) {
@@ -57,9 +55,9 @@ void CyclicTestSolenoid::Process()
             QElapsedTimer motionTimer;
             motionTimer.start();
             while (!m_terminate && motionTimer.elapsed() < 10000) {
-                quint16 val = 0;
-                emit RequestSensorRawValue(val);
-                lineSensor.push_back(val);
+                quint16 value = 0;
+                emit RequestSensorRawValue(value);
+                lineSensor.push_back(value);
                 if (lineSensor.size() > 10)
                     lineSensor.pop_front();
 
@@ -79,9 +77,9 @@ void CyclicTestSolenoid::Process()
             QElapsedTimer stopTimer;
             stopTimer.start();
             while (!m_terminate && stopTimer.elapsed() < 10000) {
-                quint16 val = 0;
-                emit RequestSensorRawValue(val);
-                lineSensor.push_back(val);
+                quint16 value = 0;
+                emit RequestSensorRawValue(value);
+                lineSensor.push_back(value);
                 if (lineSensor.size() > 10)
                     lineSensor.pop_front();
 

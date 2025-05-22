@@ -115,14 +115,14 @@ void Program::SetTimeStart()
     m_startTime = QDateTime::currentMSecsSinceEpoch();
 }
 
-void Program::StrokeTestResults(quint64 forward_time, quint64 backward_time)
+void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
 {
-    QString forwardText = QTime(0, 0).addMSecs(forward_time).toString("mm:ss.zzz");
-    QString backwardText = QTime(0, 0).addMSecs(backward_time).toString("mm:ss.zzz");
-    emit SetText(TextObjects::Label_forward, forwardText);
-    emit SetText(TextObjects::LineEdit_forward, forwardText);
-    emit SetText(TextObjects::Label_backward, backwardText);
-    emit SetText(TextObjects::LineEdit_backward, backwardText);
+    QString forwardText = QTime(0, 0).addMSecs(forwardTime).toString("mm:ss.zzz");
+    QString backwardText = QTime(0, 0).addMSecs(backwardTime).toString("mm:ss.zzz");
+    emit SetText(TextObjects::Label_strokeTest_forwardTime, forwardText);
+    emit SetText(TextObjects::LineEdit_strokeTest_forwardTime, forwardText);
+    emit SetText(TextObjects::Label_strokeTest_backwardTime, backwardText);
+    emit SetText(TextObjects::LineEdit_strokeTest_backwardTime, backwardText);
 }
 
 void Program::AddRegression(const QVector<QPointF> &points)
@@ -157,26 +157,26 @@ void Program::UpdateSensors()
         switch (i) {
         case 0:
             if (m_blockCts.moving) {
-                emit SetText(TextObjects::LineEdit_linear_sensor, m_mpi[i]->GetFormatedValue());
-                emit SetText(TextObjects::LineEdit_linear_sensor_percent, m_mpi[i]->GetPersentFormated());
+                emit SetText(TextObjects::LineEdit_linearSensor, m_mpi[i]->GetFormatedValue());
+                emit SetText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->GetPersentFormated());
                 break;
             }
             break;
         case 1:
             if (m_blockCts.pressure_1) {
-                emit SetText(TextObjects::LineEdit_pressure_sensor1, m_mpi[i]->GetFormatedValue());
+                emit SetText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->GetFormatedValue());
                 break;
             }
             break;
         case 2:
             if (m_blockCts.pressure_2) {
-                emit SetText(TextObjects::LineEdit_pressure_sensor2, m_mpi[i]->GetFormatedValue());
+                emit SetText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->GetFormatedValue());
                 break;
             }
             break;
         case 3:
             if (m_blockCts.pressure_3) {
-                emit SetText(TextObjects::LineEdit_pressure_sensor3, m_mpi[i]->GetFormatedValue());
+                emit SetText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->GetFormatedValue());
                 break;
             }
             break;
@@ -255,7 +255,7 @@ void Program::MainTestResults(MainTest::TestResults results)
 
     qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
 
-    emit SetText(TextObjects::Label_pressure_diff,
+    emit SetText(TextObjects::Label_pressureDiff,
                  QString::asprintf("%.3f bar", results.pressureDiff));
     emit SetText(TextObjects::Label_friction,
                  QString::asprintf("%.3f H", results.pressureDiff * k));
@@ -267,21 +267,21 @@ void Program::MainTestResults(MainTest::TestResults results)
                  QString::asprintf("%.2f %%", results.dinErrorMean / 0.16));
     emit SetText(TextObjects::Label_din_error_max_percent,
                  QString::asprintf("%.2f %%", results.dinErrorMax / 0.16));
-    emit SetText(TextObjects::Label_friction_percent,
+    emit SetText(TextObjects::Label_frictionPercent,
                  QString::asprintf("%.2f %%", results.friction));
     emit SetText(TextObjects::Label_low_limit, QString::asprintf("%.2f bar", results.lowLimit));
     emit SetText(TextObjects::Label_high_limit, QString::asprintf("%.2f bar", results.highLimit));
 
-    emit SetText(TextObjects::LineEdit_dinamic_error,
+    emit SetText(TextObjects::LineEdit_dinamicError,
                  QString::asprintf("%.2f", results.dinErrorMean / 0.16));
-    emit SetText(TextObjects::LineEdit_range_pressure,
+    emit SetText(TextObjects::LineEdit_rangePressure,
                  QString::asprintf("%.2f - %.2f", results.lowLimit, results.highLimit));
     emit SetText(TextObjects::LineEdit_range,
                  QString::asprintf("%.2f - %.2f", results.springLow, results.springHigh));
 
     emit SetText(TextObjects::LineEdit_friction,
                  QString::asprintf("%.3f", results.pressureDiff * k));
-    emit SetText(TextObjects::LineEdit_friction_percent,
+    emit SetText(TextObjects::LineEdit_frictionPercent,
                  QString::asprintf("%.2f", results.friction));
 }
 
@@ -345,8 +345,8 @@ void Program::button_init()
     emit SetText(TextObjects::Label_status, "");
     emit SetText(TextObjects::Label_init, "");
     emit SetText(TextObjects::Label_sensors, "");
-    emit SetText(TextObjects::Label_start_value, "");
-    emit SetText(TextObjects::Label_end_value, "");
+    emit SetText(TextObjects::Label_startValue, "");
+    emit SetText(TextObjects::Label_endValue, "");
 
     // Инициализация: Статус устройства
     if (!m_mpi.Connect()) {
@@ -395,8 +395,8 @@ void Program::button_init()
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     bool normalClosed = (valveInfo->safePosition == 0);
 
-    emit SetText(TextObjects::Label_start_value, "Измерение");
-    emit SetTextColor(TextObjects::Label_start_value, Qt::darkYellow);
+    emit SetText(TextObjects::Label_startValue, "Измерение");
+    emit SetTextColor(TextObjects::Label_startValue, Qt::darkYellow);
 
     SetDAC(0, 10000, true);
 
@@ -416,11 +416,11 @@ void Program::button_init()
     else
         m_mpi[0]->SetMax();
 
-    emit SetText(TextObjects::Label_start_value, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_start_value, Qt::darkGreen);
+    emit SetText(TextObjects::Label_startValue, m_mpi[0]->GetFormatedValue());
+    emit SetTextColor(TextObjects::Label_startValue, Qt::darkGreen);
 
-    emit SetText(TextObjects::Label_end_value, "Измерение");
-    emit SetTextColor(TextObjects::Label_end_value, Qt::darkYellow);
+    emit SetText(TextObjects::Label_endValue, "Измерение");
+    emit SetTextColor(TextObjects::Label_endValue, Qt::darkYellow);
 
     SetDAC(0xFFFF, 10000, true);
 
@@ -433,8 +433,8 @@ void Program::button_init()
     else
         m_mpi[0]->SetMin();
 
-    emit SetText(TextObjects::Label_end_value, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_end_value, Qt::darkGreen);
+    emit SetText(TextObjects::Label_endValue, m_mpi[0]->GetFormatedValue());
+    emit SetTextColor(TextObjects::Label_endValue, Qt::darkGreen);
 
     qreal correctCoefficient = 1;
     if (valveInfo->strokeMovement != 0) {

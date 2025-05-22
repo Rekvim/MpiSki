@@ -63,19 +63,12 @@ bool ReportSaver::SaveReport(const Report &report)
     Document xlsx(":/excel/report.xlsx");
 
     for (const auto &data : report.data) {
-        xlsx.write(data.x, data.y, data.line_edit->text());
+        xlsx.write(data.x, data.y, data.value);
     }
 
-    if (!report.image1.isNull()) {
-        xlsx.insertImage(86, 1, report.image1);
-    }
-
-    if (!report.image2.isNull()) {
-        xlsx.insertImage(111, 1, report.image2);
-    }
-
-    if (!report.image3.isNull()) {
-        xlsx.insertImage(136, 1, report.image3);
+    for (const auto& img : report.images) {
+        if (!img.image.isNull())
+            xlsx.insertImage(img.row, img.col, img.image);
     }
 
     for (const auto &valid : report.validation) {
