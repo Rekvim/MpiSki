@@ -19,6 +19,12 @@ public:
         const QImage& image3 = QImage()
         ) = 0;
 
+    inline QString safeToString(double val) {
+        if (std::isnan(val) || std::isinf(val)) return "";
+        if (val == 0.0) return "";
+        return QString::number(val);
+    }
+
     virtual QString templatePath() const = 0;
 };
 

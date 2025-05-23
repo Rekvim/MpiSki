@@ -8,70 +8,70 @@
 
 struct ObjectInfo
 {
-    QString object;
-    QString manufactory;
-    QString department;
-    QString FIO;
+    QString object = "";
+    QString manufactory = "";
+    QString department = "";
+    QString FIO = "";
 };
 
 struct ValveInfo
 {
-    QString positionNumber;
+    QString positionNumber = "";
 
-    QString manufacturer;
-    QString valveModel;
-    QString serialNumber;
-    QString DN;
-    QString PN;
-    QString positionerModel;
+    QString manufacturer = "";
+    QString valveModel = "";
+    QString serialNumber = "";
+    QString DN = "";
+    QString PN = "";
+    QString positionerModel = "";
 
-    qreal dinamicError;
-    quint32 strokeMovement;
-    QString strokValve;
-    QString driveModel;
-    quint32 safePosition;
-    quint32 driveType;
-    QString driveRange;
-    qreal driveDiameter;
+    qreal dinamicError = 0.0;
+    quint32 strokeMovement = 0;
+    QString strokValve = "";
+    QString driveModel = "";
+    quint32 safePosition = 0;
+    quint32 driveType = 0;
+    QString driveRange = "";
+    qreal driveDiameter = 0.0;
 
-    quint32 toolNumber;
-    qreal diameterPulley;
-    QString materialStuffingBoxSeal;
+    quint32 toolNumber = 0;
+    qreal diameterPulley = 0.0;
+    QString materialStuffingBoxSeal = "";
 };
 
 struct TestTelemetryData {
-    double dinamicReal;
-    double dinamicRecomend;
-    double dinamicIpReal;
-    double dinamicIpRecomend;
+    double dinamicReal = 0.0;
+    double dinamicRecomend = 0.0;
+    double dinamicIpReal = 0.0;
+    double dinamicIpRecomend = 0.0;
 
-    double strokeReal;
-    double strokeRecomend;
+    double strokeReal = 0.0;
+    double strokeRecomend = 0.0;
 
-    double rangeReal;
-    double rangeRecomend;
-    double rangePressure;
+    double rangeReal = 0.0;
+    double rangeRecomend = 0.0;
+    double rangePressure = 0.0;
 
-    double frictionPercent;
-    double friction;
+    double frictionPercent = 0.0;
+    double friction = 0.0;
 
-    double strokeTest_timeForward;
-    double strokeTest_timeBackward;
+    double strokeTest_timeForward = 0.0;
+    double strokeTest_timeBackward = 0.0;
 
-    double cyclicTest_timeForward;
-    double cyclicTest_timeBackward;
-    double cyclicTest_rangePercent;
-    double cyclicTest_totalTime;
-    quint32 cyclicTest_cycles;
+    double cyclicTest_timeForward = 0.0;
+    double cyclicTest_timeBackward = 0.0;
+    double cyclicTest_rangePercent = 0.0;
+    double cyclicTest_totalTime = 0.0;
+    quint32 cyclicTest_cycles = 0;
 
-    double supplyPressure;
+    double supplyPressure = 0.0;
 };
 
 struct OtherParameters
 {
-    QString date;
-    QString safePosition;
-    QString strokeMovement;
+    QString date = "";
+    QString safePosition = "";
+    QString strokeMovement = "";
 };
 
 class Registry : public QObject

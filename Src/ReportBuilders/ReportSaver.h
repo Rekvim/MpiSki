@@ -4,12 +4,12 @@
 #pragma once
 #include <QDir>
 #include <QObject>
-#include <QImage>    // Добавь для QImage
+#include <QImage>
 #include "MyChart.h"
 #include "Registry.h"
 
-// Добавь это здесь:
 struct ImageCell {
+    QString sheet;
     int row;
     int col;
     QImage image;
@@ -21,6 +21,7 @@ class ReportSaver : public QObject
 public:
 
     struct ReportData {
+        QString sheet;
         quint8 x;
         quint8 y;
         QString value;
@@ -46,8 +47,7 @@ public:
     void SetRegistry(Registry *registry);
     void SaveImage(MyChart *chart);
     QDir Directory();
-    bool SaveReport(const Report &report);
-
+    bool SaveReport(const Report &report, const QString &templatePath);
 private:
     void CreateDir();
     QDir m_dir;

@@ -18,7 +18,7 @@ public:
         const QImage& image2 = QImage(),
         const QImage& image3 = QImage()
         ) override;
-    QString templatePath() const override { return ":/excel/SKI_CTCV.xlsx"; }
+    QString templatePath() const override { return ":/excel/Reports/SKI_CTCV.xlsx"; }
 };
 
 #endif // CTCVREPORTBUILDER_H

@@ -4,7 +4,7 @@
 #pragma once
 #include "ReportBuilder.h"
 
-class CTSVReportBuilder  : public ReportBuilder
+class CTSVReportBuilder : public ReportBuilder
 {
 public:
     CTSVReportBuilder();
@@ -18,7 +18,7 @@ public:
         const QImage& image2 = QImage(),
         const QImage& image3 = QImage()
         ) override;
-    QString templatePath() const override { return ":/excel/SKI_CTSV.xlsx"; }
+    QString templatePath() const override { return ":/excel/Reports/SKI_CTSV.xlsx"; }
 };
 
 #endif // CTSVREPORTBUILDER_H

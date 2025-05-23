@@ -3,8 +3,8 @@
         <file>report.xlsx</file>
         <file>Reports/SKI_BTCV.xlsx</file>
         <file>Reports/SKI_BTSV.xlsx</file>
-        <file>Reports/SKI_CTCV.xlsx</file>
         <file>Reports/SKI_CTSV.xlsx</file>
         <file>Reports/SKI_CTV.xlsx</file>
+        <file>Reports/SKI_CTCV.xlsx</file>
     </qresource>
 </RCC>

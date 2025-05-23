@@ -20,7 +20,7 @@ public:
         const QImage& image3 = QImage()
         ) override;
 
-    QString templatePath() const override { return ":/excel/SKI_CTV.xlsx"; }
+    QString templatePath() const override { return ":/excel/Reports/SKI_CTV.xlsx"; }
 };
 
 #endif // CTVREPORTBUILDER_H

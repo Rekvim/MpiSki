@@ -98,6 +98,7 @@ void SelectTests::setPattern(const PatternSetup& setup) {
         cb->setChecked(false);
     }
     onCheckBoxChanged();
+    qDebug() << "[setPattern] После выставления паттерна: m_currentPattern =" << m_currentPattern;
 }
 
 bool SelectTests::isValidPattern() {

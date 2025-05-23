@@ -18,7 +18,7 @@ public:
         const QImage& image2 = QImage(),
         const QImage& image3 = QImage()
         ) override;
-    QString templatePath() const override { return ":/excel/SKI_BTSV.xlsx"; }
+    QString templatePath() const override { return ":/excel/Reports/SKI_BTSV.xlsx"; }
 };
 
 #endif // BTSVREPORTBUILDER_H

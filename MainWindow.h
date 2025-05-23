@@ -32,7 +32,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void SetRegistry(Registry *registry);
-    void SetBlockCTS(const SelectTests::BlockCTS &blockCTS);
+    void SetPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
+    void SetBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
     void SetSensorsNumber(quint8 num);
     // void SetSensorsNumber(quint8 num);
 
@@ -88,6 +89,8 @@ private:
     QThread *m_programthread;
 
     ReportSaver::Report m_report;
+
+    SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
     SelectTests::BlockCTS m_blockCTS;
 
     QHash<TextObjects, QLabel *> m_labels;
@@ -99,6 +102,9 @@ private:
     OtherTestSettings *m_responseTestSettings;
     OtherTestSettings *m_resolutionTestSettings;
     CyclicTestSettings *m_cyclicTestSettings;
+
+    QImage m_image_1, m_image_2, m_image_3;
+
 
     bool m_testing;
     void InitCharts();

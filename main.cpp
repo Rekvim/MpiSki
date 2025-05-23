@@ -37,8 +37,11 @@ int main(int argc, char *argv[])
     if (valveWindow.exec() == QDialog::Rejected)
         return 0;
 
-    SelectTests::BlockCTS blockCTS = selectTests.getCTS();
-    mainWindow.SetBlockCTS(blockCTS);
+    auto pattern = selectTests.currentPattern();
+    auto cts = selectTests.getCTS();
+
+    mainWindow.SetPatternType(pattern);
+    mainWindow.SetBlockCTS(cts);
     mainWindow.SetSensorsNumber(3);
     mainWindow.SetRegistry(&registry);
     mainWindow.show();

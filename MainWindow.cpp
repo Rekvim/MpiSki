@@ -2,6 +2,12 @@
 #include "ui_MainWindow.h"
 #include "CyclicTestSettings.h"
 
+#include "Src/ReportBuilders/BTCVReportBuilder.h"
+#include "Src/ReportBuilders/BTSVReportBuilder.h"
+#include "Src/ReportBuilders/CTCVReportBuilder.h"
+#include "Src/ReportBuilders/CTSVReportBuilder.h"
+#include "Src/ReportBuilders/CTVReportBuilder.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -230,20 +236,43 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::GetDirectory,
             Qt::DirectConnection);
 
-    QImage image1, image2, image3;
-
     connect(ui->pushButton_pixmap1, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap1, &image1);
+        GetImage(ui->label_pixmap1, &m_image_1);
     });
     connect(ui->pushButton_pixmap2, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap2, &image2);
+        GetImage(ui->label_pixmap2, &m_image_2);
     });
     connect(ui->pushButton_pixmap3, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap3, &image3);
+        GetImage(ui->label_pixmap3, &m_image_3);
     });
 
     connect(ui->pushButton_report, &QPushButton::clicked, this, [&] {
-        ui->pushButton_open->setEnabled(m_reportSaver->SaveReport(m_report));
+        qDebug() << "Пытаюсь получить паттерн:" << m_patternType;
+
+        std::unique_ptr<ReportBuilder> builder;
+
+        switch (m_patternType) {
+            case SelectTests::Pattern_CTV: builder = std::make_unique<CTVReportBuilder>(); break;
+            case SelectTests::Pattern_BTSV: builder = std::make_unique<BTSVReportBuilder>(); break;
+            case SelectTests::Pattern_CTSV: builder = std::make_unique<CTSVReportBuilder>(); break;
+            case SelectTests::Pattern_BTCV: builder = std::make_unique<BTCVReportBuilder>(); break;
+            case SelectTests::Pattern_CTCV: builder = std::make_unique<CTCVReportBuilder>(); break;
+            default:
+                QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн отчёта!");
+                return;
+        }
+
+        ReportSaver::Report report;
+        builder->buildReport(report, collectTestTelemetryData(),
+                             *m_registry->GetObjectInfo(),
+                             *m_registry->GetValveInfo(),
+                             *m_registry->GetOtherParameters(),
+                             m_image_1, m_image_2, m_image_3);
+
+        qDebug() << "Путь к шаблону:" << builder->templatePath();
+
+        bool saved = m_reportSaver->SaveReport(report, builder->templatePath());
+        ui->pushButton_open->setEnabled(saved);
     });
 
     connect(ui->pushButton_open, &QPushButton::clicked, this, [&] {
@@ -377,12 +406,6 @@ void MainWindow::SetSolenoidResults(double forwardSec, double backwardSec, quint
     ui->lineEdit_cyclicTest_cycles->setText(QString::number(cycles));
 }
 
-void MainWindow::SetBlockCTS(const SelectTests::BlockCTS &blockCTS)
-{
-    this->m_blockCTS = blockCTS;
-    m_program->SetBlockCTS(blockCTS);
-}
-
 void MainWindow::SetSensorsNumber(quint8 num)
 {
     num = 1;
@@ -512,7 +535,7 @@ void MainWindow::SetButtonInitEnabled(bool enable)
 
 void MainWindow::AddPoints(Charts chart, QVector<Point> points)
 {
-    for (const auto point : points)
+    for (const auto& point : points)
         m_charts[chart]->addPoint(point.series_num, point.X, point.Y);
 }
 
@@ -887,9 +910,12 @@ void MainWindow::SaveChart(Charts chart)
 
     QPixmap pix = m_charts[chart]->grab();
 
+    QImage img = pix.toImage();
+
     switch (chart) {
     case Charts::Task:
         ui->label_pixmap3->setPixmap(pix);
+        m_image_3 = img;
         break;
     case Charts::Stroke:
         break;
@@ -898,8 +924,12 @@ void MainWindow::SaveChart(Charts chart)
     case Charts::Step:
     case Charts::Pressure:
         ui->label_pixmap2->setPixmap(pix);
+        m_image_2 = img;
+
     case Charts::Friction:
         ui->label_pixmap1->setPixmap(pix);
+        m_image_1 = img;
+
 
     case Charts::Trend:
     case Charts::CyclicSolenoid:

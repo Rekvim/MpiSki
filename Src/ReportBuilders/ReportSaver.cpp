@@ -55,20 +55,25 @@ QDir ReportSaver::Directory()
     return m_dir.path();
 }
 
-bool ReportSaver::SaveReport(const Report &report)
+bool ReportSaver::SaveReport(const Report &report, const QString &templatePath)
 {
     if (!m_created)
         CreateDir();
 
-    Document xlsx(":/excel/report.xlsx");
+    Document xlsx(templatePath);
 
     for (const auto &data : report.data) {
+        if (!xlsx.selectSheet(data.sheet)) {
+            qWarning() << "Не найден лист" << data.sheet << "для записи данных!";
+            continue;
+        }
         xlsx.write(data.x, data.y, data.value);
     }
 
     for (const auto& img : report.images) {
-        if (!img.image.isNull())
+        if (!img.image.isNull() && xlsx.selectSheet(img.sheet)) {
             xlsx.insertImage(img.row, img.col, img.image);
+        }
     }
 
     for (const auto &valid : report.validation) {
