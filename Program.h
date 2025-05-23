@@ -92,9 +92,11 @@ public:
     explicit Program(QObject *parent = nullptr);
     void SetRegistry(Registry *registry);
     void SetBlockCTS(const SelectTests::BlockCTS &blockCTS);
+    bool isInitialized() const;
 
 private:
     Registry *m_registry;
+
     MPI m_mpi;
     QTimer *m_timerSensors;
     QTimer *m_timerDI;
@@ -105,6 +107,8 @@ private:
     bool m_stopSetDac;
     bool m_waitForButton = false;
     SelectTests::BlockCTS m_blockCts;
+
+    bool m_isInitialized = false;
 
 signals:
     void SetText(const TextObjects object, const QString &text);

@@ -348,7 +348,6 @@ void Program::button_init()
     emit SetText(TextObjects::Label_startValue, "");
     emit SetText(TextObjects::Label_endValue, "");
 
-    // Инициализация: Статус устройства
     if (!m_mpi.Connect()) {
         emit SetText(TextObjects::Label_status, "Ошибка подключения");
         emit SetTextColor(TextObjects::Label_status, Qt::red);
@@ -356,7 +355,6 @@ void Program::button_init()
         return;
     }
 
-    // Инициализация: Инициализация устройства
     emit SetText(TextObjects::Label_status, "Успешное подключение к порту " + m_mpi.PortName());
     emit SetTextColor(TextObjects::Label_status, Qt::darkGreen);
 
@@ -375,6 +373,8 @@ void Program::button_init()
 
     emit SetText(TextObjects::Label_init, "Успешная инициализация");
     emit SetTextColor(TextObjects::Label_init, Qt::darkGreen);
+
+    m_isInitialized = true;
 
     switch (m_mpi.SensorCount()) { // update
     case 0:
@@ -461,6 +461,10 @@ void Program::button_init()
     emit SetSensorNumber(m_mpi.SensorCount());
     emit SetButtonInitEnabled(true);
     m_timerSensors->start();
+}
+
+bool Program::isInitialized() const {
+    return m_isInitialized;
 }
 
 void Program::MainTestStart()

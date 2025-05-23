@@ -656,6 +656,10 @@ void MainWindow::ButtonStartMain()
             emit StopTest();
         }
     } else {
+        if (!m_program->isInitialized()) {
+            QMessageBox::warning(this, "Предупреждение", "Инициализация не пройдена!");
+            return;
+        }
         emit StartMainTest();
         StartTest();
     }
@@ -669,6 +673,10 @@ void MainWindow::ButtonStartStroke()
             emit StopTest();
         }
     } else {
+        if (!m_program->isInitialized()) {
+            QMessageBox::warning(this, "Предупреждение", "Инициализация не пройдена!");
+            return;
+        }
         emit StartStrokeTest();
         StartTest();
     }
@@ -682,6 +690,10 @@ void MainWindow::ButtonStartOptional()
             emit StopTest();
         }
     } else {
+        if (!m_program->isInitialized()) {
+            QMessageBox::warning(this, "Предупреждение", "Инициализация не пройдена!");
+            return;
+        }
         emit StartOptionalTest(ui->tabWidget_tests->currentIndex());
         StartTest();
     }
@@ -694,6 +706,10 @@ void MainWindow::ButtonStartCyclicSolenoid() {
             emit StopTest();
         }
     } else {
+        if (!m_program->isInitialized()) {
+            QMessageBox::warning(this, "Предупреждение", "Инициализация не пройдена!");
+            return;
+        }
         if (m_cyclicTestSettings->exec() != QDialog::Accepted)
             return;
 
