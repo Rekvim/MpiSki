@@ -60,9 +60,9 @@ struct TestTelemetryData {
 
     double cyclicTest_timeForward = 0.0;
     double cyclicTest_timeBackward = 0.0;
+    quint32 cyclicTest_cycles = 0;
     double cyclicTest_rangePercent = 0.0;
     double cyclicTest_totalTime = 0.0;
-    quint32 cyclicTest_cycles = 0;
 
     double supplyPressure = 0.0;
 };

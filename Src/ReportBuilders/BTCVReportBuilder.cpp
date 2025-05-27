@@ -2,7 +2,7 @@
 
 BTCVReportBuilder::BTCVReportBuilder() {}
 
-void BTCVReportBuilder::buildReport( // gg
+void BTCVReportBuilder::buildReport(
     ReportSaver::Report& report,
     const TestTelemetryData& telemetry,
     const ObjectInfo& objectInfo,
@@ -11,13 +11,14 @@ void BTCVReportBuilder::buildReport( // gg
     const QImage& image1,
     const QImage& image2,
     const QImage& image3
-    ) {
-    // Данные по объекту
+    )
+{
+    // Страница: Отчет ЦТ; Блок: Данные по объекту
     report.data.push_back({"Отчет ЦТ", 5, 4, objectInfo.object});
     report.data.push_back({"Отчет ЦТ", 6, 4, objectInfo.manufactory});
     report.data.push_back({"Отчет ЦТ", 7, 4, objectInfo.department});
 
-    // Краткая спецификация на клапан
+    // Страница:Отчет ЦТ; Блок: Краткая спецификация на клапан
     report.data.push_back({"Отчет ЦТ", 5, 13, valveInfo.positionNumber});
     report.data.push_back({"Отчет ЦТ", 6, 13, valveInfo.serialNumber});
     report.data.push_back({"Отчет ЦТ", 7, 13, valveInfo.valveModel});
@@ -30,17 +31,26 @@ void BTCVReportBuilder::buildReport( // gg
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.positionerModel});
     report.data.push_back({"Отчет ЦТ", 15, 13, valveInfo.materialStuffingBoxSeal});
 
-    report.data.push_back({"Отчет ЦТ", 26, 8, safeToString(telemetry.supplyPressure)});
-    report.data.push_back({"Отчет ЦТ", 28, 8, safeToString(telemetry.supplyPressure)});
-    report.data.push_back({"Отчет ЦТ", 30, 8, safeToString(telemetry.supplyPressure)});
-    report.data.push_back({"Отчет ЦТ", 32, 8, safeToString(telemetry.supplyPressure)});
-    report.data.push_back({"Отчет ЦТ", 34, 8, safeToString(telemetry.supplyPressure)});
+    // Страница:Отчет ЦТ; Блок: Результат циклического теста
+    report.data.push_back({"Отчет ЦТ", 26, 8, safeToString(telemetry.strokeTest_timeForward)});
+    report.data.push_back({"Отчет ЦТ", 28, 8, safeToString(telemetry.strokeTest_timeBackward)});
+    report.data.push_back({"Отчет ЦТ", 30, 8, safeToString(telemetry.cyclicTest_cycles)});
+    report.data.push_back({"Отчет ЦТ", 32, 8, safeToString(telemetry.cyclicTest_rangePercent)});
+    report.data.push_back({"Отчет ЦТ", 34, 8, safeToString(telemetry.cyclicTest_totalTime)});
 
+    // Страница:Отчет ЦТ; Блок: Выполненные задания позиционера
+    // report.data.push_back({"Отчет ЦТ", 26, 8, safeToString(telemetry.???)});
+    // report.data.push_back({"Отчет ЦТ", 28, 8, safeToString(telemetry.???)});
+    // report.data.push_back({"Отчет ЦТ", 30, 8, safeToString(telemetry.???)});
+    // report.data.push_back({"Отчет ЦТ", 32, 8, safeToString(telemetry.???)});
+    // report.data.push_back({"Отчет ЦТ", 34, 8, safeToString(telemetry.???)});
+    // report.data.push_back({"Отчет ЦТ", 34, 8, safeToString(telemetry.???)});
 
+    // Страница: Отчет ЦТ; Блок: Дата
     report.data.push_back({"Отчет ЦТ", 62, 12, otherParams.date});
-    report.data.push_back({"Отчет ЦТ", 70, 4, objectInfo.FIO});
 
-    report.data.push_back({"Отчет ЦТ", 26, 5, safeToString(telemetry.dinamicReal)});
+    // Страница: Отчет ЦТ; Блок: Исполнитель
+    report.data.push_back({"Отчет ЦТ", 70, 4, objectInfo.FIO});
 
     report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
