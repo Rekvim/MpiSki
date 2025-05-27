@@ -45,8 +45,6 @@ void CTVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 62, 12, otherParams.date});
     report.data.push_back({"Отчет ЦТ", 70, 4, objectInfo.FIO});
 
-    report.data.push_back({"Отчет ЦТ", 26, 5, safeToString(telemetry.dinamicReal)});
-
     report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
     report.validation.push_back({"=Заключение!$C$1:$C$3", "E44"});

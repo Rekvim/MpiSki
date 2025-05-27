@@ -12,10 +12,12 @@ void BTCVReportBuilder::buildReport( // gg
     const QImage& image2,
     const QImage& image3
     ) {
+    // Данные по объекту
     report.data.push_back({"Отчет ЦТ", 5, 4, objectInfo.object});
     report.data.push_back({"Отчет ЦТ", 6, 4, objectInfo.manufactory});
     report.data.push_back({"Отчет ЦТ", 7, 4, objectInfo.department});
 
+    // Краткая спецификация на клапан
     report.data.push_back({"Отчет ЦТ", 5, 13, valveInfo.positionNumber});
     report.data.push_back({"Отчет ЦТ", 6, 13, valveInfo.serialNumber});
     report.data.push_back({"Отчет ЦТ", 7, 13, valveInfo.valveModel});

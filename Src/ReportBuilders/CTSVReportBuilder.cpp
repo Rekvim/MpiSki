@@ -37,6 +37,15 @@ void CTSVReportBuilder::buildReport( // !!!
 
 
     report.data.push_back({"Отчет ЦТ", 62, 12, otherParams.date});
+
+    // Результат испытаний
+    // report.data.push_back({"Отчет ЦТ", 63, 4, objectInfo.FIO});
+    // report.data.push_back({"Отчет ЦТ", 64, 4, objectInfo.FIO});
+    // report.data.push_back({"Отчет ЦТ", 65, 4, objectInfo.FIO});
+    // report.data.push_back({"Отчет ЦТ", 66, 4, objectInfo.FIO});
+    // report.data.push_back({"Отчет ЦТ", 67, 4, objectInfo.FIO});
+    // report.data.push_back({"Отчет ЦТ", 68, 4, objectInfo.FIO});
+
     report.data.push_back({"Отчет ЦТ", 70, 4, objectInfo.FIO});
 
     report.data.push_back({"Отчет ЦТ", 26, 5, safeToString(telemetry.dinamicReal)});

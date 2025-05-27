@@ -28,34 +28,36 @@ void CTCVReportBuilder::buildReport( // gg
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.positionerModel});
     report.data.push_back({"Отчет ЦТ", 15, 13, valveInfo.materialStuffingBoxSeal});
 
-    report.data.push_back({"Отчет ЦТ", 26, 5, safeToString(telemetry.dinamicReal)});
-    report.data.push_back({"Отчет ЦТ", 26, 8, safeToString(telemetry.dinamicRecomend)});
+    report.data.push_back({"Отчет", 26, 5, safeToString(telemetry.dinamicReal)});
+    report.data.push_back({"Отчет", 26, 8, safeToString(telemetry.dinamicRecomend)});
 
-    report.data.push_back({"Отчет ЦТ", 28, 5, safeToString(telemetry.dinamicIpReal)});
-    report.data.push_back({"Отчет ЦТ", 28, 8, safeToString(telemetry.dinamicIpRecomend)});
+    report.data.push_back({"Отчет", 28, 5, safeToString(telemetry.dinamicIpReal)});
+    report.data.push_back({"Отчет", 28, 8, safeToString(telemetry.dinamicIpRecomend)});
 
-    report.data.push_back({"Отчет ЦТ", 30, 5, safeToString(telemetry.strokeReal)});
-    report.data.push_back({"Отчет ЦТ", 30, 8, safeToString(telemetry.strokeRecomend)});
+    report.data.push_back({"Отчет", 30, 5, safeToString(telemetry.strokeReal)});
+    report.data.push_back({"Отчет", 30, 8, safeToString(telemetry.strokeRecomend)});
 
-    report.data.push_back({"Отчет ЦТ", 32, 5, safeToString(telemetry.rangeReal)});
-    report.data.push_back({"Отчет ЦТ", 32, 8, safeToString(telemetry.rangeRecomend)});
+    report.data.push_back({"Отчет", 32, 5, safeToString(telemetry.rangeReal)});
+    report.data.push_back({"Отчет", 32, 8, safeToString(telemetry.rangeRecomend)});
 
-    report.data.push_back({"Отчет ЦТ", 34, 5, safeToString(telemetry.rangePressure)});
+    report.data.push_back({"Отчет", 34, 5, safeToString(telemetry.rangePressure)});
 
-    report.data.push_back({"Отчет ЦТ", 36, 5, safeToString(telemetry.frictionPercent)});
+    report.data.push_back({"Отчет", 36, 5, safeToString(telemetry.frictionPercent)});
 
-    report.data.push_back({"Отчет ЦТ", 38, 5, safeToString(telemetry.friction)});
+    report.data.push_back({"Отчет", 38, 5, safeToString(telemetry.friction)});
 
-    report.data.push_back({"Отчет ЦТ", 52, 5, safeToString(telemetry.strokeTest_timeForward)});
-    report.data.push_back({"Отчет ЦТ", 52, 5, safeToString(telemetry.strokeTest_timeBackward)});
+    report.data.push_back({"Отчет", 52, 5, safeToString(telemetry.strokeTest_timeForward)});
+    report.data.push_back({"Отчет", 52, 5, safeToString(telemetry.strokeTest_timeBackward)});
 
 
-    report.data.push_back({"Отчет ЦТ", 66, 12, otherParams.date});
-    report.data.push_back({"Отчет ЦТ", 74, 4, objectInfo.FIO});
+    report.data.push_back({"Отчет", 66, 12, otherParams.date});
+    report.data.push_back({"Отчет", 74, 4, objectInfo.FIO});
 
     report.images.push_back({"Отчет", 86, 1, image1});
     report.images.push_back({"Отчет", 111, 1, image2});
     report.images.push_back({"Отчет", 136, 1, image3});
+
+    report.data.push_back({"Отчет", 159, 12, otherParams.date});
 
     report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
