@@ -775,12 +775,11 @@ void MainWindow::InitCharts()
     m_charts[Charts::Task]->setName("Task");
     m_charts[Charts::Task]->useTimeaxis(false);
     m_charts[Charts::Task]->addAxis("%.2f bar");
-
-    if (!rotate)
+    if (!rotate) {
         m_charts[Charts::Task]->addAxis("%.2f mm");
-    else
+    } else {
         m_charts[Charts::Task]->addAxis("%.2f deg");
-
+    }
     m_charts[Charts::Task]->addSeries(1, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Task]->addSeries(1,"Датчик линейных перемещений",QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Task]->addSeries(0, "Датчик давления 1", QColor::fromRgb(0, 0, 255));
@@ -792,22 +791,22 @@ void MainWindow::InitCharts()
     m_charts[Charts::Friction]->setName("Friction");
     m_charts[Charts::Friction]->addAxis("%.2f H");
     m_charts[Charts::Friction]->addSeries(0, "Трение от перемещения", QColor::fromRgb(255, 0, 0));
-    if (!rotate)
+    if (!rotate) {
         m_charts[Charts::Friction]->setLabelXformat("%.2f mm");
-    else
+    } else {
         m_charts[Charts::Friction]->setLabelXformat("%.2f deg");
+    }
 
 
     m_charts[Charts::Pressure] = ui->Chart_pressure;
     m_charts[Charts::Pressure]->setName("Pressure");
     m_charts[Charts::Pressure]->useTimeaxis(false);
     m_charts[Charts::Pressure]->setLabelXformat("%.2f bar");
-
-    if (!rotate)
+    if (!rotate) {
         m_charts[Charts::Pressure]->addAxis("%.2f mm");
-    else
+    } else {
         m_charts[Charts::Pressure]->addAxis("%.2f deg");
-
+    }
     m_charts[Charts::Pressure]->addSeries(0, "Перемещение от давления", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Pressure]->addSeries(0, "Линейная регрессия", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Pressure]->visible(1, false);
