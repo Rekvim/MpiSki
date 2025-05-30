@@ -41,15 +41,13 @@ SelectTests::SelectTests(QWidget *parent)
         QFrame* frame = it.value();
 
         connect(cb, &QCheckBox::toggled, this, [cb, frame](bool checked) {
-            QFont font = cb->font();
-            font.setWeight(checked ? QFont::DemiBold : QFont::Normal);
-            cb->setFont(font);
+            // QFont font = cb->font();
+            // font.setWeight(checked ? QFont::DemiBold : QFont::Normal);
+            // cb->setFont(font);
 
-            if (checked) {
-                frame->setStyleSheet("background-color: #E1E1E1; border-radius: 6px;");
-            } else {
-                frame->setStyleSheet("");
-            }
+            frame->setStyleSheet(checked
+                                 ? "background-color: #E1E1E1; border-radius: 12px;"
+                                 : "" );
         });
 
         cb->setChecked(cb->isChecked());
@@ -97,6 +95,11 @@ void SelectTests::setPattern(const PatternSetup& setup) {
         QSignalBlocker blocker(cb);
         cb->setChecked(false);
     }
+
+    for (QCheckBox* cb : allCheckBoxes()) {
+        emit cb->toggled(cb->isChecked());
+    }
+
     onCheckBoxChanged();
     qDebug() << "[setPattern] После выставления паттерна: m_currentPattern =" << m_currentPattern;
 }
@@ -134,8 +137,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_output_4_20_mA->isChecked() &&
         ui->check_box_imit_switch_0_3->isChecked() &&
         ui->check_box_imit_switch_3_0->isChecked() &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
-        )
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
     {
         return Pattern_CTSV;
     }
@@ -147,13 +149,14 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_pressure_3->isChecked() &&
         ui->check_box_moving->isChecked() &&
         ui->check_box_input_4_20_mA->isChecked() &&
-        ui->check_box_output_4_20_mA->isChecked() &&
-        !ui->check_box_imit_switch_0_3->isChecked() &&
-        !ui->check_box_imit_switch_3_0->isChecked() &&
-        !ui->check_box_do_1->isChecked() &&
-        !ui->check_box_do_2->isChecked() &&
-        !ui->check_box_do_3->isChecked() &&
-        !ui->check_box_do_4->isChecked())
+        ui->check_box_output_4_20_mA->isChecked())
+        // &&
+        // !ui->check_box_imit_switch_0_3->isChecked() &&
+        // !ui->check_box_imit_switch_3_0->isChecked() &&
+        // !ui->check_box_do_1->isChecked() &&
+        // !ui->check_box_do_2->isChecked() &&
+        // !ui->check_box_do_3->isChecked() &&
+        // !ui->check_box_do_4->isChecked())
     {
         return Pattern_CTCV;
     }
@@ -164,14 +167,15 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_output_4_20_mA->isChecked() &&
         ui->check_box_imit_switch_0_3->isChecked() &&
         ui->check_box_imit_switch_3_0->isChecked() &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4) &&
-        !ui->check_box_pressure_1->isChecked() &&
-        !ui->check_box_pressure_2->isChecked() &&
-        !ui->check_box_pressure_3->isChecked() &&
-        !ui->check_box_moving->isChecked() &&
-        !ui->check_box_do_2->isChecked() &&
-        !ui->check_box_do_3->isChecked() &&
-        !ui->check_box_do_4->isChecked())
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
+        // &&
+        // !ui->check_box_pressure_1->isChecked() &&
+        // !ui->check_box_pressure_2->isChecked() &&
+        // !ui->check_box_pressure_3->isChecked() &&
+        // !ui->check_box_moving->isChecked() &&
+        // !ui->check_box_do_2->isChecked() &&
+        // !ui->check_box_do_3->isChecked() &&
+        // !ui->check_box_do_4->isChecked())
     {
         return Pattern_BTSV;
     }
@@ -181,13 +185,13 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_moving->isChecked() &&
         ui->check_box_imit_switch_3_0->isChecked() &&
         ui->check_box_imit_switch_0_3->isChecked() &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4) &&
-        !ui->check_box_pressure_1->isChecked() &&
-        !ui->check_box_pressure_2->isChecked() &&
-        !ui->check_box_pressure_3->isChecked() &&
-        !ui->check_box_input_4_20_mA->isChecked() &&
-        !ui->check_box_output_4_20_mA->isChecked()
-        )
+        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
+        // &&
+        // !ui->check_box_pressure_1->isChecked() &&
+        // !ui->check_box_pressure_2->isChecked() &&
+        // !ui->check_box_pressure_3->isChecked() &&
+        // !ui->check_box_input_4_20_mA->isChecked() &&
+        // !ui->check_box_output_4_20_mA->isChecked())
     {
         return Pattern_CTV;
     }
@@ -195,15 +199,15 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
     // Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический
     if (ui->check_box_usb->isChecked() &&
         ui->check_box_input_4_20_mA->isChecked() &&
-        ui->check_box_output_4_20_mA->isChecked() &&
-        !ui->check_box_pressure_1->isChecked() &&
-        !ui->check_box_pressure_2->isChecked() &&
-        !ui->check_box_pressure_3->isChecked() &&
-        !ui->check_box_moving->isChecked() &&
-        !ui->check_box_imit_switch_0_3->isChecked() &&
-        !ui->check_box_imit_switch_3_0->isChecked() &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)
-        )
+        ui->check_box_output_4_20_mA->isChecked())
+        // &&
+        // !ui->check_box_pressure_1->isChecked() &&
+        // !ui->check_box_pressure_2->isChecked() &&
+        // !ui->check_box_pressure_3->isChecked() &&
+        // !ui->check_box_moving->isChecked() &&
+        // !ui->check_box_imit_switch_0_3->isChecked() &&
+        // !ui->check_box_imit_switch_3_0->isChecked() &&
+        // (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
     {
         return Pattern_BTCV;
     }
