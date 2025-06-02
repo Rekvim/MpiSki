@@ -182,6 +182,13 @@ void Program::UpdateSensors()
             break;
         }
     }
+
+    {
+        Sensor *feedbackSensor = m_mpi.GetDAC();
+        QString fbValue = feedbackSensor->GetFormatedValue();
+        emit SetText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
+    }
+
     if (m_testing)
         emit SetTask(m_mpi.GetDAC()->GetValue());
 

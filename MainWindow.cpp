@@ -310,7 +310,6 @@ void MainWindow::SetRegistry(Registry *registry)
     OtherParameters *otherParameters = m_registry->GetOtherParameters();
 
     ui->lineEdit_date->setText(otherParameters->date);
-    ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
 
     ui->lineEdit_object->setText(objectInfo->object);
     ui->lineEdit_manufacture->setText(objectInfo->manufactory);
@@ -319,13 +318,19 @@ void MainWindow::SetRegistry(Registry *registry)
 
     ui->lineEdit_positionNumber->setText(valveInfo->positionNumber);
     ui->lineEdit_manufacturer->setText(valveInfo->manufacturer);
+    ui->lineEdit_valveModel->setText(valveInfo->valveModel);
     ui->lineEdit_serialNumber->setText(valveInfo->serialNumber);
     ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
+    ui->lineEdit_driveModel->setText(valveInfo->driveModel);
     ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
+    ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
+    ui->lineEdit_safePosition->setText(otherParameters->safePosition);
     ui->lineEdit_dinamicRecomend->setText(QString::number(valveInfo->dinamicError, 'f', 2));
+    ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo->materialStuffingBoxSeal);
+
+
     ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
     ui->lineEdit_rangeRecomend->setText(valveInfo->driveRange);
-    ui->lineEdit_valveModel->setText(valveInfo->valveModel);
 
     if (valveInfo->safePosition != 0) {
         m_stepTestSettings->reverse();

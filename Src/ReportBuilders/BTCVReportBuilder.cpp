@@ -13,6 +13,10 @@ void BTCVReportBuilder::buildReport(
     const QImage& image3
     )
 {
+    Q_UNUSED(image1);
+    Q_UNUSED(image2);
+    Q_UNUSED(image3);
+
     // Страница: Отчет ЦТ; Блок: Данные по объекту
     report.data.push_back({"Отчет ЦТ", 5, 4, objectInfo.object});
     report.data.push_back({"Отчет ЦТ", 6, 4, objectInfo.manufactory});
@@ -26,9 +30,9 @@ void BTCVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.DN + "/" + valveInfo.PN});
     report.data.push_back({"Отчет ЦТ", 10, 13, valveInfo.positionerModel});
     report.data.push_back({"Отчет ЦТ", 11, 13, safeToString(telemetry.supplyPressure)});
-    report.data.push_back({"Отчет ЦТ", 12, 13, safeToString(valveInfo.safePosition)});
-    report.data.push_back({"Отчет ЦТ", 13, 13, safeToString(valveInfo.strokeMovement)});
-    report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.positionerModel});
+    report.data.push_back({"Отчет ЦТ", 12, 13, otherParams.safePosition});
+    report.data.push_back({"Отчет ЦТ", 13, 13, valveInfo.driveModel});
+    report.data.push_back({"Отчет ЦТ", 14, 13, otherParams.strokeMovement});
     report.data.push_back({"Отчет ЦТ", 15, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат циклического теста

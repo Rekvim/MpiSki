@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>779</width>
+    <width>1073</width>
     <height>926</height>
    </rect>
   </property>
@@ -58,7 +58,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>340</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -133,7 +133,7 @@
          <widget class="QLabel" name="label_manufacturer">
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -193,7 +193,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -253,7 +253,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -313,7 +313,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -373,7 +373,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -433,7 +433,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -486,14 +486,14 @@
         <item>
          <widget class="QLabel" name="label_dinamicError">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -510,12 +510,43 @@
            </font>
           </property>
           <property name="text">
-           <string>Динамическая ошибка</string>
+           <string>Тип позиционера / Динамическая ошибка</string>
           </property>
          </widget>
         </item>
         <item>
+         <widget class="QComboBox" name="comboBox_positionerType">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>Интеллектуальный ЭПП</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ЭПП</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ПП</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
          <widget class="QComboBox" name="comboBox_dinamicError">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="font">
            <font>
             <family>Segoe UI</family>
@@ -551,7 +582,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -621,7 +652,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -681,7 +712,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -741,7 +772,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -811,7 +842,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -881,7 +912,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -941,7 +972,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -1010,7 +1041,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -1073,7 +1104,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -1161,7 +1192,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -1236,7 +1267,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>330</width>
+            <width>370</width>
             <height>0</height>
            </size>
           </property>
@@ -1279,6 +1310,26 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_materialStuffingBoxSeal">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>PTFE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Graphite</string>
+           </property>
+          </item>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -1301,6 +1352,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_clear">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Очистить</string>
        </property>
@@ -1308,6 +1364,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Далее</string>
        </property>

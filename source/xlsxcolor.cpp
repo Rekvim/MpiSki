@@ -7,7 +7,7 @@
 
 #include "xlsxcolor_p.h"
 #include "xlsxstyles_p.h"
-#include "xlsxutility_p.h"
+// #include "xlsxutility_p.h"
 
 QT_BEGIN_NAMESPACE_XLSX
 
@@ -121,9 +121,9 @@ QColor XlsxColor::fromARGBString(const QString &c)
 {
     QColor color;
     if (c.startsWith(u'#')) {
-        color.setNamedColor(c);
+        color.fromString(c);
     } else {
-        color.setNamedColor(QLatin1Char('#') + c);
+        color.fromString(QLatin1Char('#') + c);
     }
     return color;
 }
