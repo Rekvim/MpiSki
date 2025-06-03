@@ -1,5 +1,4 @@
 #include "CyclicTestSolenoid.h"
-#include <algorithm>
 
 CyclicTestSolenoid::CyclicTestSolenoid(QObject *parent)
     : MainTest(parent, /*isCyclic=*/false)
@@ -50,7 +49,6 @@ void CyclicTestSolenoid::Process()
 
             emit SetDAC(pct);
 
-            // Ждём начала движения
             QList<quint16> lineSensor;
             QElapsedTimer motionTimer;
             motionTimer.start();
@@ -63,16 +61,14 @@ void CyclicTestSolenoid::Process()
 
                 if (lineSensor.size() > 1 &&
                     qAbs(lineSensor.first() - lineSensor.last()) > 10) {
-                    break;  // движение началось
+                    break;
                 }
 
                 QThread::msleep(50);
             }
 
-            // Засекаем начало
             quint64 movementStart = timer.elapsed();
 
-            // Ждём остановки
             lineSensor.clear();
             QElapsedTimer stopTimer;
             stopTimer.start();
@@ -85,7 +81,7 @@ void CyclicTestSolenoid::Process()
 
                 if (lineSensor.size() == 10 &&
                     qAbs(lineSensor.first() - lineSensor.last()) < 10) {
-                    break;  // движение завершилось
+                    break;
                 }
 
                 QThread::msleep(50);

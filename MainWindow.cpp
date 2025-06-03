@@ -608,6 +608,14 @@ void MainWindow::GetMainTestParameters(MainTestSettings::TestParameters &paramet
 {
     if (m_mainTestSettings->exec() == QDialog::Accepted) {
         parameters = m_mainTestSettings->getParameters();
+
+        parameters = m_mainTestSettings->getParameters();
+
+        qint64 totalMs = m_mainTestSettings->totalTestTimeMillis();
+
+        QTime t = QTime(0, 0).addMSecs(totalMs);
+        ui->lineEdit_testDuration->setText(t.toString("hh:mm:ss.zzz"));
+
         return;
     }
 

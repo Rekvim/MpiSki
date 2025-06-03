@@ -26,8 +26,8 @@ void MainTest::Process()
                       + m_parameters.dac_min;
 
         time += m_parameters.response;
-        quint64 current_time = QDateTime::currentMSecsSinceEpoch();
-        SetDACBlocked(dac, time < current_time ? 0 : (time - current_time));
+        quint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+        SetDACBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
         if (m_terminate) {
             emit EndTest();
@@ -48,8 +48,8 @@ void MainTest::Process()
                       + m_parameters.dac_min;
 
         time += m_parameters.response;
-        quint64 current_time = QDateTime::currentMSecsSinceEpoch();
-        SetDACBlocked(dac, time < current_time ? 0 : (time - current_time));
+        quint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+        SetDACBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
         if (m_terminate) {
             emit EndTest();
@@ -69,54 +69,54 @@ void MainTest::Process()
     QVector<QVector<QPointF>> points;
     emit GetPoints(points);
 
-    Limits regression_limits = GetLimits(points[2], points[3]);
-    Regression regression_forward = CalculateRegression(points[2], regression_limits);
-    Regression regression_backward = CalculateRegression(points[3], regression_limits);
+    Limits regressionLimits = GetLimits(points[2], points[3]);
+    Regression regressionForward = CalculateRegression(points[2], regressionLimits);
+    Regression regressionBackward = CalculateRegression(points[3], regressionLimits);
 
-    QVector<QPointF> points_forward = GetRegressionPoints(regression_forward, regression_limits);
-    QVector<QPointF> points_backward = GetRegressionPoints(regression_backward, regression_limits);
+    QVector<QPointF> pointsForward = GetRegressionPoints(regressionForward, regressionLimits);
+    QVector<QPointF> pointsBackward = GetRegressionPoints(regressionBackward, regressionLimits);
 
-    points_forward.append({points_backward.rbegin(), points_backward.rend()});
-    points_forward.push_back(points_forward.first());
+    pointsForward.append({pointsBackward.rbegin(), pointsBackward.rend()});
+    pointsForward.push_back(pointsForward.first());
 
-    emit AddRegression(points_forward);
+    emit AddRegression(pointsForward);
 
-    QVector<QPointF> friction_points = GetFrictionPoints(points[2], points[3], regression_limits);
+    QVector<QPointF> frictionPoints = GetFrictionPoints(points[2], points[3], regressionLimits);
 
-    emit AddFriction(friction_points);
+    emit AddFriction(frictionPoints);
 
-    TestResults test_results;
+    TestResults testResults;
 
-    qreal y_mean = (regression_limits.maxY + regression_limits.minY) / 2.0;
+    qreal y_mean = (regressionLimits.maxY + regressionLimits.minY) / 2.0;
 
-    test_results.pressureDiff = qAbs((y_mean - regression_forward.b) / regression_forward.k
-                                      - (y_mean - regression_backward.b) / regression_backward.k);
+    testResults.pressureDiff = qAbs((y_mean - regressionForward.b) / regressionForward.k
+                                      - (y_mean - regressionBackward.b) / regressionBackward.k);
 
     auto [mean, max] = GetMeanMax(points[0], points[1]);
 
-    test_results.dinErrorMean = mean / 2;
-    test_results.dinErrorMax = max;
+    testResults.dinErrorMean = mean / 2;
+    testResults.dinErrorMax = max;
 
-    qreal range = qAbs((regression_limits.minY - regression_forward.b) / regression_forward.k
-                       - (regression_limits.maxY - regression_forward.b) / regression_forward.k);
+    qreal range = qAbs((regressionLimits.minY - regressionForward.b) / regressionForward.k
+                       - (regressionLimits.maxY - regressionForward.b) / regressionForward.k);
 
-    test_results.friction = 50.0 * test_results.pressureDiff / range;
+    testResults.friction = 50.0 * testResults.pressureDiff / range;
 
-    auto [low_limit, high_limit] = GetRangeLimits(regression_forward,
-                                                  regression_backward,
-                                                  regression_limits);
+    auto [lowLimit, highLimit] = GetRangeLimits(regressionForward,
+                                                  regressionBackward,
+                                                  regressionLimits);
 
-    test_results.lowLimit = low_limit;
-    test_results.highLimit = high_limit;
+    testResults.lowLimit = lowLimit;
+    testResults.highLimit = highLimit;
 
-    auto [spring_low, spring_high] = GetSpringLimits(regression_forward,
-                                                     regression_backward,
-                                                     regression_limits);
+    auto [springLow, springHigh] = GetSpringLimits(regressionForward,
+                                                     regressionBackward,
+                                                     regressionLimits);
 
-    test_results.springLow = spring_low;
-    test_results.springHigh = spring_high;
+    testResults.springLow = springLow;
+    testResults.springHigh = springHigh;
 
-    emit Results(test_results);
+    emit Results(testResults);
     if (m_endTestAfterProcess) {
         emit EndTest();
     }
@@ -266,72 +266,72 @@ QVector<QPointF> MainTest::GetRegressionPoints(Regression regression, Limits lim
     return result;
 }
 
-QVector<QPointF> MainTest::GetFrictionPoints(QVector<QPointF> &points_forward,
-                                             QVector<QPointF> &points_backward,
+QVector<QPointF> MainTest::GetFrictionPoints(QVector<QPointF> &pointsForward,
+                                             QVector<QPointF> &pointsBackward,
                                              Limits limits)
 {
-    const quint16 Sections = qMin(points_forward.size(), points_backward.size()) / 3;
+    const quint16 Sections = qMin(pointsForward.size(), pointsBackward.size()) / 3;
 
     qreal step = (limits.maxY - limits.minY) / Sections;
 
-    QVector<quint16> points_num_forward(Sections);
-    QVector<quint16> points_num_backward(Sections);
-    QVector<qreal> points_value_forward(Sections);
-    QVector<qreal> points_value_backward(Sections);
+    QVector<quint16> pointsNumForward(Sections);
+    QVector<quint16> pointsNumBackward(Sections);
+    QVector<qreal> pointsValueForward(Sections);
+    QVector<qreal> pointsValueBackward(Sections);
 
-    for (auto point : points_forward) {
-        quint16 section_num = qFloor((point.y() - limits.minY) / step);
-        section_num = qMin(section_num, quint16(Sections - 1));
-        ++points_num_forward[section_num];
-        points_value_forward[section_num] += point.x();
+    for (auto point : pointsForward) {
+        quint16 sectionNum = qFloor((point.y() - limits.minY) / step);
+        sectionNum = qMin(sectionNum, quint16(Sections - 1));
+        ++pointsNumForward[sectionNum];
+        pointsValueForward[sectionNum] += point.x();
     }
 
-    for (auto point : points_backward) {
-        quint16 section_num = qFloor((point.y() - limits.minY) / step);
-        section_num = qMin(section_num, quint16(Sections - 1));
-        ++points_num_backward[section_num];
-        points_value_backward[section_num] += point.x();
+    for (auto point : pointsBackward) {
+        quint16 sectionNum = qFloor((point.y() - limits.minY) / step);
+        sectionNum = qMin(sectionNum, quint16(Sections - 1));
+        ++pointsNumBackward[sectionNum];
+        pointsValueBackward[sectionNum] += point.x();
     }
 
     QVector<QPointF> result;
 
     for (quint16 i = Sections * 0.05; i < Sections * 0.95; ++i) {
-        if (points_num_forward[i] == 0 || points_num_backward[i] == 0)
+        if (pointsNumForward[i] == 0 || pointsNumBackward[i] == 0)
             continue;
         result.push_back({step * i + limits.minY,
-                          qAbs(points_value_forward[i] / points_num_forward[i]
-                               - points_value_backward[i] / points_num_backward[i])});
+                          qAbs(pointsValueForward[i] / pointsNumForward[i]
+                               - pointsValueBackward[i] / pointsNumBackward[i])});
     }
 
     return result;
 }
 
-QPair<qreal, qreal> MainTest::GetMeanMax(QVector<QPointF> &points_forward,
-                                         QVector<QPointF> &points_backward)
+QPair<qreal, qreal> MainTest::GetMeanMax(QVector<QPointF> &pointsForward,
+                                         QVector<QPointF> &pointsBackward)
 {
-    Limits limits = GetLimits(points_forward, points_backward);
+    Limits limits = GetLimits(pointsForward, pointsBackward);
 
-    const quint16 Sections = qMin(points_forward.size(), points_backward.size()) / 3;
+    const quint16 Sections = qMin(pointsForward.size(), pointsBackward.size()) / 3;
 
     qreal step = (limits.maxY - limits.minY) / Sections;
 
-    QVector<quint16> points_num_forward(Sections);
-    QVector<quint16> points_num_backward(Sections);
-    QVector<qreal> points_value_forward(Sections);
-    QVector<qreal> points_value_backward(Sections);
+    QVector<quint16> pointsNumForward(Sections);
+    QVector<quint16> pointsNumBackward(Sections);
+    QVector<qreal> pointsValueForward(Sections);
+    QVector<qreal> pointsValueBackward(Sections);
 
-    for (auto point : points_forward) {
-        quint16 section_num = qFloor((point.y() - limits.minY) / step);
-        section_num = qMin(section_num, quint16(Sections - 1));
-        ++points_num_forward[section_num];
-        points_value_forward[section_num] += point.x();
+    for (auto point : pointsForward) {
+        quint16 sectionNum = qFloor((point.y() - limits.minY) / step);
+        sectionNum = qMin(sectionNum, quint16(Sections - 1));
+        ++pointsNumForward[sectionNum];
+        pointsValueForward[sectionNum] += point.x();
     }
 
-    for (auto point : points_backward) {
-        quint16 section_num = qFloor((point.y() - limits.minY) / step);
-        section_num = qMin(section_num, quint16(Sections - 1));
-        ++points_num_backward[section_num];
-        points_value_backward[section_num] += point.x();
+    for (auto point : pointsBackward) {
+        quint16 sectionNum = qFloor((point.y() - limits.minY) / step);
+        sectionNum = qMin(sectionNum, quint16(Sections - 1));
+        ++pointsNumBackward[sectionNum];
+        pointsValueBackward[sectionNum] += point.x();
     }
 
     qreal sum = 0;
@@ -339,11 +339,11 @@ QPair<qreal, qreal> MainTest::GetMeanMax(QVector<QPointF> &points_forward,
     qreal max = 0;
 
     for (quint16 i = Sections * 0.05; i < Sections * 0.95; ++i) {
-        if (points_num_forward[i] == 0 || points_num_backward[i] == 0)
+        if (pointsNumForward[i] == 0 || pointsNumBackward[i] == 0)
             continue;
 
-        qreal diff = qAbs(points_value_forward[i] / points_num_forward[i]
-                          - points_value_backward[i] / points_num_backward[i]);
+        qreal diff = qAbs(pointsValueForward[i] / pointsNumForward[i]
+                          - pointsValueBackward[i] / pointsNumBackward[i]);
 
         sum += diff;
         ++num;

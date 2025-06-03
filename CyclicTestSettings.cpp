@@ -2,8 +2,6 @@
 #include "CyclicTestSettings.h"
 #include "ui_CyclicTestSettings.h"
 
-#include <QMessageBox>
-#include <QInputDialog>
 #include "./Src/ValidatorFactory/RegexPatterns.h"
 
 CyclicTestSettings::CyclicTestSettings(QWidget *parent)

@@ -9,7 +9,7 @@
 #include <QMessageBox>
 #include <QTimer>
 
-#include "Mpi.h"
+#include "./Src/MPI/MPI.h"
 #include "OtherTestSettings.h"
 #include "StepTestSettings.h"
 #include "CyclicTestSettings.h"

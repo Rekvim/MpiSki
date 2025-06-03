@@ -34,6 +34,7 @@ private:
     QJsonObject m_valveDataObj;
 
 private slots:
+    void onPositionerTypeChanged(int index);
     void PositionChanged(const QString &position);
     void ButtonClick();
     void StrokeChanged(quint16 n);

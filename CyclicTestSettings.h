@@ -4,6 +4,8 @@
 #pragma once
 #include <QDialog>
 #include <QTime>
+#include <QMessageBox>
+#include <QInputDialog>
 
 namespace Ui {
 class CyclicTestSettings;

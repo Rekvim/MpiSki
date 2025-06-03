@@ -16,6 +16,8 @@ include(./QXlsx.pri)
 
 SOURCES += \
     CyclicTestSettings.cpp \
+    Src/MPI/MPI.cpp \
+    Src/MPI/MpiSettings.cpp \
     Src/ReportBuilders/BTCVReportBuilder.cpp \
     Src/ReportBuilders/BTSVReportBuilder.cpp \
     Src/ReportBuilders/CTCVReportBuilder.cpp \
@@ -36,8 +38,6 @@ SOURCES += \
     main.cpp \
     MainWindow.cpp \
     MainTestSettings.cpp \
-    Mpi.cpp \
-    MpiSettings.cpp \
     MyChart.cpp \
     ObjectWindow.cpp \
     OtherTestSettings.cpp \
@@ -52,8 +52,6 @@ HEADERS += \
     CyclicTestSettings.h \
     MainWindow.h \
     MainTestSettings.h \
-    Mpi.h \
-    MpiSettings.h \
     MyChart.h \
     ObjectWindow.h \
     OtherTestSettings.h \
@@ -61,6 +59,8 @@ HEADERS += \
     Registry.h \
     SelectTests.h \
     Sensor.h \
+    Src/MPI/MPI.h \
+    Src/MPI/MpiSettings.h \
     Src/ReportBuilders/BTCVReportBuilder.h \
     Src/ReportBuilders/BTSVReportBuilder.h \
     Src/ReportBuilders/CTCVReportBuilder.h \
