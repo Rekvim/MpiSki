@@ -8,9 +8,12 @@ StepTestSettings::StepTestSettings(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->pushButton_change_value->setEnabled(false);
+    ui->pushButton_delete_value->setEnabled(false);
+
     connect(ui->listWidget_value, &QListWidget::currentRowChanged, this, [=](int v) {
         ui->pushButton_change_value->setEnabled(v >= 0);
-        ui->pushButton_delete_value->setEnabled((v >= 0) & (ui->listWidget_value->count() > 1));
+        ui->pushButton_delete_value->setEnabled((v >= 0) && (ui->listWidget_value->count() > 1));
     });
 
     connect(ui->pushButton_add_value, &QPushButton::clicked, this, [=]() {

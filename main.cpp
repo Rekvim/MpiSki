@@ -27,9 +27,8 @@ int main(int argc, char *argv[])
         return 0;
 
     SelectTests selectTests;
-    if (selectTests.exec() == QDialog::Rejected) {
+    if (selectTests.exec() == QDialog::Rejected)
         return 0;
-    }
 
     ValveWindow valveWindow;
     valveWindow.SetRegistry(&registry);
@@ -41,8 +40,8 @@ int main(int argc, char *argv[])
     auto cts = selectTests.getCTS();
 
     mainWindow.SetPatternType(pattern);
+    // mainWindow.SetSensorsNumber(3);
     mainWindow.SetBlockCTS(cts);
-    mainWindow.SetSensorsNumber(3);
     mainWindow.SetRegistry(&registry);
     mainWindow.show();
 

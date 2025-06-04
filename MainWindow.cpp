@@ -26,11 +26,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_reportSaver = new ReportSaver(this);
 
-    ui->groupBox_DO->setVisible(false);
+    ui->groupBox_DO->setVisible(true);
+
+    if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) {
+        ui->groupBox_DO->setVisible(true);
+    }
 
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
     ui->tabWidget->setTabEnabled(2, false);
     ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
 
     ui->checkBox_DI1->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_DI1->setFocusPolicy(Qt::NoFocus);
@@ -413,111 +418,53 @@ void MainWindow::SetSolenoidResults(double forwardSec, double backwardSec, quint
 
 void MainWindow::SetSensorsNumber(quint8 num)
 {
-    num = 1;
     bool noSensors = (num == 0);
 
-    std::array<bool, 6> tabState = {true, true, true, true, true, true};
-
-    if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) {
-        ui->groupBox_DO->setVisible(true);
-    }
+    ui->groupBox_DO->setEnabled(!noSensors);
 
     if (m_blockCTS.moving) {
-        // ui->groupBox_linear_motion_sensor->setVisible(true);
-
         ui->label_startValue->setVisible(true);
         ui->label_endValue->setVisible(true);
-
         ui->label_start_positio_sensor->setVisible(true);
         ui->label_end_positio_sensor->setVisible(true);
     } else {
-        // ui->groupBox_linear_motion_sensor->setVisible(false);
-
         ui->label_startValue->setVisible(false);
         ui->label_endValue->setVisible(false);
-
-        // ui->label_start_positio_sensor->setVisible(false);
-        // ui->label_end_positio_sensor->setVisible(false);
+        ui->label_start_positio_sensor->setVisible(false);
+        ui->label_end_positio_sensor->setVisible(false);
     }
 
-    std::vector<CTSRule> rules = {
-        // 3) Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-        {
-            [](const SelectTests::BlockCTS& cts) {
-                return cts.usb &&
-                       cts.pressure_1 &&
-                       cts.pressure_2 &&
-                       cts.pressure_3 &&
-                       cts.moving &&
-                       cts.input_4_20_mA &&
-                       cts.output_4_20_mA &&
-                       cts.imit_switch_0_3 &&
-                       cts.imit_switch_3_0 &&
-                       (cts.do_1 || cts.do_2 || cts.do_3 || cts.do_4);
-            },
-            {true, true, true, true, true, true}
-        },
-        // 5) Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-        {
-            [](const SelectTests::BlockCTS& cts) {
-                return cts.usb &&
-                       cts.pressure_1 &&
-                       cts.pressure_2 &&
-                       cts.pressure_3 &&
-                       cts.moving &&
-                       cts.input_4_20_mA &&
-                       cts.output_4_20_mA;
-            },
-            {true, true, true, true, true, true}
-        },
-        // 2) Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический
-        {
-            [](const SelectTests::BlockCTS& cts) {
-                return cts.usb &&
-                       cts.input_4_20_mA &&
-                       cts.output_4_20_mA &&
-                       cts.imit_switch_0_3 &&
-                       cts.imit_switch_3_0 &&
-                       (cts.do_1 || cts.do_2 || cts.do_3 || cts.do_4);
-            },
-            {true, false, true, false, true, true}
-        },
-        // 1) Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический
-        {
-            [](const SelectTests::BlockCTS& cts) {
-                return cts.usb &&
-                       cts.imit_switch_0_3 &&
-                       cts.imit_switch_3_0 &&
-                       (cts.do_1 || cts.do_2 || cts.do_3 || cts.do_4);
-            },
-            {true, false, true, false, true, true}
-        },
-        // 4) Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический — все вкладки
-        {
-            [](const SelectTests::BlockCTS& cts) {
-                return cts.usb &&
-                       cts.input_4_20_mA &&
-                       cts.output_4_20_mA;
-            },
-            {true, false, true, false, true, true}
-        }
-    };
-
-    for (const auto& rule : rules) {
-        if (rule.condition(m_blockCTS)) {
-            tabState = rule.pattern;
-            break;
-        }
+    for (int i = 0; i < ui->tabWidget->count(); ++i) {
+        ui->tabWidget->setTabEnabled(i, true);
     }
 
-    for (size_t i = 0; i < tabState.size(); ++i)
-        ui->tabWidget->setTabEnabled(i, tabState[i]);
+    switch (m_patternType) {
+    case SelectTests::Pattern_CTV:
+        ui->tabWidget->setTabEnabled(1, false);
+        ui->tabWidget->setTabEnabled(3, false);
+        break;
+    case SelectTests::Pattern_BTSV:
+        ui->tabWidget->setTabEnabled(1, false);
+        ui->tabWidget->setTabEnabled(3, false);
+        break;
+    case SelectTests::Pattern_CTSV:
+        break;
+    case SelectTests::Pattern_BTCV:
+        ui->tabWidget->setTabEnabled(1, false);
+        ui->tabWidget->setTabEnabled(3, false);
+        break;
+    case SelectTests::Pattern_CTCV:
+        break;
+    default:
+        break;
+    }
 
+    ui->pushButton_main_start->setEnabled(num > 1);
     ui->verticalSlider_task->setEnabled(!noSensors);
     ui->doubleSpinBox_task->setEnabled(!noSensors);
     ui->pushButton_stroke_start->setEnabled(!noSensors);
     ui->pushButton_tests_start->setEnabled(!noSensors);
-    // ui->pushButton_main_start->setEnabled(num > 1);
+    ui->pushButton_cyclicSolenoidStart->setEnabled(!noSensors);
 
     if (num > 0) {
         ui->checkBox_task->setVisible(num > 1);
