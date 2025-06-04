@@ -145,15 +145,8 @@ void ValveWindow::PositionChanged(const QString &position)
     ui->lineEdit_positionNumber->setText(m_valveInfo->positionNumber);
     ui->lineEdit_driveModel->setText(m_valveInfo->driveModel);
     ui->lineEdit_driveRange->setText(m_valveInfo->driveRange);
-    // ui->lineEdit_materialStuffingBoxSeal->setText(m_valveInfo->materialStuffingBoxSeal);
-    // ui->comboBox_materialStuffingBoxSeal->setCurrentIndex(m_valveInfo->materialStuffingBoxSeal);
 
     ui->doubleSpinBox_driveDiameter->setValue(m_valveInfo->driveDiameter);
-
-    int index = ui->comboBox_dinamicError->findText(QString::number(m_valveInfo->dinamicError, 'f', 1).replace(".", ","));
-    if (index != -1) {
-        ui->comboBox_dinamicError->setCurrentIndex(index);
-    }
 
     ui->comboBox_safePosition->setCurrentIndex(m_valveInfo->safePosition);
     ui->comboBox_driveType->setCurrentIndex(m_valveInfo->driveType);
