@@ -69,6 +69,7 @@ private slots:
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
+
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
 
@@ -76,6 +77,8 @@ private slots:
     void ButtonStartStroke();
     void ButtonStartOptional();
     void ButtonStartCyclicSolenoid();
+
+    void onCountdownTimeout();
 
 private:
     Ui::MainWindow *ui;
@@ -87,6 +90,10 @@ private:
     ReportSaver *m_reportSaver = nullptr;
     Program *m_program;
     QThread *m_programthread;
+
+    QTimer* m_durationTimer;
+    QElapsedTimer m_elapsedTimer;
+    qint64 m_totalTestMs;
 
     ReportSaver::Report m_report;
 

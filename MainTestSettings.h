@@ -29,10 +29,14 @@ public:
         quint16 response;
         quint16 dac_min;
         quint16 dac_max;
+        bool is_cyclic = false;
+        quint16 num_cycles;
+        quint16 cycle_time;
     };
 
     TestParameters getParameters() const;
     qint64 totalTestTimeMillis() const;
+
 private:
     Ui::MainTestSettings *ui;
 };
