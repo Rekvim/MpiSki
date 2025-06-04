@@ -18,6 +18,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_testing = false;
 
+    m_durationTimer = new QTimer(this);
+    m_durationTimer->setInterval(100);
+    connect(m_durationTimer, &QTimer::timeout, this, &MainWindow::onCountdownTimeout);
+
     m_mainTestSettings = new MainTestSettings(this);
     m_stepTestSettings = new StepTestSettings(this);
     m_responseTestSettings = new OtherTestSettings(this);
@@ -26,10 +30,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_reportSaver = new ReportSaver(this);
 
-    ui->groupBox_DO->setVisible(true);
-
     if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) {
         ui->groupBox_DO->setVisible(true);
+        ui->groupBox_DO->setEnabled(false);
     }
 
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
@@ -306,6 +309,25 @@ MainWindow::~MainWindow()
     m_programthread->wait();
 }
 
+void MainWindow::onCountdownTimeout()
+{
+    qint64 elapsedMs = m_elapsedTimer.elapsed();
+
+    qint64 remainingMs = m_totalTestMs - elapsedMs;
+    if (remainingMs <= 0) {
+        remainingMs = 0;
+    }
+
+    QTime t(0, 0);
+    t = t.addMSecs(remainingMs);
+
+    ui->lineEdit_testDuration->setText(t.toString("hh:mm:ss.zzz"));
+
+    if (remainingMs == 0) {
+        m_durationTimer->stop();
+    }
+}
+
 void MainWindow::SetRegistry(Registry *registry)
 {
     m_registry = registry;
@@ -466,6 +488,7 @@ void MainWindow::SetSensorsNumber(quint8 num)
     ui->pushButton_tests_start->setEnabled(!noSensors);
     ui->pushButton_cyclicSolenoidStart->setEnabled(!noSensors);
 
+
     if (num > 0) {
         ui->checkBox_task->setVisible(num > 1);
         ui->checkBox_line->setVisible(num > 1);
@@ -556,11 +579,12 @@ void MainWindow::GetMainTestParameters(MainTestSettings::TestParameters &paramet
     if (m_mainTestSettings->exec() == QDialog::Accepted) {
         parameters = m_mainTestSettings->getParameters();
 
-        parameters = m_mainTestSettings->getParameters();
-
         qint64 totalMs = m_mainTestSettings->totalTestTimeMillis();
-
-        QTime t = QTime(0, 0).addMSecs(totalMs);
+        m_totalTestMs = totalMs;
+        m_elapsedTimer.start();
+        m_durationTimer->start();
+        QTime t(0, 0);
+        t = t.addMSecs(totalMs);
         ui->lineEdit_testDuration->setText(t.toString("hh:mm:ss.zzz"));
 
         return;
