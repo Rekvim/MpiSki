@@ -1,5 +1,4 @@
 #include "CTVReportBuilder.h"
-#include "ui_MainWindow.h"
 
 CTVReportBuilder::CTVReportBuilder() {}
 
