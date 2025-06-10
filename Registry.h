@@ -24,8 +24,13 @@ struct ValveInfo
     QString DN = "";
     QString PN = "";
     QString positionerModel = "";
-
+    QString positionerType = "";
     qreal dinamicError = 0.0;
+
+    QString solenoidValveModel = "";
+    QString limitSwitchModel = "";
+    QString positionSensorModel = "";
+
     quint32 strokeMovement = 0;
     QString strokValve = "";
     QString driveModel = "";

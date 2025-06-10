@@ -86,6 +86,8 @@ void CyclicTestSettings::onEditDelayClicked()
     if (ok) {
         item->setText(QString::number(v));
     }
+
+    // Сделайть в минутах
 }
 
 void CyclicTestSettings::onRemoveDelayClicked()

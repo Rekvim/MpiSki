@@ -326,6 +326,8 @@ void MainWindow::onCountdownTimeout()
     if (remainingMs == 0) {
         m_durationTimer->stop();
     }
+
+    // Учитывать время задержки и обратного хода
 }
 
 void MainWindow::SetRegistry(Registry *registry)
@@ -431,9 +433,9 @@ void MainWindow::SetSolenoidResults(double forwardSec, double backwardSec, quint
 {
     QString forwardText = QTime(0, 0).addMSecs(forwardSec).toString("mm:ss.zzz");
     QString backwardText = QTime(0, 0).addMSecs(backwardSec).toString("mm:ss.zzz");
-    ui->lineEdit_cyclicTest_forwardTime->setText(QString::number(forwardSec, 'f', 2));
-    ui->lineEdit_cyclicTest_backwardTime->setText(QString::number(backwardSec, 'f', 2));
-    ui->lineEdit_cyclicTest_rangePercent->setText(QString::number(rangePercent, 'f', 1));
+    // ui->lineEdit_cyclicTest_forwardTime->setText(QString::number(forwardSec, 'f', 2));
+    // ui->lineEdit_cyclicTest_backwardTime->setText(QString::number(backwardSec, 'f', 2));
+    // ui->lineEdit_cyclicTest_rangePercent->setText(QString::number(rangePercent, 'f', 1));
     ui->lineEdit_cyclicTest_totalTime->setText(QString::number(totalTimeSec, 'f', 1));
     ui->lineEdit_cyclicTest_cycles->setText(QString::number(cycles));
 }
@@ -814,6 +816,7 @@ void MainWindow::InitCharts()
     m_charts[Charts::Trend] = ui->Chart_trend;
     m_charts[Charts::Trend]->useTimeaxis(true);
     m_charts[Charts::Trend]->addAxis("%.2f%%");
+    // ДОБАВИТЬ ШКАЛУ ДАВЛЕНИЯ 1
     m_charts[Charts::Trend]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Trend]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Trend]->setMaxRange(60000);
@@ -938,9 +941,9 @@ TestTelemetryData MainWindow::collectTestTelemetryData() const {
     data.strokeTest_timeForward = ui->lineEdit_strokeTest_forwardTime->text().toDouble();
     data.strokeTest_timeBackward = ui->lineEdit_strokeTest_backwardTime->text().toDouble();
 
-    data.strokeTest_timeForward = ui->lineEdit_cyclicTest_forwardTime->text().toDouble();
-    data.strokeTest_timeBackward = ui->lineEdit_cyclicTest_backwardTime->text().toDouble();
-    data.cyclicTest_rangePercent = ui->lineEdit_cyclicTest_rangePercent->text().toDouble();
+    // data.strokeTest_timeForward = ui->lineEdit_cyclicTest_forwardTime->text().toDouble();
+    // data.strokeTest_timeBackward = ui->lineEdit_cyclicTest_backwardTime->text().toDouble();
+    // data.cyclicTest_rangePercent = ui->lineEdit_cyclicTest_rangePercent->text().toDouble();
     data.cyclicTest_totalTime = ui->lineEdit_cyclicTest_totalTime->text().toDouble();
     data.cyclicTest_cycles = ui->lineEdit_cyclicTest_cycles->text().toInt();
 

@@ -5,6 +5,7 @@ QValidator* ValidatorFactory::create(Type type, QObject* parent)
 {
     static const QHash<Type, QRegularExpression> patterns = {
         { Type::Digits,         QRegularExpression(RegexPatterns::digits()) },
+        { Type::DigitsDot, QRegularExpression(RegexPatterns::digitsDot()) },
         { Type::DigitsHyphens,  QRegularExpression(RegexPatterns::digitsHyphens()) },
         { Type::LettersHyphens, QRegularExpression(RegexPatterns::lettersHyphens()) },
         { Type::NoSpecialChars, QRegularExpression(RegexPatterns::noSpecialChars()) },

@@ -13,6 +13,7 @@ class ValidatorFactory
 public:
     enum class Type {
         Digits,         // только цифры
+        DigitsDot, // цифры с точкой
         NoSpecialChars, // запрет символов
         DigitsHyphens,  // цифры и дефис
         LettersHyphens  // буквы и дефис

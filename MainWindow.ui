@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1066</width>
-    <height>784</height>
+    <height>987</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,13 +37,13 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
         <string>Ручное управление</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <layout class="QHBoxLayout" name="horizontalLayout_37">
         <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
@@ -546,19 +546,6 @@
             </widget>
            </item>
            <item>
-            <spacer name="verticalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Orientation::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
             <widget class="QGroupBox" name="groupBox_DO">
              <property name="title">
               <string>СКИ</string>
@@ -722,6 +709,105 @@
                  <bool>false</bool>
                 </property>
                </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_SettingCurrentSignal">
+             <property name="title">
+              <string>Задание токового сигнала</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_40">
+                <item>
+                 <widget class="QLabel" name="label_arrowUp">
+                  <property name="maximumSize">
+                   <size>
+                    <width>70</width>
+                    <height>50</height>
+                   </size>
+                  </property>
+                  <property name="sizeIncrement">
+                   <size>
+                    <width>70</width>
+                    <height>70</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap resource="../MpiSdk/img.qrc">:/src/img/arrowUp.png</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_arrowDown">
+                  <property name="maximumSize">
+                   <size>
+                    <width>70</width>
+                    <height>50</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap resource="../MpiSdk/img.qrc">:/src/img/arrowDown.png</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_42">
+                <item>
+                 <widget class="QPushButton" name="pushButton_signal_20mA">
+                  <property name="text">
+                   <string>20 мА</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_signal_16mA">
+                  <property name="text">
+                   <string>16 мА</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_signal_12mA">
+                  <property name="text">
+                   <string>12 мА</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_signal_8mA">
+                  <property name="text">
+                   <string>8 мА</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_signal_4mA">
+                  <property name="text">
+                   <string>4 мА</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
@@ -2016,50 +2102,6 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_30">
           <item>
-           <widget class="QGroupBox" name="groupBox_13">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="title">
-             <string>Время прямого хода:</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
-             <item>
-              <widget class="QLineEdit" name="lineEdit_cyclicTest_forwardTime">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupBox_19">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="title">
-             <string>Время обратного хода:</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <widget class="QLineEdit" name="lineEdit_cyclicTest_backwardTime">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
            <widget class="QGroupBox" name="groupBox_20">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
@@ -2068,7 +2110,7 @@
              </sizepolicy>
             </property>
             <property name="title">
-             <string>Процент дальности</string>
+             <string>Диапазон испытаний</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_21">
              <item>
@@ -2124,6 +2166,19 @@
              </item>
             </layout>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -3560,6 +3615,8 @@
   <tabstop>Chart_friction</tabstop>
   <tabstop>Chart_response</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../MpiSdk/img.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -8,21 +8,23 @@ ValveWindow::ValveWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QValidator* validatorDigits = ValidatorFactory::create(ValidatorFactory::Type::Digits, this);
-
-    QValidator* noSpecialChars = ValidatorFactory::create(ValidatorFactory::Type::NoSpecialChars, this);
+    QValidator *validatorDigits = ValidatorFactory::create(ValidatorFactory::Type::Digits, this);
+    QValidator *validatorDigitsDot = ValidatorFactory::create(ValidatorFactory::Type::DigitsDot, this);
+    QValidator *noSpecialChars = ValidatorFactory::create(ValidatorFactory::Type::NoSpecialChars, this);
 
     ui->lineEdit_positionNumber->setValidator(noSpecialChars);
     ui->lineEdit_manufacturer->setValidator(noSpecialChars);
     ui->lineEdit_serialNumber->setValidator(noSpecialChars);
     ui->lineEdit_DN->setValidator(validatorDigits);
     ui->lineEdit_PN->setValidator(validatorDigits);
-    ui->lineEdit_strokValve->setValidator(noSpecialChars);
+    ui->lineEdit_strokValve->setValidator(validatorDigitsDot);
     // ui->lineEdit_dinamicError->setValidator(noSpecialChars);
     ui->lineEdit_driveModel->setValidator(noSpecialChars);
-    ui->lineEdit_driveRange->setValidator(noSpecialChars);
+    ui->lineEdit_driveRange->setValidator(validatorDigitsDot);
+    ui->lineEdit_driveDiameter->setValidator(validatorDigitsDot);
+    ui->lineEdit_diameterPulley->setValidator(validatorDigitsDot);
 
-    ui->doubleSpinBox_diameterPulley->setValue(m_diameter[0]);
+    ui->lineEdit_diameterPulley->setText(m_diameter[0]);
 
     connect(ui->comboBox_strokeMovement,
             &QComboBox::currentIndexChanged,
@@ -34,15 +36,15 @@ ValveWindow::ValveWindow(QWidget *parent)
             this,
             &ValveWindow::ToolChanged);
 
-    connect(ui->doubleSpinBox_driveDiameter,
-            &QDoubleSpinBox::valueChanged,
+    connect(ui->lineEdit_driveDiameter,
+            &QLineEdit::textChanged,
             this,
             &ValveWindow::DiameterChanged);
 
     connect(ui->pushButton, &QPushButton::clicked, this, &ValveWindow::ButtonClick);
     connect(ui->pushButton_clear, &QPushButton::clicked, this, &ValveWindow::Clear);
 
-    DiameterChanged(ui->doubleSpinBox_driveDiameter->value());
+    DiameterChanged(ui->lineEdit_driveDiameter->text());
 
     connect(ui->comboBox_positionerType,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -104,19 +106,28 @@ void ValveWindow::SaveValveInfo()
     m_valveInfo->manufacturer = ui->lineEdit_manufacturer->text();
     m_valveInfo->valveModel = ui->lineEdit_valveModel->text();
     m_valveInfo->serialNumber = ui->lineEdit_serialNumber->text();
+
     m_valveInfo->DN = ui->lineEdit_DN->text();
     m_valveInfo->PN = ui->lineEdit_PN->text();
+
     m_valveInfo->positionerModel = ui->lineEdit_positionerModel->text();
-    m_valveInfo->dinamicError = ui->comboBox_dinamicError->currentText().replace(",", ".").toDouble();
+    m_valveInfo->positionerType = ui->comboBox_positionerType->currentText();
+    m_valveInfo->dinamicError = ui->comboBox_dinamicError->currentText().toDouble();
+
+    m_valveInfo->solenoidValveModel = ui->lineEdit_solenoidValveModel->text();
+    m_valveInfo->limitSwitchModel = ui->lineEdit_limitSwitchModel->text();
+    m_valveInfo->positionSensorModel = ui->lineEdit_positionSensorModel->text();
+
+
     m_valveInfo->strokeMovement = ui->comboBox_strokeMovement->currentIndex();
     m_valveInfo->strokValve = ui->lineEdit_strokValve->text();
     m_valveInfo->driveModel = ui->lineEdit_driveModel->text();
     m_valveInfo->safePosition = ui->comboBox_safePosition->currentIndex();
     m_valveInfo->driveType = ui->comboBox_driveType->currentIndex();
     m_valveInfo->driveRange = ui->lineEdit_driveRange->text();
-    m_valveInfo->driveDiameter = ui->doubleSpinBox_driveDiameter->value();
+    m_valveInfo->driveDiameter = ui->lineEdit_driveDiameter->text().toDouble();
     m_valveInfo->toolNumber = ui->comboBox_toolNumber->currentIndex();
-    m_valveInfo->diameterPulley = ui->doubleSpinBox_diameterPulley->value();
+    // m_valveInfo->diameterPulley = ui->lineEdit_diameterPulley->text().toDouble();
     m_valveInfo->materialStuffingBoxSeal = ui->comboBox_materialStuffingBoxSeal->currentText();
 
     m_registry->SaveValveInfo();
@@ -142,17 +153,22 @@ void ValveWindow::PositionChanged(const QString &position)
     ui->lineEdit_PN->setText(m_valveInfo->PN);
     ui->lineEdit_strokValve->setText(m_valveInfo->strokValve);
     ui->lineEdit_positionerModel->setText(m_valveInfo->positionerModel);
+
+    ui->lineEdit_solenoidValveModel->setText(m_valveInfo->solenoidValveModel);
+    ui->lineEdit_limitSwitchModel->setText(m_valveInfo->limitSwitchModel);
+    ui->lineEdit_positionSensorModel->setText(m_valveInfo->positionSensorModel);
+
     ui->lineEdit_positionNumber->setText(m_valveInfo->positionNumber);
     ui->lineEdit_driveModel->setText(m_valveInfo->driveModel);
     ui->lineEdit_driveRange->setText(m_valveInfo->driveRange);
+    // ui->lineEdit_diameterPulley->setText(QString::number(m_valveInfo->diameterPulley));
 
-    ui->doubleSpinBox_driveDiameter->setValue(m_valveInfo->driveDiameter);
+    ui->lineEdit_driveDiameter->setText(QString::number(m_valveInfo->driveDiameter));
 
     ui->comboBox_safePosition->setCurrentIndex(m_valveInfo->safePosition);
     ui->comboBox_driveType->setCurrentIndex(m_valveInfo->driveType);
     ui->comboBox_strokeMovement->setCurrentIndex(m_valveInfo->strokeMovement);
     ui->comboBox_toolNumber->setCurrentIndex(m_valveInfo->toolNumber);
-    ui->doubleSpinBox_diameterPulley->setValue(m_valveInfo->diameterPulley);
 }
 
 void ValveWindow::ButtonClick()
@@ -189,23 +205,24 @@ void ValveWindow::ButtonClick()
 void ValveWindow::StrokeChanged(quint16 n)
 {
     ui->comboBox_toolNumber->setEnabled(n == 1);
-    ui->doubleSpinBox_diameterPulley->setEnabled(
+    ui->lineEdit_diameterPulley->setEnabled(
         (n == 1)
         && (ui->comboBox_toolNumber->currentIndex() == ui->comboBox_toolNumber->count() - 1));
 }
 
 void ValveWindow::ToolChanged(quint16 n)
 {
-    if (n == ui->comboBox_toolNumber->count() - 1) {
-        ui->doubleSpinBox_diameterPulley->setEnabled(true);
+    if (ui->comboBox_toolNumber->currentText() == m_manualInput) {
+        ui->lineEdit_diameterPulley->setEnabled(true);
     } else {
-        ui->doubleSpinBox_diameterPulley->setEnabled(false);
-        ui->doubleSpinBox_diameterPulley->setValue(m_diameter[n]);
+        ui->lineEdit_diameterPulley->setEnabled(false);
+        ui->lineEdit_diameterPulley->setText(m_diameter[n]);
     }
 }
 
-void ValveWindow::DiameterChanged(qreal value)
+void ValveWindow::DiameterChanged(const QString &text)
 {
+    double value = text.toDouble();
     ui->label_valueSquare->setText(QString().asprintf("%.2f", M_PI * value * value / 4));
 }
 
@@ -220,10 +237,9 @@ void ValveWindow::Clear()
     ui->lineEdit_positionNumber->setText("");
     ui->lineEdit_valveModel->setText("");
     ui->lineEdit_driveRange->setText("");
+    ui->lineEdit_driveDiameter->setText("");
 
-    ui->doubleSpinBox_driveDiameter->setValue(1.0);
-
-    ui->doubleSpinBox_diameterPulley->setValue(m_diameter[0]);
+    ui->lineEdit_diameterPulley->setText(m_diameter[0]);
 
     ui->comboBox_materialStuffingBoxSeal->setCurrentIndex(0);
     ui->comboBox_dinamicError->setCurrentIndex(0);
