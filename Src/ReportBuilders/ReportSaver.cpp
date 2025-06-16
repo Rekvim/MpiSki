@@ -44,7 +44,7 @@ void ReportSaver::SaveImage(MyChart *chart)
     if (out.open(QIODevice::WriteOnly)) {
         QDataStream stream(&out);
         stream.setVersion(QDataStream::Qt_6_2);
-        chart->savetostream(stream);
+        chart->loadFromStream(stream);
         out.flush();
         out.close();
     }

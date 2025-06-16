@@ -3,21 +3,21 @@
 MySeries::MySeries(QObject *parent, quint8 axN)
     : QLineSeries{parent}
 {
-    axisN = axN;
+    m_axisN = axN;
 }
 
-quint8 MySeries::get_axisN() const
+quint8 MySeries::getAxisN() const
 {
-    return axisN;
+    return m_axisN;
 }
 
 MyChart::MyChart(QWidget *parent)
     : QChartView(parent)
 {
-    update = true;
+    m_update = true;
 
-    Xaxis_Time = new QDateTimeAxis(this);
-    Xaxis_Value = new QValueAxis(this);
+    m_xaxisTime = new QDateTimeAxis(this);
+    m_xaxisValue = new QValueAxis(this);
 
     //    QFont font_time = Xaxis_Time->labelsFont();
     //    font_time.setPixelSize(13);
@@ -27,41 +27,42 @@ MyChart::MyChart(QWidget *parent)
     //    font_value.setPixelSize(13);
     //    Xaxis_Time->setLabelsFont(font_value);
 
-    Xaxis = Xaxis_Value;
-    minRange = minR;
+    m_xaxis = m_xaxisValue;
+    m_minRange = m_minR;
 
-    Xaxis_Value->setLabelFormat("%.2f mA");
-    Xaxis_Value->setRange(0, minR);
-    Xaxis_Value->setMinorTickCount(4);
+    m_xaxisValue->setLabelFormat("%.2f mA");
+    m_xaxisValue->setRange(0, m_minR);
+    m_xaxisValue->setMinorTickCount(4);
 
-    Xaxis_Time->setFormat("mm:ss.zzz");
-    Xaxis_Time->setRange(QDateTime::fromMSecsSinceEpoch(0),
-                         QDateTime::fromMSecsSinceEpoch(minR_Time));
+    m_xaxisTime->setFormat("mm:ss.zzz");
+    m_xaxisTime->setRange(QDateTime::fromMSecsSinceEpoch(0),
+                         QDateTime::fromMSecsSinceEpoch(m_minRTime));
 
-    chart()->addAxis(Xaxis, Qt::AlignBottom);
+    chart()->addAxis(m_xaxis, Qt::AlignBottom);
 
-    empty = true;
-    zoomed = false;
+    m_empty = true;
+    m_zoomed = false;
 
-    chart()->addSeries(&markerX);
-    chart()->addSeries(&markerY);
+    chart()->addSeries(&m_marker_X);
+    chart()->addSeries(&m_marker_Y);
 
-    markerX.attachAxis(Xaxis);
-    markerY.attachAxis(Xaxis);
+    m_marker_X.attachAxis(m_xaxis);
+    m_marker_Y.attachAxis(m_xaxis);
 
-    markerX.setColor(Qt::gray);
-    markerY.setColor(Qt::gray);
+    m_marker_X.setColor(Qt::gray);
+    m_marker_Y.setColor(Qt::gray);
 
-    chart()->legend()->markers(&markerX)[0]->setVisible(false);
-    chart()->legend()->markers(&markerY)[0]->setVisible(false);
+    chart()->legend()->markers(&m_marker_X)[0]->setVisible(false);
+    chart()->legend()->markers(&m_marker_Y)[0]->setVisible(false);
 
-    markerX.setUseOpenGL();
-    markerY.setUseOpenGL();
+    m_marker_X.setUseOpenGL();
+    m_marker_Y.setUseOpenGL();
 
     m_coordItem = new QGraphicsSimpleTextItem(this->chart());
-    QFont F;
-    F.setPointSize(10);
-    m_coordItem->setFont(F);
+
+    QFont font;
+    font.setPointSize(10);
+    m_coordItem->setFont(font);
     m_coordItem->show();
     m_coordItem->setVisible(false);
 
@@ -73,16 +74,16 @@ MyChart::~MyChart() {}
 
 void MyChart::drawMarkers(QPoint pos)
 {
-    QSet<quint8> Set;
-    QList<MySeries *> Ser;
+    QSet<quint8> set;
+    QList<MySeries *> mySeries;
 
-    Set.clear();
+    set.clear();
 
-    for (MySeries *Serial : Series) {
-        if (!Set.contains(Serial->get_axisN())) {
-            if (Serial->isVisible()) {
-                Set.insert(Serial->get_axisN());
-                Ser.push_back(Serial);
+    for (MySeries *mySerial : m_mySeries) {
+        if (!set.contains(mySerial->getAxisN())) {
+            if (mySerial->isVisible()) {
+                set.insert(mySerial->getAxisN());
+                mySeries.push_back(mySerial);
             }
         }
     }
@@ -92,327 +93,66 @@ void MyChart::drawMarkers(QPoint pos)
     QString format;
     QString coordStr = "";
 
-    for (MySeries *Serial : Ser) {
-        format = Yaxis.at(Serial->get_axisN())->labelFormat();
+    for (MySeries *mySerial : mySeries) {
+        format = m_yaxis.at(mySerial->getAxisN())->labelFormat();
         coordStr += QString::asprintf(format.toLocal8Bit(),
-                                      this->chart()->mapToValue(pos, Serial).y())
-                    + "\n";
+                                      this->chart()->mapToValue(pos, mySerial).y())
+                                      + "\n";
     }
 
-    if (Xaxis == Xaxis_Value) {
-        format = Xaxis_Value->labelFormat();
+    if (m_xaxis == m_xaxisValue) {
+        format = m_xaxisValue->labelFormat();
         coordStr += QString::asprintf(format.toLocal8Bit(), curVal.x());
     } else {
         QTime time = QTime::fromMSecsSinceStartOfDay(curVal.x());
-        coordStr += time.toString(Xaxis_Time->format());
+        coordStr += time.toString(m_xaxisTime->format());
     }
 
     m_coordItem->setText(coordStr);
-    m_coordItem->setPos(pos.x() + 10, pos.y() - 20 * (Set.count() + 1));
+    m_coordItem->setPos(pos.x() + 10, pos.y() - 20 * (set.count() + 1));
 
-    markerX.clear();
+    m_marker_X.clear();
 
-    qreal min, max;
+    qreal minXaxisValue;
+    qreal maxXaxisValue;
 
-    if (Xaxis == Xaxis_Value) {
-        min = Xaxis_Value->min();
-        max = Xaxis_Value->max();
+    if (m_xaxis == m_xaxisValue) {
+        minXaxisValue = m_xaxisValue->min();
+        maxXaxisValue = m_xaxisValue->max();
     } else {
-        min = Xaxis_Time->min().toMSecsSinceEpoch();
-        max = Xaxis_Time->max().toMSecsSinceEpoch();
+        minXaxisValue = m_xaxisTime->min().toMSecsSinceEpoch();
+        maxXaxisValue = m_xaxisTime->max().toMSecsSinceEpoch();
     }
 
-    markerX.append(min, curVal.y());
-    markerX.append(max, curVal.y());
-    markerX.setVisible(true);
+    m_marker_X.append(minXaxisValue, curVal.y());
+    m_marker_X.append(maxXaxisValue, curVal.y());
+    m_marker_X.setVisible(true);
 
-    markerY.clear();
-    markerY.append(curVal.x(), Yaxis.last()->min());
-    markerY.append(curVal.x(), Yaxis.last()->max());
-    markerY.setVisible(true);
+    m_marker_Y.clear();
+    m_marker_Y.append(curVal.x(), m_yaxis.last()->min());
+    m_marker_Y.append(curVal.x(), m_yaxis.last()->max());
+    m_marker_Y.setVisible(true);
 
-    chart()->legend()->markers(&markerX)[0]->setVisible(false);
-    chart()->legend()->markers(&markerY)[0]->setVisible(false);
+    chart()->legend()->markers(&m_marker_X)[0]->setVisible(false);
+    chart()->legend()->markers(&m_marker_Y)[0]->setVisible(false);
 }
 
 void MyChart::setLabelXformat(QString format)
 {
-    Xaxis_Value->setLabelFormat(format);
+    m_xaxisValue->setLabelFormat(format);
 }
 
-void MyChart::autoupdate(bool u)
+void MyChart::autoScale(qreal min, qreal max)
 {
-    update = u;
-
-    if (u) {
-        axisX_min = minX;
-        axisX_max = qMax(maxX, minX + minRange);
-
-        if (Xaxis == Xaxis_Value) {
-            axisX_min = qMax(qFloor(axisX_min), 0);
-            axisX_max = qCeil(axisX_max);
-            Xaxis->setRange(axisX_min, axisX_max);
-        } else {
-            axisX_min = qMax(qFloor(axisX_min / 1000.0), 0) * 1000.0;
-            qMax(axisX_min + 1000.0, axisX_max = qCeil(axisX_max / 1000.0) * 1000.0);
-            Xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(axisX_min)),
-                            QDateTime::fromMSecsSinceEpoch(qCeil(axisX_max)));
-        }
-
-        autoscale(minX, maxX);
-    }
-}
-
-void MyChart::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        this->setRubberBand(QChartView::HorizontalRubberBand);
-        QPointF curVal = this->chart()->mapToValue(event->pos());
-        X1 = curVal.x();
-    }
-
-    QChartView::mousePressEvent(event);
-}
-
-void MyChart::mouseMoveEvent(QMouseEvent *event)
-{
-    if (Series.count()) {
-        m_coordItem->setVisible(true);
-        markersPos = event->pos();
-
-        drawMarkers(markersPos);
-    }
-
-    QChartView::mouseMoveEvent(event);
-}
-
-void MyChart::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (Series.count()) {
-        if (event->button() == Qt::LeftButton) {
-            QPointF curVal = this->chart()->mapToValue(event->pos());
-            X2 = curVal.x();
-
-            ZoomIn(qMin(X1, X2), qMax(X1, X2));
-        }
-
-        if (event->button() == Qt::RightButton) {
-            ZoomOut();
-        }
-    }
-
-    this->setRubberBand(QChartView::NoRubberBand);
-    QChartView::mouseReleaseEvent(event);
-}
-
-void MyChart::leaveEvent(QEvent *)
-{
-    m_coordItem->setVisible(false);
-    markerX.setVisible(false);
-    markerY.setVisible(false);
-}
-
-void MyChart::useTimeaxis(bool useTime)
-{
-    markerX.detachAxis(Xaxis);
-    markerY.detachAxis(Xaxis);
-
-    chart()->removeAxis(Xaxis);
-
-    if (useTime) {
-        Xaxis = Xaxis_Time;
-        minRange = minR_Time;
-    } else {
-        Xaxis = Xaxis_Value;
-        minRange = minR;
-    }
-
-    chart()->addAxis(Xaxis, Qt::AlignBottom);
-
-    markerX.attachAxis(Xaxis);
-    markerY.attachAxis(Xaxis);
-}
-
-void MyChart::addAxis(QString format)
-{
-    if (Yaxis.count()) {
-        markerX.detachAxis(Yaxis.last());
-        markerY.detachAxis(Yaxis.last());
-    }
-
-    Yaxis.emplace_back(new QValueAxis(this));
-    Yaxis.last()->setLabelFormat(format);
-    chart()->addAxis(Yaxis.last(), Qt::AlignLeft);
-
-    Yaxis.last()->setRange(0, 0.01);
-    Yaxis.last()->setMinorTickCount(4);
-
-    //    QFont font = Yaxis.last()->labelsFont();
-    //    font.setPixelSize(13);
-    //    Yaxis.last()->setLabelsFont(font);
-
-    markerX.attachAxis(Yaxis.last());
-    markerY.attachAxis(Yaxis.last());
-}
-
-void MyChart::addSeries(quint8 axisN, QString name, QColor color)
-{
-    if (axisN >= Yaxis.count()) {
-        return;
-    }
-
-    Series_dubl.emplace_back(new MySeries(this, axisN));
-
-    chart()->addSeries(Series_dubl.last());
-
-    Series_dubl.last()->setColor(color.lighter(170));
-
-    Series_dubl.last()->attachAxis(Yaxis[axisN]);
-    Series_dubl.last()->attachAxis(Xaxis);
-
-    chart()->legend()->markers(Series_dubl.last())[0]->setVisible(false);
-
-    this->thread()->msleep(50);
-
-    Series.push_back(new MySeries(this, axisN));
-
-    chart()->addSeries(Series.last());
-
-    Series.last()->setName(name);
-    Series.last()->setColor(color);
-
-    Series.last()->attachAxis(Yaxis[axisN]);
-    Series.last()->attachAxis(Xaxis);
-}
-
-void MyChart::addPoint(quint8 seriesN, qreal X, qreal Y)
-{
-    if (seriesN >= Series.count()) {
-        return;
-    }
-
-    if (empty) {
-        minX = X;
-        maxX = X;
-        empty = false;
-    } else {
-        minX = qMin(minX, X);
-        maxX = qMax(maxX, X);
-    }
-
-    if (maxRange != 0) {
-        minX = qMax(minX, maxX - maxRange);
-    }
-
-    if ((!zoomed) and (update)) {
-        axisX_min = minX;
-        axisX_max = qMax(maxX, minX + minRange);
-
-        if (Xaxis == Xaxis_Value) {
-            axisX_min = qMax(qFloor(axisX_min), 0);
-            axisX_max = qCeil(axisX_max);
-            Xaxis->setRange(axisX_min, axisX_max);
-        } else {
-            axisX_min = qMax(qFloor(axisX_min / 1000.0), 0) * 1000.0;
-            axisX_max = qMax(axisX_min + 1000.0, qCeil(axisX_max / 1000.0) * 1000.0);
-            Xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(axisX_min)),
-                            QDateTime::fromMSecsSinceEpoch(qCeil(axisX_max)));
-        }
-
-        autoscale(axisX_min, axisX_max);
-    }
-
-    Series[seriesN]->append(X, Y);
-}
-
-void MyChart::dublSeries(quint8 seriesN)
-{
-    if (seriesN >= Series.count()) {
-        return;
-    }
-
-    if (Series[seriesN]->points().empty()) {
-        return;
-    }
-
-    Series_dubl[seriesN]->replace(Series.at(seriesN)->points());
-
-    Series[seriesN]->clear();
-}
-
-void MyChart::clear()
-{
-    for (MySeries *S : Series) {
-        S->clear();
-    }
-
-    for (MySeries *S : Series_dubl) {
-        S->clear();
-    }
-
-    empty = true;
-    zoomed = false;
-
-    Xaxis_Value->setRange(0, minR);
-    Xaxis_Time->setRange(QDateTime::fromMSecsSinceEpoch(0),
-                         QDateTime::fromMSecsSinceEpoch(minR_Time));
-}
-
-void MyChart::visible(quint8 seriesN, bool visible)
-{
-    bool showaxis = visible;
-
-    if (seriesN >= Series.count()) {
-        return;
-    }
-
-    Series[seriesN]->setVisible(visible);
-
-    Series_dubl[seriesN]->setVisible(visible);
-
-    chart()->legend()->markers(Series_dubl[seriesN])[0]->setVisible(false);
-
-    if (!visible)
-        for (int i = 0; i < Series.count(); i++) {
-            if (i == seriesN) {
-                continue;
-            }
-
-            if (Series.at(i)->get_axisN() == Series.at(seriesN)->get_axisN()) {
-                if (Series.at(i)->isVisible()) {
-                    showaxis = true;
-                    break;
-                }
-            }
-        }
-
-    Yaxis[Series.at(seriesN)->get_axisN()]->setVisible(showaxis);
-
-    autoscale(axisX_min, axisX_max);
-}
-
-void MyChart::showdots(bool show)
-{
-    for (MySeries *S : Series) {
-        S->setPointsVisible(show);
-    }
-
-    for (MySeries *S : Series_dubl) {
-        S->setPointsVisible(show);
-    }
-}
-
-void MyChart::autoscale(qreal min, qreal max)
-{
-    for (int ax = 0; ax < Yaxis.count(); ax++) {
+    for (int ax = 0; ax < m_yaxis.count(); ax++) {
         bool first = true;
         qreal Ymin = 0;
         qreal Ymax = 0;
 
-        foreach (const MySeries *S, Series) {
-            if ((S->get_axisN() == ax) and (S->isVisible())) {
-                foreach (QPointF value, S->points()) {
-                    if ((value.x() >= min) and (value.x() <= max)) {
+        foreach (const MySeries *mySerial, m_mySeries) {
+            if ((mySerial->getAxisN() == ax) && (mySerial->isVisible())) {
+                foreach (QPointF value, mySerial->points()) {
+                    if ((value.x() >= min) && (value.x() <= max)) {
                         if (first) {
                             first = false;
                             Ymin = value.y();
@@ -426,10 +166,10 @@ void MyChart::autoscale(qreal min, qreal max)
             }
         }
 
-        foreach (const MySeries *S, Series_dubl) {
-            if ((S->get_axisN() == ax) and (S->isVisible())) {
-                foreach (QPointF value, S->points()) {
-                    if ((value.x() >= min) and (value.x() <= max)) {
+        foreach (const MySeries *mySerial, m_mySeriesDubl) {
+            if ((mySerial->getAxisN() == ax) && (mySerial->isVisible())) {
+                foreach (QPointF value, mySerial->points()) {
+                    if ((value.x() >= min) && (value.x() <= max)) {
                         if (first) {
                             first = false;
                             Ymin = value.y();
@@ -448,186 +188,437 @@ void MyChart::autoscale(qreal min, qreal max)
         qreal Hlim = qMax(1.0, Ymax * 1.1);
         Hlim = qCeil(Hlim);
 
-        Yaxis[ax]->setRange(Llim, Hlim);
+        m_yaxis[ax]->setRange(Llim, Hlim);
     }
 
-    if (m_coordItem)
+    if (m_coordItem) {
         if (m_coordItem->isVisible()) {
-            drawMarkers(markersPos);
+            drawMarkers(m_markersPos);
         }
+    }
 }
 
-void MyChart::ZoomIn(qreal min, qreal max)
+void MyChart::autoUpdate(bool update)
 {
-    min = qMax(min, minX);
-    max = qMin(max, maxX);
+    m_update = update;
 
-    if ((max - min) <= minRange) {
-        min -= (minRange - max + min) / 2;
-        max = min + minRange;
+    if (update) {
+        m_axisX_min = m_min_X;
+        m_axisX_max = qMax(m_max_X, m_min_X + m_minRange);
+
+        if (m_xaxis == m_xaxisValue) {
+            m_axisX_min = qMax(qFloor(m_axisX_min), 0);
+            m_axisX_max = qCeil(m_axisX_max);
+            m_xaxis->setRange(m_axisX_min, m_axisX_max);
+        } else {
+            m_axisX_min = qMax(qFloor(m_axisX_min / 1000.0), 0) * 1000.0;
+            qMax(m_axisX_min + 1000.0, m_axisX_max = qCeil(m_axisX_max / 1000.0) * 1000.0);
+            m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_min)),
+                            QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
+        }
+
+        autoScale(m_min_X, m_max_X);
+    }
+}
+
+void MyChart::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        this->setRubberBand(QChartView::HorizontalRubberBand);
+        QPointF curVal = this->chart()->mapToValue(event->pos());
+        m_X1 = curVal.x();
     }
 
-    if (max > maxX) {
-        min -= (max - maxX);
-        max = maxX;
+    QChartView::mousePressEvent(event);
+}
+
+void MyChart::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_mySeries.count()) {
+        m_coordItem->setVisible(true);
+        m_markersPos = event->pos();
+
+        drawMarkers(m_markersPos);
     }
 
-    if (min < minX) {
-        max += (minX - min);
-        min = minX;
+    QChartView::mouseMoveEvent(event);
+}
+
+void MyChart::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (m_mySeries.count()) {
+        if (event->button() == Qt::LeftButton) {
+            QPointF curVal = this->chart()->mapToValue(event->pos());
+            m_X2 = curVal.x();
+
+            zoomIn(qMin(m_X1, m_X2), qMax(m_X1, m_X2));
+        }
+
+        if (event->button() == Qt::RightButton) {
+            zoomOut();
+        }
     }
 
-    if (Xaxis == Xaxis_Value) {
-        Xaxis->setRange(min, max);
+    this->setRubberBand(QChartView::NoRubberBand);
+    QChartView::mouseReleaseEvent(event);
+}
+
+void MyChart::leaveEvent(QEvent *)
+{
+    m_coordItem->setVisible(false);
+    m_marker_X.setVisible(false);
+    m_marker_Y.setVisible(false);
+}
+
+void MyChart::useTimeaxis(bool useTime)
+{
+    m_marker_X.detachAxis(m_xaxis);
+    m_marker_Y.detachAxis(m_xaxis);
+
+    chart()->removeAxis(m_xaxis);
+
+    if (useTime) {
+        m_xaxis = m_xaxisTime;
+        m_minRange = m_minRTime;
     } else {
-        Xaxis->setRange(QDateTime::fromMSecsSinceEpoch(min),
-                        QDateTime::fromMSecsSinceEpoch(qCeil(max)));
+        m_xaxis = m_xaxisValue;
+        m_minRange = m_minR;
     }
 
-    axisX_min = min;
-    axisX_max = max;
+    chart()->addAxis(m_xaxis, Qt::AlignBottom);
 
-    zoomed = ((axisX_max < maxX) or (axisX_min > minX));
-
-    autoscale(min, max);
+    m_marker_X.attachAxis(m_xaxis);
+    m_marker_Y.attachAxis(m_xaxis);
 }
 
-void MyChart::ZoomOut()
+void MyChart::addAxis(QString format)
 {
-    if (!zoomed) {
+    if (m_yaxis.count()) {
+        m_marker_X.detachAxis(m_yaxis.last());
+        m_marker_Y.detachAxis(m_yaxis.last());
+    }
+
+    m_yaxis.emplace_back(new QValueAxis(this));
+    m_yaxis.last()->setLabelFormat(format);
+    chart()->addAxis(m_yaxis.last(), Qt::AlignLeft);
+
+    m_yaxis.last()->setRange(0, 0.01);
+    m_yaxis.last()->setMinorTickCount(4);
+
+    //    QFont font = Yaxis.last()->labelsFont();
+    //    font.setPixelSize(13);
+    //    Yaxis.last()->setLabelsFont(font);
+
+    m_marker_X.attachAxis(m_yaxis.last());
+    m_marker_Y.attachAxis(m_yaxis.last());
+}
+
+void MyChart::addSeries(quint8 axisN, QString name, QColor color)
+{
+    if (axisN >= m_yaxis.count()) {
         return;
     }
 
-    qreal min = axisX_min - (axisX_max - axisX_min) / 2;
-    qreal max = axisX_max + (axisX_max - axisX_min) / 2;
+    m_mySeriesDubl.emplace_back(new MySeries(this, axisN));
 
-    if ((max - min) > (maxX - minX)) {
-        zoomed = false;
-        min = minX;
-        max = minX + qMax(minRange, maxX - minX);
+    chart()->addSeries(m_mySeriesDubl.last());
+
+    m_mySeriesDubl.last()->setColor(color.lighter(170));
+
+    m_mySeriesDubl.last()->attachAxis(m_yaxis[axisN]);
+    m_mySeriesDubl.last()->attachAxis(m_xaxis);
+
+    chart()->legend()->markers(m_mySeriesDubl.last())[0]->setVisible(false);
+
+    this->thread()->msleep(50);
+
+    m_mySeries.push_back(new MySeries(this, axisN));
+
+    chart()->addSeries(m_mySeries.last());
+
+    m_mySeries.last()->setName(name);
+    m_mySeries.last()->setColor(color);
+
+    m_mySeries.last()->attachAxis(m_yaxis[axisN]);
+    m_mySeries.last()->attachAxis(m_xaxis);
+}
+
+void MyChart::addPoint(quint8 seriesN, qreal X, qreal Y)
+{
+    if (seriesN >= m_mySeries.count()) {
+        return;
     }
 
-    if (max > maxX) {
-        min -= (max - maxX);
-        max = maxX;
-    }
-
-    if (min < minX) {
-        max += (minX - min);
-        min = minX;
-    }
-
-    if (Xaxis == Xaxis_Value) {
-        min = qMax(qFloor(min), 0);
-        max = qCeil(max);
-        Xaxis->setRange(min, max);
+    if (m_empty) {
+        m_min_X = X;
+        m_max_X = X;
+        m_empty = false;
     } else {
-        min = qMax(qFloor(min / 1000.0), 0) * 1000.0;
-        max = qMax(min + 1000.0, qCeil(max / 1000.0) * 1000.0);
-        Xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(min)),
+        m_min_X = qMin(m_min_X, X);
+        m_max_X = qMax(m_max_X, X);
+    }
+
+    if (m_maxRange != 0) {
+        m_min_X = qMax(m_min_X, m_max_X - m_maxRange);
+    }
+
+    if ((!m_zoomed) && (m_update)) {
+        m_axisX_min = m_min_X;
+        m_axisX_max = qMax(m_max_X, m_min_X + m_minRange);
+
+        if (m_xaxis == m_xaxisValue) {
+            m_axisX_min = qMax(qFloor(m_axisX_min), 0);
+            m_axisX_max = qCeil(m_axisX_max);
+            m_xaxis->setRange(m_axisX_min, m_axisX_max);
+        } else {
+            m_axisX_min = qMax(qFloor(m_axisX_min / 1000.0), 0) * 1000.0;
+            m_axisX_max = qMax(m_axisX_min + 1000.0, qCeil(m_axisX_max / 1000.0) * 1000.0);
+            m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_min)),
+                            QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
+        }
+
+        autoScale(m_axisX_min, m_axisX_max);
+    }
+
+    m_mySeries[seriesN]->append(X, Y);
+}
+
+void MyChart::dublSeries(quint8 seriesN)
+{
+    if (seriesN >= m_mySeries.count()) {
+        return;
+    }
+
+    if (m_mySeries[seriesN]->points().empty()) {
+        return;
+    }
+
+    m_mySeriesDubl[seriesN]->replace(m_mySeries.at(seriesN)->points());
+
+    m_mySeries[seriesN]->clear();
+}
+
+void MyChart::clear()
+{
+    for (MySeries *mySerial : m_mySeries) {
+        mySerial->clear();
+    }
+
+    for (MySeries *mySerial : m_mySeriesDubl) {
+        mySerial->clear();
+    }
+
+    m_empty = true;
+    m_zoomed = false;
+
+    m_xaxisValue->setRange(0, m_minR);
+    m_xaxisTime->setRange(QDateTime::fromMSecsSinceEpoch(0),
+                         QDateTime::fromMSecsSinceEpoch(m_minRTime));
+}
+
+void MyChart::visible(quint8 seriesN, bool visible)
+{
+    bool showaxis = visible;
+
+    if (seriesN >= m_mySeries.count()) {
+        return;
+    }
+
+    m_mySeries[seriesN]->setVisible(visible);
+
+    m_mySeriesDubl[seriesN]->setVisible(visible);
+
+    chart()->legend()->markers(m_mySeriesDubl[seriesN])[0]->setVisible(false);
+
+    if (!visible)
+        for (int i = 0; i < m_mySeries.count(); i++) {
+            if (i == seriesN) {
+                continue;
+            }
+
+            if (m_mySeries.at(i)->getAxisN() == m_mySeries.at(seriesN)->getAxisN()) {
+                if (m_mySeries.at(i)->isVisible()) {
+                    showaxis = true;
+                    break;
+                }
+            }
+        }
+
+    m_yaxis[m_mySeries.at(seriesN)->getAxisN()]->setVisible(showaxis);
+
+    autoScale(m_axisX_min, m_axisX_max);
+}
+
+void MyChart::showdots(bool show)
+{
+    for (MySeries *mySerial : m_mySeries) {
+        mySerial->setPointsVisible(show);
+    }
+
+    for (MySeries *mySerial : m_mySeriesDubl) {
+        mySerial->setPointsVisible(show);
+    }
+}
+
+void MyChart::zoomIn(qreal min, qreal max)
+{
+    min = qMax(min, m_min_X);
+    max = qMin(max, m_max_X);
+
+    if ((max - min) <= m_minRange) {
+        min -= (m_minRange - max + min) / 2;
+        max = min + m_minRange;
+    } if (max > m_max_X) {
+        min -= (max - m_max_X);
+        max = m_max_X;
+    } if (min < m_min_X) {
+        max += (m_min_X - min);
+        min = m_min_X;
+    } if (m_xaxis == m_xaxisValue) {
+        m_xaxis->setRange(min, max);
+    } else {
+        m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(min),
                         QDateTime::fromMSecsSinceEpoch(qCeil(max)));
     }
 
-    axisX_min = min;
-    axisX_max = max;
+    m_axisX_min = min;
+    m_axisX_max = max;
 
-    autoscale(min, max);
+    m_zoomed = ((m_axisX_max < m_max_X) or (m_axisX_min > m_min_X));
+
+    autoScale(min, max);
 }
 
-void MyChart::setName(QString n)
+void MyChart::zoomOut()
 {
-    name = n;
+    if (!m_zoomed) {
+        return;
+    }
+
+    qreal min = m_axisX_min - (m_axisX_max - m_axisX_min) / 2;
+    qreal max = m_axisX_max + (m_axisX_max - m_axisX_min) / 2;
+
+    if ((max - min) > (m_max_X - m_min_X)) {
+        m_zoomed = false;
+        min = m_min_X;
+        max = m_min_X + qMax(m_minRange, m_max_X - m_min_X);
+    } if (max > m_max_X) {
+        min -= (max - m_max_X);
+        max = m_max_X;
+    } if (min < m_min_X) {
+        max += (m_min_X - min);
+        min = m_min_X;
+    } if (m_xaxis == m_xaxisValue) {
+        min = qMax(qFloor(min), 0);
+        max = qCeil(max);
+        m_xaxis->setRange(min, max);
+    } else {
+        min = qMax(qFloor(min / 1000.0), 0) * 1000.0;
+        max = qMax(min + 1000.0, qCeil(max / 1000.0) * 1000.0);
+        m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(min)),
+                          QDateTime::fromMSecsSinceEpoch(qCeil(max)));
+    }
+
+    m_axisX_min = min;
+    m_axisX_max = max;
+
+    autoScale(min, max);
+}
+
+void MyChart::setName(QString name)
+{
+    m_name = name;
 }
 
 void MyChart::setMaxRange(qreal value)
 {
-    maxRange = value;
+    m_maxRange = value;
 }
 
 QString MyChart::getname() const
 {
-    return name;
+    return m_name;
 }
 
-QPair<QList<QPointF>, QList<QPointF>> MyChart::getpoints(quint8 seriesN) const
+QPair<QList<QPointF>, QList<QPointF>> MyChart::getPoints(quint8 seriesN) const
 {
-    return qMakePair(Series.at(seriesN)->points(), Series_dubl.at(seriesN)->points());
+    return qMakePair(m_mySeries.at(seriesN)->points(), m_mySeriesDubl.at(seriesN)->points());
 }
 
-void MyChart::savetostream(QDataStream &stream) const
+void MyChart::saveToStream(QDataStream &stream) const
 {
-    stream << name;
-    stream << (Xaxis == Xaxis_Value);
-    stream << Xaxis_Value->labelFormat();
+    stream << m_name;
+    stream << (m_xaxis == m_xaxisValue);
+    stream << m_xaxisValue->labelFormat();
 
-    stream << Yaxis.size();
+    stream << m_yaxis.size();
 
-    for (const QValueAxis *y : Yaxis) {
-        stream << y->labelFormat();
+    for (const QValueAxis *yaxis : m_yaxis) {
+        stream << yaxis->labelFormat();
     }
 
-    stream << Series.size();
+    stream << m_mySeries.size();
 
-    for (const auto serial : Series) {
-        stream << serial->get_axisN();
-        stream << serial->name();
-        stream << serial->color();
+    for (const auto mySerial : m_mySeries) {
+        stream << mySerial->getAxisN();
+        stream << mySerial->name();
+        stream << mySerial->color();
     }
 
-    for (const auto serial : Series) {
-        stream << serial->points();
+    for (const auto mySerial : m_mySeries) {
+        stream << mySerial->points();
     }
 
-    for (const auto serial : Series_dubl) {
-        stream << serial->points();
+    for (const auto mySerial : m_mySeriesDubl) {
+        stream << mySerial->points();
     }
 
-    stream << Series.at(0)->pointsVisible();
+    stream << m_mySeries.at(0)->pointsVisible();
 }
 
-void MyChart::loadfromstream(QDataStream &stream)
+void MyChart::loadFromStream(QDataStream &dataStream)
 {
-    QString str;
-    stream >> str;
-    setName(str);
+    QString stream;
+    dataStream >> stream;
+    setName(stream);
 
-    bool value_axis;
-    stream >> value_axis;
-    useTimeaxis(!value_axis);
+    bool valueAxis;
+    dataStream >> valueAxis;
+    useTimeaxis(!valueAxis);
 
-    stream >> str;
-    setLabelXformat(str);
+    dataStream >> stream;
+    setLabelXformat(stream);
 
     qsizetype Y_size;
-    stream >> Y_size;
+    dataStream >> Y_size;
 
     for (quint32 i = 0; i < Y_size; ++i) {
-        stream >> str;
-        addAxis(str);
+        dataStream >> stream;
+        addAxis(stream);
     }
 
     qsizetype S_size;
-    stream >> S_size;
+    dataStream >> S_size;
 
     for (quint32 i = 0; i < S_size; ++i) {
         quint8 axisN;
         QString name;
         QColor color;
-        stream >> axisN >> name >> color;
+        dataStream >> axisN >> name >> color;
         addSeries(axisN, name, color);
     }
 
-    for (const auto serial : Series) {
+    for (const auto mySerial : m_mySeries) {
         QList<QPointF> points;
-        stream >> points;
-        serial->append(points);
+        dataStream >> points;
+        mySerial->append(points);
     }
 
-    for (const auto serial : Series_dubl) {
+    for (const auto mySerial : m_mySeriesDubl) {
         QList<QPointF> points;
-        stream >> points;
-        serial->append(points);
+        dataStream >> points;
+        mySerial->append(points);
     }
 
-    autoupdate(true);
+    autoUpdate(true);
 }

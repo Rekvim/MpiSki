@@ -35,10 +35,15 @@ MainWindow::MainWindow(QWidget *parent)
         ui->groupBox_DO->setEnabled(false);
     }
 
+    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
+    // ui->tabWidget->setTabEnabled(2, false);
+    // ui->tabWidget->setTabEnabled(3, false);
+    // ui->tabWidget->setTabEnabled(4, false);
+
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
-    ui->tabWidget->setTabEnabled(2, false);
-    ui->tabWidget->setTabEnabled(3, false);
-    ui->tabWidget->setTabEnabled(4, false);
+    ui->tabWidget->setTabEnabled(2, true);
+    ui->tabWidget->setTabEnabled(3, true);
+    ui->tabWidget->setTabEnabled(4, true);
 
     ui->checkBox_DI1->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_DI1->setFocusPolicy(Qt::NoFocus);
@@ -257,29 +262,29 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_report, &QPushButton::clicked, this, [&] {
         qDebug() << "Пытаюсь получить паттерн:" << m_patternType;
 
-        std::unique_ptr<ReportBuilder> builder;
+        std::unique_ptr<ReportBuilder> reportBuilder;
 
         switch (m_patternType) {
-            case SelectTests::Pattern_CTV: builder = std::make_unique<CTVReportBuilder>(); break;
-            case SelectTests::Pattern_BTSV: builder = std::make_unique<BTSVReportBuilder>(); break;
-            case SelectTests::Pattern_CTSV: builder = std::make_unique<CTSVReportBuilder>(); break;
-            case SelectTests::Pattern_BTCV: builder = std::make_unique<BTCVReportBuilder>(); break;
-            case SelectTests::Pattern_CTCV: builder = std::make_unique<CTCVReportBuilder>(); break;
+            case SelectTests::Pattern_CTV: reportBuilder = std::make_unique<CTVReportBuilder>(); break;
+            case SelectTests::Pattern_BTSV: reportBuilder = std::make_unique<BTSVReportBuilder>(); break;
+            case SelectTests::Pattern_CTSV: reportBuilder = std::make_unique<CTSVReportBuilder>(); break;
+            case SelectTests::Pattern_BTCV: reportBuilder = std::make_unique<BTCVReportBuilder>(); break;
+            case SelectTests::Pattern_CTCV: reportBuilder = std::make_unique<CTCVReportBuilder>(); break;
             default:
                 QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн отчёта!");
                 return;
         }
 
         ReportSaver::Report report;
-        builder->buildReport(report, collectTestTelemetryData(),
+        reportBuilder->buildReport(report, collectTestTelemetryData(),
                              *m_registry->GetObjectInfo(),
                              *m_registry->GetValveInfo(),
                              *m_registry->GetOtherParameters(),
                              m_image_1, m_image_2, m_image_3);
 
-        qDebug() << "Путь к шаблону:" << builder->templatePath();
+        qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 
-        bool saved = m_reportSaver->SaveReport(report, builder->templatePath());
+        bool saved = m_reportSaver->SaveReport(report, reportBuilder->templatePath());
         ui->pushButton_open->setEnabled(saved);
     });
 
@@ -551,9 +556,9 @@ void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
     if (chart == Charts::Task) {
-        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Task]->getpoints(1);
+        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Task]->getPoints(1);
 
-        QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_charts[Charts::Pressure]->getpoints(0);
+        QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_charts[Charts::Pressure]->getPoints(0);
 
         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
         points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
@@ -561,8 +566,8 @@ void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
         points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
     }
     if (chart == Charts::Step) {
-        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Step]->getpoints(1);
-        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getpoints(0);
+        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Step]->getPoints(1);
+        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getPoints(0);
 
         points.clear();
         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
@@ -816,17 +821,18 @@ void MainWindow::InitCharts()
     m_charts[Charts::Trend] = ui->Chart_trend;
     m_charts[Charts::Trend]->useTimeaxis(true);
     m_charts[Charts::Trend]->addAxis("%.2f%%");
-    // ДОБАВИТЬ ШКАЛУ ДАВЛЕНИЯ 1
+    m_charts[Charts::Trend]->addAxis("%.2f bar"); // ДОБАВИТЬ ШКАЛУ ДАВЛЕНИЯ 1
     m_charts[Charts::Trend]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Trend]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Trend]->setMaxRange(60000);
 
     m_charts[Charts::CyclicSolenoid] = ui->Chart_cyclic_solenoid;
     m_charts[Charts::CyclicSolenoid]->setName("Cyclic_solenoid");
-    m_charts[Charts::CyclicSolenoid]->useTimeaxis(true); // new
+    m_charts[Charts::CyclicSolenoid]->useTimeaxis(true);
     m_charts[Charts::CyclicSolenoid]->addAxis("%.2f%%");
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Trend]->setMaxRange(10000);
 
     connect(m_program, &Program::AddPoints, this, &MainWindow::AddPoints);
     connect(m_program, &Program::ClearPoints, this, &MainWindow::ClearPoints);

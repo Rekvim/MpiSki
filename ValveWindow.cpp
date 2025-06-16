@@ -1,6 +1,7 @@
 #include "ValveWindow.h"
 #include "ui_ValveWindow.h"
 #include "./Src/ValidatorFactory/ValidatorFactory.h"
+#include <QDebug>
 
 ValveWindow::ValveWindow(QWidget *parent)
     : QDialog(parent)
@@ -52,6 +53,8 @@ ValveWindow::ValveWindow(QWidget *parent)
             &ValveWindow::onPositionerTypeChanged);
 
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
+
+    qDebug() << "Пытаюсь получить паттерн:" << m_patternType;
 }
 
 ValveWindow::~ValveWindow()

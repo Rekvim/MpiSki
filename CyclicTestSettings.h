@@ -1,3 +1,4 @@
+// CyclicTestSettings.h
 #ifndef CYCLICTESTSETTINGS_H
 #define CYCLICTESTSETTINGS_H
 
@@ -20,24 +21,42 @@ public:
     ~CyclicTestSettings();
 
     struct TestParameters {
+        // Regulatory (регулирующий) параметры
         QString sequence;
-        int delay_sec;
-        int hold_time_sec;
-        int num_cycles;
+        int     delay_sec;
+        int     hold_time_sec;
+        int     num_cycles;
+
+        // Shut-off (отсечной) параметры
+        QString shutoff_sequence;
+        int     shutoff_delay_sec;
+        int     shutoff_hold_time_sec;
+        int     shutoff_num_cycles;
+        bool    shutoff_enable_20mA;
+        bool    shutoff_DO[4];
+        bool    shutoff_DI[2];
     };
 
     TestParameters getParameters() const { return m_parameters; }
 
 private slots:
+
+    void onTestSelectionChanged();
+    // Start
     void onPushButtonStartClicked();
 
+    // Regulatory slots
     void onAddValueClicked();
     void onEditValueClicked();
     void onRemoveValueClicked();
-
     void onAddDelayClicked();
     void onEditDelayClicked();
     void onRemoveDelayClicked();
+
+    // Shut-off slots
+    void onAddDelayShutOffClicked();
+    void onEditDelayShutOffClicked();
+    void onRemoveDelayShutOffClicked();
 
 private:
     Ui::CyclicTestSettings *ui;

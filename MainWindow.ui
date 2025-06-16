@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1066</width>
-    <height>987</height>
+    <height>1003</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -739,7 +739,7 @@
                    <string/>
                   </property>
                   <property name="pixmap">
-                   <pixmap resource="../MpiSdk/img.qrc">:/src/img/arrowUp.png</pixmap>
+                   <pixmap>:/src/img/arrowUp.png</pixmap>
                   </property>
                   <property name="scaledContents">
                    <bool>true</bool>
@@ -758,7 +758,7 @@
                    <string/>
                   </property>
                   <property name="pixmap">
-                   <pixmap resource="../MpiSdk/img.qrc">:/src/img/arrowDown.png</pixmap>
+                   <pixmap>:/src/img/arrowDown.png</pixmap>
                   </property>
                   <property name="scaledContents">
                    <bool>true</bool>
@@ -1327,7 +1327,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_maintest">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_task">
            <attribute name="title">
@@ -1896,7 +1896,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_tests">
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_response">
            <attribute name="title">
@@ -3615,8 +3615,6 @@
   <tabstop>Chart_friction</tabstop>
   <tabstop>Chart_response</tabstop>
  </tabstops>
- <resources>
-  <include location="../MpiSdk/img.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

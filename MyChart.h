@@ -9,46 +9,61 @@ class MySeries : public QLineSeries
 {
     Q_OBJECT
 private:
-    quint8 axisN;
+    quint8 m_axisN;
 
 public:
     explicit MySeries(QObject *parent = nullptr, quint8 axN = 0);
-    quint8 get_axisN() const;
+    quint8 getAxisN() const;
 };
 
 class MyChart : public QChartView
 {
     Q_OBJECT
 private:
-    QString name;
-    const qreal minR = 0.1;
-    const qreal minR_Time = 1000;
-    qreal minRange;
-    qreal maxRange = 0;
-    QList<QValueAxis *> Yaxis;
-    QValueAxis *Xaxis_Value;
-    QDateTimeAxis *Xaxis_Time;
-    QAbstractAxis *Xaxis;
-    QLineSeries markerX, markerY;
+    QString m_name;
+    const qreal m_minR = 0.1;
+    const qreal m_minRTime = 1000;
+    qreal m_minRange;
+    qreal m_maxRange = 0;
+    QList<QValueAxis *> m_yaxis;
 
-    QList<MySeries *> Series;
-    QList<MySeries *> Series_dubl;
-    qreal minX, maxX;
-    qreal axisX_min, axisX_max;
-    bool empty;
-    bool zoomed;
-    bool update;
+    QAbstractAxis *m_xaxis;
+    QValueAxis *m_xaxisValue;
+    QDateTimeAxis *m_xaxisTime;
 
-    qreal X1, X2;
+    QPoint m_markersPos;
+    QLineSeries m_marker_X;
+    QLineSeries m_marker_Y;
+
+    QList<MySeries *> m_mySeries;
+    QList<MySeries *> m_mySeriesDubl;
+
+    qreal m_min_X;
+    qreal m_max_X;
+
+    qreal m_axisX_min;
+    qreal m_axisX_max;
+
+    bool m_empty;
+    bool m_zoomed;
+    bool m_update;
+
+    qreal m_X1;
+    qreal m_X2;
+
     QGraphicsSimpleTextItem *m_coordItem = NULL;
-    QPoint markersPos;
+
+    bool m_fixedXEnabled = false;
+    qreal m_fixedXMin = 0;
+    qreal m_fixedXMax = 0;
+    QList<quint8> m_fixedXSeriesIdx;
 
     void drawMarkers(QPoint pos);
 
-    void ZoomIn(qreal, qreal);
-    void ZoomOut();
+    void zoomIn(qreal min, qreal max);
+    void zoomOut();
 
-    void autoscale(qreal min, qreal max);
+    void autoScale(qreal min, qreal max);
 
 public:
     MyChart(QWidget *parent = nullptr);
@@ -57,9 +72,9 @@ public:
     QString getname() const;
     void setName(QString name);
     void setMaxRange(qreal value);
-    QPair<QList<QPointF>, QList<QPointF>> getpoints(quint8 seriesN) const;
-    void savetostream(QDataStream &stream) const;
-    void loadfromstream(QDataStream &stream);
+    QPair<QList<QPointF>, QList<QPointF>> getPoints(quint8 seriesN) const;
+    void saveToStream(QDataStream &stream) const;
+    void loadFromStream(QDataStream &dataStream);
 
 public slots:
     void useTimeaxis(bool);
@@ -71,7 +86,7 @@ public slots:
     void visible(quint8 seriesN, bool visible);
     void showdots(bool show);
     void setLabelXformat(QString);
-    void autoupdate(bool);
+    void autoUpdate(bool);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

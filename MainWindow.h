@@ -69,7 +69,6 @@ private slots:
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
-
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
 
@@ -110,8 +109,9 @@ private:
     OtherTestSettings *m_resolutionTestSettings;
     CyclicTestSettings *m_cyclicTestSettings;
 
-    QImage m_image_1, m_image_2, m_image_3;
-
+    QImage m_image_1;
+    QImage m_image_2;
+    QImage m_image_3;
 
     bool m_testing;
     void InitCharts();

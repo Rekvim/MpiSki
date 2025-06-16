@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "Registry.h"
+#include "SelectTests.h"
 
 namespace Ui {
 class ValveWindow;
@@ -24,6 +25,7 @@ public:
     explicit ValveWindow(QWidget *parent = nullptr);
     ~ValveWindow();
     void SetRegistry(Registry *registry);
+    void SetPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
 
 private:
     Ui::ValveWindow *ui;
@@ -31,6 +33,7 @@ private:
     ValveInfo *m_valveInfo;
     void SaveValveInfo();
     const QString m_manualInput = "Ручной ввод";
+    SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
     QList<QString> m_diameter = {"50.0", "86.0", "108.0", "125.0"};
     QJsonObject m_valveDataObj;
 
