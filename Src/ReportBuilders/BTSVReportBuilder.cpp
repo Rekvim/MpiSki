@@ -29,8 +29,8 @@ void BTSVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 7, 13, valveInfo.manufacturer});
     report.data.push_back({"Отчет ЦТ", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
     report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.positionerModel});
-    // report.data.push_back({"Отчет ЦТ", 10, 13, ???}); // Соленоидный клапан
-    // report.data.push_back({"Отчет ЦТ", 11, 13, ???}); // Концевой выключатель/датчик положения
+    report.data.push_back({"Отчет ЦТ", 10, 13, valveInfo.solenoidValveModel});
+    report.data.push_back({"Отчет ЦТ", 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.materialStuffingBoxSeal});
     report.data.push_back({"Отчет ЦТ", 12, 13, safeToString(telemetry.supplyPressure)});
     report.data.push_back({"Отчет ЦТ", 13, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.driveModel});

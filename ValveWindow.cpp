@@ -23,9 +23,9 @@ ValveWindow::ValveWindow(QWidget *parent)
     ui->lineEdit_driveModel->setValidator(noSpecialChars);
     ui->lineEdit_driveRange->setValidator(validatorDigitsDot);
     ui->lineEdit_driveDiameter->setValidator(validatorDigitsDot);
-    ui->lineEdit_diameterPulley->setValidator(validatorDigitsDot);
+    ui->lineEdit_pulleyDiameter->setValidator(validatorDigitsDot);
 
-    ui->lineEdit_diameterPulley->setText(m_diameter[0]);
+    ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
 
     connect(ui->comboBox_strokeMovement,
             &QComboBox::currentIndexChanged,
@@ -53,13 +53,43 @@ ValveWindow::ValveWindow(QWidget *parent)
             &ValveWindow::onPositionerTypeChanged);
 
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
-
-    qDebug() << "Пытаюсь получить паттерн:" << m_patternType;
+    applyPatternVisibility();
 }
 
 ValveWindow::~ValveWindow()
 {
     delete ui;
+}
+
+void ValveWindow::SetPatternType(SelectTests::PatternType pattern)
+{
+    m_patternType = pattern;
+    qDebug() << "Установлен паттерн (as int):" << static_cast<int>(m_patternType);
+    applyPatternVisibility();
+}
+
+void ValveWindow::applyPatternVisibility()
+{
+    switch (m_patternType) {
+    case SelectTests::Pattern_BTCV:
+        break;
+    case SelectTests::Pattern_BTSV:
+        break;
+    case SelectTests::Pattern_CTCV:
+        ui->widget_solenoidValveModel->setVisible(false);
+        ui->widget_limitSwitchModel->setVisible(false);
+        break;
+    case SelectTests::Pattern_CTSV:
+        ui->widget_solenoidValveModel->setVisible(false);
+        ui->widget_limitSwitchModel->setVisible(false);
+        break;
+    case SelectTests::Pattern_CTV:
+            ui->widget_positionerModel->setVisible(false);
+        break;
+    default:
+        QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн!");
+        return;
+    }
 }
 
 void ValveWindow::onPositionerTypeChanged(int index)
@@ -120,7 +150,6 @@ void ValveWindow::SaveValveInfo()
     m_valveInfo->solenoidValveModel = ui->lineEdit_solenoidValveModel->text();
     m_valveInfo->limitSwitchModel = ui->lineEdit_limitSwitchModel->text();
     m_valveInfo->positionSensorModel = ui->lineEdit_positionSensorModel->text();
-
 
     m_valveInfo->strokeMovement = ui->comboBox_strokeMovement->currentIndex();
     m_valveInfo->strokValve = ui->lineEdit_strokValve->text();
@@ -208,7 +237,7 @@ void ValveWindow::ButtonClick()
 void ValveWindow::StrokeChanged(quint16 n)
 {
     ui->comboBox_toolNumber->setEnabled(n == 1);
-    ui->lineEdit_diameterPulley->setEnabled(
+    ui->lineEdit_pulleyDiameter->setEnabled(
         (n == 1)
         && (ui->comboBox_toolNumber->currentIndex() == ui->comboBox_toolNumber->count() - 1));
 }
@@ -216,10 +245,10 @@ void ValveWindow::StrokeChanged(quint16 n)
 void ValveWindow::ToolChanged(quint16 n)
 {
     if (ui->comboBox_toolNumber->currentText() == m_manualInput) {
-        ui->lineEdit_diameterPulley->setEnabled(true);
+        ui->lineEdit_pulleyDiameter->setEnabled(true);
     } else {
-        ui->lineEdit_diameterPulley->setEnabled(false);
-        ui->lineEdit_diameterPulley->setText(m_diameter[n]);
+        ui->lineEdit_pulleyDiameter->setEnabled(false);
+        ui->lineEdit_pulleyDiameter->setText(m_diameter[n]);
     }
 }
 
@@ -242,7 +271,7 @@ void ValveWindow::Clear()
     ui->lineEdit_driveRange->setText("");
     ui->lineEdit_driveDiameter->setText("");
 
-    ui->lineEdit_diameterPulley->setText(m_diameter[0]);
+    ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
 
     ui->comboBox_materialStuffingBoxSeal->setCurrentIndex(0);
     ui->comboBox_dinamicError->setCurrentIndex(0);

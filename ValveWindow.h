@@ -25,17 +25,22 @@ public:
     explicit ValveWindow(QWidget *parent = nullptr);
     ~ValveWindow();
     void SetRegistry(Registry *registry);
-    void SetPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
+    void SetPatternType(SelectTests::PatternType pattern);
 
 private:
     Ui::ValveWindow *ui;
     Registry *m_registry;
     ValveInfo *m_valveInfo;
-    void SaveValveInfo();
+
     const QString m_manualInput = "Ручной ввод";
-    SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
     QList<QString> m_diameter = {"50.0", "86.0", "108.0", "125.0"};
     QJsonObject m_valveDataObj;
+
+    SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
+
+    void SaveValveInfo();
+    void applyPatternVisibility();
+
 
 private slots:
     void onPositionerTypeChanged(int index);

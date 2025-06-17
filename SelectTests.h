@@ -20,11 +20,11 @@ public:
 
     enum PatternType {
         Pattern_None,
-        Pattern_CTV,
-        Pattern_BTSV,
-        Pattern_CTSV,
         Pattern_BTCV,
-        Pattern_CTCV
+        Pattern_BTSV,
+        Pattern_CTCV,
+        Pattern_CTSV,
+        Pattern_CTV
     };
 
     struct PatternSetup {
