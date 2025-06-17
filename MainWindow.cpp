@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_labels[TextObjects::Label_status] = ui->label_status;
     m_labels[TextObjects::Label_init] = ui->label_init;
-    m_labels[TextObjects::Label_sensors] = ui->label_sensors;
+    m_labels[TextObjects::Label_connectedSensorsNumber] = ui->label_connectedSensorsNumber;
     m_labels[TextObjects::Label_startValue] = ui->label_startValue;
     m_labels[TextObjects::Label_endValue] = ui->label_endValue;
     m_labels[TextObjects::Label_lowLimit] = ui->label_lowLimit;
@@ -455,12 +455,12 @@ void MainWindow::SetSensorsNumber(quint8 num)
         ui->label_startValue->setVisible(true);
         ui->label_endValue->setVisible(true);
         ui->label_start_positio_sensor->setVisible(true);
-        ui->label_end_positio_sensor->setVisible(true);
+        ui->label_endPositioSensor->setVisible(true);
     } else {
         ui->label_startValue->setVisible(false);
         ui->label_endValue->setVisible(false);
         ui->label_start_positio_sensor->setVisible(false);
-        ui->label_end_positio_sensor->setVisible(false);
+        ui->label_endPositioSensor->setVisible(false);
     }
 
     for (int i = 0; i < ui->tabWidget->count(); ++i) {

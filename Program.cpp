@@ -351,7 +351,7 @@ void Program::button_init()
 
     emit SetText(TextObjects::Label_status, "");
     emit SetText(TextObjects::Label_init, "");
-    emit SetText(TextObjects::Label_sensors, "");
+    emit SetText(TextObjects::Label_connectedSensorsNumber, "");
     emit SetText(TextObjects::Label_startValue, "");
     emit SetText(TextObjects::Label_endValue, "");
 
@@ -385,18 +385,18 @@ void Program::button_init()
 
     switch (m_mpi.SensorCount()) { // update
     case 0:
-        emit SetText(TextObjects::Label_sensors, "Дачики не обнаружены");
-        emit SetTextColor(TextObjects::Label_sensors, Qt::red);
+        emit SetText(TextObjects::Label_connectedSensorsNumber, "Дачики не обнаружены");
+        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::red);
         // emit SetButtonInitEnabled(true);
         // return;
     case 1:
-        emit SetText(TextObjects::Label_sensors, "Обнаружен 1 датчик");
-        emit SetTextColor(TextObjects::Label_sensors, Qt::darkYellow);
+        emit SetText(TextObjects::Label_connectedSensorsNumber, "Обнаружен 1 датчик");
+        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::darkYellow);
         break;
     default:
-        emit SetText(TextObjects::Label_sensors,
+        emit SetText(TextObjects::Label_connectedSensorsNumber,
                      "Обнаружено " + QString::number(m_mpi.SensorCount()) + " датчика");
-        emit SetTextColor(TextObjects::Label_sensors, Qt::darkGreen);
+        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::darkGreen);
     }
 
     ValveInfo *valveInfo = m_registry->GetValveInfo();

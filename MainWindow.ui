@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -45,17 +45,17 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_37">
         <item>
-         <widget class="QGroupBox" name="groupBox">
+         <widget class="QGroupBox" name="groupBox_signalStrength_task">
           <property name="title">
            <string>Задание</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <layout class="QHBoxLayout" name="horizontalLayout_signalStrength_task">
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout">
+              <layout class="QVBoxLayout" name="verticalLayout_signalStrength">
                <item>
-                <widget class="QLabel" name="label_19">
+                <widget class="QLabel" name="label_signalStrength_21mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -69,7 +69,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_3">
+                <widget class="QLabel" name="label_signalStrength_20mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -83,7 +83,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_4">
+                <widget class="QLabel" name="label_signalStrength_19mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -97,7 +97,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_5">
+                <widget class="QLabel" name="label_signalStrength_18mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -111,7 +111,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_6">
+                <widget class="QLabel" name="label_signalStrength_17mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -125,7 +125,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_7">
+                <widget class="QLabel" name="label_signalStrength_16mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -139,7 +139,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_8">
+                <widget class="QLabel" name="label_signalStrength_15mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -153,7 +153,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_9">
+                <widget class="QLabel" name="label_signalStrength_14mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -167,7 +167,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_10">
+                <widget class="QLabel" name="label_signalStrength_13mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -181,7 +181,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_20">
+                <widget class="QLabel" name="label_signalStrength_12mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -195,7 +195,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_11">
+                <widget class="QLabel" name="label_signalStrength_11mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -209,7 +209,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_12">
+                <widget class="QLabel" name="label_signalStrength_10mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -223,7 +223,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_13">
+                <widget class="QLabel" name="label_signalStrength_9mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -237,7 +237,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_14">
+                <widget class="QLabel" name="label_signalStrength_8mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -251,7 +251,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_15">
+                <widget class="QLabel" name="label_signalStrength_7mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -265,7 +265,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_16">
+                <widget class="QLabel" name="label_signalStrength_6mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -279,7 +279,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_17">
+                <widget class="QLabel" name="label_signalStrength_5mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -293,7 +293,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_18">
+                <widget class="QLabel" name="label_signalStrength_4mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -307,7 +307,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_21">
+                <widget class="QLabel" name="label_signalStrength_3mA">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -720,7 +720,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_11">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_40">
+               <layout class="QVBoxLayout" name="verticalLayout_arrow">
                 <item>
                  <widget class="QLabel" name="label_arrowUp">
                   <property name="maximumSize">
@@ -771,7 +771,7 @@
                </layout>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_42">
+               <layout class="QVBoxLayout" name="verticalLayout_signalsButton">
                 <item>
                  <widget class="QPushButton" name="pushButton_signal_20mA">
                   <property name="text">
@@ -816,7 +816,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_6">
+         <widget class="QGroupBox" name="groupBox_init">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -834,9 +834,9 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <layout class="QHBoxLayout" name="horizontalLayout_status">
              <item>
-              <widget class="QLabel" name="label">
+              <widget class="QLabel" name="label_status_2">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -848,7 +848,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer">
+              <spacer name="horizontalSpacer_status">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -896,9 +896,9 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <layout class="QHBoxLayout" name="horizontalLayout_deviceInit">
              <item>
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="label_deviceInit">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -910,7 +910,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_3">
+              <spacer name="horizontalSpacer_deviceInit">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -955,9 +955,9 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <layout class="QHBoxLayout" name="horizontalLayout_connectedSensors">
              <item>
-              <widget class="QLabel" name="label_41">
+              <widget class="QLabel" name="label_connectedSensors">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -969,7 +969,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_4">
+              <spacer name="horizontalSpacer_connectedSensors">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -982,7 +982,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_sensors">
+              <widget class="QLabel" name="label_connectedSensorsNumber">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1073,9 +1073,9 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_end_positio_sensor">
+            <layout class="QHBoxLayout" name="horizontalLayout_endPositioSensor">
              <item>
-              <widget class="QLabel" name="label_end_positio_sensor">
+              <widget class="QLabel" name="label_endPositioSensor">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -1087,7 +1087,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_6">
+              <spacer name="horizontalSpacer_endPositioSensor">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -1135,7 +1135,7 @@
             <widget class="MyChart" name="Chart_trend"/>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <layout class="QHBoxLayout" name="horizontalLayout_menuInit">
              <item>
               <widget class="QCheckBox" name="checkBox_autoinit">
                <property name="sizePolicy">
@@ -1179,7 +1179,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_2">
+              <spacer name="horizontalSpacer_menuInit">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -2276,7 +2276,7 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -2286,7 +2286,7 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_36">
               <item>
-               <widget class="QGroupBox" name="groupBox_12">
+               <widget class="QGroupBox" name="groupBox_objectData">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                   <horstretch>2</horstretch>
@@ -2307,7 +2307,7 @@
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_37">
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_23">
+                  <layout class="QHBoxLayout" name="horizontalLayout_object">
                    <property name="spacing">
                     <number>15</number>
                    </property>
@@ -2349,7 +2349,7 @@
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_32">
+                  <layout class="QHBoxLayout" name="horizontalLayout_manufacture">
                    <property name="spacing">
                     <number>15</number>
                    </property>
@@ -2391,7 +2391,7 @@
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_33">
+                  <layout class="QHBoxLayout" name="horizontalLayout_department">
                    <property name="spacing">
                     <number>15</number>
                    </property>
@@ -2433,7 +2433,7 @@
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_34">
+                  <layout class="QHBoxLayout" name="horizontalLayout_FIO">
                    <property name="spacing">
                     <number>15</number>
                    </property>
@@ -2475,12 +2475,12 @@
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_35">
+                  <layout class="QHBoxLayout" name="horizontalLayout_date">
                    <property name="spacing">
                     <number>15</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_data">
+                    <widget class="QLabel" name="label_date">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2520,7 +2520,7 @@
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_3">
+               <spacer name="verticalSpacer_objectData">
                 <property name="orientation">
                  <enum>Qt::Orientation::Vertical</enum>
                 </property>
@@ -2535,9 +2535,9 @@
              </layout>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_38">
+             <layout class="QVBoxLayout" name="verticalLayout_valveSpecification">
               <item>
-               <widget class="QGroupBox" name="groupBox_2">
+               <widget class="QGroupBox" name="groupBox_valveSpecification">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -3014,7 +3014,7 @@
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_4">
+               <spacer name="verticalSpacer_Specification">
                 <property name="orientation">
                  <enum>Qt::Orientation::Vertical</enum>
                 </property>

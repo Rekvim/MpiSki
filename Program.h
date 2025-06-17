@@ -31,7 +31,7 @@ enum class TextObjects {
     LineEdit_feedback_4_20mA,
     Label_status,
     Label_init,
-    Label_sensors,
+    Label_connectedSensorsNumber,
     Label_startValue,
     Label_endValue,
 

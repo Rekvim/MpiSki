@@ -1,16 +1,5 @@
 #include "MyChart.h"
 
-MySeries::MySeries(QObject *parent, quint8 axN)
-    : QLineSeries{parent}
-{
-    m_axisN = axN;
-}
-
-quint8 MySeries::getAxisN() const
-{
-    return m_axisN;
-}
-
 MyChart::MyChart(QWidget *parent)
     : QChartView(parent)
 {
@@ -36,7 +25,7 @@ MyChart::MyChart(QWidget *parent)
 
     m_xaxisTime->setFormat("mm:ss.zzz");
     m_xaxisTime->setRange(QDateTime::fromMSecsSinceEpoch(0),
-                         QDateTime::fromMSecsSinceEpoch(m_minRTime));
+                          QDateTime::fromMSecsSinceEpoch(m_minRTime));
 
     chart()->addAxis(m_xaxis, Qt::AlignBottom);
 
@@ -97,7 +86,7 @@ void MyChart::drawMarkers(QPoint pos)
         format = m_yaxis.at(mySerial->getAxisN())->labelFormat();
         coordStr += QString::asprintf(format.toLocal8Bit(),
                                       this->chart()->mapToValue(pos, mySerial).y())
-                                      + "\n";
+                    + "\n";
     }
 
     if (m_xaxis == m_xaxisValue) {
@@ -214,7 +203,7 @@ void MyChart::autoUpdate(bool update)
             m_axisX_min = qMax(qFloor(m_axisX_min / 1000.0), 0) * 1000.0;
             qMax(m_axisX_min + 1000.0, m_axisX_max = qCeil(m_axisX_max / 1000.0) * 1000.0);
             m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_min)),
-                            QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
+                              QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
         }
 
         autoScale(m_min_X, m_max_X);
@@ -374,7 +363,7 @@ void MyChart::addPoint(quint8 seriesN, qreal X, qreal Y)
             m_axisX_min = qMax(qFloor(m_axisX_min / 1000.0), 0) * 1000.0;
             m_axisX_max = qMax(m_axisX_min + 1000.0, qCeil(m_axisX_max / 1000.0) * 1000.0);
             m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_min)),
-                            QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
+                              QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
         }
 
         autoScale(m_axisX_min, m_axisX_max);
@@ -413,7 +402,7 @@ void MyChart::clear()
 
     m_xaxisValue->setRange(0, m_minR);
     m_xaxisTime->setRange(QDateTime::fromMSecsSinceEpoch(0),
-                         QDateTime::fromMSecsSinceEpoch(m_minRTime));
+                          QDateTime::fromMSecsSinceEpoch(m_minRTime));
 }
 
 void MyChart::visible(quint8 seriesN, bool visible)
@@ -478,7 +467,7 @@ void MyChart::zoomIn(qreal min, qreal max)
         m_xaxis->setRange(min, max);
     } else {
         m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(min),
-                        QDateTime::fromMSecsSinceEpoch(qCeil(max)));
+                          QDateTime::fromMSecsSinceEpoch(qCeil(max)));
     }
 
     m_axisX_min = min;

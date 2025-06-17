@@ -5,7 +5,7 @@
 #include <QDir>
 #include <QObject>
 #include <QImage>
-#include "MyChart.h"
+#include "./Src/CustumChart/MyChart.h"
 #include "Registry.h"
 
 struct ImageCell {

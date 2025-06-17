@@ -4,17 +4,7 @@
 #pragma once
 #include <QObject>
 #include <QtCharts>
-
-class MySeries : public QLineSeries
-{
-    Q_OBJECT
-private:
-    quint8 m_axisN;
-
-public:
-    explicit MySeries(QObject *parent = nullptr, quint8 axN = 0);
-    quint8 getAxisN() const;
-};
+#include "MySeries.h"
 
 class MyChart : public QChartView
 {
