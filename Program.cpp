@@ -262,7 +262,7 @@ void Program::MainTestResults(MainTest::TestResults results)
 
     qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
 
-    emit SetText(TextObjects::Label_pressureDiff,
+    emit SetText(TextObjects::Label_pressureDifferenceValue,
                  QString::asprintf("%.3f bar", results.pressureDiff));
     emit SetText(TextObjects::Label_friction,
                  QString::asprintf("%.3f H", results.pressureDiff * k));
@@ -276,8 +276,8 @@ void Program::MainTestResults(MainTest::TestResults results)
                  QString::asprintf("%.2f %%", results.dinErrorMax / 0.16));
     emit SetText(TextObjects::Label_frictionPercent,
                  QString::asprintf("%.2f %%", results.friction));
-    emit SetText(TextObjects::Label_low_limit, QString::asprintf("%.2f bar", results.lowLimit));
-    emit SetText(TextObjects::Label_high_limit, QString::asprintf("%.2f bar", results.highLimit));
+    emit SetText(TextObjects::Label_lowLimit, QString::asprintf("%.2f bar", results.lowLimit));
+    emit SetText(TextObjects::Label_highLimit, QString::asprintf("%.2f bar", results.highLimit));
 
     emit SetText(TextObjects::LineEdit_dinamicError,
                  QString::asprintf("%.2f", results.dinErrorMean / 0.16));
@@ -349,25 +349,25 @@ void Program::button_init()
 
     // emit SetGroupDOVisible(false);
 
-    emit SetText(TextObjects::Label_status, "");
-    emit SetText(TextObjects::Label_init, "");
+    emit SetText(TextObjects::Label_deviceStatusValue, "");
+    emit SetText(TextObjects::Label_deviceInitValue, "");
     emit SetText(TextObjects::Label_connectedSensorsNumber, "");
-    emit SetText(TextObjects::Label_startValue, "");
-    emit SetText(TextObjects::Label_endValue, "");
+    emit SetText(TextObjects::Label_startingPositionValue, "");
+    emit SetText(TextObjects::Label_finalPositionValue, "");
 
     if (!m_mpi.Connect()) {
-        emit SetText(TextObjects::Label_status, "Ошибка подключения");
-        emit SetTextColor(TextObjects::Label_status, Qt::red);
+        emit SetText(TextObjects::Label_deviceStatusValue, "Ошибка подключения");
+        emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::red);
         emit SetButtonInitEnabled(true);
         return;
     }
 
-    emit SetText(TextObjects::Label_status, "Успешное подключение к порту " + m_mpi.PortName());
-    emit SetTextColor(TextObjects::Label_status, Qt::darkGreen);
+    emit SetText(TextObjects::Label_deviceStatusValue, "Успешное подключение к порту " + m_mpi.PortName());
+    emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::darkGreen);
 
     if (!m_mpi.Initialize()) {
-        emit SetText(TextObjects::Label_init, "Ошибка инициализации");
-        emit SetTextColor(TextObjects::Label_status, Qt::red);
+        emit SetText(TextObjects::Label_deviceInitValue, "Ошибка инициализации");
+        emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::red);
         emit SetButtonInitEnabled(true);
         return;
     }
@@ -378,8 +378,8 @@ void Program::button_init()
        m_timerDI->start();
     }
 
-    emit SetText(TextObjects::Label_init, "Успешная инициализация");
-    emit SetTextColor(TextObjects::Label_init, Qt::darkGreen);
+    emit SetText(TextObjects::Label_deviceInitValue, "Успешная инициализация");
+    emit SetTextColor(TextObjects::Label_deviceInitValue, Qt::darkGreen);
 
     m_isInitialized = true;
 
@@ -402,8 +402,8 @@ void Program::button_init()
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     bool normalClosed = (valveInfo->safePosition == 0);
 
-    emit SetText(TextObjects::Label_startValue, "Измерение");
-    emit SetTextColor(TextObjects::Label_startValue, Qt::darkYellow);
+    emit SetText(TextObjects::Label_startingPositionValue, "Измерение");
+    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkYellow);
 
     SetDAC(0, 10000, true);
 
@@ -423,11 +423,11 @@ void Program::button_init()
     else
         m_mpi[0]->SetMax();
 
-    emit SetText(TextObjects::Label_startValue, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_startValue, Qt::darkGreen);
+    emit SetText(TextObjects::Label_startingPositionValue, m_mpi[0]->GetFormatedValue());
+    emit SetTextColor(TextObjects::Label_startingPositionValue, Qt::darkGreen);
 
-    emit SetText(TextObjects::Label_endValue, "Измерение");
-    emit SetTextColor(TextObjects::Label_endValue, Qt::darkYellow);
+    emit SetText(TextObjects::Label_finalPositionValue, "Измерение");
+    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkYellow);
 
     SetDAC(0xFFFF, 10000, true);
 
@@ -440,8 +440,8 @@ void Program::button_init()
     else
         m_mpi[0]->SetMin();
 
-    emit SetText(TextObjects::Label_endValue, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_endValue, Qt::darkGreen);
+    emit SetText(TextObjects::Label_finalPositionValue, m_mpi[0]->GetFormatedValue());
+    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkGreen);
 
     qreal correctCoefficient = 1;
     if (valveInfo->strokeMovement != 0) {

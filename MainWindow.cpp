@@ -50,14 +50,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->checkBox_DI2->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_DI2->setFocusPolicy(Qt::NoFocus);
 
-    m_labels[TextObjects::Label_status] = ui->label_status;
-    m_labels[TextObjects::Label_init] = ui->label_init;
+    m_labels[TextObjects::Label_deviceStatusValue] = ui->label_deviceStatusValue;
+    m_labels[TextObjects::Label_deviceInitValue] = ui->label_deviceInitValue;
     m_labels[TextObjects::Label_connectedSensorsNumber] = ui->label_connectedSensorsNumber;
-    m_labels[TextObjects::Label_startValue] = ui->label_startValue;
-    m_labels[TextObjects::Label_endValue] = ui->label_endValue;
+    m_labels[TextObjects::Label_startingPositionValue] = ui->label_startingPositionValue;
+    m_labels[TextObjects::Label_finalPositionValue] = ui->label_finalPositionValue;
     m_labels[TextObjects::Label_lowLimit] = ui->label_lowLimit;
     m_labels[TextObjects::Label_highLimit] = ui->label_highLimit;
-    m_labels[TextObjects::Label_pressureDiff] = ui->label_pressureDiff;
+    m_labels[TextObjects::Label_pressureDifferenceValue] = ui->label_pressureDifferenceValue;
     m_labels[TextObjects::Label_friction] = ui->label_friction;
     m_labels[TextObjects::Label_frictionPercent] = ui->label_frictionPercent;
     m_labels[TextObjects::Label_din_error_mean] = ui->label_din_error_mean;
@@ -65,8 +65,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_labels[TextObjects::Label_din_error_max] = ui->label_din_error_max;
     m_labels[TextObjects::Label_din_error_max_percent] = ui->label_din_error_max_percent;
     m_labels[TextObjects::Label_range] = ui->label_range;
-    m_labels[TextObjects::Label_low_limit] = ui->label_lowLimit;
-    m_labels[TextObjects::Label_high_limit] = ui->label_highLimit;
     m_labels[TextObjects::Label_strokeTest_forwardTime] = ui->label_strokeTest_forwardTime;
     m_labels[TextObjects::Label_strokeTest_backwardTime] = ui->label_strokeTest_backwardTime;
 
@@ -155,9 +153,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton_open, &QPushButton::clicked, m_program, &Program::button_open);
     connect(ui->pushButton_report, &QPushButton::clicked, m_program, &Program::button_report);
-    connect(ui->pushButton_pixmap1, &QPushButton::clicked, m_program, &Program::button_pixmap1);
-    connect(ui->pushButton_pixmap2, &QPushButton::clicked, m_program, &Program::button_pixmap2);
-    connect(ui->pushButton_pixmap3, &QPushButton::clicked, m_program, &Program::button_pixmap3);
+    connect(ui->pushButton_imageChartTask, &QPushButton::clicked, m_program, &Program::button_pixmap1);
+    connect(ui->pushButton_imageChartPressure, &QPushButton::clicked, m_program, &Program::button_pixmap2);
+    connect(ui->pushButton_imageChartFriction, &QPushButton::clicked, m_program, &Program::button_pixmap3);
 
     connect(this, &MainWindow::StartMainTest, m_program, &Program::MainTestStart);
     connect(this, &MainWindow::StartStrokeTest, m_program, &Program::StrokeTestStart);
@@ -199,6 +197,28 @@ MainWindow::MainWindow(QWidget *parent)
             ui->doubleSpinBox_task->setValue(value / 1000.0);
         }
     });
+
+    connect(ui->pushButton_signal_4mA, &QPushButton::clicked, this, [this]() {
+        ui->doubleSpinBox_task->setValue(4.0);
+    });
+    connect(ui->pushButton_signal_8mA, &QPushButton::clicked, this, [this]() {
+        ui->doubleSpinBox_task->setValue(8.0);
+    });
+    connect(ui->pushButton_signal_12mA, &QPushButton::clicked, this, [this]() {
+        ui->doubleSpinBox_task->setValue(12.0);
+    });
+    connect(ui->pushButton_signal_16mA, &QPushButton::clicked, this, [this]() {
+        ui->doubleSpinBox_task->setValue(16.0);
+    });
+    connect(ui->pushButton_signal_20mA, &QPushButton::clicked, this, [this]() {
+        ui->doubleSpinBox_task->setValue(20.0);
+    });
+
+    ui->label_arrowUp->setCursor(Qt::PointingHandCursor);
+    ui->label_arrowDown->setCursor(Qt::PointingHandCursor);
+
+    ui->label_arrowUp->installEventFilter(this);
+    ui->label_arrowDown->installEventFilter(this);
 
     connect(m_program, &Program::SetTask, this, &MainWindow::SetTask);
     connect(m_program, &Program::SetSensorNumber, this, [=](quint8 num) {
@@ -249,14 +269,14 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::GetDirectory,
             Qt::DirectConnection);
 
-    connect(ui->pushButton_pixmap1, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap1, &m_image_1);
+    connect(ui->pushButton_imageChartTask, &QPushButton::clicked, this, [&] {
+        GetImage(ui->label_imageChartTask, &m_image_1);
     });
-    connect(ui->pushButton_pixmap2, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap2, &m_image_2);
+    connect(ui->pushButton_imageChartPressure, &QPushButton::clicked, this, [&] {
+        GetImage(ui->label_imageChartPressure, &m_image_2);
     });
-    connect(ui->pushButton_pixmap3, &QPushButton::clicked, this, [&] {
-        GetImage(ui->label_pixmap3, &m_image_3);
+    connect(ui->pushButton_imageChartFriction, &QPushButton::clicked, this, [&] {
+        GetImage(ui->label_imageChartFriction, &m_image_3);
     });
 
     connect(ui->pushButton_report, &QPushButton::clicked, this, [&] {
@@ -304,6 +324,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_step_results->setHorizontalHeaderLabels({"T86", "Перерегулирование"});
     ui->tableWidget_step_results->resizeColumnsToContents();
 
+    ui->label_arrowUp->setCursor(Qt::PointingHandCursor);
+    ui->label_arrowDown->setCursor(Qt::PointingHandCursor);
+
+    ui->label_arrowUp->installEventFilter(this);
+    ui->label_arrowDown->installEventFilter(this);
+
+    ui->label_arrowUp->setCursor(Qt::PointingHandCursor);
+    ui->label_arrowDown->setCursor(Qt::PointingHandCursor);
+
+    ui->label_arrowUp->installEventFilter(this);
+    ui->label_arrowDown->installEventFilter(this);
+
     connect(m_program, &Program::SetSolenoidResults, this, &MainWindow::SetSolenoidResults);
 }
 
@@ -312,6 +344,53 @@ MainWindow::~MainWindow()
     delete ui;
     m_programthread->quit();
     m_programthread->wait();
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (auto w = qobject_cast<QWidget*>(watched)) {
+        if (!w->isEnabled()) {
+            return false;
+        }
+    }
+    if (watched == ui->label_arrowUp && event->type() == QEvent::MouseButtonRelease) {
+        double cur = ui->doubleSpinBox_task->value();
+        double nxt = cur + 0.05;
+        if (nxt > ui->doubleSpinBox_task->maximum())
+            nxt = ui->doubleSpinBox_task->maximum();
+        ui->doubleSpinBox_task->setValue(nxt);
+        return true;
+    }
+    if (watched == ui->label_arrowDown && event->type() == QEvent::MouseButtonRelease) {
+        double cur = ui->doubleSpinBox_task->value();
+        double nxt = cur - 0.05;
+        if (nxt < ui->doubleSpinBox_task->minimum())
+            nxt = ui->doubleSpinBox_task->minimum();
+        ui->doubleSpinBox_task->setValue(nxt);
+        return true;
+    }
+    if (watched == ui->label_arrowUp) {
+        if (event->type() == QEvent::Enter) {
+            ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUpHover.png"));
+            return true;
+        }
+        if (event->type() == QEvent::Leave) {
+            ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUp.png"));
+            return true;
+        }
+    }
+    if (watched == ui->label_arrowDown) {
+        if (event->type() == QEvent::Enter) {
+            ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDownHover.png"));
+            return true;
+        }
+        if (event->type() == QEvent::Leave) {
+            ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDown.png"));
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
 }
 
 void MainWindow::onCountdownTimeout()
@@ -452,15 +531,15 @@ void MainWindow::SetSensorsNumber(quint8 num)
     ui->groupBox_DO->setEnabled(!noSensors);
 
     if (m_blockCTS.moving) {
-        ui->label_startValue->setVisible(true);
-        ui->label_endValue->setVisible(true);
-        ui->label_start_positio_sensor->setVisible(true);
-        ui->label_endPositioSensor->setVisible(true);
+        ui->label_startingPositionValue->setVisible(true);
+        ui->label_finalPositionValue->setVisible(true);
+        ui->label_startingPosition->setVisible(true);
+        ui->label_finalPosition->setVisible(true);
     } else {
-        ui->label_startValue->setVisible(false);
-        ui->label_endValue->setVisible(false);
-        ui->label_start_positio_sensor->setVisible(false);
-        ui->label_endPositioSensor->setVisible(false);
+        ui->label_startingPositionValue->setVisible(false);
+        ui->label_finalPositionValue->setVisible(false);
+        ui->label_startingPosition->setVisible(false);
+        ui->label_finalPosition->setVisible(false);
     }
 
     for (int i = 0; i < ui->tabWidget->count(); ++i) {
@@ -894,7 +973,7 @@ void MainWindow::SaveChart(Charts chart)
 
     switch (chart) {
     case Charts::Task:
-        ui->label_pixmap3->setPixmap(pix);
+        ui->label_imageChartFriction->setPixmap(pix);
         m_image_3 = img;
         break;
     case Charts::Stroke:
@@ -903,11 +982,11 @@ void MainWindow::SaveChart(Charts chart)
     case Charts::Resolution:
     case Charts::Step:
     case Charts::Pressure:
-        ui->label_pixmap2->setPixmap(pix);
+        ui->label_imageChartPressure->setPixmap(pix);
         m_image_2 = img;
 
     case Charts::Friction:
-        ui->label_pixmap1->setPixmap(pix);
+        ui->label_imageChartTask->setPixmap(pix);
         m_image_1 = img;
 
 
@@ -918,9 +997,9 @@ void MainWindow::SaveChart(Charts chart)
         break;
     }
 
-    ui->label_pixmap1->setScaledContents(true);
-    ui->label_pixmap2->setScaledContents(true);
-    ui->label_pixmap3->setScaledContents(true);
+    ui->label_imageChartTask->setScaledContents(true);
+    ui->label_imageChartPressure->setScaledContents(true);
+    ui->label_imageChartFriction->setScaledContents(true);
 }
 
 void MainWindow::GetImage(QLabel *label, QImage *image)

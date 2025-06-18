@@ -16,8 +16,8 @@ include(./QXlsx.pri)
 
 SOURCES += \
     CyclicTestSettings.cpp \
-    Src/CustumChart/MyChart.cpp \
-    Src/CustumChart/MySeries.cpp \
+    Src/CustomChart/MyChart.cpp \
+    Src/CustomChart/MySeries.cpp \
     Src/MPI/MPI.cpp \
     Src/MPI/MpiSettings.cpp \
     Src/ReportBuilders/BTCVReportBuilder.cpp \
@@ -59,8 +59,8 @@ HEADERS += \
     Registry.h \
     SelectTests.h \
     Sensor.h \
-    Src/CustumChart/MyChart.h \
-    Src/CustumChart/MySeries.h \
+    Src/CustomChart/MyChart.h \
+    Src/CustomChart/MySeries.h \
     Src/MPI/MPI.h \
     Src/MPI/MpiSettings.h \
     Src/ReportBuilders/BTCVReportBuilder.h \
@@ -95,6 +95,8 @@ FORMS += \
     StepTestSettings.ui \
     ValveWindow.ui
 
+INCLUDEPATH += ./Src/CustomChart
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
@@ -102,4 +104,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     excel.qrc \
+    img.qrc \
     translations.qrc

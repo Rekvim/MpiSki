@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -398,7 +398,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
-            <widget class="QGroupBox" name="groupBox_linear_motion_sensor">
+            <widget class="QGroupBox" name="groupBox_linearMotionSensor">
              <property name="font">
               <font>
                <pointsize>12</pointsize>
@@ -438,7 +438,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_3">
+            <widget class="QGroupBox" name="groupBox_pressureSensor_1">
              <property name="font">
               <font>
                <pointsize>12</pointsize>
@@ -465,7 +465,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_4">
+            <widget class="QGroupBox" name="groupBox_pressureSensor_2">
              <property name="font">
               <font>
                <pointsize>12</pointsize>
@@ -492,7 +492,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_5">
+            <widget class="QGroupBox" name="groupBox_pressureSensor_3">
              <property name="font">
               <font>
                <pointsize>12</pointsize>
@@ -739,7 +739,7 @@
                    <string/>
                   </property>
                   <property name="pixmap">
-                   <pixmap>:/src/img/arrowUp.png</pixmap>
+                   <pixmap resource="img.qrc">:/Src/Img/arrowUp.png</pixmap>
                   </property>
                   <property name="scaledContents">
                    <bool>true</bool>
@@ -758,7 +758,7 @@
                    <string/>
                   </property>
                   <property name="pixmap">
-                   <pixmap>:/src/img/arrowDown.png</pixmap>
+                   <pixmap resource="img.qrc">:/Src/Img/arrowDown.png</pixmap>
                   </property>
                   <property name="scaledContents">
                    <bool>true</bool>
@@ -834,9 +834,9 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_status">
+            <layout class="QHBoxLayout" name="horizontalLayout_deviceStatus">
              <item>
-              <widget class="QLabel" name="label_status_2">
+              <widget class="QLabel" name="label_deviceStatus">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -848,7 +848,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_status">
+              <spacer name="horizontalSpacer_deviceStatus">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -861,7 +861,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_status">
+              <widget class="QLabel" name="label_deviceStatusValue">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -923,7 +923,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_init">
+              <widget class="QLabel" name="label_deviceInitValue">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1014,9 +1014,9 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_start_positio_sensor">
+            <layout class="QHBoxLayout" name="horizontalLayout_startingPosition">
              <item>
-              <widget class="QLabel" name="label_start_positio_sensor">
+              <widget class="QLabel" name="label_startingPosition">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -1028,7 +1028,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_5">
+              <spacer name="horizontalSpacer_startingPosition">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -1041,7 +1041,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_startValue">
+              <widget class="QLabel" name="label_startingPositionValue">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1073,9 +1073,9 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_endPositioSensor">
+            <layout class="QHBoxLayout" name="horizontalLayout_finalPosition">
              <item>
-              <widget class="QLabel" name="label_endPositioSensor">
+              <widget class="QLabel" name="label_finalPosition">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -1087,7 +1087,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_endPositioSensor">
+              <spacer name="horizontalSpacer_finalPosition">
                <property name="orientation">
                 <enum>Qt::Orientation::Horizontal</enum>
                </property>
@@ -1100,7 +1100,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_endValue">
+              <widget class="QLabel" name="label_finalPositionValue">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1327,7 +1327,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_maintest">
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_task">
            <attribute name="title">
@@ -1603,14 +1603,14 @@
                  <item>
                   <layout class="QVBoxLayout" name="verticalLayout_19">
                    <item>
-                    <widget class="QLabel" name="label_46">
+                    <widget class="QLabel" name="label_pressureDifference">
                      <property name="text">
                       <string>Разница давлений</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLabel" name="label_47">
+                    <widget class="QLabel" name="label_frictionForce">
                      <property name="text">
                       <string>Сила трения</string>
                      </property>
@@ -1628,14 +1628,14 @@
                  <item>
                   <layout class="QVBoxLayout" name="verticalLayout_20">
                    <item>
-                    <widget class="QLabel" name="label_pressureDiff">
+                    <widget class="QLabel" name="label_pressureDifferenceValue">
                      <property name="text">
                       <string>0.000 bar</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLabel" name="label_friction">
+                    <widget class="QLabel" name="label_frictionForceValue">
                      <property name="text">
                       <string>0.000 H</string>
                      </property>
@@ -2220,63 +2220,10 @@
         <string>Формирование отчета</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="2" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_28">
-          <item>
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_report">
-            <property name="font">
-             <font>
-              <pointsize>11</pointsize>
-              <stylestrategy>PreferDefault</stylestrategy>
-             </font>
-            </property>
-            <property name="text">
-             <string>Сформировать отчёт</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_open">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Открыть отчёт</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0">
-         <spacer name="horizontalSpacer_20">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -3036,15 +2983,15 @@
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_24">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_45">
+             <layout class="QVBoxLayout" name="verticalLayout_imagesChart">
               <item>
-               <widget class="QGroupBox" name="groupBox_16">
+               <widget class="QGroupBox" name="groupBox_imageChartTask">
                 <property name="title">
                  <string>График зависимости ход штока/сигнал позиционера</string>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_25">
                  <item>
-                  <widget class="QLabel" name="label_pixmap1">
+                  <widget class="QLabel" name="label_imageChartTask">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -3081,9 +3028,9 @@
                   </widget>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_46">
+                  <layout class="QVBoxLayout" name="verticalLayout_imageChartTask">
                    <item>
-                    <spacer name="verticalSpacer_6">
+                    <spacer name="verticalSpacer_imageChartTask">
                      <property name="orientation">
                       <enum>Qt::Orientation::Vertical</enum>
                      </property>
@@ -3096,7 +3043,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="pushButton_pixmap1">
+                    <widget class="QPushButton" name="pushButton_imageChartTask">
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -3108,13 +3055,13 @@
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_17">
+               <widget class="QGroupBox" name="groupBox_imageChartPressure">
                 <property name="title">
                  <string>График зависимости ход штока/давление в приводе</string>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_26">
                  <item>
-                  <widget class="QLabel" name="label_pixmap2">
+                  <widget class="QLabel" name="label_imageChartPressure">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
@@ -3148,9 +3095,9 @@
                   </widget>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_47">
+                  <layout class="QVBoxLayout" name="verticalLayout_imageChartPressure">
                    <item>
-                    <spacer name="verticalSpacer_7">
+                    <spacer name="verticalSpacer_imageChartPressure">
                      <property name="orientation">
                       <enum>Qt::Orientation::Vertical</enum>
                      </property>
@@ -3163,7 +3110,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="pushButton_pixmap2">
+                    <widget class="QPushButton" name="pushButton_imageChartPressure">
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -3175,13 +3122,13 @@
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_18">
+               <widget class="QGroupBox" name="groupBox_imageChartFriction">
                 <property name="title">
                  <string>График трения</string>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_27">
                  <item>
-                  <widget class="QLabel" name="label_pixmap3">
+                  <widget class="QLabel" name="label_imageChartFriction">
                    <property name="minimumSize">
                     <size>
                      <width>200</width>
@@ -3209,9 +3156,9 @@
                   </widget>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_48">
+                  <layout class="QVBoxLayout" name="verticalLayout_imageChartFriction">
                    <item>
-                    <spacer name="verticalSpacer_8">
+                    <spacer name="verticalSpacer_imageChartFriction">
                      <property name="orientation">
                       <enum>Qt::Orientation::Vertical</enum>
                      </property>
@@ -3224,7 +3171,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="pushButton_pixmap3">
+                    <widget class="QPushButton" name="pushButton_imageChartFriction">
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -3260,7 +3207,7 @@
             <item>
              <layout class="QGridLayout" name="gridLayout">
               <item row="7" column="0">
-               <widget class="QLabel" name="label_72">
+               <widget class="QLabel" name="label_result_frictionPercent">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3273,7 +3220,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLabel" name="label_76">
+               <widget class="QLabel" name="label_validValue">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3286,7 +3233,7 @@
                </widget>
               </item>
               <item row="9" column="0">
-               <widget class="QLabel" name="label_78">
+               <widget class="QLabel" name="label_result_strokeTest_backwardTime">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3298,7 +3245,7 @@
                </widget>
               </item>
               <item row="5" column="0">
-               <widget class="QLabel" name="label_90">
+               <widget class="QLabel" name="label_result_rangePressure">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3312,7 +3259,7 @@
                </widget>
               </item>
               <item row="4" column="0">
-               <widget class="QLabel" name="label_69">
+               <widget class="QLabel" name="label_result_rangeReal_rangeRecomend">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3375,7 +3322,7 @@
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QLabel" name="label_65">
+               <widget class="QLabel" name="label_result_strokeReal_strokeRecomend">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3410,7 +3357,7 @@
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="label_89">
+               <widget class="QLabel" name="label_result_dinamicIpReal_dinamicIpRecomend">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3424,7 +3371,7 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_70">
+               <widget class="QLabel" name="label_measurementParameter">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3437,7 +3384,7 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_77">
+               <widget class="QLabel" name="label_result_dinamicReal_dinamicRecomend">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3451,7 +3398,7 @@
                </widget>
               </item>
               <item row="6" column="0">
-               <widget class="QLabel" name="label_75">
+               <widget class="QLabel" name="label_result_friction">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3471,7 +3418,7 @@
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QLabel" name="label_68">
+               <widget class="QLabel" name="label_recommendedValue">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3484,7 +3431,7 @@
                </widget>
               </item>
               <item row="8" column="0">
-               <widget class="QLabel" name="label_66">
+               <widget class="QLabel" name="label_result_strokeTest_forwardTime">
                 <property name="font">
                  <font>
                   <pointsize>11</pointsize>
@@ -3547,6 +3494,46 @@
           </widget>
          </widget>
         </item>
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_28">
+          <item>
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_report">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <stylestrategy>PreferDefault</stylestrategy>
+             </font>
+            </property>
+            <property name="text">
+             <string>Сформировать отчёт</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_open">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Открыть отчёт</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -3596,9 +3583,9 @@
   <tabstop>tab_widget</tabstop>
   <tabstop>pushButton_report</tabstop>
   <tabstop>pushButton_open</tabstop>
-  <tabstop>pushButton_pixmap1</tabstop>
-  <tabstop>pushButton_pixmap2</tabstop>
-  <tabstop>pushButton_pixmap3</tabstop>
+  <tabstop>pushButton_imageChartTask</tabstop>
+  <tabstop>pushButton_imageChartPressure</tabstop>
+  <tabstop>pushButton_imageChartFriction</tabstop>
   <tabstop>lineEdit_dinamicReal</tabstop>
   <tabstop>lineEdit_strokeReal</tabstop>
   <tabstop>lineEdit_rangeReal</tabstop>
@@ -3615,6 +3602,8 @@
   <tabstop>Chart_friction</tabstop>
   <tabstop>Chart_response</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="img.qrc"/>
+ </resources>
  <connections/>
 </ui>

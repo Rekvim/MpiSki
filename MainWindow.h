@@ -118,6 +118,8 @@ private:
     void SaveChart(Charts chart);
     void GetImage(QLabel *label, QImage *image);
     void InitReport();
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
 signals:
     void StartCyclicSolenoidTest(const CyclicTestSettings::TestParameters &p);
     void SetDAC(qreal value);

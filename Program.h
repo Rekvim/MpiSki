@@ -29,16 +29,17 @@ enum class TextObjects {
     LineEdit_pressureSensor_3,
 
     LineEdit_feedback_4_20mA,
-    Label_status,
-    Label_init,
+
+    Label_deviceStatusValue,
+    Label_deviceInitValue,
     Label_connectedSensorsNumber,
-    Label_startValue,
-    Label_endValue,
+    Label_startingPositionValue,
+    Label_finalPositionValue,
 
     Label_lowLimit,
     Label_highLimit,
 
-    Label_pressureDiff,
+    Label_pressureDifferenceValue,
     Label_friction,
     Label_frictionPercent,
 

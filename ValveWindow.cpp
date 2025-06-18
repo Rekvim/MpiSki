@@ -53,7 +53,6 @@ ValveWindow::ValveWindow(QWidget *parent)
             &ValveWindow::onPositionerTypeChanged);
 
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
-    applyPatternVisibility();
 }
 
 ValveWindow::~ValveWindow()
