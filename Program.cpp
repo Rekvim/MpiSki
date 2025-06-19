@@ -264,20 +264,27 @@ void Program::MainTestResults(MainTest::TestResults results)
 
     emit SetText(TextObjects::Label_pressureDifferenceValue,
                  QString::asprintf("%.3f bar", results.pressureDiff));
-    emit SetText(TextObjects::Label_friction,
+
+    emit SetText(TextObjects::Label_frictionForceValue,
                  QString::asprintf("%.3f H", results.pressureDiff * k));
-    emit SetText(TextObjects::Label_din_error_mean,
-                 QString::asprintf("%.3f mA", results.dinErrorMean));
-    emit SetText(TextObjects::Label_din_error_max,
-                 QString::asprintf("%.3f mA", results.dinErrorMax));
-    emit SetText(TextObjects::Label_din_error_mean_percent,
-                 QString::asprintf("%.2f %%", results.dinErrorMean / 0.16));
-    emit SetText(TextObjects::Label_din_error_max_percent,
-                 QString::asprintf("%.2f %%", results.dinErrorMax / 0.16));
-    emit SetText(TextObjects::Label_frictionPercent,
+    emit SetText(TextObjects::label_frictionPercentValue,
                  QString::asprintf("%.2f %%", results.friction));
-    emit SetText(TextObjects::Label_lowLimit, QString::asprintf("%.2f bar", results.lowLimit));
-    emit SetText(TextObjects::Label_highLimit, QString::asprintf("%.2f bar", results.highLimit));
+
+    emit SetText(TextObjects::Label_dynamicErrorMeanPercent,
+                 QString::asprintf("%.2f %%", results.dinErrorMean / 0.16));
+    emit SetText(TextObjects::Label_dynamicErrorMean,
+                 QString::asprintf("%.3f mA", results.dinErrorMean));
+
+    emit SetText(TextObjects::Label_dynamicErrorMax,
+                 QString::asprintf("%.3f mA", results.dinErrorMax));
+    emit SetText(TextObjects::Label_dynamicErrorMaxPercent,
+                 QString::asprintf("%.2f %%", results.dinErrorMax / 0.16));
+
+
+
+
+    emit SetText(TextObjects::Label_lowLimitValue, QString::asprintf("%.2f bar", results.lowLimit));
+    emit SetText(TextObjects::Label_highLimitValue, QString::asprintf("%.2f bar", results.highLimit));
 
     emit SetText(TextObjects::LineEdit_dinamicError,
                  QString::asprintf("%.2f", results.dinErrorMean / 0.16));
@@ -451,12 +458,12 @@ void Program::button_init()
     m_mpi[0]->CorrectCoefficients(correctCoefficient);
 
     if (normalClosed) {
-        emit SetText(TextObjects::Label_range, m_mpi[0]->GetFormatedValue());
+        emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
         emit SetText(TextObjects::LineEdit_stroke, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
         SetDAC(0);
     } else {
         SetDAC(0, 10000, true);
-        emit SetText(TextObjects::Label_range, m_mpi[0]->GetFormatedValue());
+        emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
         emit SetText(TextObjects::LineEdit_stroke, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
     }
 

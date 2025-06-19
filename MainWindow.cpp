@@ -55,16 +55,16 @@ MainWindow::MainWindow(QWidget *parent)
     m_labels[TextObjects::Label_connectedSensorsNumber] = ui->label_connectedSensorsNumber;
     m_labels[TextObjects::Label_startingPositionValue] = ui->label_startingPositionValue;
     m_labels[TextObjects::Label_finalPositionValue] = ui->label_finalPositionValue;
-    m_labels[TextObjects::Label_lowLimit] = ui->label_lowLimit;
-    m_labels[TextObjects::Label_highLimit] = ui->label_highLimit;
+    m_labels[TextObjects::Label_lowLimitValue] = ui->label_lowLimitValue;
+    m_labels[TextObjects::Label_highLimitValue] = ui->label_highLimitValue;
     m_labels[TextObjects::Label_pressureDifferenceValue] = ui->label_pressureDifferenceValue;
-    m_labels[TextObjects::Label_friction] = ui->label_friction;
-    m_labels[TextObjects::Label_frictionPercent] = ui->label_frictionPercent;
-    m_labels[TextObjects::Label_din_error_mean] = ui->label_din_error_mean;
-    m_labels[TextObjects::Label_din_error_mean_percent] = ui->label_din_error_mean_percent;
-    m_labels[TextObjects::Label_din_error_max] = ui->label_din_error_max;
-    m_labels[TextObjects::Label_din_error_max_percent] = ui->label_din_error_max_percent;
-    m_labels[TextObjects::Label_range] = ui->label_range;
+    m_labels[TextObjects::Label_frictionForceValue] = ui->label_frictionForceValue;
+    m_labels[TextObjects::label_frictionPercentValue] = ui->label_frictionPercentValue;
+    m_labels[TextObjects::Label_dynamicErrorMean] = ui->label_dynamicErrorMean;
+    m_labels[TextObjects::Label_dynamicErrorMeanPercent] = ui->label_dynamicErrorMeanPercent;
+    m_labels[TextObjects::Label_dynamicErrorMax] = ui->label_dynamicErrorMax;
+    m_labels[TextObjects::Label_dynamicErrorMaxPercent] = ui->label_dynamicErrorMaxPercent;
+    m_labels[TextObjects::Label_valveStroke_range] = ui->label_valveStroke_range;
     m_labels[TextObjects::Label_strokeTest_forwardTime] = ui->label_strokeTest_forwardTime;
     m_labels[TextObjects::Label_strokeTest_backwardTime] = ui->label_strokeTest_backwardTime;
 

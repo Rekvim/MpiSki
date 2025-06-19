@@ -36,21 +36,20 @@ enum class TextObjects {
     Label_startingPositionValue,
     Label_finalPositionValue,
 
-    Label_lowLimit,
-    Label_highLimit,
-
     Label_pressureDifferenceValue,
-    Label_friction,
-    Label_frictionPercent,
+    Label_frictionForceValue,
+    label_frictionPercentValue,
 
-    Label_din_error_mean,
-    Label_din_error_mean_percent,
+    Label_dynamicErrorMean,
+    Label_dynamicErrorMeanPercent,
 
-    Label_din_error_max,
-    Label_din_error_max_percent,
-    Label_range,
-    Label_low_limit,
-    Label_high_limit,
+    Label_dynamicErrorMax,
+    Label_dynamicErrorMaxPercent,
+
+    Label_valveStroke_range,
+
+    Label_lowLimitValue,
+    Label_highLimitValue,
 
     Label_strokeTest_forwardTime,
     Label_strokeTest_backwardTime,
