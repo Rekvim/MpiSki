@@ -38,6 +38,9 @@ ValveInfo *Registry::GetValveInfo(const QString &position)
     m_valveInfo.DN = m_settings.value("DN", "").toString();
     m_valveInfo.PN = m_settings.value("PN", "").toString();
     m_valveInfo.positionerModel = m_settings.value("positionerModel", "").toString();
+    m_valveInfo.solenoidValveModel = m_settings.value("solenoidValveModel", "").toString();
+    m_valveInfo.limitSwitchModel = m_settings.value("limitSwitchModel", "").toString();
+    m_valveInfo.positionSensorModel = m_settings.value("positionSensorModel", "").toString();
     m_valveInfo.dinamicError = m_settings.value("dinamicError", "").toDouble();
     m_valveInfo.strokeMovement = m_settings.value("strokeMovement", "").toInt();
     m_valveInfo.strokValve = m_settings.value("strokValve", "").toString();
@@ -78,6 +81,9 @@ void Registry::SaveValveInfo()
     m_settings.setValue("DN", m_valveInfo.DN);
     m_settings.setValue("PN", m_valveInfo.PN);
     m_settings.setValue("positionerModel", m_valveInfo.positionerModel);
+    m_settings.setValue("solenoidValveModel", m_valveInfo.solenoidValveModel);
+    m_settings.setValue("limitSwitchModel", m_valveInfo.limitSwitchModel);
+    m_settings.setValue("positionSensorModel", m_valveInfo.positionSensorModel);
     m_settings.setValue("dinamicError", m_valveInfo.dinamicError);
     m_settings.setValue("strokeMovement", m_valveInfo.strokeMovement);
     m_settings.setValue("strokValve", m_valveInfo.strokValve);

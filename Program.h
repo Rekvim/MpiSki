@@ -119,7 +119,7 @@ signals:
     void SetGroupDOVisible(bool visible);
     void SetVisible(Charts chart, quint16 series, bool visible);
     void SetRegressionEnable(bool enable);
-    void SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
+    void SetSolenoidResults(QString sequence, double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
 
     void GetPoints(QVector<QVector<QPointF>> &points, Charts chart);
 
@@ -132,6 +132,7 @@ signals:
     void DublSeries();
     void ReleaseBlock();
 
+    void MainTestFinished();
     void GetMainTestParameters(MainTestSettings::TestParameters &parameters);
     void GetStepTestParameters(StepTestSettings::TestParameters &parameters);
     void GetResolutionTestParameters(OtherTestSettings::TestParameters &parameters);
@@ -160,7 +161,7 @@ private slots:
                 bool wait_for_start = false);
     void SetTimeStart();
     void StrokeTestResults(quint64 forward_time, quint64 backward_time);
-    void SolenoidResults(double forward, double backward, quint16 cycles, double range_percent, double total_time_sec);
+    void SolenoidResults(QString sequence, double forward, double backward, quint16 cycles, double range_percent, double total_time_sec);
 
 public slots:
     void AddRegression(const QVector<QPointF> &points);

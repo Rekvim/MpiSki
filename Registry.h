@@ -63,6 +63,7 @@ struct TestTelemetryData {
     double strokeTest_timeForward = 0.0;
     double strokeTest_timeBackward = 0.0;
 
+    QString cyclicTest_sequence = "";
     double cyclicTest_timeForward = 0.0;
     double cyclicTest_timeBackward = 0.0;
     quint32 cyclicTest_cycles = 0;

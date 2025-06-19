@@ -42,6 +42,7 @@ private slots:
     void AddPoints(Charts chart, QVector<Point> points);
     void ClearPoints(Charts chart);
 
+    void promptSaveCharts();
     void SetChartVisible(Charts chart, quint16 series, bool visible);
     void ShowDots(bool visible);
     void DublSeries();
@@ -65,7 +66,7 @@ private slots:
     void SetTask(qreal task);
     void SetTextColor(const TextObjects object, const QColor color);
     void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
-    void SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
+    void SetSolenoidResults(QString sequence, double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
@@ -84,7 +85,7 @@ private:
 
     Registry *m_registry = nullptr;
     TestTelemetryData collectTestTelemetryData() const;
-
+    QString m_lastSolenoidSequence;
 
     ReportSaver *m_reportSaver = nullptr;
     Program *m_program;

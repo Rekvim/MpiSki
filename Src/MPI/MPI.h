@@ -30,6 +30,7 @@ public:
     const QString &PortName() const;
     Sensor *operator[](quint8 n);
     Sensor *GetDAC();
+
     void SetDiscreteOutput(quint8 DO_num, bool state);
 
 private:

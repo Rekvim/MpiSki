@@ -28,8 +28,8 @@ void CTVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 6, 13, valveInfo.valveModel});
     report.data.push_back({"Отчет ЦТ", 7, 13, valveInfo.manufacturer});
     report.data.push_back({"Отчет ЦТ", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
-    // report.data.push_back({"Отчет ЦТ", 9, 13, ???}); // Соленоидный клапан
-    // report.data.push_back({"Отчет ЦТ", 10, 13, ???}); // Концевой выключатель/датчик положения
+    report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.solenoidValveModel});
+    report.data.push_back({"Отчет ЦТ", 10, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
     report.data.push_back({"Отчет ЦТ", 11, 13, safeToString(telemetry.supplyPressure)});
     report.data.push_back({"Отчет ЦТ", 12, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 13, 13, valveInfo.driveModel});
@@ -37,11 +37,11 @@ void CTVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 15, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({"Отчет ЦТ", 20, 8, safeToString(telemetry.strokeTest_timeForward)}); // Результат теста полного хода
-    report.data.push_back({"Отчет ЦТ", 22, 8, safeToString(telemetry.strokeTest_timeBackward)}); // Результат теста полного хода
-    // report.data.push_back({"Отчет ЦТ", 24, 8, safeToString(???)});
-    // report.data.push_back({"Отчет ЦТ", 26, 8, safeToString(telemetry.cyclicTest_rangePercent)}); // Указывается выбранное значение ЦТ (по умолчанию либо введеный вручную)
-    // report.data.push_back({"Отчет ЦТ", 28, 8, safeToString(telemetry.cyclicTest_totalTime)});
+    report.data.push_back({"Отчет ЦТ", 20, 8, safeToString(telemetry.strokeTest_timeForward)});
+    report.data.push_back({"Отчет ЦТ", 22, 8, safeToString(telemetry.strokeTest_timeBackward)});
+    report.data.push_back({"Отчет ЦТ", 24, 8, safeToString(telemetry.cyclicTest_cycles)});
+    report.data.push_back({"Отчет ЦТ", 26, 8, telemetry.cyclicTest_sequence});
+    report.data.push_back({"Отчет ЦТ", 28, 8, safeToString(telemetry.cyclicTest_totalTime)});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     // report.data.push_back({"Отчет ЦТ", 36, 8, safeToString(???)}); // Задание диапазона (0% хода)

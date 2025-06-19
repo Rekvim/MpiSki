@@ -526,6 +526,7 @@ void Program::MainTestStart()
     connect(threadTest, &QThread::finished, main_test, &MainTest::deleteLater);
 
     connect(main_test, &MainTest::EndTest, this, &Program::EndTest);
+    connect(main_test, &MainTest::EndTest, this, &Program::MainTestFinished);
 
     connect(main_test, &MainTest::UpdateGraph, this, &Program::UpdateCharts_maintest);
     connect(main_test, &MainTest::SetDAC, this, &Program::SetDAC);
@@ -701,13 +702,14 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     m_timerSensors->start();
 }
 
-void Program::SolenoidResults(double forwardSec,
+void Program::SolenoidResults(QString sequence,
+                              double forwardSec,
                               double backwardSec,
                               quint16 cycles,
                               double rangePercent,
                               double totalTimeSec)
 {
-    emit SetSolenoidResults(forwardSec, backwardSec, cycles, rangePercent, totalTimeSec);
+    emit SetSolenoidResults(sequence, forwardSec, backwardSec, cycles, rangePercent, totalTimeSec);
 }
 
 void Program::StartOptionalTest(quint8 testNum)

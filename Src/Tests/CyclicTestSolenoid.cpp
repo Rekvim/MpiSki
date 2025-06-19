@@ -11,6 +11,7 @@ void CyclicTestSolenoid::SetParameters(const QString &sequence,
                                        int numCycles)
 {
     m_dacValues.clear();
+    m_sequence = sequence;
     for (auto &part : sequence.split('-', Qt::SkipEmptyParts)) {
         bool ok = false;
         int v = part.trimmed().toInt(&ok);
@@ -110,6 +111,7 @@ void CyclicTestSolenoid::Process()
     double rangePercent = maxPct - minPct;
 
     emit SetSolenoidResults(
+        m_sequence,
         forwardDuration / 1000.0,
         backwardDuration / 1000.0,
         m_numCycles,

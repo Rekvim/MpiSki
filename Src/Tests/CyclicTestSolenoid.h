@@ -29,9 +29,10 @@ signals:
     void UpdateCyclicTred();
     void SetStartTime();
 
-    void SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
+    void SetSolenoidResults(QString sequence, double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
 
 private:
+    QString m_sequence;
     QList<int> m_dacValues;
     int m_stepDelayMs = 0;
     int m_holdTimeMs  = 0;

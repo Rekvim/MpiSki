@@ -7,6 +7,7 @@
 #include "Src/ReportBuilders/CTCVReportBuilder.h"
 #include "Src/ReportBuilders/CTSVReportBuilder.h"
 #include "Src/ReportBuilders/CTVReportBuilder.h"
+#include "./Src/Tests/CyclicTestSolenoid.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -41,9 +42,9 @@ MainWindow::MainWindow(QWidget *parent)
     // ui->tabWidget->setTabEnabled(4, false);
 
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
-    ui->tabWidget->setTabEnabled(2, true);
-    ui->tabWidget->setTabEnabled(3, true);
-    ui->tabWidget->setTabEnabled(4, true);
+    ui->tabWidget->setTabEnabled(2, false);
+    ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
 
     ui->checkBox_DI1->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_DI1->setFocusPolicy(Qt::NoFocus);
@@ -513,14 +514,12 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     ui->tableWidget_step_results->resizeColumnsToContents();
 }
 
-void MainWindow::SetSolenoidResults(double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec)
+void MainWindow::SetSolenoidResults(QString sequence, double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec)
 {
-    QString forwardText = QTime(0, 0).addMSecs(forwardSec).toString("mm:ss.zzz");
-    QString backwardText = QTime(0, 0).addMSecs(backwardSec).toString("mm:ss.zzz");
-    // ui->lineEdit_cyclicTest_forwardTime->setText(QString::number(forwardSec, 'f', 2));
-    // ui->lineEdit_cyclicTest_backwardTime->setText(QString::number(backwardSec, 'f', 2));
+    m_lastSolenoidSequence = sequence;
+    double totalTimeMin = totalTimeSec / 60.0;
     // ui->lineEdit_cyclicTest_rangePercent->setText(QString::number(rangePercent, 'f', 1));
-    ui->lineEdit_cyclicTest_totalTime->setText(QString::number(totalTimeSec, 'f', 1));
+    ui->lineEdit_cyclicTest_totalTime->setText(QString::number(totalTimeMin, 'f', 2));
     ui->lineEdit_cyclicTest_cycles->setText(QString::number(cycles));
 }
 
@@ -547,21 +546,21 @@ void MainWindow::SetSensorsNumber(quint8 num)
     }
 
     switch (m_patternType) {
-    case SelectTests::Pattern_CTV:
-        ui->tabWidget->setTabEnabled(1, false);
+    case SelectTests::Pattern_BTCV:
+        ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
     case SelectTests::Pattern_BTSV:
-        ui->tabWidget->setTabEnabled(1, false);
-        ui->tabWidget->setTabEnabled(3, false);
-        break;
-    case SelectTests::Pattern_CTSV:
-        break;
-    case SelectTests::Pattern_BTCV:
-        ui->tabWidget->setTabEnabled(1, false);
+        ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
     case SelectTests::Pattern_CTCV:
+        break;
+    case SelectTests::Pattern_CTSV:
+        break;
+    case SelectTests::Pattern_CTV:
+        ui->tabWidget->setTabEnabled(2, false);
+        ui->tabWidget->setTabEnabled(3, false);
         break;
     default:
         break;
@@ -963,6 +962,28 @@ void MainWindow::InitCharts()
     ui->checkBox_pressure3->setVisible(false);
 }
 
+void MainWindow::promptSaveCharts()
+{
+    auto answer = QMessageBox::question(
+        this,
+        tr("Сохранение результатов"),
+        tr("Тест MainTest завершён.\nСохранить графики Task, Pressure и Friction?"),
+        QMessageBox::Yes | QMessageBox::No,
+        QMessageBox::Yes
+        );
+
+    if (answer == QMessageBox::Yes) {
+        SaveChart(Charts::Task);
+        SaveChart(Charts::Pressure);
+        SaveChart(Charts::Friction);
+        QMessageBox::information(
+            this,
+            tr("Готово"),
+            tr("Графики сохранены в текущую папку отчётов.")
+        );
+    }
+}
+
 void MainWindow::SaveChart(Charts chart)
 {
     m_reportSaver->SaveImage(m_charts[chart]);
@@ -1026,9 +1047,8 @@ TestTelemetryData MainWindow::collectTestTelemetryData() const {
     data.strokeTest_timeForward = ui->lineEdit_strokeTest_forwardTime->text().toDouble();
     data.strokeTest_timeBackward = ui->lineEdit_strokeTest_backwardTime->text().toDouble();
 
-    // data.strokeTest_timeForward = ui->lineEdit_cyclicTest_forwardTime->text().toDouble();
-    // data.strokeTest_timeBackward = ui->lineEdit_cyclicTest_backwardTime->text().toDouble();
     // data.cyclicTest_rangePercent = ui->lineEdit_cyclicTest_rangePercent->text().toDouble();
+    data.cyclicTest_sequence = m_lastSolenoidSequence;
     data.cyclicTest_totalTime = ui->lineEdit_cyclicTest_totalTime->text().toDouble();
     data.cyclicTest_cycles = ui->lineEdit_cyclicTest_cycles->text().toInt();
 

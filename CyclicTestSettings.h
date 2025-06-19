@@ -21,13 +21,11 @@ public:
     ~CyclicTestSettings();
 
     struct TestParameters {
-        // Regulatory (регулирующий) параметры
         QString sequence;
         int     delay_sec;
         int     hold_time_sec;
         int     num_cycles;
 
-        // Shut-off (отсечной) параметры
         QString shutoff_sequence;
         int     shutoff_delay_sec;
         int     shutoff_hold_time_sec;
@@ -42,10 +40,9 @@ public:
 private slots:
 
     void onTestSelectionChanged();
-    // Start
+
     void onPushButtonStartClicked();
 
-    // Regulatory slots
     void onAddValueClicked();
     void onEditValueClicked();
     void onRemoveValueClicked();
@@ -53,7 +50,6 @@ private slots:
     void onEditDelayClicked();
     void onRemoveDelayClicked();
 
-    // Shut-off slots
     void onAddDelayShutOffClicked();
     void onEditDelayShutOffClicked();
     void onRemoveDelayShutOffClicked();

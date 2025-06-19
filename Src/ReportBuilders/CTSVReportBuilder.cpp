@@ -36,11 +36,11 @@ void CTSVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({"Отчет ЦТ", 19, 8, safeToString(telemetry.strokeTest_timeForward)}); // Результат теста полного хода
-    report.data.push_back({"Отчет ЦТ", 21, 8, safeToString(telemetry.strokeTest_timeBackward)}); // Результат теста полного хода
-    // report.data.push_back({"Отчет ЦТ", 23, 8, safeToString(???)});
-    // report.data.push_back({"Отчет ЦТ", 25, 8, safeToString(telemetry.cyclicTest_rangePercent)}); // Указывается выбранное значение ЦТ (по умолчанию либо введеный вручную)
-    // report.data.push_back({"Отчет ЦТ", 27, 8, safeToString(telemetry.cyclicTest_totalTime)});
+    report.data.push_back({"Отчет ЦТ", 19, 8, safeToString(telemetry.strokeTest_timeForward)});
+    report.data.push_back({"Отчет ЦТ", 21, 8, safeToString(telemetry.strokeTest_timeBackward)});
+    report.data.push_back({"Отчет ЦТ", 23, 8, safeToString(telemetry.cyclicTest_cycles)});
+    report.data.push_back({"Отчет ЦТ", 25, 8, telemetry.cyclicTest_sequence});
+    report.data.push_back({"Отчет ЦТ", 27, 8, safeToString(telemetry.cyclicTest_totalTime)});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     // report.data.push_back({"Отчет ЦТ", 33, 8, safeToString(telemetry.???)});

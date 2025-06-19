@@ -9,7 +9,7 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->verticalLayout_shutOff->parentWidget()->hide();
+    // ui->verticalLayout_shutOff->parentWidget()->hide();
 
     // Регулирующий
     connect(ui->pushButton_addRangeRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onAddValueClicked);
@@ -40,25 +40,13 @@ CyclicTestSettings::~CyclicTestSettings()
     delete ui;
 }
 
-static void setLayoutVisible(QLayout* layout, bool visible) {
-    for (int i = 0; i < layout->count(); ++i) {
-        QLayoutItem* item = layout->itemAt(i);
-        if (QWidget* w = item->widget()) {
-            w->setVisible(visible);
-        }
-        if (QLayout* sub = item->layout()) {
-            setLayoutVisible(sub, visible);
-        }
-    }
-}
-
 void CyclicTestSettings::onTestSelectionChanged()
 {
     const QString sel = ui->comboBox_testSelection->currentText();
     bool showReg = (sel == "Регулирующий" || sel == "Запорно-регулирующий");
     bool showOff = (sel == "Отсечной"    || sel == "Запорно-регулирующий");
-    setLayoutVisible(ui->verticalLayout_regulatory, showReg);
-    setLayoutVisible(ui->verticalLayout_shutOff,    showOff);
+    ui->widget_retentionTimeRegulatory->setVisible(showReg);
+    ui->widget_shutOff->setVisible(showOff);
 }
 
 // --- Регулирующий
