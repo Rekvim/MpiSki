@@ -1,43 +1,54 @@
-// CyclicTestSolenoid.h
+// CyclicTestSolenoid.h  — без изменений
 #ifndef CYCLICTESTSOLENOID_H
 #define CYCLICTESTSOLENOID_H
 
 #pragma once
 
 #include "MainTest.h"
+#include "CyclicTestSettings.h"
+
+#include <QElapsedTimer>
 #include <QThread>
-#include <QDateTime>
+#include <QVector>
+#include <QList>
+#include <QString>
 
-class CyclicTestSolenoid : public MainTest
-{
+class CyclicTestSolenoid : public MainTest {
     Q_OBJECT
-public:
-    explicit CyclicTestSolenoid(QObject *parent = nullptr);
 
-    void SetParameters(const QString &sequence,
-                       int delaySec,
-                       int holdTimeSec,
-                       int numCycles);
+public:
+    using Parameters = CyclicTestSettings::TestParameters;
+
+    explicit CyclicTestSolenoid(QObject* parent = nullptr);
+
+    void SetParameters(const Parameters& params);
 
 public slots:
-
     void Process() override;
 
 signals:
-    void ClearGraph();
     void TaskPoint(quint64 timeMs, int percent);
     void UpdateCyclicTred();
     void SetStartTime();
 
-    void SetSolenoidResults(QString sequence, double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
+    void SetSolenoidResults(QString sequence,
+                            quint16 cycles,
+                            double totalTimeSec);
 
 private:
-    QString m_sequence;
-    QList<int> m_dacValues;
-    int m_stepDelayMs = 0;
-    int m_holdTimeMs  = 0;
-    int m_numCycles   = 0;
-    quint64 m_startTime = 0;
+    Parameters   m_params;
+    QVector<int> m_valuesReg;
+    QVector<int> m_valuesOff;
+
+    void parseSequence(const QString& seq, QVector<int>& out);
+    void runLoop(const QVector<int>& values,
+                 int delayMs,
+                 int holdMs,
+                 int cycles);
+
+    void processRegulatory();
+    void processShutoff();
+    void processCombined();
 };
 
 #endif // CYCLICTESTSOLENOID_H

@@ -23,6 +23,12 @@ MainWindow::MainWindow(QWidget *parent)
     m_durationTimer->setInterval(100);
     connect(m_durationTimer, &QTimer::timeout, this, &MainWindow::onCountdownTimeout);
 
+    m_cyclicCountdownTimer.setInterval(100);
+    connect(&m_cyclicCountdownTimer,
+            &QTimer::timeout,
+            this,
+            &MainWindow::onCyclicCountdown);
+
     m_mainTestSettings = new MainTestSettings(this);
     m_stepTestSettings = new StepTestSettings(this);
     m_responseTestSettings = new OtherTestSettings(this);
@@ -36,15 +42,15 @@ MainWindow::MainWindow(QWidget *parent)
         ui->groupBox_DO->setEnabled(false);
     }
 
+    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
+    ui->tabWidget->setTabEnabled(2, true);
+    ui->tabWidget->setTabEnabled(3, true);
+    ui->tabWidget->setTabEnabled(4, true);
+
     // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
     // ui->tabWidget->setTabEnabled(2, false);
     // ui->tabWidget->setTabEnabled(3, false);
     // ui->tabWidget->setTabEnabled(4, false);
-
-    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
-    ui->tabWidget->setTabEnabled(2, false);
-    ui->tabWidget->setTabEnabled(3, false);
-    ui->tabWidget->setTabEnabled(4, false);
 
     ui->checkBox_DI1->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_DI1->setFocusPolicy(Qt::NoFocus);
@@ -76,8 +82,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->LineEdit_pressureSensor_3;
     m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
     m_lineEdits[TextObjects::LineEdit_dinamicError] = ui->lineEdit_dinamicReal;
-    m_lineEdits[TextObjects::LineEdit_stroke] = ui->lineEdit_strokeReal;
-    m_lineEdits[TextObjects::LineEdit_range] = ui->lineEdit_rangeReal;
+    m_lineEdits[TextObjects::lineEdit_strokeReal] = ui->lineEdit_strokeReal;
+    m_lineEdits[TextObjects::lineEdit_rangeReal] = ui->lineEdit_rangeReal;
     m_lineEdits[TextObjects::LineEdit_friction] = ui->lineEdit_friction;
     m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercent;
     m_lineEdits[TextObjects::LineEdit_strokeTest_forwardTime] = ui->lineEdit_strokeTest_forwardTime;
@@ -127,12 +133,10 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::ButtonStartOptional);
 
-    connect(
-        this,
-        &MainWindow::StartCyclicSolenoidTest,
-        m_program,
-        &Program::CyclicSolenoidTestStart
-    );
+    connect(this,
+            &MainWindow::StartCyclicSolenoidTest,
+            m_program,
+            &Program::CyclicSolenoidTestStart);
 
     connect(ui->pushButton_stroke_save, &QPushButton::clicked, this, [&] {
         SaveChart(Charts::Stroke);
@@ -347,6 +351,21 @@ MainWindow::~MainWindow()
     m_programthread->wait();
 }
 
+void MainWindow::onCyclicCountdown()
+{
+    qint64 elapsed = m_cyclicElapsedTimer.elapsed();
+    qint64 remaining = m_cyclicTotalMs - elapsed;
+    if (remaining < 0) remaining = 0;
+
+    // Здесь снова выводим «Осталось в секундах»
+    ui->lineEdit_cyclicTest_totalTime->setText(
+        QString::number(remaining / 1000.0, 'f', 2));
+
+    if (remaining == 0) {
+        m_cyclicCountdownTimer.stop();
+    }
+}
+
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (auto w = qobject_cast<QWidget*>(watched)) {
@@ -514,11 +533,12 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     ui->tableWidget_step_results->resizeColumnsToContents();
 }
 
-void MainWindow::SetSolenoidResults(QString sequence, double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec)
+void MainWindow::SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec)
 {
     m_lastSolenoidSequence = sequence;
     double totalTimeMin = totalTimeSec / 60.0;
-    // ui->lineEdit_cyclicTest_rangePercent->setText(QString::number(rangePercent, 'f', 1));
+
+     ui->lineEdit_cyclicTest_rangePercent->setText(sequence);
     ui->lineEdit_cyclicTest_totalTime->setText(QString::number(totalTimeMin, 'f', 2));
     ui->lineEdit_cyclicTest_cycles->setText(QString::number(cycles));
 }
@@ -533,12 +553,12 @@ void MainWindow::SetSensorsNumber(quint8 num)
         ui->label_startingPositionValue->setVisible(true);
         ui->label_finalPositionValue->setVisible(true);
         ui->label_startingPosition->setVisible(true);
-        ui->label_finalPosition->setVisible(true);
+        // ui->label_finalPosition->setVisible(true);
     } else {
         ui->label_startingPositionValue->setVisible(false);
         ui->label_finalPositionValue->setVisible(false);
         ui->label_startingPosition->setVisible(false);
-        ui->label_finalPosition->setVisible(false);
+        // ui->label_finalPosition->setVisible(false);
     }
 
     for (int i = 0; i < ui->tabWidget->count(); ++i) {
@@ -547,8 +567,6 @@ void MainWindow::SetSensorsNumber(quint8 num)
 
     switch (m_patternType) {
     case SelectTests::Pattern_BTCV:
-        ui->tabWidget->setTabEnabled(2, false);
-        ui->tabWidget->setTabEnabled(3, false);
         break;
     case SelectTests::Pattern_BTSV:
         ui->tabWidget->setTabEnabled(2, false);
@@ -557,6 +575,8 @@ void MainWindow::SetSensorsNumber(quint8 num)
     case SelectTests::Pattern_CTCV:
         break;
     case SelectTests::Pattern_CTSV:
+        ui->tabWidget->setTabEnabled(2, false);
+        ui->tabWidget->setTabEnabled(3, false);
         break;
     case SelectTests::Pattern_CTV:
         ui->tabWidget->setTabEnabled(2, false);
@@ -783,19 +803,58 @@ void MainWindow::ButtonStartOptional()
 }
 
 void MainWindow::ButtonStartCyclicSolenoid() {
+    qDebug() << "[MW] ButtonStartCyclicSolenoid called; m_testing =" << m_testing;
+
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
             emit StopTest();
         }
     } else {
-
         if (m_cyclicTestSettings->exec() != QDialog::Accepted)
             return;
 
-        auto params = m_cyclicTestSettings->getParameters();
+        using TP = CyclicTestSettings::TestParameters;
+        auto p = m_cyclicTestSettings->getParameters();
+
+        if ((p.testType == TP::Shutoff || p.testType == TP::Combined)
+            &&  p.shutoff_enable_20mA)
+        {
+            emit SetDAC(20.0);
+        }
+
+        auto countSteps = [](const QString& seq){
+            return seq.split('-', Qt::SkipEmptyParts).size();
+        };
+        qint64 totalMs = 0;
+        if (p.testType == CyclicTestSettings::TestParameters::Regulatory ||
+            p.testType == CyclicTestSettings::TestParameters::Combined)
+        {
+            int steps = countSteps(p.regulatory_sequence);
+            totalMs += qint64(steps)
+                       * p.regulatory_numCycles
+                       * (p.regulatory_delaySec + p.regulatory_holdTimeSec)
+                       * 1000;
+        }
+        if (p.testType == CyclicTestSettings::TestParameters::Shutoff ||
+            p.testType == CyclicTestSettings::TestParameters::Combined)
+        {
+            int steps = countSteps(p.shutoff_sequence);
+            totalMs += qint64(steps)
+                       * p.shutoff_numCycles
+                       * (p.shutoff_delaySec + p.shutoff_holdTimeSec)
+                       * 1000;
+        }
+
+        ui->lineEdit_cyclicTest_totalTime->setText(
+            QString::number(totalMs / 1000.0, 'f', 2));
+
+        m_cyclicTotalMs = totalMs;
+        m_cyclicElapsedTimer.restart();
+        m_cyclicCountdownTimer.start();
+
         StartTest();
-        emit StartCyclicSolenoidTest(params);
+        emit StartCyclicSolenoidTest(p);
     }
 }
 
@@ -910,7 +969,16 @@ void MainWindow::InitCharts()
     m_charts[Charts::CyclicSolenoid]->addAxis("%.2f%%");
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Trend]->setMaxRange(10000);
+    m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI1", QColor::fromRgb(200, 200, 0));
+    m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI2", QColor::fromRgb(0,   200, 0));
+    m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
+
+    m_charts[Charts::CyclicSolenoid]->visible(0, true);
+    m_charts[Charts::CyclicSolenoid]->visible(1, true);
+    m_charts[Charts::CyclicSolenoid]->visible(2, true);  // DI1
+    m_charts[Charts::CyclicSolenoid]->visible(3, true);  // DI2
+
+    m_charts[Charts::CyclicSolenoid]->showdots(true);
 
     connect(m_program, &Program::AddPoints, this, &MainWindow::AddPoints);
     connect(m_program, &Program::ClearPoints, this, &MainWindow::ClearPoints);

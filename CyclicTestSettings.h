@@ -21,15 +21,15 @@ public:
     ~CyclicTestSettings();
 
     struct TestParameters {
-        QString sequence;
-        int     delay_sec;
-        int     hold_time_sec;
-        int     num_cycles;
-
+        enum Type { Regulatory, Shutoff, Combined } testType;
+        QString regulatory_sequence;
+        int     regulatory_delaySec;
+        int     regulatory_holdTimeSec;
+        int     regulatory_numCycles;
         QString shutoff_sequence;
-        int     shutoff_delay_sec;
-        int     shutoff_hold_time_sec;
-        int     shutoff_num_cycles;
+        int     shutoff_delaySec;
+        int     shutoff_holdTimeSec;
+        int     shutoff_numCycles;
         bool    shutoff_enable_20mA;
         bool    shutoff_DO[4];
         bool    shutoff_DI[2];

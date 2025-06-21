@@ -1,124 +1,135 @@
-#include "CyclicTestSolenoid.h"
+    // CyclicTestSolenoid.cpp
+    #include "CyclicTestSolenoid.h"
+    #include <QtGlobal>     // qAbs()
 
-CyclicTestSolenoid::CyclicTestSolenoid(QObject *parent)
-    : MainTest(parent, /*isCyclic=*/false)
-{
-}
+    CyclicTestSolenoid::CyclicTestSolenoid(QObject* parent)
+        : MainTest(parent, /*isCyclic=*/false)
+    {}
 
-void CyclicTestSolenoid::SetParameters(const QString &sequence,
-                                       int delaySec,
-                                       int holdTimeSec,
-                                       int numCycles)
-{
-    m_dacValues.clear();
-    m_sequence = sequence;
-    for (auto &part : sequence.split('-', Qt::SkipEmptyParts)) {
-        bool ok = false;
-        int v = part.trimmed().toInt(&ok);
-        if (ok) m_dacValues.append(v);
+    void CyclicTestSolenoid::SetParameters(const Parameters& params)
+    {
+        m_params = params;
+        parseSequence(params.regulatory_sequence, m_valuesReg);
+        parseSequence(params.shutoff_sequence, m_valuesOff);
     }
 
-    m_stepDelayMs = delaySec * 1000;
-    m_holdTimeMs = holdTimeSec * 1000;
-    m_numCycles = numCycles;
-}
-
-void CyclicTestSolenoid::Process()
-{
-    if (m_dacValues.isEmpty() || m_stepDelayMs <= 0 || m_holdTimeMs < 0 || m_numCycles <= 0) {
+    void CyclicTestSolenoid::Process()
+    {
+        qDebug() << "[CTS] Process() start in thread" << QThread::currentThread();
+        switch (m_params.testType) {
+        case Parameters::Regulatory: processRegulatory(); break;
+        case Parameters::Shutoff:    processShutoff();    break;
+        case Parameters::Combined:   processCombined();   break;
+        }
+        qDebug() << "[CTS] Process() end";
         emit EndTest();
-        return;
     }
 
-    emit SetStartTime();
-    emit ClearGraph();
-
-    QElapsedTimer timer;
-    timer.start();
-
-    quint64 forwardDuration = 0;
-    quint64 backwardDuration = 0;
-
-    for (int cycle = 0; cycle < m_numCycles && !m_terminate; ++cycle) {
-        for (int idx = 0; idx < m_dacValues.size() && !m_terminate; ++idx) {
-            int pct = m_dacValues[idx];
-            int oldPct = (idx == 0 ? m_dacValues.first() : m_dacValues[idx - 1]);
-
-            quint64 t0 = timer.elapsed();
-            emit TaskPoint(t0, oldPct);
-            emit TaskPoint(t0, pct);
-
-            emit SetDAC(pct);
-
-            QList<quint16> lineSensor;
-            QElapsedTimer motionTimer;
-            motionTimer.start();
-            while (!m_terminate && motionTimer.elapsed() < 10000) {
-                quint16 value = 0;
-                emit RequestSensorRawValue(value);
-                lineSensor.push_back(value);
-                if (lineSensor.size() > 10)
-                    lineSensor.pop_front();
-
-                if (lineSensor.size() > 1 &&
-                    qAbs(lineSensor.first() - lineSensor.last()) > 10) {
-                    break;
-                }
-
-                QThread::msleep(50);
-            }
-
-            quint64 movementStart = timer.elapsed();
-
-            lineSensor.clear();
-            QElapsedTimer stopTimer;
-            stopTimer.start();
-            while (!m_terminate && stopTimer.elapsed() < 10000) {
-                quint16 value = 0;
-                emit RequestSensorRawValue(value);
-                lineSensor.push_back(value);
-                if (lineSensor.size() > 10)
-                    lineSensor.pop_front();
-
-                if (lineSensor.size() == 10 &&
-                    qAbs(lineSensor.first() - lineSensor.last()) < 10) {
-                    break;
-                }
-
-                QThread::msleep(50);
-            }
-
-            quint64 movementEnd = timer.elapsed();
-            quint64 moveDuration = movementEnd - movementStart;
-
-            if (pct > oldPct) {
-                forwardDuration = moveDuration;
-            } else if (pct < oldPct) {
-                backwardDuration = moveDuration;
-            }
-
-            emit TaskPoint(movementEnd, pct);
-            QThread::msleep(m_holdTimeMs);
-            emit TaskPoint(timer.elapsed(), pct);
-
-            emit UpdateCyclicTred();
+    void CyclicTestSolenoid::parseSequence(const QString& seq, QVector<int>& out)
+    {
+        out.clear();
+        for (const QString& part : seq.split('-', Qt::SkipEmptyParts)) {
+            bool ok = false;
+            int v = part.trimmed().toInt(&ok);
+            if (ok) out.append(v);
         }
     }
 
-    double totalTimeSec = timer.elapsed() / 1000.0;
-    int minPct = *std::min_element(m_dacValues.constBegin(), m_dacValues.constEnd());
-    int maxPct = *std::max_element(m_dacValues.constBegin(), m_dacValues.constEnd());
-    double rangePercent = maxPct - minPct;
+    void CyclicTestSolenoid::runLoop(const QVector<int>& values,
+                                     int delayMs,
+                                     int holdMs,
+                                     int cycles)
+    {
+        // --- валидация
+        if (values.isEmpty() || delayMs <= 0 || holdMs < 0 || cycles <= 0) {
+            emit EndTest();
+            return;
+        }
 
-    emit SetSolenoidResults(
-        m_sequence,
-        forwardDuration / 1000.0,
-        backwardDuration / 1000.0,
-        m_numCycles,
-        rangePercent,
-        totalTimeSec
-        );
+        // Старт измерения
+        emit SetStartTime();
+        emit ClearGraph();
 
-    emit EndTest();
-}
+        QElapsedTimer timer;
+        timer.start();
 
+        // Основной цикл
+        for (int c = 0; c < cycles && !m_terminate; ++c) {
+            for (int i = 0; i < values.size() && !m_terminate; ++i) {
+                int pct     = values.at(i);
+                int prevPct = (i == 0 ? values.first() : values.at(i - 1));
+
+                // точка «до хода»
+                quint64 t0 = timer.elapsed();
+                emit TaskPoint(t0, prevPct);
+                emit TaskPoint(t0, pct);
+
+                // команда на аппарат
+                emit SetDAC(pct);
+
+                // ждём delayMs
+                QThread::msleep(delayMs);
+
+                // помечаем окончание хода
+                quint64 t1 = timer.elapsed();
+                emit TaskPoint(t1, pct);
+
+                // удерживаем
+                QThread::msleep(holdMs);
+                quint64 t2 = timer.elapsed();
+                emit TaskPoint(t2, pct);
+
+                // обновляем тренд
+                emit UpdateCyclicTred();
+            }
+        }
+
+        // рассчитаем общее время
+        double totalSec = timer.elapsed() / 1000.0;
+
+        // какую строку выводить
+        bool isShutoff = (&values == &m_valuesOff);
+        QString seq = isShutoff && m_params.shutoff_enable_20mA
+                          ? QStringLiteral("20mA")
+                          : (isShutoff
+                                 ? m_params.shutoff_sequence
+                                 : m_params.regulatory_sequence);
+
+        emit SetSolenoidResults(seq,
+                                quint16(cycles),
+                                totalSec);
+
+        emit EndTest();
+    }
+
+    void CyclicTestSolenoid::processRegulatory()
+    {
+        runLoop(
+            m_valuesReg,
+            m_params.regulatory_delaySec   * 1000,
+            m_params.regulatory_holdTimeSec * 1000,
+            m_params.regulatory_numCycles
+            );
+    }
+
+    void CyclicTestSolenoid::processShutoff()
+    {
+        if (m_params.shutoff_enable_20mA) {
+            emit SetStartTime();
+            emit TaskPoint(0, 100);
+            emit SetDAC(100);
+            QThread::msleep(m_params.shutoff_delaySec * 1000);
+        }
+        // 2) а потом основную последовательность
+        runLoop(m_valuesOff,
+                m_params.shutoff_delaySec    * 1000,
+                m_params.shutoff_holdTimeSec * 1000,
+                m_params.shutoff_numCycles);
+    }
+
+    void CyclicTestSolenoid::processCombined()
+    {
+        processRegulatory();
+        if (!m_terminate)
+            processShutoff();
+    }

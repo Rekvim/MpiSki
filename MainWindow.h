@@ -66,7 +66,7 @@ private slots:
     void SetTask(qreal task);
     void SetTextColor(const TextObjects object, const QColor color);
     void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
-    void SetSolenoidResults(QString sequence, double forwardSec, double backwardSec, quint16 cycles, double rangePercent,  double totalTimeSec);
+    void SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec);
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
@@ -82,6 +82,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QTimer      m_cyclicCountdownTimer;
+    QElapsedTimer m_cyclicElapsedTimer;
+    qint64      m_cyclicTotalMs = 0;
 
     Registry *m_registry = nullptr;
     TestTelemetryData collectTestTelemetryData() const;
@@ -114,6 +118,7 @@ private:
     QImage m_image_2;
     QImage m_image_3;
 
+    void onCyclicCountdown();
     bool m_testing;
     void InitCharts();
     void SaveChart(Charts chart);

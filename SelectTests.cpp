@@ -139,7 +139,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_imit_switch_3_0->isChecked() &&
         (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
     {
-        return Pattern_CTSV;
+        return Pattern_BTCV;
     }
 
     // Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
@@ -209,7 +209,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         // !ui->check_box_imit_switch_3_0->isChecked() &&
         // (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
     {
-        return Pattern_BTCV;
+        return Pattern_CTSV;
     }
 
     return Pattern_None;
