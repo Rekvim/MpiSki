@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -2135,7 +2135,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_tests">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_response">
            <attribute name="title">
@@ -2272,7 +2272,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_50">
             <item>
-             <widget class="QTableWidget" name="tableWidget_step_results">
+             <widget class="QTableWidget" name="tableWidget_stepResults">
               <property name="editTriggers">
                <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
               </property>

@@ -9,11 +9,13 @@
 #include <QThread>
 #include <QDateTime>
 #include <QDebug>
+#include <vector>
 
 #include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
 #include "Registry.h"
 #include "SelectTests.h"
+#include "./Src/Telemetry/TelemetryStore.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -65,7 +67,6 @@ private slots:
     void SetText(const TextObjects object, const QString &text);
     void SetTask(qreal task);
     void SetTextColor(const TextObjects object, const QColor color);
-    void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
     void SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec);
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
@@ -83,9 +84,12 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QTimer      m_cyclicCountdownTimer;
+    TelemetryStore m_telemetry;
+    void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
+
+    QTimer m_cyclicCountdownTimer;
     QElapsedTimer m_cyclicElapsedTimer;
-    qint64      m_cyclicTotalMs = 0;
+    qint64 m_cyclicTotalMs = 0;
 
     Registry *m_registry = nullptr;
     TestTelemetryData collectTestTelemetryData() const;

@@ -101,6 +101,37 @@ void BTCVReportBuilder::buildReport(
     // Страница: Отчет ЦТ; Блок: Дата
     report.data.push_back({"Отчет ЦТ", 122, 12, otherParams.date});
 
+    // Страница: Результат теста шаговой реакции
+
+    // Лист 1; Страница: Результат теста шаговой реакции; Блок: Данные по объекту
+    report.data.push_back({"Результат теста шаговой реакции", 4, 4, objectInfo.object});
+    report.data.push_back({"Результат теста шаговой реакции", 5, 4, objectInfo.manufactory});
+    report.data.push_back({"Результат теста шаговой реакции", 6, 4, objectInfo.department});
+
+    // Страница:Результат теста шаговой реакции; Блок: Краткая спецификация на клапан
+    report.data.push_back({"Результат теста шаговой реакции", 4, 13, valveInfo.positionNumber});
+    report.data.push_back({"Результат теста шаговой реакции", 5, 13, valveInfo.serialNumber});
+    report.data.push_back({"Результат теста шаговой реакции", 6, 13, valveInfo.valveModel});
+    report.data.push_back({"Результат теста шаговой реакции", 7, 13, valveInfo.manufacturer});
+    report.data.push_back({"Результат теста шаговой реакции", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({"Результат теста шаговой реакции", 9, 13, valveInfo.positionerModel});
+    report.data.push_back({"Результат теста шаговой реакции", 10, 13, valveInfo.solenoidValveModel});
+    report.data.push_back({"Результат теста шаговой реакции", 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
+    report.data.push_back({"Результат теста шаговой реакции", 12, 13, safeToString(telemetry.supplyPressure)});
+    report.data.push_back({"Результат теста шаговой реакции", 13, 13, otherParams.safePosition});
+    report.data.push_back({"Результат теста шаговой реакции", 14, 13, valveInfo.driveModel});
+    report.data.push_back({"Результат теста шаговой реакции", 15, 13, otherParams.strokeMovement});
+    report.data.push_back({"Результат теста шаговой реакции", 16, 13, valveInfo.materialStuffingBoxSeal});
+
+    // Страница:Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
+
+    int excelRow = 23;
+    for (auto &r : telemetry.stepResults) {
+        report.data.push_back({ sheet, excelRow, colRange, r.range });
+        report.data.push_back({ sheet, excelRow, colT86, QString::number(r.T86sec, "f", 3) });
+        report.data.push_back({ sheet, excelRow, colOvershoot, QString::number(r.overshoot, "f", 2) + "%" });
+        ++excelRow;
+    }
 
     // Страница: Отчет; Блок: Данные по объекту
     report.data.push_back({"Отчет", 4, 4, objectInfo.object});
@@ -145,9 +176,9 @@ void BTCVReportBuilder::buildReport(
     report.data.push_back({"Отчет", 48, 8, safeToString(telemetry.strokeTest_timeBackward)});
 
     // Страница: Отчет ЦТ; Блок: Дата
-    report.data.push_back({"Отчет ЦТ", 62, 12, otherParams.date});
+    report.data.push_back({"Отчет", 62, 12, otherParams.date});
     // Страница: Отчет ЦТ; Блок: Исполнитель
-    report.data.push_back({"Отчет ЦТ", 70, 4, objectInfo.FIO});
+    report.data.push_back({"Отчет", 70, 4, objectInfo.FIO});
 
     // Страница: Отчет; Блок: Диагностические графики клапана, поз.
     report.images.push_back({"Отчет", 82, 1, image1}); // график зависимости ход штока/управляющий сигнал мА

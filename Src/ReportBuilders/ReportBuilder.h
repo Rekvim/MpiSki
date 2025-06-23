@@ -3,6 +3,7 @@
 
 #pragma once
 #include "ReportSaver.h"
+#include "./Src/Telemetry/TelemetryStore.h"
 #include <QWidget>
 
 class ReportBuilder {
@@ -10,6 +11,7 @@ public:
     virtual ~ReportBuilder() = default;
     virtual void buildReport(
         ReportSaver::Report& report,
+        const TelemetryStore& fullTelemetry,
         const TestTelemetryData& telemetry,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
@@ -17,7 +19,7 @@ public:
         const QImage& image1 = QImage(),
         const QImage& image2 = QImage(),
         const QImage& image3 = QImage()
-        ) = 0;
+    ) = 0;
 
     inline QString safeToString(double val) {
         if (std::isnan(val) || std::isinf(val)) return "";

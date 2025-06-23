@@ -632,6 +632,26 @@ void Program::UpdateCharts_CyclicSolenoid()
     emit AddPoints(Charts::CyclicSolenoid, pts);
 }
 
+void Program::pollDIForCyclic()
+{
+    quint8 di = m_mpi.GetDIStatus();
+    if (di == m_lastDI)
+        return;
+
+     quint64 t = QDateTime::currentMSecsSinceEpoch() - m_cyclicStartTs;
+
+    QVector<Point> pts;
+    if ((di & 0x01) && !(m_lastDI & 0x01))
+        pts.push_back({2, qreal(t), 100.0});
+    if ((di & 0x02) && !(m_lastDI & 0x02))
+        pts.push_back({3, qreal(t), 100.0});
+
+    if (!pts.isEmpty())
+        emit AddPoints(Charts::CyclicSolenoid, pts);
+
+    m_lastDI = di;
+}
+
 void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p)
 {
     using TP = CyclicTestSettings::TestParameters;
@@ -661,6 +681,22 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     QThread *thr = new QThread(this);
     sol->moveToThread(thr);
 
+    m_lastDI = m_mpi.GetDIStatus();
+    m_cyclicStartTs = QDateTime::currentMSecsSinceEpoch();
+
+    m_diPollTimer = new QTimer(this);
+    m_diPollTimer->setInterval(50);
+    connect(m_diPollTimer, &QTimer::timeout, this, &Program::pollDIForCyclic);
+    m_diPollTimer->start();
+
+    connect(sol, &CyclicTestSolenoid::EndTest, this, [this](){
+        if (m_diPollTimer) {
+            m_diPollTimer->stop();
+            m_diPollTimer->deleteLater();
+            m_diPollTimer = nullptr;
+        }
+    });
+
     connect(thr, &QThread::started, sol, &CyclicTestSolenoid::Process);
     connect(sol, &CyclicTestSolenoid::EndTest, thr, &QThread::quit);
     connect(sol, &CyclicTestSolenoid::EndTest, this, &Program::EndTest);
@@ -673,11 +709,6 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(sol, &CyclicTestSolenoid::TaskPoint, this,
             [this](quint64 t, int pct){
                  emit AddPoints(Charts::CyclicSolenoid, QVector<Point>{{0, qreal(t), qreal(pct)}});
-                 quint8 di = m_mpi.GetDIStatus();
-                QVector<Point> dipts;
-                if (di & 0x01) dipts.push_back({2, qreal(t), 100.0});
-                if (di & 0x02) dipts.push_back({3, qreal(t), 100.0});
-                if (!dipts.isEmpty()) emit AddPoints(Charts::CyclicSolenoid, dipts);
             });
 
     connect(sol, &CyclicTestSolenoid::SetStartTime,
@@ -686,8 +717,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(sol, &CyclicTestSolenoid::SetSolenoidResults,
             this, &Program::SolenoidResults);
 
-    // 4) Пересылка DAC-команд в аппарат
-    connect(sol, &CyclicTestSolenoid::SetDAC,
+     connect(sol, &CyclicTestSolenoid::SetDAC,
             this, &Program::SetDAC_int);
 
     emit ClearPoints(Charts::CyclicSolenoid);
@@ -778,13 +808,13 @@ void Program::StartOptionalTest(quint8 testNum)
 
         for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
             qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
-            qreal dac_value = m_mpi.GetDAC()->GetRawFromValue(current);
+            qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
 
             for (auto it_s = parameters.steps.begin(); it_s < parameters.steps.end(); ++it_s) {
-                task.value.push_back(dac_value);
+                task.value.push_back(dacValue);
                 current = (16 * (normalOpen ? 100 - *it - *it_s : *it + *it_s) / 100 + 4.0);
-                qreal dac_value_step = m_mpi.GetDAC()->GetRawFromValue(current);
-                task.value.push_back(dac_value_step);
+                qreal dacValueStep = m_mpi.GetDAC()->GetRawFromValue(current);
+                task.value.push_back(dacValueStep);
             }
         }
 
@@ -824,16 +854,16 @@ void Program::StartOptionalTest(quint8 testNum)
 
         for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
             qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
-            qreal dac_value = m_mpi.GetDAC()->GetRawFromValue(current);
-            task.value.push_back(dac_value);
+            qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
+            task.value.push_back(dacValue);
         }
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(endValue));
 
         for (auto it = parameters.points.rbegin(); it != parameters.points.rend(); ++it) {
             qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
-            qreal dac_value = m_mpi.GetDAC()->GetRawFromValue(current);
-            task.value.push_back(dac_value);
+            qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
+            task.value.push_back(dacValue);
         }
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));

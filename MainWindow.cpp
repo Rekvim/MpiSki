@@ -325,9 +325,9 @@ MainWindow::MainWindow(QWidget *parent)
     InitReport();
     // SetSensorsNumber(0);
 
-    ui->tableWidget_step_results->setColumnCount(2);
-    ui->tableWidget_step_results->setHorizontalHeaderLabels({"T86", "Перерегулирование"});
-    ui->tableWidget_step_results->resizeColumnsToContents();
+    ui->tableWidget_stepResults->setColumnCount(2);
+    ui->tableWidget_stepResults->setHorizontalHeaderLabels({"T86", "Перерегулирование"});
+    ui->tableWidget_stepResults->resizeColumnsToContents();
 
     ui->label_arrowUp->setCursor(Qt::PointingHandCursor);
     ui->label_arrowDown->setCursor(Qt::PointingHandCursor);
@@ -512,10 +512,10 @@ void MainWindow::SetTextColor(TextObjects object, const QColor color)
 
 void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value)
 {
-    ui->tableWidget_step_results->setHorizontalHeaderLabels(
+    ui->tableWidget_stepResults->setHorizontalHeaderLabels(
         {QString("T%1").arg(T_value), "Перерегулирование"});
 
-    ui->tableWidget_step_results->setRowCount(results.size());
+    ui->tableWidget_stepResults->setRowCount(results.size());
     QStringList rowNames;
     for (int i = 0; i < results.size(); ++i) {
 
@@ -523,14 +523,25 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
             ? "Ошибка"
             : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
 
-        ui->tableWidget_step_results->setItem(i, 0, new QTableWidgetItem(time));
+        ui->tableWidget_stepResults->setItem(i, 0, new QTableWidgetItem(time));
         QString overshoot = QString("%1%").arg(results.at(i).overshoot, 4, 'f', 2);
-        ui->tableWidget_step_results->setItem(i, 1, new QTableWidgetItem(overshoot));
+        ui->tableWidget_stepResults->setItem(i, 1, new QTableWidgetItem(overshoot));
         QString rowName = QString("%1-%2").arg(results.at(i).from).arg(results.at(i).to);
         rowNames << rowName;
     }
-    ui->tableWidget_step_results->setVerticalHeaderLabels(rowNames);
-    ui->tableWidget_step_results->resizeColumnsToContents();
+    ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
+    ui->tableWidget_stepResults->resizeColumnsToContents();
+
+    m_telemetry.stepResults.clear();
+    m_telemetry.stepResults.reserve(results.size());
+
+    for (int i = 0; i < results.size(); ++i) {
+        StepRecord rec;
+        rec.range = QString("%1-%2").arg(results[i].from).arg(results[i].to);
+        rec.T86sec = static_cast<double>(results[i].T_value) / 1000.0;
+        rec.overshoot = results[i].overshoot;
+        m_telemetry.stepResults.push_back(rec);
+    }
 }
 
 void MainWindow::SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec)

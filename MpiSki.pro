@@ -26,6 +26,7 @@ SOURCES += \
     Src/ReportBuilders/CTSVReportBuilder.cpp \
     Src/ReportBuilders/CTVReportBuilder.cpp \
     Src/ReportBuilders/ReportSaver.cpp \
+    Src/Telemetry/TelemetryStore.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTestSolenoid.cpp \
     Src/Tests/MainTest.cpp \
@@ -70,6 +71,7 @@ HEADERS += \
     Src/ReportBuilders/CTVReportBuilder.h \
     Src/ReportBuilders/ReportBuilder.h \
     Src/ReportBuilders/ReportSaver.h \
+    Src/Telemetry/TelemetryStore.h \
     Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTestSolenoid.h \
     Src/Tests/MainTest.h \

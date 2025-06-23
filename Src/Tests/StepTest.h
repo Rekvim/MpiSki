@@ -22,7 +22,7 @@ public:
     {
         quint16 from;
         quint16 to;
-        quint64 T_value;
+        quint32 T_value;
         qreal overshoot;
     };
 
