@@ -4,7 +4,7 @@ BTCVReportBuilder::BTCVReportBuilder() {}
 
 void BTCVReportBuilder::buildReport(
     ReportSaver::Report& report,
-    const TestTelemetryData& telemetry,
+    const TelemetryStore& telemetryStore,
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
@@ -16,7 +16,7 @@ void BTCVReportBuilder::buildReport(
     Q_UNUSED(image1);
     Q_UNUSED(image2);
     Q_UNUSED(image3);
-    qDebug() << "  cyclicTest_sequence =" << telemetry.cyclicTest_sequence;
+
     // Лист 1; Страница: Отчет ЦТ; Блок: Данные по объекту
     report.data.push_back({"Отчет ЦТ", 4, 4, objectInfo.object});
     report.data.push_back({"Отчет ЦТ", 5, 4, objectInfo.manufactory});
@@ -31,18 +31,18 @@ void BTCVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.positionerModel});
     report.data.push_back({"Отчет ЦТ", 10, 13, valveInfo.solenoidValveModel});
     report.data.push_back({"Отчет ЦТ", 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.materialStuffingBoxSeal});
-    report.data.push_back({"Отчет ЦТ", 12, 13, safeToString(telemetry.supplyPressure)});
+    report.data.push_back({"Отчет ЦТ", 12, 13, safeToString(telemetryStore.supplyRecord.supplyPressure)});
     report.data.push_back({"Отчет ЦТ", 13, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.driveModel});
     report.data.push_back({"Отчет ЦТ", 15, 13, otherParams.strokeMovement});
     report.data.push_back({"Отчет ЦТ", 16, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({"Отчет ЦТ", 21, 8, safeToString(telemetry.strokeTest_timeForward)});
-    report.data.push_back({"Отчет ЦТ", 23, 8, safeToString(telemetry.strokeTest_timeBackward)});
-    report.data.push_back({"Отчет ЦТ", 25, 8, safeToString(telemetry.cyclicTest_cycles)});
-    report.data.push_back({"Отчет ЦТ", 27, 8, telemetry.cyclicTest_sequence});
-    report.data.push_back({"Отчет ЦТ", 29, 8, safeToString(telemetry.cyclicTest_totalTime)});
+    report.data.push_back({"Отчет ЦТ", 21, 8, safeToString(telemetryStore.strokeTestRecord.timeForward)});
+    report.data.push_back({"Отчет ЦТ", 23, 8, safeToString(telemetryStore.strokeTestRecord.timeBackward)});
+    report.data.push_back({"Отчет ЦТ", 25, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({"Отчет ЦТ", 27, 8, telemetryStore.cyclicTestRecord.sequence});
+    report.data.push_back({"Отчет ЦТ", 29, 8, safeToString(telemetryStore.cyclicTestRecord.totalTime)});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     // report.data.push_back({"Отчет ЦТ", 35, 8, safeToString(telemetry.???)});
@@ -75,18 +75,18 @@ void BTCVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 73, 13, valveInfo.positionerModel});
     report.data.push_back({"Отчет ЦТ", 74, 13, valveInfo.solenoidValveModel});
     report.data.push_back({"Отчет ЦТ", 75, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({"Отчет ЦТ", 76, 13, safeToString(telemetry.supplyPressure)});
+    report.data.push_back({"Отчет ЦТ", 76, 13, safeToString(telemetryStore.supplyRecord.supplyPressure)});
     report.data.push_back({"Отчет ЦТ", 77, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 78, 13, valveInfo.driveModel});
     report.data.push_back({"Отчет ЦТ", 79, 13, otherParams.strokeMovement});
     report.data.push_back({"Отчет ЦТ", 80, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({"Отчет ЦТ", 85, 8, safeToString(telemetry.strokeTest_timeForward)});
-    report.data.push_back({"Отчет ЦТ", 87, 8, safeToString(telemetry.strokeTest_timeBackward)});
-    report.data.push_back({"Отчет ЦТ", 89, 8, safeToString(telemetry.cyclicTest_cycles)});
-    report.data.push_back({"Отчет ЦТ", 91, 8, telemetry.cyclicTest_sequence});
-    report.data.push_back({"Отчет ЦТ", 93, 8, safeToString(telemetry.cyclicTest_totalTime)});
+    report.data.push_back({"Отчет ЦТ", 85, 8, safeToString(telemetryStore.strokeTestRecord.timeForward)});
+    report.data.push_back({"Отчет ЦТ", 87, 8, safeToString(telemetryStore.strokeTestRecord.timeBackward)});
+    report.data.push_back({"Отчет ЦТ", 89, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({"Отчет ЦТ", 91, 8, telemetryStore.cyclicTestRecord.sequence});
+    report.data.push_back({"Отчет ЦТ", 93, 8, safeToString(telemetryStore.cyclicTestRecord.totalTime)});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     // report.data.push_back({"Отчет ЦТ", 101, 8, safeToString(???)}); // Задание диапазона (0% хода)
@@ -103,7 +103,7 @@ void BTCVReportBuilder::buildReport(
 
     // Страница: Результат теста шаговой реакции
 
-    // Лист 1; Страница: Результат теста шаговой реакции; Блок: Данные по объекту
+    // Страница: Результат теста шаговой реакции; Блок: Данные по объекту
     report.data.push_back({"Результат теста шаговой реакции", 4, 4, objectInfo.object});
     report.data.push_back({"Результат теста шаговой реакции", 5, 4, objectInfo.manufactory});
     report.data.push_back({"Результат теста шаговой реакции", 6, 4, objectInfo.department});
@@ -117,7 +117,7 @@ void BTCVReportBuilder::buildReport(
     report.data.push_back({"Результат теста шаговой реакции", 9, 13, valveInfo.positionerModel});
     report.data.push_back({"Результат теста шаговой реакции", 10, 13, valveInfo.solenoidValveModel});
     report.data.push_back({"Результат теста шаговой реакции", 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({"Результат теста шаговой реакции", 12, 13, safeToString(telemetry.supplyPressure)});
+    report.data.push_back({"Результат теста шаговой реакции", 12, 13, safeToString(telemetryStore.supplyRecord.supplyPressure)});
     report.data.push_back({"Результат теста шаговой реакции", 13, 13, otherParams.safePosition});
     report.data.push_back({"Результат теста шаговой реакции", 14, 13, valveInfo.driveModel});
     report.data.push_back({"Результат теста шаговой реакции", 15, 13, otherParams.strokeMovement});
@@ -125,13 +125,15 @@ void BTCVReportBuilder::buildReport(
 
     // Страница:Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
 
-    int excelRow = 23;
-    for (auto &r : telemetry.stepResults) {
-        report.data.push_back({ sheet, excelRow, colRange, r.range });
-        report.data.push_back({ sheet, excelRow, colT86, QString::number(r.T86sec, "f", 3) });
-        report.data.push_back({ sheet, excelRow, colOvershoot, QString::number(r.overshoot, "f", 2) + "%" });
+    quint16 excelRow = 23;
+    for (auto &r : telemetryStore.stepResults) {
+        report.data.push_back({ "Результат теста шаговой реакции", excelRow, 3, r.range });
+        report.data.push_back({ "Результат теста шаговой реакции", excelRow, 4, safeToString(r.T86sec) });
+        report.data.push_back({ "Результат теста шаговой реакции", excelRow, 5, safeToString(r.overshoot) + "%" });
         ++excelRow;
     }
+
+    report.data.push_back({"Результат теста шаговой реакции", 44, 12, otherParams.date});
 
     // Страница: Отчет; Блок: Данные по объекту
     report.data.push_back({"Отчет", 4, 4, objectInfo.object});
@@ -139,41 +141,41 @@ void BTCVReportBuilder::buildReport(
     report.data.push_back({"Отчет", 6, 4, objectInfo.department});
 
     // Страница:Отчет; Блок: Краткая спецификация на клапан
-    report.data.push_back({"Отчет ЦТ", 4, 13, valveInfo.positionNumber});
-    report.data.push_back({"Отчет ЦТ", 5, 13, valveInfo.serialNumber});
-    report.data.push_back({"Отчет ЦТ", 6, 13, valveInfo.valveModel});
-    report.data.push_back({"Отчет ЦТ", 7, 13, valveInfo.manufacturer});
-    report.data.push_back({"Отчет ЦТ", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
-    report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.positionerModel});
-    report.data.push_back({"Отчет ЦТ", 10, 13, valveInfo.solenoidValveModel});
-    report.data.push_back({"Отчет ЦТ", 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({"Отчет ЦТ", 12, 13, safeToString(telemetry.supplyPressure)});
-    report.data.push_back({"Отчет ЦТ", 13, 13, otherParams.safePosition});
-    report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.driveModel});
-    report.data.push_back({"Отчет ЦТ", 15, 13, otherParams.strokeMovement});
-    report.data.push_back({"Отчет ЦТ", 16, 13, valveInfo.materialStuffingBoxSeal});
+    report.data.push_back({"Отчет", 4, 13, valveInfo.positionNumber});
+    report.data.push_back({"Отчет", 5, 13, valveInfo.serialNumber});
+    report.data.push_back({"Отчет", 6, 13, valveInfo.valveModel});
+    report.data.push_back({"Отчет", 7, 13, valveInfo.manufacturer});
+    report.data.push_back({"Отчет", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({"Отчет", 9, 13, valveInfo.positionerModel});
+    report.data.push_back({"Отчет", 10, 13, valveInfo.solenoidValveModel});
+    report.data.push_back({"Отчет", 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
+    report.data.push_back({"Отчет", 12, 13, safeToString(telemetryStore.supplyRecord.supplyPressure)});
+    report.data.push_back({"Отчет", 13, 13, otherParams.safePosition});
+    report.data.push_back({"Отчет", 14, 13, valveInfo.driveModel});
+    report.data.push_back({"Отчет", 15, 13, otherParams.strokeMovement});
+    report.data.push_back({"Отчет", 16, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница: Отчет; Блок: Результат испытаний
-    report.data.push_back({"Отчет", 22, 5, safeToString(telemetry.dinamicReal)});
-    report.data.push_back({"Отчет", 22, 8, safeToString(telemetry.dinamicRecomend)});
+    report.data.push_back({"Отчет", 22, 5, safeToString(telemetryStore.dinamicRecord.dinamicReal)});
+    report.data.push_back({"Отчет", 22, 8, safeToString(telemetryStore.dinamicRecord.dinamicRecomend)});
 
-    report.data.push_back({"Отчет", 24, 5, safeToString(telemetry.dinamicIpReal)});
-    report.data.push_back({"Отчет", 24, 8, safeToString(telemetry.dinamicIpRecomend)});
+    report.data.push_back({"Отчет", 24, 5, safeToString(telemetryStore.dinamicRecord.dinamicIpReal)});
+    report.data.push_back({"Отчет", 24, 8, safeToString(telemetryStore.dinamicRecord.dinamicIpRecomend)});
 
-    report.data.push_back({"Отчет", 26, 5, safeToString(telemetry.strokeReal)});
-    report.data.push_back({"Отчет", 26, 8, safeToString(telemetry.strokeRecomend)});
+    report.data.push_back({"Отчет", 26, 5, safeToString(telemetryStore.strokeRecord.strokeReal)});
+    report.data.push_back({"Отчет", 26, 8, safeToString(telemetryStore.strokeRecord.strokeRecomend)});
 
-    report.data.push_back({"Отчет", 28, 5, safeToString(telemetry.rangeReal)});
-    report.data.push_back({"Отчет", 28, 8, safeToString(telemetry.rangeRecomend)});
+    report.data.push_back({"Отчет", 28, 5, safeToString(telemetryStore.rangeRecord.rangeReal)});
+    report.data.push_back({"Отчет", 28, 8, safeToString(telemetryStore.rangeRecord.rangeRecomend)});
 
-    report.data.push_back({"Отчет", 30, 5, safeToString(telemetry.rangePressure)});
+    report.data.push_back({"Отчет", 30, 5, safeToString(telemetryStore.rangeRecord.rangePressure)});
 
-    report.data.push_back({"Отчет", 32, 5, safeToString(telemetry.frictionPercent)});
+    report.data.push_back({"Отчет", 32, 5, safeToString(telemetryStore.frictionRecord.frictionPercent)});
 
-    report.data.push_back({"Отчет", 34, 5, safeToString(telemetry.friction)});
+    report.data.push_back({"Отчет", 34, 5, safeToString(telemetryStore.frictionRecord.friction)});
 
-    report.data.push_back({"Отчет", 48, 5, safeToString(telemetry.strokeTest_timeForward)});
-    report.data.push_back({"Отчет", 48, 8, safeToString(telemetry.strokeTest_timeBackward)});
+    report.data.push_back({"Отчет", 48, 5, safeToString(telemetryStore.strokeTestRecord.timeForward)});
+    report.data.push_back({"Отчет", 48, 8, safeToString(telemetryStore.strokeTestRecord.timeBackward)});
 
     // Страница: Отчет ЦТ; Блок: Дата
     report.data.push_back({"Отчет", 62, 12, otherParams.date});

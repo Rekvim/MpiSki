@@ -22,8 +22,8 @@ public:
 
     struct ReportData {
         QString sheet;
-        quint8 x;
-        quint8 y;
+        quint16 x;
+        quint16 y;
         QString value;
     };
 

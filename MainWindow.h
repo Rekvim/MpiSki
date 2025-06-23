@@ -92,7 +92,7 @@ private:
     qint64 m_cyclicTotalMs = 0;
 
     Registry *m_registry = nullptr;
-    TestTelemetryData collectTestTelemetryData() const;
+    void collectTestTelemetryData();
     QString m_lastSolenoidSequence;
 
     ReportSaver *m_reportSaver = nullptr;

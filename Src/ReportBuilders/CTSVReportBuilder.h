@@ -10,7 +10,7 @@ public:
     CTSVReportBuilder();
     void buildReport(
         ReportSaver::Report& report,
-        const TestTelemetryData& telemetry,
+        const TelemetryStore& telemetryStore,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,

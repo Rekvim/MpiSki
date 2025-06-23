@@ -301,11 +301,12 @@ MainWindow::MainWindow(QWidget *parent)
         }
 
         ReportSaver::Report report;
-        reportBuilder->buildReport(report, collectTestTelemetryData(),
-                             *m_registry->GetObjectInfo(),
-                             *m_registry->GetValveInfo(),
-                             *m_registry->GetOtherParameters(),
-                             m_image_1, m_image_2, m_image_3);
+        reportBuilder->buildReport(report,
+                            m_telemetry,
+                            *m_registry->GetObjectInfo(),
+                            *m_registry->GetValveInfo(),
+                            *m_registry->GetOtherParameters(),
+                            m_image_1, m_image_2, m_image_3);
 
         qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 
@@ -524,8 +525,10 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
             : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
 
         ui->tableWidget_stepResults->setItem(i, 0, new QTableWidgetItem(time));
+
         QString overshoot = QString("%1%").arg(results.at(i).overshoot, 4, 'f', 2);
         ui->tableWidget_stepResults->setItem(i, 1, new QTableWidgetItem(overshoot));
+
         QString rowName = QString("%1-%2").arg(results.at(i).from).arg(results.at(i).to);
         rowNames << rowName;
     }
@@ -533,13 +536,11 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
     m_telemetry.stepResults.clear();
-    m_telemetry.stepResults.reserve(results.size());
-
-    for (int i = 0; i < results.size(); ++i) {
+    for (const auto &res : results) {
         StepRecord rec;
-        rec.range = QString("%1-%2").arg(results[i].from).arg(results[i].to);
-        rec.T86sec = static_cast<double>(results[i].T_value) / 1000.0;
-        rec.overshoot = results[i].overshoot;
+        rec.range = QString("%1-%2").arg(res.from).arg(res.to);
+        rec.T86sec = res.T_value / 1000.0;
+        rec.overshoot = res.overshoot;
         m_telemetry.stepResults.push_back(rec);
     }
 }
@@ -1116,23 +1117,28 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
     }
 }
 
-TestTelemetryData MainWindow::collectTestTelemetryData() const {
-    TestTelemetryData data;
-    data.dinamicReal = ui->lineEdit_dinamicReal->text().toDouble();
-    data.strokeReal = ui->lineEdit_strokeReal->text().toDouble();
-    data.rangeReal = ui->lineEdit_rangeReal->text().toDouble();
-    data.friction = ui->lineEdit_friction->text().toDouble();
-    data.frictionPercent = ui->lineEdit_frictionPercent->text().toDouble();
-    data.strokeTest_timeForward = ui->lineEdit_strokeTest_forwardTime->text().toDouble();
-    data.strokeTest_timeBackward = ui->lineEdit_strokeTest_backwardTime->text().toDouble();
+void MainWindow::collectTestTelemetryData() {
+    // динамика
+    m_telemetry.dinamicRecord.dinamicReal = ui->lineEdit_dinamicReal->text().toDouble();
+    m_telemetry.dinamicRecord.dinamicRecomend = ui->lineEdit_dinamicRecomend->text().toDouble();
+    m_telemetry.dinamicRecord.dinamicIpReal = ui->lineEdit_dinamicIpReal->text().toDouble();
+    m_telemetry.dinamicRecord.dinamicIpRecomend = ui->lineEdit_dinamicIpRecomend->text().toDouble();
 
-    // data.cyclicTest_rangePercent = ui->lineEdit_cyclicTest_rangePercent->text().toDouble();
-    data.cyclicTest_sequence = m_lastSolenoidSequence;
-    data.cyclicTest_totalTime = ui->lineEdit_cyclicTest_totalTime->text().toDouble();
-    data.cyclicTest_cycles = ui->lineEdit_cyclicTest_cycles->text().toInt();
+    // ход клапана
+    m_telemetry.strokeTestRecord.timeForward = ui->lineEdit_strokeTest_forwardTime->text().toDouble();
+    m_telemetry.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text().toDouble();
 
-    data.rangePressure = ui->lineEdit_rangePressure->text().toDouble();
-    return data;
+    // диапазон
+    m_telemetry.rangeRecord.rangeReal = ui->lineEdit_rangeReal->text().toDouble();
+    m_telemetry.rangeRecord.rangeRecomend = ui->lineEdit_rangeRecomend->text().toDouble();
+    m_telemetry.rangeRecord.rangePressure = ui->lineEdit_rangePressure->text().toDouble();
+
+    // трение
+    m_telemetry.frictionRecord.friction = ui->lineEdit_friction->text().toDouble();
+    m_telemetry.frictionRecord.frictionPercent = ui->lineEdit_frictionPercent->text().toDouble();
+
+    // подача
+    m_telemetry.supplyRecord.supplyPressure = ui->lineEdit_supplyPressure->text().toDouble();
 }
 
 void MainWindow::InitReport()

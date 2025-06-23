@@ -45,27 +45,27 @@ struct ValveInfo
 };
 
 struct TestTelemetryData {
-    double dinamicReal = 0.0;
-    double dinamicRecomend = 0.0;
-    double dinamicIpReal = 0.0;
-    double dinamicIpRecomend = 0.0;
+    // double dinamicReal = 0.0;
+    // double dinamicRecomend = 0.0;
+    // double dinamicIpReal = 0.0;
+    // double dinamicIpRecomend = 0.0;
 
-    double strokeReal = 0.0;
-    double strokeRecomend = 0.0;
+    // double strokeReal = 0.0;
+    // double strokeRecomend = 0.0;
 
-    double rangeReal = 0.0;
-    double rangeRecomend = 0.0;
-    double rangePressure = 0.0;
+    // double rangeReal = 0.0;
+    // double rangeRecomend = 0.0;
+    // double rangePressure = 0.0;
 
-    double frictionPercent = 0.0;
-    double friction = 0.0;
+    // double frictionPercent = 0.0;
+    // double friction = 0.0;
 
-    double strokeTest_timeForward = 0.0;
-    double strokeTest_timeBackward = 0.0;
+    // double strokeTest_timeForward = 0.0;
+    // double strokeTest_timeBackward = 0.0;
 
-    QString cyclicTest_sequence = "";
-    quint32 cyclicTest_cycles = 0;
-    double cyclicTest_totalTime = 0.0;
+    // QString cyclicTest_sequence = "";
+    // quint32 cyclicTest_cycles = 0;
+    // double cyclicTest_totalTime = 0.0;
 
     double supplyPressure = 0.0;
 };

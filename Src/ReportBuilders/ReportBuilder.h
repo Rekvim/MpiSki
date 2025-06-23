@@ -11,8 +11,7 @@ public:
     virtual ~ReportBuilder() = default;
     virtual void buildReport(
         ReportSaver::Report& report,
-        const TelemetryStore& fullTelemetry,
-        const TestTelemetryData& telemetry,
+        const TelemetryStore& telemetryStore,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,

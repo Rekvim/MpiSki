@@ -62,7 +62,6 @@ enum class TextObjects {
     LineEdit_strokeTest_forwardTime,
     LineEdit_strokeTest_backwardTime,
     LineEdit_rangePressure
-
 };
 
 enum class Charts {
