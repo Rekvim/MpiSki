@@ -29,18 +29,18 @@ void CTSVReportBuilder::buildReport(
     report.data.push_back({"Отчет ЦТ", 7, 13, valveInfo.manufacturer});
     report.data.push_back({"Отчет ЦТ", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
     report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.positionerModel});
-    report.data.push_back({"Отчет ЦТ", 10, 13, safeToString(telemetryStore.supplyRecord.supplyPressure)});
+    report.data.push_back({"Отчет ЦТ", 10, 13, telemetryStore.supplyRecord.supplyPressure});
     report.data.push_back({"Отчет ЦТ", 11, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 12, 13, valveInfo.driveModel});
     report.data.push_back({"Отчет ЦТ", 13, 13, otherParams.strokeMovement});
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({"Отчет ЦТ", 19, 8, safeToString(telemetryStore.strokeTestRecord.timeForward)});
-    report.data.push_back({"Отчет ЦТ", 21, 8, safeToString(telemetryStore.strokeTestRecord.timeBackward)});
-    report.data.push_back({"Отчет ЦТ", 23, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({"Отчет ЦТ", 19, 8, telemetryStore.strokeTestRecord.timeForward});
+    report.data.push_back({"Отчет ЦТ", 21, 8, telemetryStore.strokeTestRecord.timeBackward});
+    report.data.push_back({"Отчет ЦТ", 23, 8, telemetryStore.cyclicTestRecord.cycles});
     report.data.push_back({"Отчет ЦТ", 25, 8, telemetryStore.cyclicTestRecord.sequence});
-    report.data.push_back({"Отчет ЦТ", 27, 8, safeToString(telemetryStore.cyclicTestRecord.totalTime)});
+    report.data.push_back({"Отчет ЦТ", 27, 8, telemetryStore.cyclicTestRecord.totalTime});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     // report.data.push_back({"Отчет ЦТ", 33, 8, safeToString(telemetry.???)});

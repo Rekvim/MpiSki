@@ -6,46 +6,46 @@
 
 struct StepRecord {
     QString range;
-    double T86sec;
-    qreal overshoot;
+    QString T86sec;
+    QString overshoot;
 };
 
 struct CyclicTestRecord {
     QString sequence = "";
-    quint32 cycles = 0;
-    double totalTime = 0.0;
+    QString cycles = "";
+    QString totalTime = "";
 };
 struct StrokeTestRecord {
-    double timeForward = 0.0;
-    double timeBackward = 0.0;
+    QString timeForward = "";
+    QString timeBackward = "";
 };
 
 struct DinamicRecord {
-    double dinamicReal = 0.0;
-    double dinamicRecomend = 0.0;
+    QString dinamicReal = "";
+    QString dinamicRecomend = "";
 
-    double dinamicIpReal = 0.0;
-    double dinamicIpRecomend = 0.0;
+    QString dinamicIpReal = "";
+    QString dinamicIpRecomend = "";
 };
 
 struct RangeRecord {
-    double rangeReal = 0.0;
-    double rangeRecomend = 0.0;
-    double rangePressure = 0.0;
+    QString rangeReal = "";
+    QString rangeRecomend = "";
+    QString rangePressure = "";
 };
 
 struct StrokeRecord {
-    double strokeReal = 0.0;
-    double strokeRecomend = 0.0;
+    QString strokeReal = "";
+    QString strokeRecomend = "";
 };
 
 struct FrictionRecord {
-    double friction = 0.0;
-    double frictionPercent = 0.0;
+    QString friction = "";
+    QString frictionPercent = "";
 };
 
 struct SupplyRecord {
-    double supplyPressure = 0.0;
+    QString supplyPressure = "";
 };
 
 class TelemetryStore {
