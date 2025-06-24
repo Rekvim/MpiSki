@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1327,7 +1327,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_maintest">
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_task">
            <attribute name="title">
@@ -1584,7 +1584,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_17">
             <item>
-             <widget class="QGroupBox" name="groupBox_9">
+             <widget class="QGroupBox" name="groupBox_valveFriction">
               <property name="font">
                <font>
                 <pointsize>12</pointsize>
@@ -1596,7 +1596,7 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_22">
                <item>
-                <widget class="QWidget" name="widget" native="true">
+                <widget class="QWidget" name="widget_pressureDifferenceValue" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_2">
                   <property name="spacing">
                    <number>30</number>
@@ -1634,7 +1634,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_5">
+                   <spacer name="horizontalSpacer_pressureDifferenceValue">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -1650,7 +1650,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_2" native="true">
+                <widget class="QWidget" name="widget_frictionForce" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_3">
                   <property name="spacing">
                    <number>30</number>
@@ -1688,7 +1688,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_4">
+                   <spacer name="horizontalSpacer_frictionForce">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -1704,7 +1704,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_3" native="true">
+                <widget class="QWidget" name="widget_frictionPercent" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_4">
                   <property name="spacing">
                    <number>30</number>
@@ -1742,7 +1742,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_3">
+                   <spacer name="horizontalSpacer_frictionPercent">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -1773,7 +1773,7 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_21">
                <item>
-                <widget class="QWidget" name="widget_4" native="true">
+                <widget class="QWidget" name="widget_dynamicErrorMean" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_5">
                   <property name="spacing">
                    <number>30</number>
@@ -1818,7 +1818,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer">
+                   <spacer name="horizontalSpacer_dynamicErrorMean">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -1834,7 +1834,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_5" native="true">
+                <widget class="QWidget" name="widget_dynamicErrorMax" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_6">
                   <property name="spacing">
                    <number>30</number>
@@ -1879,7 +1879,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_2">
+                   <spacer name="horizontalSpacer_dynamicErrorMax">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -1913,7 +1913,7 @@
                 <number>15</number>
                </property>
                <item>
-                <widget class="QWidget" name="widget_6" native="true">
+                <widget class="QWidget" name="widget_valveStroke" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_9">
                   <property name="spacing">
                    <number>30</number>
@@ -1951,7 +1951,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_6">
+                   <spacer name="horizontalSpacer_valveStroke">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -1967,7 +1967,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_7" native="true">
+                <widget class="QWidget" name="widget_lowLimit" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_10">
                   <property name="spacing">
                    <number>30</number>
@@ -2005,7 +2005,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_9">
+                   <spacer name="horizontalSpacer_lowLimit">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
@@ -2021,7 +2021,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QWidget" name="widget_8" native="true">
+                <widget class="QWidget" name="widget_highLimit" native="true">
                  <layout class="QHBoxLayout" name="horizontalLayout_14">
                   <property name="spacing">
                    <number>30</number>
@@ -2059,7 +2059,7 @@
                    </widget>
                   </item>
                   <item>
-                   <spacer name="horizontalSpacer_11">
+                   <spacer name="horizontalSpacer_highLimit">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
