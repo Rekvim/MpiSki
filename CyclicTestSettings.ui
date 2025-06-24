@@ -20,23 +20,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QComboBox" name="comboBox_testSelection">
-     <item>
-      <property name="text">
-       <string>Регулирующий</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Отсечной</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Запорно-регулирующий</string>
-      </property>
-     </item>
-    </widget>
+    <widget class="QComboBox" name="comboBox_testSelection"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_tests">
