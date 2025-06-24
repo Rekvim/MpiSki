@@ -478,13 +478,10 @@ void MainWindow::SetRegistry(Registry *registry)
     auto* seriesDI1 = static_cast<QAbstractSeries*>(m_charts[Charts::CyclicSolenoid]->chart()->series().at(2));
     auto* seriesDI2 = static_cast<QAbstractSeries*>(m_charts[Charts::CyclicSolenoid]->chart()->series().at(3));
 
-    // Приводим к QLineSeries, чтобы достучаться до pen и точек
     auto* line1 = qobject_cast<QLineSeries*>(seriesDI1);
     auto* line2 = qobject_cast<QLineSeries*>(seriesDI2);
     if (line1) {
-        // точками
         line1->setPointsVisible(true);
-        // и без линий
         QPen nop;
         nop.setStyle(Qt::NoPen);
         line1->setPen(nop);
