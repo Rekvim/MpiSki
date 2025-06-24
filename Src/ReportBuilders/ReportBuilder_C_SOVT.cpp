@@ -44,12 +44,24 @@ void ReportBuilder_C_SOVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 28, 8, telemetryStore.cyclicTestRecord.totalTime});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
-    // report.data.push_back({"Отчет ЦТ", 36, 8, safeToString(???)}); // Задание диапазона (0% хода)
-    // report.data.push_back({"Отчет ЦТ", 38, 8, safeToString(???)}); // Задание диапазона (100% хода)
+    // Задание диапазона (0% хода)
+    report.data.push_back({"Отчет ЦТ", 36, 8, telemetryStore.cyclicTestRecord.cycles});
+    // report.data.push_back({"Отчет ЦТ", 36, 10, safeToString(???)});
+    // report.data.push_back({"Отчет ЦТ", 36, 13, safeToString(???)});
+    // Задание диапазона (100% хода)
+    report.data.push_back({"Отчет ЦТ", 38, 8, telemetryStore.cyclicTestRecord.cycles});
+    // report.data.push_back({"Отчет ЦТ", 38, 10, safeToString(???)});
+    // report.data.push_back({"Отчет ЦТ", 38, 13, safeToString(???)});
+
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения
-    // report.data.push_back({"Отчет ЦТ", 44, 8, valveInfo.???}); // Положение "О-3"
-    // report.data.push_back({"Отчет ЦТ", 46, 8, valveInfo.???}); // Положение "З-О"
+    report.data.push_back({"Отчет ЦТ", 44, 8, telemetryStore.cyclicTestRecord.cycles});
+    // report.data.push_back({"Отчет ЦТ", 44, 10, safeToString(???)});
+    // report.data.push_back({"Отчет ЦТ", 44, 13, safeToString(???)});
+
+    report.data.push_back({"Отчет ЦТ", 46, 8, telemetryStore.cyclicTestRecord.cycles});
+    // report.data.push_back({"Отчет ЦТ", 46, 10, safeToString(???)});
+    // report.data.push_back({"Отчет ЦТ", 46, 13, safeToString(???)});
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 53, 4, objectInfo.FIO});

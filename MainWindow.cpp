@@ -1152,6 +1152,11 @@ void MainWindow::collectTestTelemetryData() {
     m_telemetry.strokeTestRecord.timeForward = ui->lineEdit_strokeTest_forwardTime->text();
     m_telemetry.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text();
 
+    // Циклический тест
+    m_telemetry.cyclicTestRecord.sequence = ui->lineEdit_strokeTest_forwardTime->text();
+    m_telemetry.cyclicTestRecord.cycles = ui->lineEdit_strokeTest_backwardTime->text();
+    m_telemetry.cyclicTestRecord.totalTime = ui->lineEdit_cyclicTest_totalTime->text();
+
     // ход штока / вала
     m_telemetry.strokeRecord.strokeReal = ui->lineEdit_strokeReal->text();
     m_telemetry.strokeRecord.strokeRecomend = ui->lineEdit_strokeRecomend->text();

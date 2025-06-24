@@ -6,6 +6,7 @@
 
 #include "MainTest.h"
 #include "CyclicTestSettings.h"
+#include "./Src/Telemetry/TelemetryStore.h"
 
 #include <QElapsedTimer>
 #include <QThread>
@@ -34,6 +35,7 @@ signals:
     void SetSolenoidResults(QString sequence,
                             quint16 cycles,
                             double totalTimeSec);
+    void CyclicDeviationResults(const QVector<RangeDeviationRecord>&);
 
 private:
     Parameters   m_params;

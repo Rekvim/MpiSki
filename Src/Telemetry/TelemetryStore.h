@@ -10,10 +10,22 @@ struct StepRecord {
     QString overshoot;
 };
 
+struct RangeDeviationRecord {
+    double avgErrorLinear = 0;
+    double maxErrorLinear = 0;
+    quint32 maxErrorLinearCycle  = 0;
+
+    double avgErrorPositioner = 0;
+    double maxErrorPositioner = 0;
+    quint32 maxErrorPositionerCycle = 0;
+};
+
 struct CyclicTestRecord {
     QString sequence = "";
-    quint32 cycles = 0;
-    double totalTime = 0.0;
+    QString cycles = "";
+    QString totalTime = "";
+
+    QVector<RangeDeviationRecord> ranges;
 
     int switch_3_0_count = 0;
     int switch_0_3_count = 0;

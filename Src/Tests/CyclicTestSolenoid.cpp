@@ -40,23 +40,23 @@
                                      int holdMs,
                                      int cycles)
     {
-        // --- валидация
         if (values.isEmpty() || delayMs <= 0 || holdMs < 0 || cycles <= 0) {
             emit EndTest();
             return;
         }
 
-        // Старт измерения
+        const int N = values.size();
+        QVector<QVector<double>> devLin(N), devPos(N);
+
         emit SetStartTime();
         emit ClearGraph();
 
         QElapsedTimer timer;
         timer.start();
 
-        // Основной цикл
         for (int c = 0; c < cycles && !m_terminate; ++c) {
             for (int i = 0; i < values.size() && !m_terminate; ++i) {
-                int pct     = values.at(i);
+                int pct = values.at(i);
                 int prevPct = (i == 0 ? values.first() : values.at(i - 1));
 
                 // точка «до хода»
@@ -73,6 +73,13 @@
                 // помечаем окончание хода
                 quint64 t1 = timer.elapsed();
                 emit TaskPoint(t1, pct);
+
+                double measuredLin = /* например */ m_mpi[0]->GetPersent();
+                double measuredPos = /* например */ m_mpi.GetDAC()->GetValue();
+
+                devLin[i].append(qAbs(measuredLin - pct));
+                 double posPct = (measuredPos - 4.0) / 16.0 * 100.0;
+                devPos[i].append(qAbs(posPct - pct));
 
                 // удерживаем
                 QThread::msleep(holdMs);
@@ -94,6 +101,25 @@
                           : (isShutoff
                                  ? m_params.shutoff_sequence
                                  : m_params.regulatory_sequence);
+
+        QVector<RangeDeviationRecord> recs(N);
+        for (int i = 0; i < N; ++i) {
+            const auto& L = devLin[i];
+            const auto& P = devPos[i];
+
+            // 1) среднее
+            recs[i].avgErrorLinear     = std::accumulate(L.begin(), L.end(), 0.0) / L.size();
+            recs[i].avgErrorPositioner = std::accumulate(P.begin(), P.end(), 0.0) / P.size();
+
+            // 2) максимумы и их индексы
+            auto itL  = std::max_element(L.begin(), L.end());
+            recs[i].maxErrorLinear     = *itL;
+            recs[i].maxErrorLinearCycle  = quint32(std::distance(L.begin(), itL)) + 1;
+
+            auto itP  = std::max_element(P.begin(), P.end());
+            recs[i].maxErrorPositioner    = *itP;
+            recs[i].maxErrorPositionerCycle = quint32(std::distance(P.begin(), itP)) + 1;
+        }
 
         emit SetSolenoidResults(seq,
                                 quint16(cycles),
