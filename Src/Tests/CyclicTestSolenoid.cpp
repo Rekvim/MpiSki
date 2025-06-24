@@ -74,12 +74,12 @@
                 quint64 t1 = timer.elapsed();
                 emit TaskPoint(t1, pct);
 
-                double measuredLin = /* например */ m_mpi[0]->GetPersent();
-                double measuredPos = /* например */ m_mpi.GetDAC()->GetValue();
+                // double measuredLin = /* например */ m_mpi[0]->GetPersent();
+                // double measuredPos = /* например */ m_mpi.GetDAC()->GetValue();
 
-                devLin[i].append(qAbs(measuredLin - pct));
-                 double posPct = (measuredPos - 4.0) / 16.0 * 100.0;
-                devPos[i].append(qAbs(posPct - pct));
+                // devLin[i].append(qAbs(measuredLin - pct));
+                //  double posPct = (measuredPos - 4.0) / 16.0 * 100.0;
+                // devPos[i].append(qAbs(posPct - pct));
 
                 // удерживаем
                 QThread::msleep(holdMs);

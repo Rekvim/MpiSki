@@ -20,6 +20,14 @@ public:
     explicit CyclicTestSettings(QWidget *parent = nullptr);
     ~CyclicTestSettings();
 
+    enum AvailableTests {
+        OnlyRegulatory,
+        OnlyShutoff,
+        ZipRegulatory
+    };
+
+    void setAvailableTests(AvailableTests at);
+
     struct TestParameters {
         enum Type { Regulatory, Shutoff, Combined } testType;
         QString regulatory_sequence;

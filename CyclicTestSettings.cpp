@@ -17,13 +17,13 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     connect(ui->pushButton_removeDelayRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onRemoveDelayClicked);
 
     // Отсечной
-    connect(ui->pushButton_addDelayShutOff,    &QPushButton::clicked, this, &CyclicTestSettings::onAddDelayShutOffClicked);
-    connect(ui->pushButton_editDelayShutOff,   &QPushButton::clicked, this, &CyclicTestSettings::onEditDelayShutOffClicked);
+    connect(ui->pushButton_addDelayShutOff, &QPushButton::clicked, this, &CyclicTestSettings::onAddDelayShutOffClicked);
+    connect(ui->pushButton_editDelayShutOff, &QPushButton::clicked, this, &CyclicTestSettings::onEditDelayShutOffClicked);
     connect(ui->pushButton_removeDelayShutOff, &QPushButton::clicked, this, &CyclicTestSettings::onRemoveDelayShutOffClicked);
 
     // Общие
     connect(ui->pushButton_cancel, &QPushButton::clicked, this, &QDialog::reject);
-    connect(ui->pushButton_start,  &QPushButton::clicked, this, &CyclicTestSettings::onPushButtonStartClicked);
+    connect(ui->pushButton_start, &QPushButton::clicked, this, &CyclicTestSettings::onPushButtonStartClicked);
 
     connect(ui->comboBox_testSelection, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CyclicTestSettings::onTestSelectionChanged);
@@ -34,6 +34,25 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 CyclicTestSettings::~CyclicTestSettings()
 {
     delete ui;
+}
+
+void CyclicTestSettings::setAvailableTests(AvailableTests at)
+{
+    ui->comboBox_testSelection->clear();
+    switch (at) {
+    case OnlyRegulatory:
+        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
+        break;
+    case OnlyShutoff:
+        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
+        break;
+    case ZipRegulatory:
+        ui->comboBox_testSelection->addItem(QStringLiteral("Запорно-регулирующий"));
+        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
+        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
+        break;
+    }
+    onTestSelectionChanged();
 }
 
 void CyclicTestSettings::onTestSelectionChanged()
@@ -153,6 +172,7 @@ void CyclicTestSettings::onRemoveDelayShutOffClicked()
 void CyclicTestSettings::onPushButtonStartClicked()
 {
     using TP = TestParameters;
+
 
     // --- Regulatory или Combined
     if (m_parameters.testType == TP::Regulatory || m_parameters.testType == TP::Combined) {

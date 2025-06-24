@@ -845,6 +845,25 @@ void MainWindow::ButtonStartCyclicSolenoid() {
             emit StopTest();
         }
     } else {
+
+        CyclicTestSettings::AvailableTests avail;
+        using PT = SelectTests::PatternType;
+        if (m_patternType == PT::Pattern_B_CVT || m_patternType == PT::Pattern_C_CVT) {
+            avail = CyclicTestSettings::OnlyRegulatory;
+        }
+        else if (m_patternType == PT::Pattern_C_SOVT) {
+            avail = CyclicTestSettings::OnlyShutoff;
+        }
+        else if (m_patternType == PT::Pattern_B_SACVT || m_patternType == PT::Pattern_C_SACVT) {
+            avail = CyclicTestSettings::ZipRegulatory;
+        } else {
+            avail = CyclicTestSettings::ZipRegulatory;
+        }
+
+        m_cyclicTestSettings->setAvailableTests(avail);
+        if (m_cyclicTestSettings->exec() != QDialog::Accepted)
+            return;
+
         if (m_cyclicTestSettings->exec() != QDialog::Accepted)
             return;
 

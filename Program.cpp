@@ -27,6 +27,7 @@ Program::Program(QObject *parent)
 
     connect(m_timerSensors, &QTimer::timeout,
             this, &Program::UpdateCharts_CyclicSolenoid);
+
 }
 
 void Program::SetRegistry(Registry *registry)
@@ -686,6 +687,11 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(m_diPollTimer, &QTimer::timeout, this, &Program::pollDIForCyclic);
     m_diPollTimer->start();
 
+    connect(sol, &CyclicTestSolenoid::CyclicDeviationResults,
+            this, [this](const QVector<RangeDeviationRecord>& recs){
+                m_store.cyclicTestRecord.ranges = recs;
+            });
+
     connect(sol, &CyclicTestSolenoid::EndTest, this, [this](){
         if (m_diPollTimer) {
             m_diPollTimer->stop();
@@ -731,6 +737,7 @@ void Program::SolenoidResults(QString sequence,
                               quint16 cycles,
                               double totalTimeSec)
 {
+    auto& R = m_store.cyclicTestRecord;
     emit SetSolenoidResults(sequence, cycles, totalTimeSec);
 }
 
