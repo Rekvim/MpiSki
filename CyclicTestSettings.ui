@@ -126,6 +126,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_buttonsTestRangeRegulatory">
              <item>
               <widget class="QPushButton" name="pushButton_addRangeRegulatory">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Добавить</string>
                </property>
@@ -133,6 +139,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_editRangeRegulatory">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Изменить</string>
                </property>
@@ -140,6 +152,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_removeRangeRegulatory">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Удалить</string>
                </property>
@@ -175,6 +193,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_buttonsDelayRegulatory">
              <item>
               <widget class="QPushButton" name="pushButton_addDelayRegulatory">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Добавить</string>
                </property>
@@ -182,6 +206,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_editDelayRegulatory">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Изменить</string>
                </property>
@@ -189,6 +219,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_removeDelayRegulatory">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Удалить</string>
                </property>
@@ -358,6 +394,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_buttonsDelayShutOff">
              <item>
               <widget class="QPushButton" name="pushButton_addDelayShutOff">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Добавить</string>
                </property>
@@ -365,6 +407,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_editDelayShutOff">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Изменить</string>
                </property>
@@ -372,6 +420,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_removeDelayShutOff">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Удалить</string>
                </property>
