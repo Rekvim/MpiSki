@@ -59,15 +59,15 @@
                 int pct = values.at(i);
                 int prevPct = (i == 0 ? values.first() : values.at(i - 1));
 
-                 quint64 t0 = timer.elapsed();
+                quint64 t0 = timer.elapsed();
                 emit TaskPoint(t0, prevPct);
                 emit TaskPoint(t0, pct);
 
-                 emit SetDAC(pct);
+                emit SetDAC(pct);
 
-                 QThread::msleep(delayMs);
+                QThread::msleep(delayMs);
 
-                 quint64 t1 = timer.elapsed();
+                quint64 t1 = timer.elapsed();
                 emit TaskPoint(t1, pct);
 
                 double measuredLin = m_mpi[0]->GetPersent();
@@ -77,11 +77,11 @@
                  double posPct = (measuredPos - 4.0) / 16.0 * 100.0;
                 devPos[i].append(qAbs(posPct - pct));
 
-                 QThread::msleep(holdMs);
+                QThread::msleep(holdMs);
                 quint64 t2 = timer.elapsed();
                 emit TaskPoint(t2, pct);
 
-                 emit UpdateCyclicTred();
+                emit UpdateCyclicTred();
             }
         }
 
@@ -138,7 +138,6 @@
             emit SetDAC(100);
             QThread::msleep(m_params.shutoff_delaySec * 1000);
         }
-        // 2) а потом основную последовательность
         runLoop(m_valuesOff,
                 m_params.shutoff_delaySec * 1000,
                 m_params.shutoff_holdTimeSec * 1000,
