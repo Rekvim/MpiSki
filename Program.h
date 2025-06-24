@@ -15,6 +15,7 @@
 #include "CyclicTestSettings.h"
 
 #include "Registry.h"
+#include "./Src/Telemetry/TelemetryStore.h"
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/MainTest.h"
 #include "SelectTests.h"
@@ -97,7 +98,12 @@ private:
     Registry *m_registry;
 
     MPI m_mpi;
+    TelemetryStore m_store;
+
+
     QTimer* m_diPollTimer = nullptr;
+    int m_cyclicDI1Count = 0;
+    int m_cyclicDI2Count = 0;
     quint8  m_lastDI = 0;
     quint64 m_cyclicStartTs = 0;
     QTimer *m_timerSensors;

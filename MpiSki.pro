@@ -20,11 +20,11 @@ SOURCES += \
     Src/CustomChart/MySeries.cpp \
     Src/MPI/MPI.cpp \
     Src/MPI/MpiSettings.cpp \
-    Src/ReportBuilders/BTCVReportBuilder.cpp \
-    Src/ReportBuilders/BTSVReportBuilder.cpp \
-    Src/ReportBuilders/CTCVReportBuilder.cpp \
-    Src/ReportBuilders/CTSVReportBuilder.cpp \
-    Src/ReportBuilders/CTVReportBuilder.cpp \
+    Src/ReportBuilders/ReportBuilder_B_CVT.cpp \
+    Src/ReportBuilders/ReportBuilder_B_SACVT.cpp \
+    Src/ReportBuilders/ReportBuilder_C_CVT.cpp \
+    Src/ReportBuilders/ReportBuilder_C_SACVT.cpp \
+    Src/ReportBuilders/ReportBuilder_C_SOVT.cpp \
     Src/ReportBuilders/ReportSaver.cpp \
     Src/Telemetry/TelemetryStore.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
@@ -64,12 +64,12 @@ HEADERS += \
     Src/CustomChart/MySeries.h \
     Src/MPI/MPI.h \
     Src/MPI/MpiSettings.h \
-    Src/ReportBuilders/BTCVReportBuilder.h \
-    Src/ReportBuilders/BTSVReportBuilder.h \
-    Src/ReportBuilders/CTCVReportBuilder.h \
-    Src/ReportBuilders/CTSVReportBuilder.h \
-    Src/ReportBuilders/CTVReportBuilder.h \
     Src/ReportBuilders/ReportBuilder.h \
+    Src/ReportBuilders/ReportBuilder_B_CVT.h \
+    Src/ReportBuilders/ReportBuilder_B_SACVT.h \
+    Src/ReportBuilders/ReportBuilder_C_CVT.h \
+    Src/ReportBuilders/ReportBuilder_C_SACVT.h \
+    Src/ReportBuilders/ReportBuilder_C_SOVT.h \
     Src/ReportBuilders/ReportSaver.h \
     Src/Telemetry/TelemetryStore.h \
     Src/Tests/CyclicTestPositioner.h \

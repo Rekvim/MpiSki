@@ -14,6 +14,9 @@ struct CyclicTestRecord {
     QString sequence = "";
     quint32 cycles = 0;
     double totalTime = 0.0;
+
+    int switch_3_0_count = 0;
+    int switch_0_3_count = 0;
 };
 struct StrokeTestRecord {
     double timeForward = 0.0;

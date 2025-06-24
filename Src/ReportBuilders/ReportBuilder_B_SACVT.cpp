@@ -1,8 +1,8 @@
-#include "BTSVReportBuilder.h"
+#include "ReportBuilder_B_SACVT.h"
 
-BTSVReportBuilder::BTSVReportBuilder() {}
+ReportBuilder_B_SACVT::ReportBuilder_B_SACVT() {}
 
-void BTSVReportBuilder::buildReport(
+void ReportBuilder_B_SACVT::buildReport(
     ReportSaver::Report& report,
     const TelemetryStore& telemetryStore,
     const ObjectInfo& objectInfo,

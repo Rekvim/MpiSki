@@ -186,7 +186,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
             int secs = hold.minute()*60 + hold.second();
             if (secs <= 0) {
                 QMessageBox::warning(this, "Ошибка",
-                                     "Время удержания (регулирующий) > 00:00.");
+                                    "Время удержания (регулирующий) > 00:00.");
                 return;
             }
             m_parameters.regulatory_holdTimeSec = secs;
@@ -208,9 +208,9 @@ void CyclicTestSettings::onPushButtonStartClicked()
     else {
         // сбросить ненужные
         m_parameters.regulatory_sequence.clear();
-        m_parameters.regulatory_delaySec    = 0;
+        m_parameters.regulatory_delaySec = 0;
         m_parameters.regulatory_holdTimeSec = 0;
-        m_parameters.regulatory_numCycles   = 0;
+        m_parameters.regulatory_numCycles = 0;
     }
 
     // --- Shutoff или Combined
@@ -271,8 +271,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
         m_parameters.shutoff_DO[2] = ui->pushButton_DO2_ShutOff->isChecked();
         m_parameters.shutoff_DO[3] = ui->pushButton_DO3_ShutOff->isChecked();
 
-        m_parameters.shutoff_DI[0] = ui->checkBox_DI1_ShutOff->isChecked();
-        m_parameters.shutoff_DI[1] = ui->checkBox_DI2_ShutOff->isChecked();
+        m_parameters.shutoff_DI[0] = ui->checkBox_switch_3_0_ShutOff->isChecked();
+        m_parameters.shutoff_DI[1] = ui->checkBox_switch_0_3_ShutOff->isChecked();
     }
     else {
         // сбросить ненужные

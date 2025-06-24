@@ -20,11 +20,11 @@ public:
 
     enum PatternType {
         Pattern_None,
-        Pattern_BTCV,
-        Pattern_BTSV,
-        Pattern_CTCV,
-        Pattern_CTSV,
-        Pattern_CTV
+        Pattern_B_CVT,
+        Pattern_B_SACVT,
+        Pattern_C_CVT,
+        Pattern_C_SACVT,
+        Pattern_C_SOVT
     };
 
     struct PatternSetup {
@@ -59,11 +59,11 @@ private slots:
 
     void resetCheckBoxes();
 
-    void ButtonClick_CTV();
-    void ButtonClick_BTSV();
-    void ButtonClick_CTSV();
-    void ButtonClick_BTCV();
-    void ButtonClick_CTCV();
+    void ButtonClick_C_SOVT();
+    void ButtonClick_B_SACVT();
+    void ButtonClick_C_SACVT();
+    void ButtonClick_B_CVT();
+    void ButtonClick_C_CVT();
 
     void ButtonClick();
 

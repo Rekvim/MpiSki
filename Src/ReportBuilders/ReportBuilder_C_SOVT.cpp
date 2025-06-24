@@ -1,8 +1,8 @@
-#include "CTVReportBuilder.h"
+#include "ReportBuilder_C_SOVT.h"
 
-CTVReportBuilder::CTVReportBuilder() {}
+ReportBuilder_C_SOVT::ReportBuilder_C_SOVT() {}
 
-void CTVReportBuilder::buildReport(
+void ReportBuilder_C_SOVT::buildReport(
     ReportSaver::Report& report,
     const TelemetryStore& telemetryStore,
     const ObjectInfo& objectInfo,

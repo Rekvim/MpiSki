@@ -638,13 +638,17 @@ void Program::pollDIForCyclic()
     if (di == m_lastDI)
         return;
 
-     quint64 t = QDateTime::currentMSecsSinceEpoch() - m_cyclicStartTs;
+    quint64 t = QDateTime::currentMSecsSinceEpoch() - m_cyclicStartTs;
 
     QVector<Point> pts;
-    if ((di & 0x01) && !(m_lastDI & 0x01))
+    if ((di & 0x01) && !(m_lastDI & 0x01)) {
+        ++m_store.cyclicTestRecord.switch_3_0_count;
         pts.push_back({2, qreal(t), 100.0});
-    if ((di & 0x02) && !(m_lastDI & 0x02))
+    }
+    if ((di & 0x02) && !(m_lastDI & 0x02)) {
+        ++m_store.cyclicTestRecord.switch_0_3_count;
         pts.push_back({3, qreal(t), 100.0});
+    }
 
     if (!pts.isEmpty())
         emit AddPoints(Charts::CyclicSolenoid, pts);
@@ -681,6 +685,8 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     QThread *thr = new QThread(this);
     sol->moveToThread(thr);
 
+    m_store.cyclicTestRecord.switch_3_0_count = 0;
+    m_store.cyclicTestRecord.switch_0_3_count = 0;
     m_lastDI = m_mpi.GetDIStatus();
     m_cyclicStartTs = QDateTime::currentMSecsSinceEpoch();
 

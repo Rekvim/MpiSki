@@ -1,8 +1,8 @@
-#include "CTSVReportBuilder.h"
+#include "ReportBuilder_B_CVT.h"
 
-CTSVReportBuilder::CTSVReportBuilder() {}
+ReportBuilder_B_CVT::ReportBuilder_B_CVT() {}
 
-void CTSVReportBuilder::buildReport(
+void ReportBuilder_B_CVT::buildReport(
     ReportSaver::Report& report,
     const TelemetryStore& telemetryStore,
     const ObjectInfo& objectInfo,
@@ -13,6 +13,10 @@ void CTSVReportBuilder::buildReport(
     const QImage& image3
     )
 {
+    Q_UNUSED(image1);
+    Q_UNUSED(image2);
+    Q_UNUSED(image3);
+
     Q_UNUSED(image1);
     Q_UNUSED(image2);
     Q_UNUSED(image3);

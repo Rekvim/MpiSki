@@ -2,11 +2,11 @@
 #include "ui_MainWindow.h"
 #include "CyclicTestSettings.h"
 
-#include "Src/ReportBuilders/BTCVReportBuilder.h"
-#include "Src/ReportBuilders/BTSVReportBuilder.h"
-#include "Src/ReportBuilders/CTCVReportBuilder.h"
-#include "Src/ReportBuilders/CTSVReportBuilder.h"
-#include "Src/ReportBuilders/CTVReportBuilder.h"
+#include "Src/ReportBuilders/ReportBuilder_B_CVT.h"
+#include "Src/ReportBuilders/ReportBuilder_B_SACVT.h"
+#include "Src/ReportBuilders/ReportBuilder_C_CVT.h"
+#include "Src/ReportBuilders/ReportBuilder_C_SACVT.h"
+#include "Src/ReportBuilders/ReportBuilder_C_SOVT.h"
 #include "./Src/Tests/CyclicTestSolenoid.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -52,10 +52,10 @@ MainWindow::MainWindow(QWidget *parent)
     // ui->tabWidget->setTabEnabled(3, false);
     // ui->tabWidget->setTabEnabled(4, false);
 
-    ui->checkBox_DI1->setAttribute(Qt::WA_TransparentForMouseEvents);
-    ui->checkBox_DI1->setFocusPolicy(Qt::NoFocus);
-    ui->checkBox_DI2->setAttribute(Qt::WA_TransparentForMouseEvents);
-    ui->checkBox_DI2->setFocusPolicy(Qt::NoFocus);
+    ui->checkBox_switch_3_0->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->checkBox_switch_3_0->setFocusPolicy(Qt::NoFocus);
+    ui->checkBox_switch_0_3->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->checkBox_switch_0_3->setFocusPolicy(Qt::NoFocus);
 
     m_labels[TextObjects::Label_deviceStatusValue] = ui->label_deviceStatusValue;
     m_labels[TextObjects::Label_deviceInitValue] = ui->label_deviceInitValue;
@@ -290,14 +290,14 @@ MainWindow::MainWindow(QWidget *parent)
         std::unique_ptr<ReportBuilder> reportBuilder;
 
         switch (m_patternType) {
-            case SelectTests::Pattern_CTV: reportBuilder = std::make_unique<CTVReportBuilder>(); break;
-            case SelectTests::Pattern_BTSV: reportBuilder = std::make_unique<BTSVReportBuilder>(); break;
-            case SelectTests::Pattern_CTSV: reportBuilder = std::make_unique<CTSVReportBuilder>(); break;
-            case SelectTests::Pattern_BTCV: reportBuilder = std::make_unique<BTCVReportBuilder>(); break;
-            case SelectTests::Pattern_CTCV: reportBuilder = std::make_unique<CTCVReportBuilder>(); break;
-            default:
-                QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн отчёта!");
-                return;
+        case SelectTests::Pattern_B_CVT: reportBuilder = std::make_unique<ReportBuilder_B_CVT>(); break;
+        case SelectTests::Pattern_B_SACVT: reportBuilder = std::make_unique<ReportBuilder_B_SACVT>(); break;
+        case SelectTests::Pattern_C_CVT: reportBuilder = std::make_unique<ReportBuilder_C_CVT>(); break;
+        case SelectTests::Pattern_C_SACVT: reportBuilder = std::make_unique<ReportBuilder_C_SACVT>(); break;
+        case SelectTests::Pattern_C_SOVT: reportBuilder = std::make_unique<ReportBuilder_C_SOVT>(); break;
+        default:
+            QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн отчёта!");
+            return;
         }
 
         ReportSaver::Report report;
@@ -578,19 +578,19 @@ void MainWindow::SetSensorsNumber(quint8 num)
     }
 
     switch (m_patternType) {
-    case SelectTests::Pattern_BTCV:
+    case SelectTests::Pattern_B_CVT:
         break;
-    case SelectTests::Pattern_BTSV:
+    case SelectTests::Pattern_B_SACVT:
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
-    case SelectTests::Pattern_CTCV:
+    case SelectTests::Pattern_C_CVT:
         break;
-    case SelectTests::Pattern_CTSV:
+    case SelectTests::Pattern_C_SACVT:
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
-    case SelectTests::Pattern_CTV:
+    case SelectTests::Pattern_C_SOVT:
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
@@ -890,8 +890,8 @@ void MainWindow::SetButtonsDOChecked(quint8 status)
 
 void MainWindow::SetCheckboxDIChecked(quint8 status)
 {
-    ui->checkBox_DI1->setChecked((status & (1 << 0)) != 0);
-    ui->checkBox_DI2->setChecked((status & (1 << 1)) != 0);
+    ui->checkBox_switch_3_0->setChecked((status & (1 << 0)) != 0);
+    ui->checkBox_switch_0_3->setChecked((status & (1 << 1)) != 0);
 }
 
 void MainWindow::InitCharts()

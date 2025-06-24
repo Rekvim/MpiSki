@@ -1,13 +1,14 @@
-#ifndef BTCVREPORTBUILDER_H
-#define BTCVREPORTBUILDER_H
+#ifndef REPORTBUILDER_C_SOVT_H
+#define REPORTBUILDER_C_SOVT_H
 
 #pragma once
 #include "ReportBuilder.h"
+#include "Registry.h"
 
-class BTCVReportBuilder : public ReportBuilder
+class ReportBuilder_C_SOVT : public ReportBuilder
 {
 public:
-    BTCVReportBuilder();
+    ReportBuilder_C_SOVT();
     void buildReport(
         ReportSaver::Report& report,
         const TelemetryStore& telemetryStore,
@@ -18,7 +19,8 @@ public:
         const QImage& image2 = QImage(),
         const QImage& image3 = QImage()
         ) override;
-    QString templatePath() const override { return ":/excel/Reports/SKI_BTCV.xlsx"; }
+
+    QString templatePath() const override { return ":/excel/Reports/SKI_C_SOVT.xlsx"; }
 };
 
-#endif // BTCVREPORTBUILDER_H
+#endif // REPORTBUILDER_C_SOVT_H

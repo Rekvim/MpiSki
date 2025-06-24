@@ -56,11 +56,11 @@ SelectTests::SelectTests(QWidget *parent)
     for (QCheckBox* cb : allCheckBoxes())
         connect(cb, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
 
-    connect(ui->button_CTV, &QPushButton::clicked, this, &SelectTests::ButtonClick_CTV);
-    connect(ui->button_BTSV, &QPushButton::clicked, this, &SelectTests::ButtonClick_BTSV);
-    connect(ui->button_CTSV, &QPushButton::clicked, this, &SelectTests::ButtonClick_CTSV);
-    connect(ui->button_BTCV, &QPushButton::clicked, this, &SelectTests::ButtonClick_BTCV);
-    connect(ui->button_CTCV, &QPushButton::clicked, this, &SelectTests::ButtonClick_CTCV);
+    connect(ui->button_C_SOVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_C_SOVT);
+    connect(ui->button_B_SACVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_B_SACVT);
+    connect(ui->button_C_SACVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_C_SACVT);
+    connect(ui->button_B_CVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_B_CVT);
+    connect(ui->button_C_CVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_C_CVT);
 
     connect(ui->entry_testing, &QPushButton::clicked, this, &SelectTests::ButtonClick);
 }
@@ -139,7 +139,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_imit_switch_3_0->isChecked() &&
         (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
     {
-        return Pattern_BTCV;
+        return Pattern_C_SACVT;
     }
 
     // Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
@@ -158,7 +158,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         // !ui->check_box_do_3->isChecked() &&
         // !ui->check_box_do_4->isChecked())
     {
-        return Pattern_CTCV;
+        return Pattern_C_CVT;
     }
 
     // Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический
@@ -177,7 +177,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         // !ui->check_box_do_3->isChecked() &&
         // !ui->check_box_do_4->isChecked())
     {
-        return Pattern_BTSV;
+        return Pattern_B_SACVT;
     }
 
     // Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический
@@ -193,7 +193,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         // !ui->check_box_input_4_20_mA->isChecked() &&
         // !ui->check_box_output_4_20_mA->isChecked())
     {
-        return Pattern_CTV;
+        return Pattern_C_SOVT;
     }
 
     // Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический
@@ -209,7 +209,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         // !ui->check_box_imit_switch_3_0->isChecked() &&
         // (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
     {
-        return Pattern_CTSV;
+        return Pattern_B_CVT;
     }
 
     return Pattern_None;
@@ -241,19 +241,19 @@ void SelectTests::onCheckBoxChanged()
 
     if (!m_suppressDebugOutput) {
         switch (m_currentPattern) {
-        case Pattern_CTV:
+        case Pattern_C_SOVT:
             qDebug() << "Текущий паттерн: Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический";
             break;
-        case Pattern_BTSV:
+        case Pattern_B_SACVT:
             qDebug() << "Текущий паттерн: Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический";
             break;
-        case Pattern_CTSV:
+        case Pattern_C_SACVT:
             qDebug() << "Текущий паттерн: Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический";
             break;
-        case Pattern_BTCV:
+        case Pattern_B_CVT:
             qDebug() << "Текущий паттерн: Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический";
             break;
-        case Pattern_CTCV:
+        case Pattern_C_CVT:
             qDebug() << "Текущий паттерн: Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический";
             break;
         default:
@@ -263,14 +263,14 @@ void SelectTests::onCheckBoxChanged()
     }
 }
 
-void SelectTests::ButtonClick_CTV() {
+void SelectTests::ButtonClick_C_SOVT() {
     setPattern({
         {ui->check_box_usb, ui->check_box_moving, ui->check_box_imit_switch_3_0, ui->check_box_imit_switch_0_3, ui->check_box_do_1},
         {}
     });
 }
 
-void SelectTests::ButtonClick_BTSV() {
+void SelectTests::ButtonClick_B_SACVT() {
     setPattern({
         {ui->check_box_usb, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA,
          ui->check_box_imit_switch_0_3, ui->check_box_imit_switch_3_0, ui->check_box_do_1},
@@ -278,7 +278,7 @@ void SelectTests::ButtonClick_BTSV() {
     });
 }
 
-void SelectTests::ButtonClick_CTSV() {
+void SelectTests::ButtonClick_C_SACVT() {
     setPattern({
         {ui->check_box_usb, ui->check_box_pressure_1, ui->check_box_pressure_2, ui->check_box_pressure_3,
          ui->check_box_moving, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA,
@@ -287,14 +287,14 @@ void SelectTests::ButtonClick_CTSV() {
     });
 }
 
-void SelectTests::ButtonClick_BTCV() {
+void SelectTests::ButtonClick_B_CVT() {
     setPattern({
-        {ui->check_box_usb, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA, ui->check_box_do_1},
+        {ui->check_box_usb, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA},
         {}
     });
 }
 
-void SelectTests::ButtonClick_CTCV() {
+void SelectTests::ButtonClick_C_CVT() {
     setPattern({
         {ui->check_box_usb, ui->check_box_pressure_1, ui->check_box_pressure_2, ui->check_box_pressure_3,
          ui->check_box_moving, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA},

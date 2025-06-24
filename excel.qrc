@@ -1,10 +1,10 @@
 <RCC>
     <qresource prefix="/excel">
         <file>report.xlsx</file>
-        <file>Reports/SKI_BTCV.xlsx</file>
-        <file>Reports/SKI_BTSV.xlsx</file>
-        <file>Reports/SKI_CTSV.xlsx</file>
-        <file>Reports/SKI_CTV.xlsx</file>
-        <file>Reports/SKI_CTCV.xlsx</file>
+        <file>Reports/SKI_B_CVT.xlsx</file>
+        <file>Reports/SKI_B_SACVT.xlsx</file>
+        <file>Reports/SKI_C_CVT.xlsx</file>
+        <file>Reports/SKI_C_SACVT.xlsx</file>
+        <file>Reports/SKI_C_SOVT.xlsx</file>
     </qresource>
 </RCC>

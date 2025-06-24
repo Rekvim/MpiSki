@@ -1,13 +1,13 @@
-#ifndef CTCVREPORTBUILDER_H
-#define CTCVREPORTBUILDER_H
+#ifndef REPORTBUILDER_C_CVT_H
+#define REPORTBUILDER_C_CVT_H
 
 #pragma once
 #include "ReportBuilder.h"
 
-class CTCVReportBuilder : public ReportBuilder
+class ReportBuilder_C_CVT : public ReportBuilder
 {
 public:
-    CTCVReportBuilder();
+    ReportBuilder_C_CVT();
     void buildReport(
         ReportSaver::Report& report,
         const TelemetryStore& telemetryStore,
@@ -18,7 +18,7 @@ public:
         const QImage& image2 = QImage(),
         const QImage& image3 = QImage()
         ) override;
-    QString templatePath() const override { return ":/excel/Reports/SKI_CTCV.xlsx"; }
+    QString templatePath() const override { return ":/excel/Reports/SKI_C_CVT.xlsx"; }
 };
 
-#endif // CTCVREPORTBUILDER_H
+#endif // REPORTBUILDER_C_CVT_H

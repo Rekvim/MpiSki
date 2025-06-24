@@ -1049,7 +1049,7 @@ border-radius: 6px;</string>
          </spacer>
         </item>
         <item>
-         <widget class="QToolButton" name="button_CTV">
+         <widget class="QToolButton" name="button_C_SOVT">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1079,7 +1079,7 @@ border-radius: 6px;</string>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="button_BTSV">
+         <widget class="QToolButton" name="button_B_SACVT">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1109,7 +1109,7 @@ border-radius: 6px;</string>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="button_CTSV">
+         <widget class="QToolButton" name="button_C_SACVT">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1139,7 +1139,7 @@ border-radius: 6px;</string>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="button_BTCV">
+         <widget class="QToolButton" name="button_B_CVT">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1169,7 +1169,7 @@ border-radius: 6px;</string>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="button_CTCV">
+         <widget class="QToolButton" name="button_C_CVT">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>

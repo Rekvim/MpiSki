@@ -70,19 +70,19 @@ void ValveWindow::SetPatternType(SelectTests::PatternType pattern)
 void ValveWindow::applyPatternVisibility()
 {
     switch (m_patternType) {
-    case SelectTests::Pattern_BTCV:
+    case SelectTests::Pattern_B_CVT:
         break;
-    case SelectTests::Pattern_BTSV:
+    case SelectTests::Pattern_B_SACVT:
         break;
-    case SelectTests::Pattern_CTCV:
+    case SelectTests::Pattern_C_CVT:
         ui->widget_solenoidValveModel->setVisible(false);
         ui->widget_limitSwitchModel->setVisible(false);
         break;
-    case SelectTests::Pattern_CTSV:
+    case SelectTests::Pattern_C_SACVT:
         ui->widget_solenoidValveModel->setVisible(false);
         ui->widget_limitSwitchModel->setVisible(false);
         break;
-    case SelectTests::Pattern_CTV:
+    case SelectTests::Pattern_C_SOVT:
             ui->widget_positionerModel->setVisible(false);
         break;
     default:
