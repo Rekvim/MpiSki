@@ -122,7 +122,7 @@
         }
         // 2) а потом основную последовательность
         runLoop(m_valuesOff,
-                m_params.shutoff_delaySec    * 1000,
+                m_params.shutoff_delaySec * 1000,
                 m_params.shutoff_holdTimeSec * 1000,
                 m_params.shutoff_numCycles);
     }

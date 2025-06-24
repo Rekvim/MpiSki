@@ -156,29 +156,20 @@ void Program::UpdateSensors()
     for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
         switch (i) {
         case 0:
-            if (m_blockCts.moving) {
-                emit SetText(TextObjects::LineEdit_linearSensor, m_mpi[i]->GetFormatedValue());
-                emit SetText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->GetPersentFormated());
-                break;
-            }
+            emit SetText(TextObjects::LineEdit_linearSensor, m_mpi[i]->GetFormatedValue());
+            emit SetText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->GetPersentFormated());
             break;
         case 1:
-            if (m_blockCts.pressure_1) {
-                emit SetText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->GetFormatedValue());
-                break;
-            }
+            emit SetText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->GetFormatedValue());
+            break;
             break;
         case 2:
-            if (m_blockCts.pressure_2) {
-                emit SetText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->GetFormatedValue());
-                break;
-            }
+            emit SetText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->GetFormatedValue());
+            break;
+
             break;
         case 3:
-            if (m_blockCts.pressure_3) {
-                emit SetText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->GetFormatedValue());
-                break;
-            }
+            emit SetText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->GetFormatedValue());
             break;
         }
     }
@@ -380,9 +371,9 @@ void Program::button_init()
     }
 
     if ((m_mpi.Version() & 0x40) != 0) {
-       // emit SetGroupDOVisible(true);
-       emit SetButtonsDOChecked(m_mpi.GetDOStatus());
-       m_timerDI->start();
+        // emit SetGroupDOVisible(true);
+        emit SetButtonsDOChecked(m_mpi.GetDOStatus());
+        m_timerDI->start();
     }
 
     emit SetText(TextObjects::Label_deviceInitValue, "Успешная инициализация");
@@ -661,7 +652,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     using TP = CyclicTestSettings::TestParameters;
     qDebug() << "[Pr] CyclicSolenoidTestStart; thread=" << QThread::currentThread();
 
-     bool ok = true;
+    bool ok = true;
     if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
         ok &= !p.regulatory_sequence.isEmpty()
         &&  p.regulatory_delaySec   > 0
@@ -679,7 +670,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
         return;
     }
 
-     auto *sol = new CyclicTestSolenoid;
+    auto *sol = new CyclicTestSolenoid;
     sol->SetParameters(p);
 
     QThread *thr = new QThread(this);
@@ -706,6 +697,8 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(thr, &QThread::started, sol, &CyclicTestSolenoid::Process);
     connect(sol, &CyclicTestSolenoid::EndTest, thr, &QThread::quit);
     connect(sol, &CyclicTestSolenoid::EndTest, this, &Program::EndTest);
+    connect(this, &Program::StopTest, sol, &CyclicTestSolenoid::Stop);
+
     connect(thr, &QThread::finished, sol,  &QObject::deleteLater);
     connect(thr, &QThread::finished, thr,  &QObject::deleteLater);
 
@@ -714,7 +707,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 
     connect(sol, &CyclicTestSolenoid::TaskPoint, this,
             [this](quint64 t, int pct){
-                 emit AddPoints(Charts::CyclicSolenoid, QVector<Point>{{0, qreal(t), qreal(pct)}});
+                emit AddPoints(Charts::CyclicSolenoid, QVector<Point>{{0, qreal(t), qreal(pct)}});
             });
 
     connect(sol, &CyclicTestSolenoid::SetStartTime,
@@ -723,7 +716,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(sol, &CyclicTestSolenoid::SetSolenoidResults,
             this, &Program::SolenoidResults);
 
-     connect(sol, &CyclicTestSolenoid::SetDAC,
+    connect(sol, &CyclicTestSolenoid::SetDAC,
             this, &Program::SetDAC_int);
 
     emit ClearPoints(Charts::CyclicSolenoid);

@@ -163,6 +163,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_imageChartFriction, &QPushButton::clicked, m_program, &Program::button_pixmap3);
 
     connect(this, &MainWindow::StartMainTest, m_program, &Program::MainTestStart);
+    connect(m_program, &Program::MainTestFinished, this, &MainWindow::promptSaveCharts);
     connect(this, &MainWindow::StartStrokeTest, m_program, &Program::StrokeTestStart);
     connect(this, &MainWindow::StartOptionalTest, m_program, &Program::StartOptionalTest);
     connect(this, &MainWindow::StopTest, m_program, &Program::TerminateTest);
@@ -285,8 +286,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(ui->pushButton_report, &QPushButton::clicked, this, [&] {
-        qDebug() << "Пытаюсь получить паттерн:" << m_patternType;
-
+        collectTestTelemetryData();
         std::unique_ptr<ReportBuilder> reportBuilder;
 
         switch (m_patternType) {
@@ -354,13 +354,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::onCyclicCountdown()
 {
-    qint64 elapsed = m_cyclicElapsedTimer.elapsed();
+    qint64 elapsed   = m_cyclicElapsedTimer.elapsed();
     qint64 remaining = m_cyclicTotalMs - elapsed;
     if (remaining < 0) remaining = 0;
 
-    // Здесь снова выводим «Осталось в секундах»
+    QTime t(0, 0);
+    t = t.addMSecs(remaining);
     ui->lineEdit_cyclicTest_totalTime->setText(
-        QString::number(remaining / 1000.0, 'f', 2));
+    t.toString("hh:mm:ss.zzz"));
 
     if (remaining == 0) {
         m_cyclicCountdownTimer.stop();
@@ -536,11 +537,19 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
     m_telemetry.stepResults.clear();
-    for (const auto &res : results) {
+    for (const auto &r : results) {
+        // Формируем нужные строковые представления
+        QString rangeStr = QString("%1-%2").arg(r.from).arg(r.to);
+        QString timeStr = (r.T_value == 0)
+                              ? "Ошибка"
+                              : QTime(0,0).addMSecs(r.T_value).toString("m:ss.zzz");
+        QString overshootStr = QString("%1").arg(r.overshoot, 0, 'f', 2);
+
         StepRecord rec;
-        rec.range = QString("%1-%2").arg(res.from).arg(res.to);
-        rec.T86sec = res.T_value / 1000.0;
-        rec.overshoot = res.overshoot;
+        rec.range = rangeStr;
+        rec.T86sec = timeStr;
+        rec.overshoot = overshootStr;
+
         m_telemetry.stepResults.push_back(rec);
     }
 }
@@ -548,11 +557,16 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
 void MainWindow::SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec)
 {
     m_lastSolenoidSequence = sequence;
-    double totalTimeMin = totalTimeSec / 60.0;
 
-     ui->lineEdit_cyclicTest_rangePercent->setText(sequence);
-    ui->lineEdit_cyclicTest_totalTime->setText(QString::number(totalTimeMin, 'f', 2));
-    ui->lineEdit_cyclicTest_cycles->setText(QString::number(cycles));
+    qint64 totalMs = qRound(totalTimeSec * 1000.0);
+    QTime t(0, 0);
+    t = t.addMSecs(totalMs);
+
+    ui->lineEdit_cyclicTest_rangePercent->setText(sequence);
+    ui->lineEdit_cyclicTest_totalTime->setText(
+        t.toString("hh:mm:ss.zzz"));
+    ui->lineEdit_cyclicTest_cycles->setText(
+        QString::number(cycles));
 }
 
 void MainWindow::SetSensorsNumber(quint8 num)
@@ -568,7 +582,7 @@ void MainWindow::SetSensorsNumber(quint8 num)
         // ui->label_finalPosition->setVisible(true);
     } else {
         ui->label_startingPositionValue->setVisible(false);
-        ui->label_finalPositionValue->setVisible(false);
+        // ui->label_finalPositionValue->setVisible(false);
         ui->label_startingPosition->setVisible(false);
         // ui->label_finalPosition->setVisible(false);
     }
@@ -696,12 +710,20 @@ void MainWindow::GetMainTestParameters(MainTestSettings::TestParameters &paramet
     if (m_mainTestSettings->exec() == QDialog::Accepted) {
         parameters = m_mainTestSettings->getParameters();
 
-        qint64 totalMs = m_mainTestSettings->totalTestTimeMillis();
-        m_totalTestMs = totalMs;
+        qint64 runMs = m_mainTestSettings->totalTestTimeMillis();
+
+        const qint64 delayMs = 15 * 1000;
+        const qint64 delayMs2 = 10 * 1000;
+
+        m_totalTestMs = delayMs
+                        + runMs
+                        + delayMs2
+                        + runMs;
+
         m_elapsedTimer.start();
         m_durationTimer->start();
         QTime t(0, 0);
-        t = t.addMSecs(totalMs);
+        t = t.addMSecs(m_totalTestMs);
         ui->lineEdit_testDuration->setText(t.toString("hh:mm:ss.zzz"));
 
         return;
@@ -858,8 +880,10 @@ void MainWindow::ButtonStartCyclicSolenoid() {
                        * 1000;
         }
 
+        QTime t0(0, 0);
+        t0 = t0.addMSecs(totalMs);
         ui->lineEdit_cyclicTest_totalTime->setText(
-            QString::number(totalMs / 1000.0, 'f', 2));
+        t0.toString("hh:mm:ss.zzz"));
 
         m_cyclicTotalMs = totalMs;
         m_cyclicElapsedTimer.restart();
@@ -982,7 +1006,7 @@ void MainWindow::InitCharts()
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI1", QColor::fromRgb(200, 200, 0));
-    m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI2", QColor::fromRgb(0,   200, 0));
+    m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI2", QColor::fromRgb(0, 200, 0));
     m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
 
     m_charts[Charts::CyclicSolenoid]->visible(0, true);
@@ -1047,7 +1071,7 @@ void MainWindow::promptSaveCharts()
     auto answer = QMessageBox::question(
         this,
         tr("Сохранение результатов"),
-        tr("Тест MainTest завершён.\nСохранить графики Task, Pressure и Friction?"),
+        tr("Тест MainTest завершён.\nСохранитаь графики Task, Pressure и Friction?"),
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::Yes
         );
@@ -1119,26 +1143,33 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
 
 void MainWindow::collectTestTelemetryData() {
     // динамика
-    m_telemetry.dinamicRecord.dinamicReal = ui->lineEdit_dinamicReal->text().toDouble();
-    m_telemetry.dinamicRecord.dinamicRecomend = ui->lineEdit_dinamicRecomend->text().toDouble();
-    m_telemetry.dinamicRecord.dinamicIpReal = ui->lineEdit_dinamicIpReal->text().toDouble();
-    m_telemetry.dinamicRecord.dinamicIpRecomend = ui->lineEdit_dinamicIpRecomend->text().toDouble();
+    m_telemetry.dinamicRecord.dinamicReal = ui->lineEdit_dinamicReal->text();
+    m_telemetry.dinamicRecord.dinamicRecomend= ui->lineEdit_dinamicRecomend->text();
+    m_telemetry.dinamicRecord.dinamicIpReal = ui->lineEdit_dinamicIpReal->text();
+    m_telemetry.dinamicRecord.dinamicIpRecomend = ui->lineEdit_dinamicIpRecomend->text();
 
     // ход клапана
-    m_telemetry.strokeTestRecord.timeForward = ui->lineEdit_strokeTest_forwardTime->text().toDouble();
-    m_telemetry.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text().toDouble();
+    m_telemetry.strokeTestRecord.timeForward = ui->lineEdit_strokeTest_forwardTime->text();
+    m_telemetry.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text();
+
+    // ход штока / вала
+    m_telemetry.strokeRecord.strokeReal = ui->lineEdit_strokeReal->text();
+    m_telemetry.strokeRecord.strokeRecomend = ui->lineEdit_strokeRecomend->text();
+
+    // m_telemetry.data.push_back({30, 5, ui->lineEdit_strokeReal});
+    // m_telemetry.data.push_back({30, 8, ui->lineEdit_strokeRecomend});
 
     // диапазон
-    m_telemetry.rangeRecord.rangeReal = ui->lineEdit_rangeReal->text().toDouble();
-    m_telemetry.rangeRecord.rangeRecomend = ui->lineEdit_rangeRecomend->text().toDouble();
-    m_telemetry.rangeRecord.rangePressure = ui->lineEdit_rangePressure->text().toDouble();
+    m_telemetry.rangeRecord.rangeReal = ui->lineEdit_rangeReal->text();
+    m_telemetry.rangeRecord.rangeRecomend= ui->lineEdit_rangeRecomend->text();
+    m_telemetry.rangeRecord.rangePressure= ui->lineEdit_rangePressure->text();
 
     // трение
-    m_telemetry.frictionRecord.friction = ui->lineEdit_friction->text().toDouble();
-    m_telemetry.frictionRecord.frictionPercent = ui->lineEdit_frictionPercent->text().toDouble();
+    m_telemetry.frictionRecord.friction  = ui->lineEdit_friction->text();
+    m_telemetry.frictionRecord.frictionPercent = ui->lineEdit_frictionPercent->text();
 
     // подача
-    m_telemetry.supplyRecord.supplyPressure = ui->lineEdit_supplyPressure->text().toDouble();
+    m_telemetry.supplyRecord.supplyPressure = ui->lineEdit_supplyPressure->text();
 }
 
 void MainWindow::InitReport()

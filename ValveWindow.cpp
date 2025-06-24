@@ -98,11 +98,11 @@ void ValveWindow::onPositionerTypeChanged(int index)
     ui->comboBox_dinamicError->clear();
 
     if (selected == QStringLiteral("Интеллектуальный ЭПП")) {
-        ui->comboBox_dinamicError->addItem(QStringLiteral("1,5"));
+        ui->comboBox_dinamicError->addItem(QStringLiteral("1.5"));
         ui->comboBox_dinamicError->setCurrentIndex(0);
     }
     else if (selected == QStringLiteral("ЭПП") || selected == QStringLiteral("ПП")) {
-        ui->comboBox_dinamicError->addItem(QStringLiteral("2,5"));
+        ui->comboBox_dinamicError->addItem(QStringLiteral("2.5"));
         ui->comboBox_dinamicError->setCurrentIndex(0);
     }
 }
