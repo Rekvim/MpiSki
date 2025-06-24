@@ -45,18 +45,31 @@ void ReportBuilder_B_SACVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 29, 8, telemetryStore.cyclicTestRecord.totalTime});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
-    // report.data.push_back({"Отчет ЦТ", 26, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 28, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 30, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 32, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 34, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 36, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 38, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 40, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 42, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 44, 8, safeToString(telemetry.???)});
-    // report.data.push_back({"Отчет ЦТ", 46, 8, safeToString(telemetry.???)});
+    using Getter = std::function<double(const RangeDeviationRecord&)>;
+    static const struct {
+        quint16 col;
+        Getter get;
+    } map[] = {
+               {  8, [](auto& r){ return r.avgErrorLinear; }},
+               { 10, [](auto& r){ return r.maxErrorLinear; }},
+               { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
+               { 13, [](auto& r){ return r.avgErrorPositioner; }},
+               { 15, [](auto& r){ return r.maxErrorPositioner; }},
+               { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
+               };
 
+    static const quint16 rowStart[] = {35,37,39,41,43,45,47,49,51,53};
+
+    for (quint16 i = 0; i < 10; ++i) {
+        const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
+        quint16 row = rowStart[i];
+        for (auto& m : map) {
+            report.data.push_back({
+                "Отчет ЦТ", row, m.col,
+                safeToString(m.get(rec))
+            });
+        }
+    }
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 58, 4, objectInfo.FIO});
     // Страница: Отчет ЦТ; Блок: Дата

@@ -7,6 +7,7 @@
 #include "MainTest.h"
 #include "CyclicTestSettings.h"
 #include "./Src/Telemetry/TelemetryStore.h"
+#include "./Src/MPI/MPI.h"
 
 #include <QElapsedTimer>
 #include <QThread>
@@ -35,9 +36,10 @@ signals:
     void SetSolenoidResults(QString sequence,
                             quint16 cycles,
                             double totalTimeSec);
-    void CyclicDeviationResults(const QVector<RangeDeviationRecord>&);
+    void CyclicDeviationResults(const QVector<RangeDeviationRecord>& recs);
 
 private:
+    MPI   m_mpi;
     Parameters   m_params;
     QVector<int> m_valuesReg;
     QVector<int> m_valuesOff;

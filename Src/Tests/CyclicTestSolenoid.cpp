@@ -59,43 +59,35 @@
                 int pct = values.at(i);
                 int prevPct = (i == 0 ? values.first() : values.at(i - 1));
 
-                // точка «до хода»
-                quint64 t0 = timer.elapsed();
+                 quint64 t0 = timer.elapsed();
                 emit TaskPoint(t0, prevPct);
                 emit TaskPoint(t0, pct);
 
-                // команда на аппарат
-                emit SetDAC(pct);
+                 emit SetDAC(pct);
 
-                // ждём delayMs
-                QThread::msleep(delayMs);
+                 QThread::msleep(delayMs);
 
-                // помечаем окончание хода
-                quint64 t1 = timer.elapsed();
+                 quint64 t1 = timer.elapsed();
                 emit TaskPoint(t1, pct);
 
-                // double measuredLin = /* например */ m_mpi[0]->GetPersent();
-                // double measuredPos = /* например */ m_mpi.GetDAC()->GetValue();
+                double measuredLin = m_mpi[0]->GetPersent();
+                double measuredPos =  m_mpi.GetDAC()->GetValue();
 
-                // devLin[i].append(qAbs(measuredLin - pct));
-                //  double posPct = (measuredPos - 4.0) / 16.0 * 100.0;
-                // devPos[i].append(qAbs(posPct - pct));
+                devLin[i].append(qAbs(measuredLin - pct));
+                 double posPct = (measuredPos - 4.0) / 16.0 * 100.0;
+                devPos[i].append(qAbs(posPct - pct));
 
-                // удерживаем
-                QThread::msleep(holdMs);
+                 QThread::msleep(holdMs);
                 quint64 t2 = timer.elapsed();
                 emit TaskPoint(t2, pct);
 
-                // обновляем тренд
-                emit UpdateCyclicTred();
+                 emit UpdateCyclicTred();
             }
         }
 
-        // рассчитаем общее время
-        double totalSec = timer.elapsed() / 1000.0;
+         double totalSec = timer.elapsed() / 1000.0;
 
-        // какую строку выводить
-        bool isShutoff = (&values == &m_valuesOff);
+         bool isShutoff = (&values == &m_valuesOff);
         QString seq = isShutoff && m_params.shutoff_enable_20mA
                           ? QStringLiteral("20mA")
                           : (isShutoff
