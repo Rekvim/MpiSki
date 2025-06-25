@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
 
     ui->tabWidget->setCurrentIndex(0);
@@ -37,10 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_reportSaver = new ReportSaver(this);
 
-    if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) {
-        ui->groupBox_DO->setVisible(true);
-        ui->groupBox_DO->setEnabled(false);
-    }
+
 
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_main), false);
     ui->tabWidget->setTabEnabled(2, true);
@@ -178,6 +176,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::SetGroupDOVisible, this, [&](bool visible) {
         ui->groupBox_DO->setVisible(visible);
     });
+
+    if (m_blockCTS.do_1 || m_blockCTS.do_2 || m_blockCTS.do_3 || m_blockCTS.do_4) {
+        ui->groupBox_DO->setVisible(true);
+        ui->groupBox_DO->setEnabled(false);
+    }
 
     connect(m_program, &Program::SetButtonsDOChecked, this, &MainWindow::SetButtonsDOChecked);
     connect(m_program, &Program::SetCheckboxDIChecked, this, &MainWindow::SetCheckboxDIChecked);
@@ -432,8 +435,6 @@ void MainWindow::onCountdownTimeout()
     if (remainingMs == 0) {
         m_durationTimer->stop();
     }
-
-    // Учитывать время задержки и обратного хода
 }
 
 void MainWindow::SetRegistry(Registry *registry)
@@ -593,30 +594,25 @@ void MainWindow::SetSensorsNumber(quint8 num)
 
     ui->groupBox_DO->setEnabled(!noSensors);
 
-    if (m_blockCTS.moving) {
-        ui->label_startingPositionValue->setVisible(true);
-        ui->label_finalPositionValue->setVisible(true);
-        ui->label_startingPosition->setVisible(true);
-        // ui->label_finalPosition->setVisible(true);
-    } else {
+    if (!m_blockCTS.moving) {
         ui->label_startingPositionValue->setVisible(false);
         // ui->label_finalPositionValue->setVisible(false);
         ui->label_startingPosition->setVisible(false);
         // ui->label_finalPosition->setVisible(false);
     }
 
-    for (int i = 0; i < ui->tabWidget->count(); ++i) {
-        ui->tabWidget->setTabEnabled(i, true);
-    }
+    ui->groupBox_SettingCurrentSignal->setEnabled(!noSensors);
 
     switch (m_patternType) {
     case SelectTests::Pattern_B_CVT:
+        ui->groupBox_SettingCurrentSignal->setVisible(false);
         break;
     case SelectTests::Pattern_B_SACVT:
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
     case SelectTests::Pattern_C_CVT:
+        ui->groupBox_SettingCurrentSignal->setVisible(false);
         break;
     case SelectTests::Pattern_C_SACVT:
         ui->tabWidget->setTabEnabled(2, false);

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1066</width>
-    <height>1069</height>
+    <height>995</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -547,6 +547,9 @@
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_DO">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="title">
               <string>СКИ</string>
              </property>
@@ -554,7 +557,7 @@
               <item row="0" column="0">
                <widget class="QPushButton" name="pushButton_DO0">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -715,6 +718,9 @@
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_SettingCurrentSignal">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="title">
               <string>Задание токового сигнала</string>
              </property>
