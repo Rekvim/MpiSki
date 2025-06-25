@@ -29,6 +29,9 @@ public slots:
     void Process() override;
 
 signals:
+
+    void SetMultipleDO(const QVector<bool>& states);
+    void SetDO(quint8 index, bool state);
     void TaskPoint(quint64 timeMs, int percent);
     void UpdateCyclicTred();
     void SetStartTime();
@@ -37,6 +40,7 @@ signals:
                             quint16 cycles,
                             double totalTimeSec);
     void CyclicDeviationResults(const QVector<RangeDeviationRecord>& recs);
+    void DOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
 
 private:
     MPI   m_mpi;

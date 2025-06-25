@@ -40,32 +40,32 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 27, 8, telemetryStore.cyclicTestRecord.sequence});
     report.data.push_back({"Отчет ЦТ", 29, 8, telemetryStore.cyclicTestRecord.totalTime});
 
-    // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
-    using Getter = std::function<double(const RangeDeviationRecord&)>;
-    static const struct {
-        quint16 col;
-        Getter get;
-    } map[] = {
-               {  8, [](auto& r){ return r.avgErrorLinear; }},
-               { 10, [](auto& r){ return r.maxErrorLinear; }},
-               { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
-               { 13, [](auto& r){ return r.avgErrorPositioner; }},
-               { 15, [](auto& r){ return r.maxErrorPositioner; }},
-               { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
-               };
+    // // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
+    // using Getter = std::function<double(const RangeDeviationRecord&)>;
+    // static const struct {
+    //     quint16 col;
+    //     Getter get;
+    // } map[] = {
+    //            {  8, [](auto& r){ return r.avgErrorLinear; }},
+    //            { 10, [](auto& r){ return r.maxErrorLinear; }},
+    //            { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
+    //            { 13, [](auto& r){ return r.avgErrorPositioner; }},
+    //            { 15, [](auto& r){ return r.maxErrorPositioner; }},
+    //            { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
+    //            };
 
-    static const quint16 rowStart[] = {35,37,39,41,43,45,47,49,51,53};
+    // static const quint16 rowStart[] = {35,37,39,41,43,45,47,49,51,53};
 
-    for (quint16 i = 0; i < 10; ++i) {
-        const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
-        quint16 row = rowStart[i];
-        for (auto& m : map) {
-            report.data.push_back({
-                "Отчет ЦТ", row, m.col,
-                safeToString(m.get(rec))
-            });
-        }
-    }
+    // for (quint16 i = 0; i < 10; ++i) {
+    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
+    //     quint16 row = rowStart[i];
+    //     for (auto& m : map) {
+    //         report.data.push_back({
+    //             "Отчет ЦТ", row, m.col,
+    //             safeToString(m.get(rec))
+    //         });
+    //     }
+    // }
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 58, 4, objectInfo.FIO});

@@ -45,73 +45,56 @@
             return;
         }
 
-        const int N = values.size();
-        QVector<QVector<double>> devLin(N), devPos(N);
+        const bool isShutoff = (&values == &m_valuesOff);
+        const int  N         = values.size();
 
         emit SetStartTime();
         emit ClearGraph();
-
-        QElapsedTimer timer;
-        timer.start();
+        QElapsedTimer timer; timer.start();
 
         for (int c = 0; c < cycles && !m_terminate; ++c) {
-            for (int i = 0; i < values.size() && !m_terminate; ++i) {
-                int pct = values.at(i);
-                int prevPct = (i == 0 ? values.first() : values.at(i - 1));
+            for (int i = 0; i < N && !m_terminate; ++i) {
+                int pct = values[i];
+                int prevPct = (i == 0 ? values.first() : values[i-1]);
 
                 quint64 t0 = timer.elapsed();
                 emit TaskPoint(t0, prevPct);
                 emit TaskPoint(t0, pct);
 
-                emit SetDAC(pct);
+                // если это отсечный тест — включаем DO
+                if (isShutoff) {
+                    for (quint8 d = 0; d < 4; ++d)
+                        if (m_params.shutoff_DO[d])
+                            emit SetDO(d, true);
+                }
 
+                emit SetDAC(pct);
                 QThread::msleep(delayMs);
 
                 quint64 t1 = timer.elapsed();
                 emit TaskPoint(t1, pct);
 
-                double measuredLin = m_mpi[0]->GetPersent();
-                double measuredPos =  m_mpi.GetDAC()->GetValue();
-
-                devLin[i].append(qAbs(measuredLin - pct));
-                 double posPct = (measuredPos - 4.0) / 16.0 * 100.0;
-                devPos[i].append(qAbs(posPct - pct));
-
                 QThread::msleep(holdMs);
+
+                if (isShutoff) {
+                    for (quint8 d = 0; d < 4; ++d)
+                        if (m_params.shutoff_DO[d])
+                            emit SetDO(d, false);
+                }
+
                 quint64 t2 = timer.elapsed();
                 emit TaskPoint(t2, pct);
-
                 emit UpdateCyclicTred();
             }
         }
 
-         double totalSec = timer.elapsed() / 1000.0;
+        double totalSec = timer.elapsed() / 1000.0;
 
-         bool isShutoff = (&values == &m_valuesOff);
         QString seq = isShutoff && m_params.shutoff_enable_20mA
                           ? QStringLiteral("20mA")
                           : (isShutoff
                                  ? m_params.shutoff_sequence
                                  : m_params.regulatory_sequence);
-
-        QVector<RangeDeviationRecord> recs(N);
-        for (int i = 0; i < N; ++i) {
-            const auto& L = devLin[i];
-            const auto& P = devPos[i];
-
-            // 1) среднее
-            recs[i].avgErrorLinear     = std::accumulate(L.begin(), L.end(), 0.0) / L.size();
-            recs[i].avgErrorPositioner = std::accumulate(P.begin(), P.end(), 0.0) / P.size();
-
-            // 2) максимумы и их индексы
-            auto itL  = std::max_element(L.begin(), L.end());
-            recs[i].maxErrorLinear     = *itL;
-            recs[i].maxErrorLinearCycle  = quint32(std::distance(L.begin(), itL)) + 1;
-
-            auto itP  = std::max_element(P.begin(), P.end());
-            recs[i].maxErrorPositioner    = *itP;
-            recs[i].maxErrorPositionerCycle = quint32(std::distance(P.begin(), itP)) + 1;
-        }
 
         emit SetSolenoidResults(seq,
                                 quint16(cycles),
@@ -132,18 +115,78 @@
 
     void CyclicTestSolenoid::processShutoff()
     {
-        if (m_params.shutoff_enable_20mA) {
-            emit SetStartTime();
-            emit TaskPoint(0, 100);
-            emit SetDAC(100);
-            QThread::msleep(m_params.shutoff_delaySec * 1000);
-        }
-        runLoop(m_valuesOff,
-                m_params.shutoff_delaySec * 1000,
-                m_params.shutoff_holdTimeSec * 1000,
-                m_params.shutoff_numCycles);
-    }
+        // 1) предтест 20 mA (без изменений) …
+        // if (m_params.shutoff_enable_20mA) {
+        //     emit SetStartTime();
+        //     emit TaskPoint(0, 100);
+        //     emit SetDAC(100);
+        //     QThread::msleep(m_params.shutoff_delaySec * 1000);
+        // }
 
+        // 2) Собираем маску тех DO, которые пользователь включил:
+        QVector<bool> doMask(m_params.shutoff_DO.begin(), m_params.shutoff_DO.end());
+        int DO_COUNT = doMask.size();
+
+        // 3) Текущее состояние (начинаем с false) и счётчики переключений:
+        QVector<bool> currentStates(DO_COUNT, false);
+        QVector<int>  onCounts(DO_COUNT, 0), offCounts(DO_COUNT, 0);
+
+        const int delayMs = m_params.shutoff_delaySec   * 1000;
+        const int holdMs  = m_params.shutoff_holdTimeSec * 1000;
+        const int cycles  = m_params.shutoff_numCycles;
+        const int N       = m_valuesOff.size();
+
+        emit SetStartTime();
+        emit ClearGraph();
+        QElapsedTimer timer; timer.start();
+
+        for (int c = 0; c < cycles && !m_terminate; ++c) {
+            for (int i = 0; i < N && !m_terminate; ++i) {
+                int pct     = m_valuesOff[i];
+                int prevPct = (i == 0 ? m_valuesOff.first() : m_valuesOff[i-1]);
+
+                // график
+                quint64 t0 = timer.elapsed();
+                emit TaskPoint(t0, prevPct);
+                emit TaskPoint(t0, pct);
+
+                // единственная инверсия состояний выбранных DO
+                for (int d = 0; d < DO_COUNT; ++d) {
+                    if (!doMask[d]) continue;
+                    currentStates[d] = !currentStates[d];
+                    if (currentStates[d])
+                        ++onCounts[d];
+                    else
+                        ++offCounts[d];
+                }
+                emit SetMultipleDO(currentStates);
+
+                emit SetDAC(pct);
+                QThread::msleep(delayMs);
+
+                quint64 t1 = timer.elapsed();
+                emit TaskPoint(t1, pct);
+
+                QThread::msleep(holdMs);
+
+                quint64 t2 = timer.elapsed();
+                emit TaskPoint(t2, pct);
+
+                emit UpdateCyclicTred();
+            }
+        }
+
+        // итоги
+        double totalSec = timer.elapsed() / 1000.0;
+        QString seq = m_params.shutoff_enable_20mA
+                          ? QStringLiteral("20mA")
+                          : m_params.shutoff_sequence;
+        emit SetSolenoidResults(seq, quint16(cycles), totalSec);
+
+        // отдадим счётчики переключений и завершим тест
+        emit DOCounts(onCounts, offCounts);
+        emit EndTest();
+    }
     void CyclicTestSolenoid::processCombined()
     {
         processRegulatory();

@@ -152,9 +152,11 @@ signals:
     void SetStepResults(QVector<StepTest::TestResult> results, quint32 T_value);
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
+public  slots:
+    void onDOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
 
 private slots:
-
+    void SetMultipleDO(const QVector<bool>& states);
     void UpdateSensors();
     void UpdateCharts_maintest();
     void UpdateCharts_stroketest();

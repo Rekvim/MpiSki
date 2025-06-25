@@ -39,7 +39,7 @@ public:
         int     shutoff_holdTimeSec;
         int     shutoff_numCycles;
         bool    shutoff_enable_20mA;
-        bool    shutoff_DO[4];
+        std::array<bool,4> shutoff_DO;
         bool    shutoff_DI[2];
     };
 

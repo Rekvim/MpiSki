@@ -32,38 +32,216 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({"Отчет ЦТ", 19, 8, telemetryStore.strokeTestRecord.timeForward});
-    report.data.push_back({"Отчет ЦТ", 21, 8, telemetryStore.strokeTestRecord.timeBackward});
-    report.data.push_back({"Отчет ЦТ", 23, 8, telemetryStore.cyclicTestRecord.cycles});
-    report.data.push_back({"Отчет ЦТ", 25, 8, telemetryStore.cyclicTestRecord.sequence});
-    report.data.push_back({"Отчет ЦТ", 27, 8, telemetryStore.cyclicTestRecord.totalTime});
+    // report.data.push_back({"Отчет ЦТ", 19, 8, telemetryStore.strokeTestRecord.timeForward});
+    // report.data.push_back({"Отчет ЦТ", 21, 8, telemetryStore.strokeTestRecord.timeBackward});
+    // report.data.push_back({"Отчет ЦТ", 23, 8, telemetryStore.cyclicTestRecord.cycles});
+    // report.data.push_back({"Отчет ЦТ", 25, 8, telemetryStore.cyclicTestRecord.sequence});
+    // report.data.push_back({"Отчет ЦТ", 27, 8, telemetryStore.cyclicTestRecord.totalTime});
 
-    // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
-    using Getter = std::function<double(const RangeDeviationRecord&)>;
-    static const struct {
-        quint16 col;
-        Getter get;
-    } map[] = {
-               {  8, [](auto& r){ return r.avgErrorLinear; }},
-               { 10, [](auto& r){ return r.maxErrorLinear; }},
-               { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
-               { 13, [](auto& r){ return r.avgErrorPositioner; }},
-               { 15, [](auto& r){ return r.maxErrorPositioner; }},
-               { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
-               };
+    // // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
+    // report.data.push_back({"Отчет ЦТ", 33,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[0].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 33, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[0].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 33, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[0].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 33, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[0].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 33, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[0].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 33, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[0].maxErrorPositionerCycle)});
 
-    static const quint16 rowStart[] = {33,35,37,39,41,43,45,47,49,51};
+    // // Задание диапазона 2 (индекс 1)
+    // report.data.push_back({"Отчет ЦТ", 35,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[1].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 35, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[1].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 35, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[1].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 35, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[1].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 35, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[1].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 35, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[1].maxErrorPositionerCycle)});
 
-    for (quint16 i = 0; i < 10; ++i) {
-        const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
-        quint16 row = rowStart[i];
-        for (auto& m : map) {
-            report.data.push_back({
-                "Отчет ЦТ", row, m.col,
-                safeToString(m.get(rec))
-            });
-        }
-    }
+    // // Задание диапазона 3 (индекс 2)
+    // report.data.push_back({"Отчет ЦТ", 37,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[2].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 37, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[2].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 37, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[2].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 37, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[2].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 37, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[2].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 37, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[2].maxErrorPositionerCycle)});
+
+    // // Задание диапазона 4 (индекс 3)
+    // report.data.push_back({"Отчет ЦТ", 39,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[3].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 39, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[3].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 39, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[3].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 39, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[3].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 39, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[3].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 39, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[3].maxErrorPositionerCycle)});
+
+    // // Задание диапазона 5 (индекс 4)
+    // report.data.push_back({"Отчет ЦТ", 41,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[4].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 41, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[4].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 41, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[4].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 41, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[4].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 41, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[4].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 41, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[4].maxErrorPositionerCycle)});
+
+    // // Задание диапазона 6 (индекс 5)
+    // report.data.push_back({"Отчет ЦТ", 43,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[5].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 43, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[5].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 43, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[5].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 43, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[5].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 43, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[5].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 43, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[5].maxErrorPositionerCycle)});
+
+    // // Задание диапазона 7 (индекс 6)
+    // report.data.push_back({"Отчет ЦТ", 45,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[6].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 45, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[6].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 45, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[6].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 45, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[6].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 45, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[6].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 45, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[6].maxErrorPositionerCycle)});
+
+    // // Задание диапазона 8 (индекс 7)
+    // report.data.push_back({"Отчет ЦТ", 47,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[7].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 47, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[7].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 47, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[7].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 47, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[7].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 47, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[7].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 47, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[7].maxErrorPositionerCycle)});
+
+    // // Задание диапазона 9 (индекс 8)
+    // report.data.push_back({"Отчет ЦТ", 49,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[8].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 49, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[8].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 49, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[8].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 49, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[8].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 49, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[8].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 49, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[8].maxErrorPositionerCycle)});
+
+    // // Задание диапазона 10 (индекс 9)
+    // report.data.push_back({"Отчет ЦТ", 51,  8, safeToString(telemetryStore.cyclicTestRecord.ranges[9].avgErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 51, 10, safeToString(telemetryStore.cyclicTestRecord.ranges[9].maxErrorLinear)});
+    // report.data.push_back({"Отчет ЦТ", 51, 12, safeToString(telemetryStore.cyclicTestRecord.ranges[9].maxErrorLinearCycle)});
+    // report.data.push_back({"Отчет ЦТ", 51, 13, safeToString(telemetryStore.cyclicTestRecord.ranges[9].avgErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 51, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[9].maxErrorPositioner)});
+    // report.data.push_back({"Отчет ЦТ", 51, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[9].maxErrorPositionerCycle)});
+
+    // static const quint16 rowStart[10] = {33,35,37,39,41,43,45,47,49,51};
+
+    // Для каждого диапазона нужно вывести 6 значений:
+    // struct ColMap {
+    //     quint16 col;
+    //     std::function<QString(const RangeDeviationRecord&)> getter;
+    // };
+    // static const ColMap cols[] = {
+    //                               {  8, [](auto& r){ return r.avgErrorLinear; }},
+    //                               { 10, [](auto& r){ return safeToString(r.maxErrorLinear); }},
+    //                               { 12, [](auto& r){ return safeToString(r.maxErrorLinearCycle); }},
+    //                               { 13, [](auto& r){ return safeToString(r.avgErrorPositioner); }},
+    //                               { 15, [](auto& r){ return safeToString(r.maxErrorPositioner); }},
+    //                               { 17, [](auto& r){ return safeToString(r.maxErrorPositionerCycle); }},
+    //                               };
+
+    // const auto& ranges = ts.cyclicTestRecord.ranges;
+    // for (int i = 0; i < 10; ++i) {
+    //     quint16 row = rowStart[i];
+    //     if (i < ranges.size()) {
+    //         // есть реальная запись — выводим её
+    //         const auto& rec = ranges[i];
+    //         for (auto& m : cols) {
+    //             report.data.push_back({
+    //                 "Отчет ЦТ",
+    //                 row,
+    //                 m.col,
+    //                 m.getter(rec)
+    //             });
+    //         }
+    //     }
+    //     else {
+    //         // данных нет — пушим пустые строки
+    //         for (auto& m : cols) {
+    //             report.data.push_back({
+    //                 "Отчет ЦТ",
+    //                 row,
+    //                 m.col,
+    //                 QString()
+    //             });
+    //         }
+    //     }
+    // }
+
+    // using Getter = std::function<double(const RangeDeviationRecord&)>;
+    // static const struct {
+    //     quint16 col;
+    //     Getter get;
+    // } map[] = {
+    //            // {  8, [](auto& r){ return r.avgErrorLinear; }},
+    //            // { 10, [](auto& r){ return r.maxErrorLinear; }},
+    //            // { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
+    //            { 13, [](auto& r){ return r.avgErrorPositioner; }},
+    //            { 15, [](auto& r){ return r.maxErrorPositioner; }},
+    //            { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
+    //            };
+
+    // static const quint16 rowStart[] = {33,35,37,39,41,43,45,47,49,51};
+
+    // for (quint16 i = 0; i < 10; ++i) {
+    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
+    //     quint16 row = rowStart[i];
+    //     for (auto& m : map) {
+    //         report.data.push_back({
+    //             "Отчет ЦТ", row, m.col,
+    //             safeToString(m.get(rec))
+    //         });
+    //     }
+    // }
+
+    // const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+    // for (int i = 0; i < 10; ++i) {
+    //     quint16 row = rowStart[i];
+    //     if (i < ranges.size()) {
+    //         // есть реальная запись — выводим её
+    //         const auto& rec = ranges[i];
+    //         for (auto& m : map) {
+    //             report.data.push_back({
+    //                 "Отчет ЦТ",
+    //                 row,
+    //                 m.col,
+    //                 safeToString(m.get(rec))
+    //             });
+    //         }
+    //     }
+    //     else {
+    //         // данных нет — пушим пустые строки
+    //         for (auto& m : map) {
+    //             report.data.push_back({
+    //                 "Отчет ЦТ",
+    //                 row,
+    //                 m.col,
+    //                 QString()
+    //             });
+    //         }
+    //     }
+    // }
+
+    // struct Field { quint16 col; std::function<QString(const RangeDeviationRecord&)> get; };
+    // static constexpr Field fields[] = {
+    //                                    {  8, [](auto& r){ return safeToString(r.avgErrorLinear); }},
+    //                                    { 10, [](auto& r){ return safeToString(r.maxErrorLinear); }},
+    //                                    { 12, [](auto& r){ return safeToString(r.maxErrorLinearCycle); }},
+    //                                    { 13, [](auto& r){ return safeToString(r.avgErrorPositioner); }},
+    //                                    { 15, [](auto& r){ return safeToString(r.maxErrorPositioner); }},
+    //                                    { 17, [](auto& r){ return safeToString(r.maxErrorPositionerCycle); }},
+    //                                    };
+    // // стартовые строки для диапазонов 1…10
+    // static constexpr quint16 rowStart[10] = {33,35,37,39,41,43,45,47,49,51};
+
+    // int count = telemetryStore.cyclicTestRecord.ranges.size();
+    // // не более 10 диапазонов
+    // for (int i = 0; i < count && i < 10; ++i) {
+    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
+    //     quint16 row = rowStart[i];
+    //     for (const auto& f : fields) {
+    //         report.data.push_back({
+    //             "Отчет ЦТ",
+    //             row,
+    //             f.col,
+    //             f.get(const_cast<RangeDeviationRecord&>(rec))
+    //         });
+    //     }
+    // }
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 56, 4, objectInfo.FIO});
@@ -85,8 +263,6 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({"Результат теста шаговой реакции", 12, 13, telemetryStore.supplyRecord.supplyPressure});
     report.data.push_back({"Результат теста шаговой реакции", 13, 13, otherParams.safePosition});
     report.data.push_back({"Результат теста шаговой реакции", 14, 13, valveInfo.driveModel});
-    report.data.push_back({"Результат теста шаговой реакции", 15, 13, otherParams.strokeMovement});
-    report.data.push_back({"Результат теста шаговой реакции", 16, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
     quint16 excelRow = 23;

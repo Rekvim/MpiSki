@@ -185,16 +185,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::SetDAC, m_program, &Program::SetDAC_real);
 
     connect(ui->doubleSpinBox_task,
-        qOverload<double>(&QDoubleSpinBox::valueChanged),
-        this,
-        [&](double value) {
-            if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
-                if (ui->verticalSlider_task->isEnabled())
-                    emit SetDAC(value);
-                ui->verticalSlider_task->setValue(qRound(value * 1000));
+            qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this,
+            [&](double value) {
+                if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
+                    if (ui->verticalSlider_task->isEnabled())
+                        emit SetDAC(value);
+                    ui->verticalSlider_task->setValue(qRound(value * 1000));
+                }
             }
-        }
-    );
+            );
 
     connect(ui->verticalSlider_task, &QSlider::valueChanged, this, [&](int value) {
         if (qRound(ui->doubleSpinBox_task->value() * 1000) != value) {
@@ -302,11 +302,11 @@ MainWindow::MainWindow(QWidget *parent)
 
         ReportSaver::Report report;
         reportBuilder->buildReport(report,
-                            m_telemetry,
-                            *m_registry->GetObjectInfo(),
-                            *m_registry->GetValveInfo(),
-                            *m_registry->GetOtherParameters(),
-                            m_image_1, m_image_2, m_image_3);
+                                   m_telemetry,
+                                   *m_registry->GetObjectInfo(),
+                                   *m_registry->GetValveInfo(),
+                                   *m_registry->GetOtherParameters(),
+                                   m_image_1, m_image_2, m_image_3);
 
         qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 
@@ -361,7 +361,7 @@ void MainWindow::onCyclicCountdown()
     QTime t(0, 0);
     t = t.addMSecs(remaining);
     ui->lineEdit_cyclicTest_totalTime->setText(
-    t.toString("hh:mm:ss.zzz"));
+        t.toString("hh:mm:ss.zzz"));
 
     if (remaining == 0) {
         m_cyclicCountdownTimer.stop();
@@ -540,8 +540,8 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     for (int i = 0; i < results.size(); ++i) {
 
         QString time = results.at(i).T_value == 0
-            ? "Ошибка"
-            : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
+                           ? "Ошибка"
+                           : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
 
         ui->tableWidget_stepResults->setItem(i, 0, new QTableWidgetItem(time));
 
@@ -796,8 +796,8 @@ void MainWindow::Question(QString title, QString text, bool &result)
 void MainWindow::GetDirectory(QString current_path, QString &result)
 {
     result = QFileDialog::getExistingDirectory(this,
-        "Выберите папку для сохранения изображений",
-        current_path);
+                                               "Выберите папку для сохранения изображений",
+                                               current_path);
 }
 
 void MainWindow::StartTest()
@@ -882,9 +882,6 @@ void MainWindow::ButtonStartCyclicSolenoid() {
         if (m_cyclicTestSettings->exec() != QDialog::Accepted)
             return;
 
-        if (m_cyclicTestSettings->exec() != QDialog::Accepted)
-            return;
-
         using TP = CyclicTestSettings::TestParameters;
         auto p = m_cyclicTestSettings->getParameters();
 
@@ -920,7 +917,7 @@ void MainWindow::ButtonStartCyclicSolenoid() {
         QTime t0(0, 0);
         t0 = t0.addMSecs(totalMs);
         ui->lineEdit_cyclicTest_totalTime->setText(
-        t0.toString("hh:mm:ss.zzz"));
+            t0.toString("hh:mm:ss.zzz"));
 
         m_cyclicTotalMs = totalMs;
         m_cyclicElapsedTimer.restart();
@@ -1044,14 +1041,7 @@ void MainWindow::InitCharts()
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI1", QColor::fromRgb(200, 200, 0));
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI2", QColor::fromRgb(0, 200, 0));
-    m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
-
-    m_charts[Charts::CyclicSolenoid]->visible(0, true);
-    m_charts[Charts::CyclicSolenoid]->visible(1, true);
-    m_charts[Charts::CyclicSolenoid]->visible(2, true);  // DI1
-    m_charts[Charts::CyclicSolenoid]->visible(3, true);  // DI2
-
-    m_charts[Charts::CyclicSolenoid]->showdots(true);
+    // m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
 
     connect(m_program, &Program::AddPoints, this, &MainWindow::AddPoints);
     connect(m_program, &Program::ClearPoints, this, &MainWindow::ClearPoints);
@@ -1121,7 +1111,7 @@ void MainWindow::promptSaveCharts()
             this,
             tr("Готово"),
             tr("Графики сохранены в текущую папку отчётов.")
-        );
+            );
     }
 }
 
@@ -1167,9 +1157,9 @@ void MainWindow::SaveChart(Charts chart)
 void MainWindow::GetImage(QLabel *label, QImage *image)
 {
     QString imgPath = QFileDialog::getOpenFileName(this,
-                                                    "Выберите файл",
-                                                    m_reportSaver->Directory().absolutePath(),
-                                                    "Изображения (*.jpg *.png *.bmp)");
+                                                   "Выберите файл",
+                                                   m_reportSaver->Directory().absolutePath(),
+                                                   "Изображения (*.jpg *.png *.bmp)");
 
     if (!imgPath.isEmpty()) {
         QImage img(imgPath);
@@ -1190,8 +1180,8 @@ void MainWindow::collectTestTelemetryData() {
     m_telemetry.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text();
 
     // Циклический тест
-    m_telemetry.cyclicTestRecord.sequence = ui->lineEdit_strokeTest_forwardTime->text();
-    m_telemetry.cyclicTestRecord.cycles = ui->lineEdit_strokeTest_backwardTime->text();
+    m_telemetry.cyclicTestRecord.sequence = ui->lineEdit_cyclicTest_rangePercent->text();
+    m_telemetry.cyclicTestRecord.cycles = ui->lineEdit_cyclicTest_cycles->text();
     m_telemetry.cyclicTestRecord.totalTime = ui->lineEdit_cyclicTest_totalTime->text();
 
     // ход штока / вала

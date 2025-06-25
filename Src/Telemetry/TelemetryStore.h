@@ -1,90 +1,95 @@
-#ifndef TELEMETRYSTORE_H
-#define TELEMETRYSTORE_H
+    #ifndef TELEMETRYSTORE_H
+    #define TELEMETRYSTORE_H
 
-#pragma once
-#include <QVector>
+    #pragma once
+    #include <QVector>
 
-struct StepRecord {
-    QString range;
-    QString T86sec;
-    QString overshoot;
-};
+    struct StepRecord {
+        QString range;
+        QString T86sec;
+        QString overshoot;
+    };
 
-struct RangeDeviationRecord {
-    double avgErrorLinear = 0;
-    double maxErrorLinear = 0;
-    quint32 maxErrorLinearCycle  = 0;
+    struct RangeDeviationRecord {
+        double avgErrorLinear = 0;
+        double maxErrorLinear = 0;
+        quint32 maxErrorLinearCycle  = 0;
 
-    double avgErrorPositioner = 0;
-    double maxErrorPositioner = 0;
-    quint32 maxErrorPositionerCycle = 0;
-};
+        double avgErrorPositioner = 0;
+        double maxErrorPositioner = 0;
+        quint32 maxErrorPositionerCycle = 0;
+    };
 
-struct CyclicTestRecord {
-    QString sequence = "";
-    QString cycles = "";
-    QString totalTime = "";
+    struct CyclicTestRecord {
+        QString sequence = "";
+        QString cycles = "";
+        QString totalTime = "";
 
-    QVector<RangeDeviationRecord> ranges;
+        QVector<RangeDeviationRecord> ranges;
 
-    int switch_3_0_count = 0;
-    int switch_0_3_count = 0;
-};
-struct StrokeTestRecord {
-    QString timeForward = "";
-    QString timeBackward = "";
-};
+        int switch_3_0_count = 0;
+        int switch_0_3_count = 0;
+    };
+    struct StrokeTestRecord {
+        QString timeForward = "";
+        QString timeBackward = "";
+    };
 
-struct DinamicRecord {
-    QString dinamicReal = "";
-    QString dinamicRecomend = "";
+    struct DinamicRecord {
+        QString dinamicReal = "";
+        QString dinamicRecomend = "";
 
-    QString dinamicIpReal = "";
-    QString dinamicIpRecomend = "";
-};
+        QString dinamicIpReal = "";
+        QString dinamicIpRecomend = "";
+    };
 
-struct RangeRecord {
-    QString rangeReal = "";
-    QString rangeRecomend = "";
-    QString rangePressure = "";
-};
+    struct RangeRecord {
+        QString rangeReal = "";
+        QString rangeRecomend = "";
+        QString rangePressure = "";
+    };
 
-struct StrokeRecord {
-    QString strokeReal = "";
-    QString strokeRecomend = "";
-};
+    struct StrokeRecord {
+        QString strokeReal = "";
+        QString strokeRecomend = "";
+    };
 
-struct FrictionRecord {
-    QString friction = "";
-    QString frictionPercent = "";
-};
+    struct FrictionRecord {
+        QString friction = "";
+        QString frictionPercent = "";
+    };
 
-struct SupplyRecord {
-    QString supplyPressure = "";
-};
+    struct SupplyRecord {
+        QString supplyPressure = "";
+    };
 
-class TelemetryStore {
-public:
-    QVector<StepRecord> stepResults;
+    class TelemetryStore {
+    public:
+        QVector<StepRecord> stepResults;
 
-    CyclicTestRecord cyclicTestRecord;
-    StrokeTestRecord strokeTestRecord;
-    DinamicRecord dinamicRecord;
-    RangeRecord rangeRecord;
-    StrokeRecord strokeRecord;
-    FrictionRecord frictionRecord;
-    SupplyRecord supplyRecord;
+        CyclicTestRecord cyclicTestRecord;
+        StrokeTestRecord strokeTestRecord;
+        DinamicRecord dinamicRecord;
+        RangeRecord rangeRecord;
+        StrokeRecord strokeRecord;
+        FrictionRecord frictionRecord;
+        SupplyRecord supplyRecord;
 
-    void clearAll() {
-        stepResults.clear();
-        cyclicTestRecord = {};
-        strokeTestRecord = {};
-        dinamicRecord = {};
-        rangeRecord = {};
-        strokeRecord = {};
-        frictionRecord = {};
-        supplyRecord = {};
-    }
-};
+        QVector<int> doOnCounts;
+        QVector<int> doOffCounts;
 
-#endif // TELEMETRYSTORE_H
+        void clearAll() {
+            stepResults.clear();
+            cyclicTestRecord = {};
+            strokeTestRecord = {};
+            dinamicRecord = {};
+            rangeRecord = {};
+            strokeRecord = {};
+            frictionRecord = {};
+            supplyRecord = {};
+            doOnCounts.clear();
+            doOffCounts.clear();
+        }
+    };
+
+    #endif // TELEMETRYSTORE_H

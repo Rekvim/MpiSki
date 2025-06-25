@@ -648,6 +648,15 @@ void Program::pollDIForCyclic()
     m_lastDI = di;
 }
 
+void Program::SetMultipleDO(const QVector<bool>& states)
+{
+    quint8 mask = 0;
+    for (int d = 0; d < states.size(); ++d) {
+        m_mpi.SetDiscreteOutput(d, states[d]);
+        if (states[d]) mask |= (1 << d);
+    }
+    emit SetButtonsDOChecked(mask);
+}
 void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p)
 {
     using TP = CyclicTestSettings::TestParameters;
@@ -671,6 +680,8 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
         return;
     }
 
+    m_store.cyclicTestRecord.ranges.clear();
+
     auto *sol = new CyclicTestSolenoid;
     sol->SetParameters(p);
 
@@ -687,10 +698,10 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(m_diPollTimer, &QTimer::timeout, this, &Program::pollDIForCyclic);
     m_diPollTimer->start();
 
-    connect(sol, &CyclicTestSolenoid::CyclicDeviationResults,
-            this, [this](const QVector<RangeDeviationRecord>& recs){
-                m_store.cyclicTestRecord.ranges = recs;
-            });
+    // connect(sol, &CyclicTestSolenoid::CyclicDeviationResults,
+    //         this, [this](const QVector<RangeDeviationRecord>& recs){
+    //             m_store.cyclicTestRecord.ranges = recs;
+    //         });
 
     connect(sol, &CyclicTestSolenoid::EndTest, this, [this](){
         if (m_diPollTimer) {
@@ -699,7 +710,10 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
             m_diPollTimer = nullptr;
         }
     });
-
+    connect(sol, &CyclicTestSolenoid::DOCounts,
+            this, &Program::onDOCounts);
+    connect(sol, &CyclicTestSolenoid::SetMultipleDO,
+            this, &Program::SetMultipleDO);
     connect(thr, &QThread::started, sol, &CyclicTestSolenoid::Process);
     connect(sol, &CyclicTestSolenoid::EndTest, thr, &QThread::quit);
     connect(sol, &CyclicTestSolenoid::EndTest, this, &Program::EndTest);
@@ -707,6 +721,9 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 
     connect(thr, &QThread::finished, sol,  &QObject::deleteLater);
     connect(thr, &QThread::finished, thr,  &QObject::deleteLater);
+
+    connect(sol, &CyclicTestSolenoid::SetDO,
+            this, &Program::button_DO);
 
     connect(sol, &CyclicTestSolenoid::ClearGraph, this,
             [&]{ emit ClearPoints(Charts::CyclicSolenoid); });
@@ -733,11 +750,16 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     m_timerSensors->start();
 }
 
+void Program::onDOCounts(const QVector<int>& on, const QVector<int>& off) {
+    m_store.doOnCounts  = on;
+    m_store.doOffCounts = off;
+}
+
 void Program::SolenoidResults(QString sequence,
                               quint16 cycles,
                               double totalTimeSec)
 {
-    auto& R = m_store.cyclicTestRecord;
+    // auto& R = m_store.cyclicTestRecord;
     emit SetSolenoidResults(sequence, cycles, totalTimeSec);
 }
 
@@ -950,6 +972,7 @@ void Program::button_set_position()
 void Program::button_DO(quint8 DO_num, bool state)
 {
     m_mpi.SetDiscreteOutput(DO_num, state);
+    emit SetButtonsDOChecked(m_mpi.GetDOStatus());
 }
 
 void Program::checkbox_autoinit(int state)

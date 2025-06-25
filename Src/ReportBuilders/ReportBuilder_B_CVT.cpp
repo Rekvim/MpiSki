@@ -47,31 +47,31 @@ void ReportBuilder_B_CVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 27, 8, telemetryStore.cyclicTestRecord.totalTime});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
-    using Getter = std::function<double(const RangeDeviationRecord&)>;
-    static const struct {
-        quint16 col;
-        Getter get;
-    } map[] = {
-               {  8, [](auto& r){ return r.avgErrorLinear; }},
-               { 10, [](auto& r){ return r.maxErrorLinear; }},
-               { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
-               { 13, [](auto& r){ return r.avgErrorPositioner; }},
-               { 15, [](auto& r){ return r.maxErrorPositioner; }},
-               { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
-               };
+    // using Getter = std::function<double(const RangeDeviationRecord&)>;
+    // static const struct {
+    //     quint16 col;
+    //     Getter get;
+    // } map[] = {
+    //            {  8, [](auto& r){ return r.avgErrorLinear; }},
+    //            { 10, [](auto& r){ return r.maxErrorLinear; }},
+    //            { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
+    //            { 13, [](auto& r){ return r.avgErrorPositioner; }},
+    //            { 15, [](auto& r){ return r.maxErrorPositioner; }},
+    //            { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
+    //            };
 
-    static const quint16 rowStart[] = {33,35,37,39,41,43,45,47,49,51};
+    // static const quint16 rowStart[] = {33,35,37,39,41,43,45,47,49,51};
 
-    for (quint16 i = 0; i < 10; ++i) {
-        const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
-        quint16 row = rowStart[i];
-        for (auto& m : map) {
-            report.data.push_back({
-                "Отчет ЦТ", row, m.col,
-                safeToString(m.get(rec))
-            });
-        }
-    }
+    // for (quint16 i = 0; i < 10; ++i) {
+    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
+    //     quint16 row = rowStart[i];
+    //     for (auto& m : map) {
+    //         report.data.push_back({
+    //             "Отчет ЦТ", row, m.col,
+    //             safeToString(m.get(rec))
+    //         });
+    //     }
+    // }
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 56, 4, objectInfo.FIO});

@@ -63,6 +63,24 @@ void ReportBuilder_C_SOVT::buildReport(
     // report.data.push_back({"Отчет ЦТ", 46, 10, safeToString(???)});
     // report.data.push_back({"Отчет ЦТ", 46, 13, safeToString(???)});
 
+    int N = telemetryStore.doOnCounts.size();
+    for (int i = 0; i < N; ++i) {
+        quint16 row = 36 + i*2;
+        QString onCnt  = QString::number(telemetryStore.doOnCounts[i]);
+        QString offCnt = QString::number(telemetryStore.doOffCounts[i]);
+        report.data.push_back({"Отчет ЦТ", row, 10, onCnt});
+        report.data.push_back({"Отчет ЦТ", row, 13, offCnt});
+    }
+
+     int cnt30 = telemetryStore.cyclicTestRecord.switch_3_0_count;
+    int cnt03 = telemetryStore.cyclicTestRecord.switch_0_3_count;
+    // строка 44 — «O→3»
+    report.data.push_back({"Отчет ЦТ", 44, 10, QString::number(cnt30)});
+    report.data.push_back({"Отчет ЦТ", 44, 13, QString::number(0)});
+    // строка 46 — «3→O»
+    report.data.push_back({"Отчет ЦТ", 46, 10, QString::number(cnt03)});
+    report.data.push_back({"Отчет ЦТ", 46, 13, QString::number(0)});
+
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 53, 4, objectInfo.FIO});
 
