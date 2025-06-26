@@ -56,12 +56,12 @@
             for (int i = 0; i < N && !m_terminate; ++i) {
                 int pct = values[i];
                 int prevPct = (i == 0 ? values.first() : values[i-1]);
+                bool forward = (pct > prevPct);
 
                 quint64 t0 = timer.elapsed();
                 emit TaskPoint(t0, prevPct);
                 emit TaskPoint(t0, pct);
 
-                // если это отсечный тест — включаем DO
                 if (isShutoff) {
                     for (quint8 d = 0; d < 4; ++d)
                         if (m_params.shutoff_DO[d])
@@ -85,6 +85,10 @@
                 quint64 t2 = timer.elapsed();
                 emit TaskPoint(t2, pct);
                 emit UpdateCyclicTred();
+
+                if (&values == &m_valuesReg) {
+                    emit RegulatoryMeasurement(c, forward);
+                }
             }
         }
 

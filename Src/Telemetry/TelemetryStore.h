@@ -15,6 +15,11 @@
         double maxErrorLinear = 0;
         quint32 maxErrorLinearCycle  = 0;
 
+        double maxForwardValue    = -1.0;
+        double maxForwardCycle    = -1;
+        double minReverseValue    = 101.0;
+        double minReverseCycle    = -1;
+
         double avgErrorPositioner = 0;
         double maxErrorPositioner = 0;
         quint32 maxErrorPositionerCycle = 0;

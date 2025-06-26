@@ -118,130 +118,44 @@ void ReportBuilder_C_CVT::buildReport(
     // report.data.push_back({"Отчет ЦТ", 51, 15, safeToString(telemetryStore.cyclicTestRecord.ranges[9].maxErrorPositioner)});
     // report.data.push_back({"Отчет ЦТ", 51, 17, safeToString(telemetryStore.cyclicTestRecord.ranges[9].maxErrorPositionerCycle)});
 
-    // static const quint16 rowStart[10] = {33,35,37,39,41,43,45,47,49,51};
+    static constexpr quint16 rowStart[10] = {33,35,37,39,41,43,45,47,49,51};
 
-    // Для каждого диапазона нужно вывести 6 значений:
-    // struct ColMap {
-    //     quint16 col;
-    //     std::function<QString(const RangeDeviationRecord&)> getter;
-    // };
-    // static const ColMap cols[] = {
-    //                               {  8, [](auto& r){ return r.avgErrorLinear; }},
-    //                               { 10, [](auto& r){ return safeToString(r.maxErrorLinear); }},
-    //                               { 12, [](auto& r){ return safeToString(r.maxErrorLinearCycle); }},
-    //                               { 13, [](auto& r){ return safeToString(r.avgErrorPositioner); }},
-    //                               { 15, [](auto& r){ return safeToString(r.maxErrorPositioner); }},
-    //                               { 17, [](auto& r){ return safeToString(r.maxErrorPositionerCycle); }},
-    //                               };
+    struct LinearField {
+        quint16 col;
+        std::function<QString(const RangeDeviationRecord&)> getter;
+    };
+    static const LinearField linearFields[] = {
+        {  8, [](auto& rec){ return QString::number(rec.maxForwardValue);    }}, // макс прямого
+        { 10, [](auto& rec){ return QString::number(rec.minReverseValue);    }}, // макс обратного
+        { 12, [](auto& rec){ return QString::number(rec.maxForwardCycle); }}, // цикл прямого
+        { 14, [](auto& rec){ return QString::number(rec.minReverseCycle); }}, // цикл обратного
+    };
 
-    // const auto& ranges = ts.cyclicTestRecord.ranges;
-    // for (int i = 0; i < 10; ++i) {
-    //     quint16 row = rowStart[i];
-    //     if (i < ranges.size()) {
-    //         // есть реальная запись — выводим её
-    //         const auto& rec = ranges[i];
-    //         for (auto& m : cols) {
-    //             report.data.push_back({
-    //                 "Отчет ЦТ",
-    //                 row,
-    //                 m.col,
-    //                 m.getter(rec)
-    //             });
-    //         }
-    //     }
-    //     else {
-    //         // данных нет — пушим пустые строки
-    //         for (auto& m : cols) {
-    //             report.data.push_back({
-    //                 "Отчет ЦТ",
-    //                 row,
-    //                 m.col,
-    //                 QString()
-    //             });
-    //         }
-    //     }
-    // }
-
-    // using Getter = std::function<double(const RangeDeviationRecord&)>;
-    // static const struct {
-    //     quint16 col;
-    //     Getter get;
-    // } map[] = {
-    //            // {  8, [](auto& r){ return r.avgErrorLinear; }},
-    //            // { 10, [](auto& r){ return r.maxErrorLinear; }},
-    //            // { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
-    //            { 13, [](auto& r){ return r.avgErrorPositioner; }},
-    //            { 15, [](auto& r){ return r.maxErrorPositioner; }},
-    //            { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
-    //            };
-
-    // static const quint16 rowStart[] = {33,35,37,39,41,43,45,47,49,51};
-
-    // for (quint16 i = 0; i < 10; ++i) {
-    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
-    //     quint16 row = rowStart[i];
-    //     for (auto& m : map) {
-    //         report.data.push_back({
-    //             "Отчет ЦТ", row, m.col,
-    //             safeToString(m.get(rec))
-    //         });
-    //     }
-    // }
-
-    // const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
-    // for (int i = 0; i < 10; ++i) {
-    //     quint16 row = rowStart[i];
-    //     if (i < ranges.size()) {
-    //         // есть реальная запись — выводим её
-    //         const auto& rec = ranges[i];
-    //         for (auto& m : map) {
-    //             report.data.push_back({
-    //                 "Отчет ЦТ",
-    //                 row,
-    //                 m.col,
-    //                 safeToString(m.get(rec))
-    //             });
-    //         }
-    //     }
-    //     else {
-    //         // данных нет — пушим пустые строки
-    //         for (auto& m : map) {
-    //             report.data.push_back({
-    //                 "Отчет ЦТ",
-    //                 row,
-    //                 m.col,
-    //                 QString()
-    //             });
-    //         }
-    //     }
-    // }
-
-    // struct Field { quint16 col; std::function<QString(const RangeDeviationRecord&)> get; };
-    // static constexpr Field fields[] = {
-    //                                    {  8, [](auto& r){ return safeToString(r.avgErrorLinear); }},
-    //                                    { 10, [](auto& r){ return safeToString(r.maxErrorLinear); }},
-    //                                    { 12, [](auto& r){ return safeToString(r.maxErrorLinearCycle); }},
-    //                                    { 13, [](auto& r){ return safeToString(r.avgErrorPositioner); }},
-    //                                    { 15, [](auto& r){ return safeToString(r.maxErrorPositioner); }},
-    //                                    { 17, [](auto& r){ return safeToString(r.maxErrorPositionerCycle); }},
-    //                                    };
-    // // стартовые строки для диапазонов 1…10
-    // static constexpr quint16 rowStart[10] = {33,35,37,39,41,43,45,47,49,51};
-
-    // int count = telemetryStore.cyclicTestRecord.ranges.size();
-    // // не более 10 диапазонов
-    // for (int i = 0; i < count && i < 10; ++i) {
-    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
-    //     quint16 row = rowStart[i];
-    //     for (const auto& f : fields) {
-    //         report.data.push_back({
-    //             "Отчет ЦТ",
-    //             row,
-    //             f.col,
-    //             f.get(const_cast<RangeDeviationRecord&>(rec))
-    //         });
-    //     }
-    // }
+    const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+    for (int i = 0; i < 10; ++i) {
+        quint16 row = rowStart[i];
+        if (i < ranges.size()) {
+            const auto& rec = ranges[i];
+            for (auto& f : linearFields) {
+                report.data.push_back({
+                    "Отчет ЦТ",
+                    row,
+                    f.col,
+                    f.getter(rec)
+                });
+            }
+        }
+        else {
+            for (auto& f : linearFields) {
+                report.data.push_back({
+                    "Отчет ЦТ",
+                    row,
+                    f.col,
+                    QString()
+                });
+            }
+        }
+    }
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 56, 4, objectInfo.FIO});

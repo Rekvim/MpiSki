@@ -557,7 +557,7 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
 
     m_telemetry.stepResults.clear();
     for (const auto &r : results) {
-        // Формируем нужные строковые представления
+
         QString rangeStr = QString("%1-%2").arg(r.from).arg(r.to);
         QString timeStr = (r.T_value == 0)
                               ? "Ошибка"

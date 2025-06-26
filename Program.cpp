@@ -660,7 +660,6 @@ void Program::SetMultipleDO(const QVector<bool>& states)
 void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p)
 {
     using TP = CyclicTestSettings::TestParameters;
-    qDebug() << "[Pr] CyclicSolenoidTestStart; thread=" << QThread::currentThread();
 
     bool ok = true;
     if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
@@ -681,6 +680,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     }
 
     m_store.cyclicTestRecord.ranges.clear();
+    m_store.cyclicTestRecord.ranges.push_back(RangeDeviationRecord{});
 
     auto *sol = new CyclicTestSolenoid;
     sol->SetParameters(p);
@@ -698,10 +698,22 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(m_diPollTimer, &QTimer::timeout, this, &Program::pollDIForCyclic);
     m_diPollTimer->start();
 
-    // connect(sol, &CyclicTestSolenoid::CyclicDeviationResults,
-    //         this, [this](const QVector<RangeDeviationRecord>& recs){
-    //             m_store.cyclicTestRecord.ranges = recs;
-    //         });
+    connect(sol, &CyclicTestSolenoid::RegulatoryMeasurement,
+            this, [&](int cycle, bool forward) {
+                auto &rec = m_store.cyclicTestRecord.ranges[0];
+                qreal measured = m_mpi[0]->GetPersent();
+                if (forward) {
+                    if (measured > rec.maxForwardValue) {
+                        rec.maxForwardValue = measured;
+                        rec.maxForwardCycle = cycle;
+                    }
+                } else {
+                    if (measured < rec.minReverseValue) {
+                        rec.minReverseValue = measured;
+                        rec.minReverseCycle = cycle;
+                    }
+                }
+            });
 
     connect(sol, &CyclicTestSolenoid::EndTest, this, [this](){
         if (m_diPollTimer) {
