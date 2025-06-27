@@ -53,16 +53,25 @@ SelectTests::SelectTests(QWidget *parent)
         cb->setChecked(cb->isChecked());
     }
 
-    for (QCheckBox* cb : allCheckBoxes())
-        connect(cb, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
+    for (QCheckBox* cb : allCheckBoxes()) connect(cb, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
 
-    connect(ui->button_C_SOVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_C_SOVT);
-    connect(ui->button_B_SACVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_B_SACVT);
-    connect(ui->button_C_SACVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_C_SACVT);
-    connect(ui->button_B_CVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_B_CVT);
-    connect(ui->button_C_CVT, &QPushButton::clicked, this, &SelectTests::ButtonClick_C_CVT);
+    connect(ui->button_C_SOVT, &QPushButton::clicked,
+            this, &SelectTests::ButtonClick_C_SOVT);
 
-    connect(ui->entry_testing, &QPushButton::clicked, this, &SelectTests::ButtonClick);
+    connect(ui->button_B_SACVT, &QPushButton::clicked,
+            this, &SelectTests::ButtonClick_B_SACVT);
+
+    connect(ui->button_C_SACVT, &QPushButton::clicked,
+            this, &SelectTests::ButtonClick_C_SACVT);
+
+    connect(ui->button_B_CVT, &QPushButton::clicked,
+            this, &SelectTests::ButtonClick_B_CVT);
+
+    connect(ui->button_C_CVT, &QPushButton::clicked,
+            this, &SelectTests::ButtonClick_C_CVT);
+
+    connect(ui->entry_testing, &QPushButton::clicked,
+            this, &SelectTests::ButtonClick);
 }
 
 SelectTests::~SelectTests()
