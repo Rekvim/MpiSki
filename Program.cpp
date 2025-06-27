@@ -679,8 +679,18 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
         return;
     }
 
-    m_store.cyclicTestRecord.ranges.clear();
-    m_store.cyclicTestRecord.ranges.push_back(RangeDeviationRecord{});
+    const auto parts = p.regulatory_sequence.split('-', Qt::SkipEmptyParts);
+    int recordCount = parts.size();
+
+    // парсим в QVector<int>
+    QVector<int> valuesReg;
+    valuesReg.reserve(recordCount);
+    for (auto &part : parts) {
+        bool ok = false;
+        int v = part.trimmed().toInt(&ok);
+        if (ok) valuesReg.append(v);
+    }
+
 
     auto *sol = new CyclicTestSolenoid;
     sol->SetParameters(p);
@@ -688,10 +698,23 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     QThread *thr = new QThread(this);
     sol->moveToThread(thr);
 
+    m_store.cyclicTestRecord.ranges.clear();
+    m_store.cyclicTestRecord.ranges.resize(recordCount);
+
+    for (int i = 0; i < recordCount; ++i) {
+        auto &rec = m_store.cyclicTestRecord.ranges[i];
+        rec.rangePercent      = valuesReg[i];
+        rec.maxForwardValue   = 0;
+        rec.maxForwardCycle   = 0;
+        rec.maxReverseValue   = 0;
+        rec.maxReverseCycle   = 0;
+    }
+
     m_store.cyclicTestRecord.switch_3_0_count = 0;
     m_store.cyclicTestRecord.switch_0_3_count = 0;
     m_lastDI = m_mpi.GetDIStatus();
     m_cyclicStartTs = QDateTime::currentMSecsSinceEpoch();
+
 
     m_diPollTimer = new QTimer(this);
     m_diPollTimer->setInterval(50);
@@ -699,8 +722,8 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     m_diPollTimer->start();
 
     connect(sol, &CyclicTestSolenoid::RegulatoryMeasurement,
-            this, [&](int cycle, bool forward) {
-                auto &rec = m_store.cyclicTestRecord.ranges[0];
+            this, [&](int cycle, int step, bool forward) {
+                auto &rec = m_store.cyclicTestRecord.ranges[step];
                 qreal measured = m_mpi[0]->GetPersent();
                 if (forward) {
                     if (measured > rec.maxForwardValue) {
@@ -708,9 +731,9 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
                         rec.maxForwardCycle = cycle;
                     }
                 } else {
-                    if (measured < rec.minReverseValue) {
-                        rec.minReverseValue = measured;
-                        rec.minReverseCycle = cycle;
+                    if (measured > rec.maxReverseValue) {
+                        rec.maxReverseValue = measured;
+                        rec.maxReverseCycle = cycle;
                     }
                 }
             });
@@ -771,8 +794,19 @@ void Program::SolenoidResults(QString sequence,
                               quint16 cycles,
                               double totalTimeSec)
 {
-    // auto& R = m_store.cyclicTestRecord;
+    const auto& ranges = m_store.cyclicTestRecord.ranges;
+    for (int i = 0; i < ranges.size(); ++i) {
+        const auto& rec = ranges[i];
+        qDebug() << QString("Range[%1]: maxForward=%2 at cycle=%3, minReverse=%4 at cycle=%5")
+                        .arg(i)
+                        .arg(rec.maxForwardValue)
+                        .arg(rec.maxForwardCycle)
+                        .arg(rec.maxReverseValue)
+                        .arg(rec.maxReverseCycle);
+    }
+
     emit SetSolenoidResults(sequence, cycles, totalTimeSec);
+    emit SetSolenoidRangesData(ranges);
 }
 
 void Program::StartOptionalTest(quint8 testNum)

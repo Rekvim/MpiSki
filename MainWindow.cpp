@@ -117,6 +117,8 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
+
+
     connect(ui->pushButton_main_start,
             &QPushButton::clicked,
             this,
@@ -270,6 +272,11 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::ButtonStartCyclicSolenoid);
 
     connect(m_program, &Program::Question, this, &MainWindow::Question, Qt::BlockingQueuedConnection);
+
+    connect(m_program,
+            &Program::SetSolenoidRangesData,
+            this,
+            &MainWindow::onSolenoidRangesData);
 
     connect(m_reportSaver, &ReportSaver::Question, this, &MainWindow::Question, Qt::DirectConnection);
     connect(m_reportSaver,
@@ -476,24 +483,6 @@ void MainWindow::SetRegistry(Registry *registry)
 
     InitCharts();
 
-    auto* seriesDI1 = static_cast<QAbstractSeries*>(m_charts[Charts::CyclicSolenoid]->chart()->series().at(2));
-    auto* seriesDI2 = static_cast<QAbstractSeries*>(m_charts[Charts::CyclicSolenoid]->chart()->series().at(3));
-
-    auto* line1 = qobject_cast<QLineSeries*>(seriesDI1);
-    auto* line2 = qobject_cast<QLineSeries*>(seriesDI2);
-    if (line1) {
-        line1->setPointsVisible(true);
-        QPen nop;
-        nop.setStyle(Qt::NoPen);
-        line1->setPen(nop);
-    }
-    if (line2) {
-        line2->setPointsVisible(true);
-        QPen nop;
-        nop.setStyle(Qt::NoPen);
-        line2->setPen(nop);
-    }
-
     m_program->SetRegistry(registry);
     m_programthread->start();
 
@@ -588,6 +577,11 @@ void MainWindow::SetSolenoidResults(QString sequence, quint16 cycles, double tot
         QString::number(cycles));
 }
 
+void MainWindow::onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges)
+{
+    m_telemetry.cyclicTestRecord.ranges = ranges;
+}
+
 void MainWindow::SetSensorsNumber(quint8 num)
 {
     bool noSensors = (num == 0);
@@ -605,20 +599,19 @@ void MainWindow::SetSensorsNumber(quint8 num)
 
     switch (m_patternType) {
     case SelectTests::Pattern_B_CVT:
-        ui->groupBox_SettingCurrentSignal->setVisible(false);
         break;
     case SelectTests::Pattern_B_SACVT:
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
     case SelectTests::Pattern_C_CVT:
-        ui->groupBox_SettingCurrentSignal->setVisible(false);
         break;
     case SelectTests::Pattern_C_SACVT:
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
     case SelectTests::Pattern_C_SOVT:
+        ui->groupBox_SettingCurrentSignal->setVisible(false);
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
         break;
@@ -1035,9 +1028,16 @@ void MainWindow::InitCharts()
     m_charts[Charts::CyclicSolenoid]->addAxis("%.2f%%");
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI1", QColor::fromRgb(200, 200, 0));
-    m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI2", QColor::fromRgb(0, 200, 0));
     // m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
+
+    if (m_patternType == SelectTests::Pattern_C_SOVT || m_patternType == SelectTests::Pattern_B_SACVT || m_patternType ==  SelectTests::Pattern_C_SACVT) {
+        m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI1", QColor::fromRgb(200, 200, 0));
+        m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI2", QColor::fromRgb(0, 200, 0));
+
+        m_charts[Charts::CyclicSolenoid]->setPointsVisible(2, true);
+        m_charts[Charts::CyclicSolenoid]->setPointsVisible(3, true);
+    }
+
 
     connect(m_program, &Program::AddPoints, this, &MainWindow::AddPoints);
     connect(m_program, &Program::ClearPoints, this, &MainWindow::ClearPoints);

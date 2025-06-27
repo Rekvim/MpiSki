@@ -61,6 +61,14 @@ MyChart::MyChart(QWidget *parent)
 
 MyChart::~MyChart() {}
 
+void MyChart::setPointsVisible(quint8 seriesN, bool visible)
+{
+    if (seriesN < m_mySeries.count()) {
+        m_mySeries[seriesN]->setPointsVisible(visible);
+        m_mySeriesDubl[seriesN]->setPointsVisible(visible);
+    }
+}
+
 void MyChart::drawMarkers(QPoint pos)
 {
     QSet<quint8> set;

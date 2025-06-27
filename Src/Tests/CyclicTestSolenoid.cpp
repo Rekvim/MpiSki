@@ -46,7 +46,7 @@
         }
 
         const bool isShutoff = (&values == &m_valuesOff);
-        const int  N         = values.size();
+        const int N = values.size();
 
         emit SetStartTime();
         emit ClearGraph();
@@ -87,7 +87,7 @@
                 emit UpdateCyclicTred();
 
                 if (&values == &m_valuesReg) {
-                    emit RegulatoryMeasurement(c, forward);
+                    emit RegulatoryMeasurement(c, i, forward);
                 }
             }
         }

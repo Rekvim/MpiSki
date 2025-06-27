@@ -65,6 +65,7 @@ public:
     QPair<QList<QPointF>, QList<QPointF>> getPoints(quint8 seriesN) const;
     void saveToStream(QDataStream &stream) const;
     void loadFromStream(QDataStream &dataStream);
+    void setPointsVisible(quint8 seriesN, bool visible);
 
 public slots:
     void useTimeaxis(bool);

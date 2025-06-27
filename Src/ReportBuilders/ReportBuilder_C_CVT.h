@@ -3,6 +3,8 @@
 
 #pragma once
 #include "ReportBuilder.h"
+#include "./Program.h"
+
 
 class ReportBuilder_C_CVT : public ReportBuilder
 {

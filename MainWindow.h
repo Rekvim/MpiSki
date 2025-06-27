@@ -80,7 +80,7 @@ private slots:
     void ButtonStartCyclicSolenoid();
 
     void onCountdownTimeout();
-
+    void onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges);
 private:
     Ui::MainWindow *ui;
 

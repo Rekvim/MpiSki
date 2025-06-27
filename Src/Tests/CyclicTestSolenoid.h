@@ -40,7 +40,7 @@ signals:
                             double totalTimeSec);
     void CyclicDeviationResults(const QVector<RangeDeviationRecord>& recs);
     void DOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
-    void RegulatoryMeasurement(int cycle, bool forward);
+    void RegulatoryMeasurement(int cycle, int step, bool forward);
 
 private:
     MPI   m_mpi;
