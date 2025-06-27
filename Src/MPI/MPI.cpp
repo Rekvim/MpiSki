@@ -9,55 +9,67 @@ MPI::MPI(QObject *parent)
     m_uartReader->moveToThread(m_uartThread);
     m_uartThread->start();
 
-    connect(this,
-            &MPI::ConnectToUart,
-            m_uartReader,
-            &UartReader::ConnectToUart,
+    connect(this, &MPI::ConnectToUart,
+            m_uartReader, &UartReader::ConnectToUart,
             Qt::BlockingQueuedConnection);
-    connect(this,
-            &MPI::GetVersion,
-            m_uartReader,
-            &UartReader::GetVersion,
-            Qt::BlockingQueuedConnection);
-    connect(this, &MPI::SetDAC, m_uartReader, &UartReader::SetDAC, Qt::BlockingQueuedConnection);
-    connect(this,
-            &MPI::SetChannels,
-            m_uartReader,
-            &UartReader::SetChannels,
-            Qt::BlockingQueuedConnection);
-    connect(this, &MPI::SetTimer, m_uartReader, &UartReader::SetTimer, Qt::BlockingQueuedConnection);
-    connect(this,
-            &MPI::TurnADC_On,
-            m_uartReader,
-            &UartReader::TurnADC_On,
-            Qt::BlockingQueuedConnection);
-    connect(this,
-            &MPI::TurnADC_Off,
-            m_uartReader,
-            &UartReader::TurnADC_Off,
-            Qt::BlockingQueuedConnection);
-    connect(this, &MPI::GetADC, m_uartReader, &UartReader::GetADC, Qt::BlockingQueuedConnection);
-    connect(this,
-            &MPI::ADC_Timer,
-            m_uartReader,
-            &UartReader::ADC_Timer,
-            Qt::BlockingQueuedConnection);
-    connect(this, &MPI::SetDO, m_uartReader, &UartReader::SetDO, Qt::BlockingQueuedConnection);
-    connect(this, &MPI::GetDO, m_uartReader, &UartReader::GetDO, Qt::BlockingQueuedConnection);
-    connect(this, &MPI::GetDI, m_uartReader, &UartReader::GetDI, Qt::BlockingQueuedConnection);
 
-    connect(m_uartReader, &UartReader::ADC, this, &MPI::ADC);
-    connect(m_uartReader,
-            &UartReader::UartConnected,
-            this,
-            &MPI::UartConnected,
+    connect(this, &MPI::GetVersion,
+            m_uartReader, &UartReader::GetVersion,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::SetDAC,
+            m_uartReader, &UartReader::SetDAC,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::SetChannels,
+            m_uartReader, &UartReader::SetChannels,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::SetTimer,
+            m_uartReader, &UartReader::SetTimer,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::TurnADC_On,
+            m_uartReader, &UartReader::TurnADC_On,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::TurnADC_Off,
+            m_uartReader, &UartReader::TurnADC_Off,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::GetADC,
+            m_uartReader, &UartReader::GetADC,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::ADC_Timer,
+            m_uartReader, &UartReader::ADC_Timer,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::SetDO,
+            m_uartReader, &UartReader::SetDO,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::GetDO,
+            m_uartReader, &UartReader::GetDO,
+            Qt::BlockingQueuedConnection);
+
+    connect(this, &MPI::GetDI,
+            m_uartReader, &UartReader::GetDI,
+            Qt::BlockingQueuedConnection);
+
+    connect(m_uartReader, &UartReader::ADC,
+            this, &MPI::ADC);
+
+    connect(m_uartReader, &UartReader::UartConnected,
+            this, &MPI::UartConnected,
             Qt::DirectConnection);
-    connect(m_uartReader,
-            &UartReader::UartDisconnected,
-            this,
-            &MPI::UartDisconnected,
+    connect(m_uartReader, &UartReader::UartDisconnected,
+            this, &MPI::UartDisconnected,
             Qt::DirectConnection);
-    connect(m_uartReader, &UartReader::UartError, this, &MPI::UartError, Qt::DirectConnection);
+
+    connect(m_uartReader, &UartReader::UartError,
+            this, &MPI::UartError,
+            Qt::DirectConnection);
 }
 
 MPI::~MPI()

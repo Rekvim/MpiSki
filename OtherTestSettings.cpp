@@ -12,17 +12,20 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
     ui->pushButton_change_step->setEnabled(false);
     ui->pushButton_delete_step->setEnabled(false);
 
-    connect(ui->listWidget_value, &QListWidget::currentRowChanged, this, [=](int v) {
+    connect(ui->listWidget_value, &QListWidget::currentRowChanged,
+            this, [=](int v) {
         ui->pushButton_change_value->setEnabled(v >= 0);
         ui->pushButton_delete_value->setEnabled((v >= 0) && (ui->listWidget_value->count() > 1));
     });
 
-    connect(ui->pushButton_add_value, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_add_value, &QPushButton::clicked,
+            this, [=]() {
         ui->listWidget_value->addItem("50.0");
         ui->listWidget_value->setCurrentRow(ui->listWidget_value->count() - 1);
     });
 
-    connect(ui->pushButton_delete_value, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_delete_value, &QPushButton::clicked,
+            this, [=]() {
         delete ui->listWidget_value->currentItem();
 
         if (ui->listWidget_value->count() == 1) {
@@ -32,7 +35,8 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
         ui->listWidget_value->setCurrentRow(-1);
     });
 
-    connect(ui->pushButton_change_value, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_change_value, &QPushButton::clicked,
+            this, [=]() {
         bool ok;
         double d = QInputDialog::getDouble(this,
                                            "Ввод числа",
@@ -48,17 +52,20 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
         }
     });
 
-    connect(ui->listWidget_step, &QListWidget::currentRowChanged, this, [=](int v) {
+    connect(ui->listWidget_step, &QListWidget::currentRowChanged,
+            this, [=](int v) {
         ui->pushButton_change_step->setEnabled(v >= 0);
         ui->pushButton_delete_step->setEnabled((v >= 0) && (ui->listWidget_step->count() > 1));
     });
 
-    connect(ui->pushButton_add_step, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_add_step, &QPushButton::clicked,
+            this, [=]() {
         ui->listWidget_step->addItem("3.0");
         ui->listWidget_step->setCurrentRow(ui->listWidget_step->count() - 1);
     });
 
-    connect(ui->pushButton_delete_step, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_delete_step, &QPushButton::clicked,
+            this, [=]() {
         delete ui->listWidget_step->currentItem();
 
         if (ui->listWidget_step->count() == 1) {
@@ -68,7 +75,8 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
         ui->listWidget_step->setCurrentRow(-1);
     });
 
-    connect(ui->pushButton_change_step, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_change_step, &QPushButton::clicked,
+            this, [=]() {
         bool ok;
         double d = QInputDialog::getDouble(this,
             "Ввод числа",
@@ -84,7 +92,8 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
         }
     });
 
-    connect(ui->timeEdit, &QTimeEdit::timeChanged, this, [&](QTime time) {
+    connect(ui->timeEdit, &QTimeEdit::timeChanged,
+            this, [&](QTime time) {
         if (time > m_maxTime) {
             ui->timeEdit->setTime(m_maxTime);
         }

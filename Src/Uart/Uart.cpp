@@ -10,10 +10,8 @@ Uart::Uart(QObject *parent)
     m_serialPort->setStopBits(QSerialPort::OneStop);
     m_serialPort->setReadBufferSize(1);
 
-    connect(m_serialPort,
-            &QSerialPort::errorOccurred,
-            this,
-            [this](QSerialPort::SerialPortError err) { emit Error(err); });
+    connect(m_serialPort, &QSerialPort::errorOccurred,
+            this, [this](QSerialPort::SerialPortError err) { emit Error(err); });
 }
 
 Uart::~Uart()

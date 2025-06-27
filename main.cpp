@@ -42,10 +42,9 @@ int main(int argc, char *argv[])
     auto cts = selectTests.getCTS();
 
     mainWindow.SetPatternType(selectedPattern);
-    // mainWindow.SetSensorsNumber(3);
     mainWindow.SetBlockCTS(cts);
     mainWindow.SetRegistry(&registry);
     mainWindow.show();
-
+    mainWindow.showMaximized();
     return a.exec();
 }

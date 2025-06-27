@@ -118,7 +118,7 @@ bool SelectTests::isValidPattern() {
         m_blockCts.imit_switch_0_3 && m_blockCts.imit_switch_3_0 &&
         (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)) return true;
     // Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический
-    if (m_blockCts.usb && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA) return true;
+    if (m_blockCts.usb && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA && m_blockCts.moving) return true;
     // Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
     if (m_blockCts.usb && m_blockCts.pressure_1 && m_blockCts.pressure_2 && m_blockCts.pressure_3 &&
         m_blockCts.moving && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA) return true;
@@ -198,6 +198,7 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
 
     // Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический
     if (ui->check_box_usb->isChecked() &&
+        ui->check_box_moving->isChecked() &&
         ui->check_box_input_4_20_mA->isChecked() &&
         ui->check_box_output_4_20_mA->isChecked())
         // &&
@@ -289,7 +290,7 @@ void SelectTests::ButtonClick_C_SACVT() {
 
 void SelectTests::ButtonClick_B_CVT() {
     setPattern({
-        {ui->check_box_usb, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA},
+        {ui->check_box_usb, ui->check_box_moving, ui->check_box_output_4_20_mA, ui->check_box_input_4_20_mA},
         {}
     });
 }

@@ -13,8 +13,7 @@ MpiSettings::MpiSettings(QObject *parent)
 
     settings.beginGroup("Sensors");
     settings.beginGroup("Linear");
-    m_sensors.push_back(
-        {settings.value("min", "0.0").toDouble(), settings.value("max", "50.0").toDouble()});
+    m_sensors.push_back({settings.value("min", "0.0").toDouble(), settings.value("max", "50.0").toDouble()});
     settings.endGroup();
 
     for (int i = 1; i < 4; i++) {

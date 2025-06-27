@@ -6,15 +6,26 @@ UartReader::UartReader(QObject *parent)
     m_uart = new Uart(this);
     m_adcTimer = new QTimer(this);
 
-    connect(m_uart, &Uart::Connected, this, &UartReader::Connected, Qt::DirectConnection);
-    connect(m_uart, &Uart::Disconnected, this, &UartReader::Disconnected, Qt::DirectConnection);
-    connect(m_uart, &Uart::Error, this, &UartReader::Error, Qt::DirectConnection);
+    connect(m_uart, &Uart::Connected, this,
+            &UartReader::Connected, Qt::DirectConnection);
 
-    connect(this, &UartReader::Connect, m_uart, &Uart::Connect, Qt::DirectConnection);
-    connect(this, &UartReader::Disconnect, m_uart, &Uart::Disconnect, Qt::DirectConnection);
-    connect(this, &UartReader::Write_Read, m_uart, &Uart::Write_Read, Qt::DirectConnection);
+    connect(m_uart, &Uart::Disconnected, this,
+            &UartReader::Disconnected, Qt::DirectConnection);
 
-    connect(m_adcTimer, &QTimer::timeout, this, &UartReader::SendADC);
+    connect(m_uart, &Uart::Error, this,
+            &UartReader::Error, Qt::DirectConnection);
+
+    connect(this, &UartReader::Connect, m_uart,
+            &Uart::Connect, Qt::DirectConnection);
+
+    connect(this, &UartReader::Disconnect, m_uart,
+            &Uart::Disconnect, Qt::DirectConnection);
+
+    connect(this, &UartReader::Write_Read, m_uart,
+            &Uart::Write_Read, Qt::DirectConnection);
+
+    connect(m_adcTimer, &QTimer::timeout,
+            this, &UartReader::SendADC);
 }
 
 QByteArray UartReader::SendMessage(const UartMessage &message)

@@ -2,9 +2,7 @@
 
 Sensor::Sensor(QObject *parent)
     : QObject{parent}
-{
-
-}
+{}
 
 quint16 Sensor::GetRawValue() const
 {

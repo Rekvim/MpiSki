@@ -12,11 +12,11 @@ Program::Program(QObject *parent)
 {
     m_timerSensors = new QTimer(this);
     m_timerSensors->setInterval(200);
-    connect(m_timerSensors, &QTimer::timeout, this, &Program::UpdateSensors);
-    m_testing = false;
+
     m_dacEventloop = new QEventLoop(this);
 
-
+    connect(m_timerSensors, &QTimer::timeout,
+            this, &Program::UpdateSensors);
 
     m_timerDI = new QTimer(this);
     m_timerDI->setInterval(1000);

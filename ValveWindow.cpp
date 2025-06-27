@@ -42,15 +42,16 @@ ValveWindow::ValveWindow(QWidget *parent)
             this,
             &ValveWindow::DiameterChanged);
 
-    connect(ui->pushButton, &QPushButton::clicked, this, &ValveWindow::ButtonClick);
-    connect(ui->pushButton_clear, &QPushButton::clicked, this, &ValveWindow::Clear);
+    connect(ui->pushButton, &QPushButton::clicked,
+            this, &ValveWindow::ButtonClick);
+
+    connect(ui->pushButton_clear, &QPushButton::clicked,
+            this, &ValveWindow::Clear);
 
     DiameterChanged(ui->lineEdit_driveDiameter->text());
 
-    connect(ui->comboBox_positionerType,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &ValveWindow::onPositionerTypeChanged);
+    connect(ui->comboBox_positionerType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &ValveWindow::onPositionerTypeChanged);
 
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
 }

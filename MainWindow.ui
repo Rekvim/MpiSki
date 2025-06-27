@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>1066</width>
-    <height>1069</height>
+    <height>1075</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -386,7 +386,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_7">
+         <widget class="QGroupBox" name="groupBox_sensors">
           <property name="maximumSize">
            <size>
             <width>300</width>
@@ -1338,15 +1338,15 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_main">
+      <widget class="QWidget" name="tab_mainTests">
        <attribute name="title">
-        <string>Основной тест</string>
+        <string>Основные тесты</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_10">
         <item>
-         <widget class="QTabWidget" name="tabWidget_maintest">
+         <widget class="QTabWidget" name="tabWidget_mainTests">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_task">
            <attribute name="title">
@@ -1354,7 +1354,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_11">
             <item>
-             <widget class="QFrame" name="frame">
+             <widget class="QFrame" name="frame_chartTask">
               <property name="font">
                <font>
                 <pointsize>11</pointsize>
@@ -1399,11 +1399,11 @@
               <item>
                <widget class="QGroupBox" name="groupBox_8">
                 <property name="title">
-                 <string>Отображение графиков</string>
+                 <string>Отображение кривых</string>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_12">
                  <item>
-                  <widget class="QCheckBox" name="checkBox_task">
+                  <widget class="QCheckBox" name="checkBox_showCurve_task">
                    <property name="text">
                     <string>Задание</string>
                    </property>
@@ -1413,7 +1413,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_line">
+                  <widget class="QCheckBox" name="checkBox_showCurve_moving">
                    <property name="text">
                     <string>Датчик линейных перемещений</string>
                    </property>
@@ -1423,32 +1423,41 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_pressure1">
+                  <widget class="QCheckBox" name="checkBox_showCurve_pressure_1">
                    <property name="text">
                     <string>Датчик давления 1</string>
                    </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
                    <property name="checked">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_pressure2">
+                  <widget class="QCheckBox" name="checkBox_showCurve_pressure_2">
                    <property name="text">
                     <string>Датчик давления 2</string>
                    </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
                    <property name="checked">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_pressure3">
+                  <widget class="QCheckBox" name="checkBox_showCurve_pressure_3">
                    <property name="text">
                     <string>Датчик давления 3</string>
                    </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
                    <property name="checked">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -1481,7 +1490,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_14">
             <item>
-             <widget class="QFrame" name="frame_2">
+             <widget class="QFrame" name="frame_chartPressure">
               <property name="autoFillBackground">
                <bool>false</bool>
               </property>
@@ -1517,7 +1526,7 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <layout class="QHBoxLayout" name="horizontalLayout_regression">
               <item>
                <widget class="QCheckBox" name="checkBox_regression">
                 <property name="enabled">
@@ -1538,7 +1547,7 @@
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_12">
+               <spacer name="horizontalSpacer_regression">
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -1560,7 +1569,7 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_16">
             <item>
-             <widget class="QFrame" name="frame_3">
+             <widget class="QFrame" name="frame_chartFriction">
               <property name="autoFillBackground">
                <bool>false</bool>
               </property>
@@ -2114,9 +2123,9 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="horizontalLayout_mainTestsMenu">
           <item>
-           <spacer name="horizontalSpacer_10">
+           <spacer name="horizontalSpacer_mainTests">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
@@ -2129,14 +2138,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_main_save">
+           <widget class="QPushButton" name="pushButton_mainTests_save">
             <property name="text">
              <string>Сохранить</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_main_start">
+           <widget class="QPushButton" name="pushButton_mainTests_start">
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -2334,13 +2343,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_9">
+      <widget class="QWidget" name="tab_cyclicTest">
        <attribute name="title">
         <string>Циклический тест</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_39">
         <item>
-         <widget class="QFrame" name="frame_9">
+         <widget class="QFrame" name="frame_chartCyclicSolenoid">
           <property name="styleSheet">
            <string notr="true">background-color: rgb(152, 118, 84);</string>
           </property>
@@ -2352,15 +2361,15 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_41">
            <item>
-            <widget class="MyChart" name="Chart_cyclic_solenoid"/>
+            <widget class="MyChart" name="Chart_cyclicSolenoid"/>
            </item>
           </layout>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_30">
+         <layout class="QHBoxLayout" name="horizontalLayout_telemetryCyclicTest">
           <item>
-           <widget class="QGroupBox" name="groupBox_20">
+           <widget class="QGroupBox" name="groupBox_cyclicTest_sequence">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -2372,7 +2381,7 @@
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_21">
              <item>
-              <widget class="QLineEdit" name="lineEdit_cyclicTest_rangePercent">
+              <widget class="QLineEdit" name="lineEdit_cyclicTest_sequence">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -2382,7 +2391,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_21">
+           <widget class="QGroupBox" name="groupBox_cyclicTest_totalTime">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -2404,7 +2413,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_22">
+           <widget class="QGroupBox" name="groupBox_cyclicTest_cycles">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -2426,7 +2435,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_8">
+           <spacer name="horizontalSpacer_cyclicTest">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
@@ -3822,16 +3831,16 @@
   <tabstop>LineEdit_pressureSensor_2</tabstop>
   <tabstop>LineEdit_pressureSensor_3</tabstop>
   <tabstop>pushButton_init</tabstop>
-  <tabstop>tabWidget_maintest</tabstop>
+  <tabstop>tabWidget_mainTests</tabstop>
   <tabstop>Chart_task</tabstop>
-  <tabstop>checkBox_task</tabstop>
-  <tabstop>checkBox_line</tabstop>
-  <tabstop>checkBox_pressure1</tabstop>
-  <tabstop>checkBox_pressure2</tabstop>
-  <tabstop>checkBox_pressure3</tabstop>
+  <tabstop>checkBox_showCurve_task</tabstop>
+  <tabstop>checkBox_showCurve_moving</tabstop>
+  <tabstop>checkBox_showCurve_pressure_1</tabstop>
+  <tabstop>checkBox_showCurve_pressure_2</tabstop>
+  <tabstop>checkBox_showCurve_pressure_3</tabstop>
   <tabstop>checkBox_regression</tabstop>
-  <tabstop>pushButton_main_save</tabstop>
-  <tabstop>pushButton_main_start</tabstop>
+  <tabstop>pushButton_mainTests_save</tabstop>
+  <tabstop>pushButton_mainTests_start</tabstop>
   <tabstop>Chart_stroke</tabstop>
   <tabstop>pushButton_stroke_save</tabstop>
   <tabstop>pushButton_stroke_start</tabstop>

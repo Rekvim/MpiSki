@@ -9,21 +9,40 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     ui->setupUi(this);
 
     // Регулирующий
-    connect(ui->pushButton_addRangeRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onAddValueClicked);
-    connect(ui->pushButton_editRangeRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onEditValueClicked);
-    connect(ui->pushButton_removeRangeRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onRemoveValueClicked);
-    connect(ui->pushButton_addDelayRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onAddDelayClicked);
-    connect(ui->pushButton_editDelayRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onEditDelayClicked);
-    connect(ui->pushButton_removeDelayRegulatory, &QPushButton::clicked, this, &CyclicTestSettings::onRemoveDelayClicked);
+    connect(ui->pushButton_addRangeRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onAddValueClicked);
+
+    connect(ui->pushButton_editRangeRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onEditValueClicked);
+
+    connect(ui->pushButton_removeRangeRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onRemoveValueClicked);
+
+    connect(ui->pushButton_addDelayRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onAddDelayClicked);
+
+    connect(ui->pushButton_editDelayRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onEditDelayClicked);
+
+    connect(ui->pushButton_removeDelayRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onRemoveDelayClicked);
 
     // Отсечной
-    connect(ui->pushButton_addDelayShutOff, &QPushButton::clicked, this, &CyclicTestSettings::onAddDelayShutOffClicked);
-    connect(ui->pushButton_editDelayShutOff, &QPushButton::clicked, this, &CyclicTestSettings::onEditDelayShutOffClicked);
-    connect(ui->pushButton_removeDelayShutOff, &QPushButton::clicked, this, &CyclicTestSettings::onRemoveDelayShutOffClicked);
+    connect(ui->pushButton_addDelayShutOff, &QPushButton::clicked,
+            this, &CyclicTestSettings::onAddDelayShutOffClicked);
+
+    connect(ui->pushButton_editDelayShutOff, &QPushButton::clicked,
+            this, &CyclicTestSettings::onEditDelayShutOffClicked);
+
+    connect(ui->pushButton_removeDelayShutOff, &QPushButton::clicked,
+            this, &CyclicTestSettings::onRemoveDelayShutOffClicked);
 
     // Общие
-    connect(ui->pushButton_cancel, &QPushButton::clicked, this, &QDialog::reject);
-    connect(ui->pushButton_start, &QPushButton::clicked, this, &CyclicTestSettings::onPushButtonStartClicked);
+    connect(ui->pushButton_cancel, &QPushButton::clicked,
+            this, &QDialog::reject);
+
+    connect(ui->pushButton_start, &QPushButton::clicked,
+            this, &CyclicTestSettings::onPushButtonStartClicked);
 
     connect(ui->comboBox_testSelection, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CyclicTestSettings::onTestSelectionChanged);

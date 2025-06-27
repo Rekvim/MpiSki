@@ -110,7 +110,7 @@ private:
     QTimer *m_timerDI;
     quint64 m_startTime;
     quint64 m_initTime;
-    bool m_testing;
+    bool m_testing = false;
     QEventLoop *m_dacEventloop;
     bool m_stopSetDac;
     bool m_waitForButton = false;

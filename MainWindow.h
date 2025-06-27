@@ -36,11 +36,9 @@ public:
     void SetRegistry(Registry *registry);
     void SetPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
     void SetBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
-    void SetSensorsNumber(quint8 num);
-    // void SetSensorsNumber(quint8 num);
 
 private slots:
-
+    void SetSensorsNumber(quint8 num);
     void AddPoints(Charts chart, QVector<Point> points);
     void ClearPoints(Charts chart);
 
@@ -83,7 +81,7 @@ private slots:
     void onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges);
 private:
     Ui::MainWindow *ui;
-
+    void ВideTabByWidget(QWidget *page);
     TelemetryStore m_telemetry;
     void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
 
@@ -97,7 +95,7 @@ private:
 
     ReportSaver *m_reportSaver = nullptr;
     Program *m_program;
-    QThread *m_programthread;
+    QThread *m_programThread;
 
     QTimer* m_durationTimer;
     QElapsedTimer m_elapsedTimer;
@@ -122,12 +120,13 @@ private:
     QImage m_image_2;
     QImage m_image_3;
 
+    void DisplayDependingPattern();
+
     void onCyclicCountdown();
     bool m_testing;
     void InitCharts();
     void SaveChart(Charts chart);
     void GetImage(QLabel *label, QImage *image);
-    void InitReport();
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 signals:

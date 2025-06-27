@@ -11,17 +11,20 @@ StepTestSettings::StepTestSettings(QWidget *parent) :
     ui->pushButton_change_value->setEnabled(false);
     ui->pushButton_delete_value->setEnabled(false);
 
-    connect(ui->listWidget_value, &QListWidget::currentRowChanged, this, [=](int v) {
+    connect(ui->listWidget_value, &QListWidget::currentRowChanged,
+            this, [=](int v) {
         ui->pushButton_change_value->setEnabled(v >= 0);
         ui->pushButton_delete_value->setEnabled((v >= 0) && (ui->listWidget_value->count() > 1));
     });
 
-    connect(ui->pushButton_add_value, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_add_value, &QPushButton::clicked,
+            this, [=]() {
         ui->listWidget_value->addItem("50.0");
         ui->pushButton_delete_value->setEnabled(ui->listWidget_value->currentRow() >= 0);
     });
 
-    connect(ui->pushButton_delete_value, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_delete_value, &QPushButton::clicked,
+            this, [=]() {
         delete ui->listWidget_value->currentItem();
 
         if (ui->listWidget_value->count() == 1) {
@@ -31,7 +34,8 @@ StepTestSettings::StepTestSettings(QWidget *parent) :
         ui->listWidget_value->setCurrentRow(-1);
     });
 
-    connect(ui->pushButton_change_value, &QPushButton::clicked, this, [=]() {
+    connect(ui->pushButton_change_value, &QPushButton::clicked,
+            this, [=]() {
         bool ok;
         double d = QInputDialog::getDouble(this,
                                            "Ввод числа",
@@ -47,7 +51,8 @@ StepTestSettings::StepTestSettings(QWidget *parent) :
         }
     });
 
-    connect(ui->timeEdit, &QTimeEdit::timeChanged, this, [&](QTime time) {
+    connect(ui->timeEdit, &QTimeEdit::timeChanged,
+            this, [&](QTime time) {
         if (time > m_maxTime) {
             ui->timeEdit->setTime(m_maxTime);
         }
@@ -56,7 +61,8 @@ StepTestSettings::StepTestSettings(QWidget *parent) :
         }
     });
 
-    connect(ui->spinBox_T_value, &QSpinBox::valueChanged, this, [&](int value) {
+    connect(ui->spinBox_T_value, &QSpinBox::valueChanged,
+            this, [&](int value) {
         if (value < m_minTValue) {
             ui->spinBox_T_value->setValue(m_minTValue);
         }
