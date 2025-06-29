@@ -106,26 +106,33 @@ MainWindow::MainWindow(QWidget *parent)
         });
     }
 
-    connect(ui->pushButton_mainTests_save, &QPushButton::clicked, this, [&] {
-        if (ui->tabWidget_mainTests->currentWidget() == ui->tab_task) {
-            SaveChart(Charts::Task);
-        } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_pressure) {
-            SaveChart(Charts::Pressure);
-        } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_friction) {
-            SaveChart(Charts::Friction);
-        }
-    });
 
-    connect(ui->pushButton_mainTests_start,
+
+    connect(ui->pushButton_mainTest_start,
             &QPushButton::clicked,
             this,
             &MainWindow::ButtonStartMain);
 
-    connect(ui->pushButton_stroke_start,
+    connect(ui->pushButton_mainTest_save, &QPushButton::clicked, this, [&] {
+        if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_task) {
+            SaveChart(Charts::Task);
+        } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_pressure) {
+            SaveChart(Charts::Pressure);
+        } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_friction) {
+            SaveChart(Charts::Friction);
+        }
+    });
+
+    connect(ui->pushButton_strokeTest_start,
             &QPushButton::clicked,
             this,
             &MainWindow::ButtonStartStroke);
-    connect(ui->pushButton_tests_start,
+
+    connect(ui->pushButton_strokeTest_save, &QPushButton::clicked, this, [&] {
+        SaveChart(Charts::Stroke);
+    });
+
+    connect(ui->pushButton_optionalTests_start,
             &QPushButton::clicked,
             this,
             &MainWindow::ButtonStartOptional);
@@ -135,24 +142,24 @@ MainWindow::MainWindow(QWidget *parent)
             m_program,
             &Program::CyclicSolenoidTestStart);
 
-    connect(ui->pushButton_stroke_save, &QPushButton::clicked, this, [&] {
-        SaveChart(Charts::Stroke);
-    });
-
-    connect(ui->pushButton_tests_save, &QPushButton::clicked, this, [&] {
-        if (ui->tabWidget_tests->currentWidget() == ui->tab_response) {
+    connect(ui->pushButton_optionalTests_save, &QPushButton::clicked, this, [&] {
+        if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_response) {
             SaveChart(Charts::Response);
-        } else if (ui->tabWidget_tests->currentWidget() == ui->tab_resolution) {
+        } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_resolution) {
             SaveChart(Charts::Resolution);
-        } else if (ui->tabWidget_tests->currentWidget() == ui->tab_step) {
+        } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_step) {
             SaveChart(Charts::Step);
         }
     });
 
-    connect(ui->pushButton_cyclic_solenoid_save, &QPushButton::clicked,
+    connect(ui->pushButton_cyclicTest_start, &QPushButton::clicked,
+            this, &MainWindow::ButtonStartCyclicSolenoid);
+
+    connect(ui->pushButton_cyclicTest_save, &QPushButton::clicked,
             this, [&](){
         SaveChart(Charts::CyclicSolenoid);
     });
+
 
     connect(ui->pushButton_open, &QPushButton::clicked,
             m_program, &Program::button_open);
@@ -297,9 +304,6 @@ MainWindow::MainWindow(QWidget *parent)
             &Program::GetCyclicTestParameters,
             this, &MainWindow::GetCyclicTestParameters,
             Qt::BlockingQueuedConnection);
-
-    connect(ui->pushButton_cyclicSolenoidStart, &QPushButton::clicked,
-            this, &MainWindow::ButtonStartCyclicSolenoid);
 
     connect(m_program, &Program::Question,
             this, &MainWindow::Question,
@@ -668,10 +672,10 @@ void MainWindow::SetSensorsNumber(quint8 num)
     ui->groupBox_SettingCurrentSignal->setEnabled(!noSensors);
     ui->groupBox_SettingCurrentSignal->setEnabled(!noSensors);
 
-    ui->pushButton_mainTests_start->setEnabled(num > 1);
-    ui->pushButton_stroke_start->setEnabled(!noSensors);
-    ui->pushButton_tests_start->setEnabled(!noSensors);
-    ui->pushButton_cyclicSolenoidStart->setEnabled(!noSensors);
+    ui->pushButton_mainTest_start->setEnabled(num > 1);
+    ui->pushButton_strokeTest_start->setEnabled(!noSensors);
+    ui->pushButton_optionalTests_start->setEnabled(!noSensors);
+    ui->pushButton_cyclicTest_start->setEnabled(!noSensors);
 
     ui->doubleSpinBox_task->setEnabled(!noSensors);
     ui->verticalSlider_task->setEnabled(!noSensors);

@@ -1235,7 +1235,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_stroke">
+      <widget class="QWidget" name="tab_strokeTest">
        <attribute name="title">
         <string>Тест полного хода</string>
        </attribute>
@@ -1274,9 +1274,9 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_17">
+         <layout class="QHBoxLayout" name="horizontalLayout_strokeTest_menu">
           <item>
-           <widget class="QGroupBox" name="groupBox_14">
+           <widget class="QGroupBox" name="groupBox_strokeTest_forwardTime">
             <property name="title">
              <string>Время прямого хода:</string>
             </property>
@@ -1292,7 +1292,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_15">
+           <widget class="QGroupBox" name="groupBox__strokeTest_backwardTime">
             <property name="title">
              <string>Время обратного хода:</string>
             </property>
@@ -1308,7 +1308,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_16">
+           <spacer name="horizontalSpacer_strokeTest_menu">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
@@ -1321,14 +1321,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_stroke_save">
+           <widget class="QPushButton" name="pushButton_strokeTest_save">
             <property name="text">
              <string>Сохранить</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_stroke_start">
+           <widget class="QPushButton" name="pushButton_strokeTest_start">
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -1348,7 +1348,7 @@
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <widget class="QWidget" name="tab_task">
+          <widget class="QWidget" name="tab_mainTests_task">
            <attribute name="title">
             <string>График задания</string>
            </attribute>
@@ -1484,7 +1484,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_pressure">
+          <widget class="QWidget" name="tab_mainTests_pressure">
            <attribute name="title">
             <string>График давления от перемещения</string>
            </attribute>
@@ -1563,7 +1563,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_friction">
+          <widget class="QWidget" name="tab_mainTests_friction">
            <attribute name="title">
             <string>Сила трения от перемещения</string>
            </attribute>
@@ -1606,7 +1606,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_results">
+          <widget class="QWidget" name="tab_mainTests_results">
            <attribute name="title">
             <string>Результаты</string>
            </attribute>
@@ -2138,14 +2138,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_mainTests_save">
+           <widget class="QPushButton" name="pushButton_mainTest_save">
             <property name="text">
              <string>Сохранить</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_mainTests_start">
+           <widget class="QPushButton" name="pushButton_mainTest_start">
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -2155,7 +2155,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_tests">
+      <widget class="QWidget" name="tab_optionalTests">
        <attribute name="title">
         <string>Опциональные тесты</string>
        </attribute>
@@ -2163,15 +2163,15 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_tests">
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
-          <widget class="QWidget" name="tab_response">
+          <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
             <string>Тест на чувствительность реагирования</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_29">
             <item>
-             <widget class="QFrame" name="frame_4">
+             <widget class="QFrame" name="frame_chartResponse">
               <property name="autoFillBackground">
                <bool>false</bool>
               </property>
@@ -2208,13 +2208,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_resolution">
+          <widget class="QWidget" name="tab_optionalTests_resolution">
            <attribute name="title">
             <string>Тест на разрешающую способность</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_31">
             <item>
-             <widget class="QFrame" name="frame_5">
+             <widget class="QFrame" name="frame_chartResolution">
               <property name="autoFillBackground">
                <bool>false</bool>
               </property>
@@ -2251,13 +2251,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_step">
+          <widget class="QWidget" name="tab_optionalTests_step">
            <attribute name="title">
             <string>Тест шаговой реакции</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_33">
             <item>
-             <widget class="QFrame" name="frame_7">
+             <widget class="QFrame" name="frame_chartStep">
               <property name="autoFillBackground">
                <bool>false</bool>
               </property>
@@ -2294,7 +2294,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_step_results">
+          <widget class="QWidget" name="tab_optionalTests_stepResults">
            <attribute name="title">
             <string>Результаты</string>
            </attribute>
@@ -2326,14 +2326,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_tests_save">
+           <widget class="QPushButton" name="pushButton_optionalTests_save">
             <property name="text">
              <string>Сохранить</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_tests_start">
+           <widget class="QPushButton" name="pushButton_optionalTests_start">
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -2465,14 +2465,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_cyclic_solenoid_save">
+           <widget class="QPushButton" name="pushButton_cyclicTest_save">
             <property name="text">
              <string>Сохранить</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_cyclicSolenoidStart">
+           <widget class="QPushButton" name="pushButton_cyclicTest_start">
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -2490,7 +2490,7 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -3839,14 +3839,14 @@
   <tabstop>checkBox_showCurve_pressure_2</tabstop>
   <tabstop>checkBox_showCurve_pressure_3</tabstop>
   <tabstop>checkBox_regression</tabstop>
-  <tabstop>pushButton_mainTests_save</tabstop>
-  <tabstop>pushButton_mainTests_start</tabstop>
+  <tabstop>pushButton_mainTest_save</tabstop>
+  <tabstop>pushButton_mainTest_start</tabstop>
   <tabstop>Chart_stroke</tabstop>
-  <tabstop>pushButton_stroke_save</tabstop>
-  <tabstop>pushButton_stroke_start</tabstop>
+  <tabstop>pushButton_strokeTest_save</tabstop>
+  <tabstop>pushButton_strokeTest_start</tabstop>
   <tabstop>tabWidget_tests</tabstop>
-  <tabstop>pushButton_tests_save</tabstop>
-  <tabstop>pushButton_tests_start</tabstop>
+  <tabstop>pushButton_optionalTests_save</tabstop>
+  <tabstop>pushButton_optionalTests_start</tabstop>
   <tabstop>tab_widget</tabstop>
   <tabstop>pushButton_report</tabstop>
   <tabstop>pushButton_open</tabstop>
