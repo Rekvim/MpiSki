@@ -14,9 +14,10 @@ public:
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,
-        const QImage& image1 = QImage(),
-        const QImage& image2 = QImage(),
-        const QImage& image3 = QImage()
+        const QImage& imageChartTask = QImage(),
+        const QImage& imageChartPressure = QImage(),
+        const QImage& imageChartFriction = QImage(),
+        const QImage& imageChartStep = QImage()
         ) override;
     QString templatePath() const override { return ":/excel/Reports/SKI_C_SACVT.xlsx"; }
 };

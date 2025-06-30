@@ -15,9 +15,10 @@ public:
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,
-        const QImage& image1 = QImage(),
-        const QImage& image2 = QImage(),
-        const QImage& image3 = QImage()
+        const QImage& imageChartTask = QImage(),
+        const QImage& imageChartPressure = QImage(),
+        const QImage& imageChartFriction = QImage(),
+        const QImage& imageChartStep = QImage()
     ) = 0;
 
     inline QString safeToString(double val) {

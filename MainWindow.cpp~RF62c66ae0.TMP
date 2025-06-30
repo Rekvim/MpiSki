@@ -356,7 +356,7 @@ MainWindow::MainWindow(QWidget *parent)
                                    *m_registry->GetObjectInfo(),
                                    *m_registry->GetValveInfo(),
                                    *m_registry->GetOtherParameters(),
-                                   m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
+                                   m_imageChartTask, m_imageChartPressure, m_imageChartFriction);
 
         qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 
@@ -1167,28 +1167,24 @@ void MainWindow::SaveChart(Charts chart)
 
     switch (chart) {
     case Charts::Task:
-        ui->label_imageChartTask->setPixmap(pix);
+        ui->label_imageChartFriction->setPixmap(pix);
         m_imageChartTask = img;
         break;
     case Charts::Stroke:
         break;
     case Charts::Response:
-        break;
     case Charts::Resolution:
-        break;
     case Charts::Step:
-        m_imageChartStep = img;
-        break;
+
     case Charts::Pressure:
         ui->label_imageChartPressure->setPixmap(pix);
         m_imageChartPressure = img;
-        break;
+
     case Charts::Friction:
-        ui->label_imageChartFriction->setPixmap(pix);
+        ui->label_imageChartTask->setPixmap(pix);
         m_imageChartFriction = img;
-        break;
+
     case Charts::Trend:
-        break;
     case Charts::CyclicSolenoid:
         break;
     default:

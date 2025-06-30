@@ -8,9 +8,10 @@ void ReportBuilder_C_CVT::buildReport(
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
-    const QImage& image1,
-    const QImage& image2,
-    const QImage& image3
+    const QImage& imageChartTask,
+    const QImage& imageChartPressure,
+    const QImage& imageChartFriction,
+    const QImage& imageChartStep
     )
 {
 
@@ -77,8 +78,12 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({"Результат теста шаговой реакции", 13, 13, otherParams.safePosition});
     report.data.push_back({"Результат теста шаговой реакции", 14, 13, valveInfo.driveModel});
 
+    // Страница:Результат теста шаговой реакции; Блок: График теста шаговой реакции
+    report.images.push_back({"Результат теста шаговой реакции", 18, 2, imageChartStep}); // график зависимости ход штока/управляющий сигнал мА
+
+
     // Страница:Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
-    quint16 excelRow = 23;
+    quint16 excelRow = 55;
     for (auto &r : telemetryStore.stepResults) {
         report.data.push_back({ "Результат теста шаговой реакции", excelRow, 3, r.range });
         report.data.push_back({ "Результат теста шаговой реакции", excelRow, 4, r.T86sec });
@@ -139,9 +144,9 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({"Отчет", 68, 4, objectInfo.FIO});
 
     // Страница: Отчет; Блок: Диагностические графики клапана, поз.
-    report.images.push_back({"Отчет", 80, 1, image1}); // график зависимости ход штока/управляющий сигнал мА
-    report.images.push_back({"Отчет", 105, 1, image2}); // график зависимости ход штока/давление в приводе
-    report.images.push_back({"Отчет", 130, 1, image3}); // график трения
+    report.images.push_back({"Отчет", 80, 1, imageChartTask}); // график зависимости ход штока/управляющий сигнал мА
+    report.images.push_back({"Отчет", 105, 1, imageChartPressure}); // график зависимости ход штока/давление в приводе
+    report.images.push_back({"Отчет", 130, 1, imageChartFriction}); // график трения
 
     // Страница: Отчет; Блок: Дата
     report.data.push_back({"Отчет", 156, 12, otherParams.date});

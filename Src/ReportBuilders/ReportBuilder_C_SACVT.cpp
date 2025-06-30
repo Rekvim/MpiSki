@@ -8,9 +8,10 @@ void ReportBuilder_C_SACVT::buildReport(
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
-    const QImage& image1,
-    const QImage& image2,
-    const QImage& image3
+    const QImage& imageChartTask,
+    const QImage& imageChartPressure,
+    const QImage& imageChartFriction,
+    const QImage& imageChartStep
     )
 {
     // Лист 1; Страница: Отчет ЦТ; Блок: Данные по объекту
@@ -148,9 +149,11 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({"Результат теста шаговой реакции", 15, 13, otherParams.strokeMovement});
     report.data.push_back({"Результат теста шаговой реакции", 16, 13, valveInfo.materialStuffingBoxSeal});
 
-    // Страница:Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
+    // Страница:Результат теста шаговой реакции; Блок: График теста шаговой реакции
+    report.images.push_back({"Результат теста шаговой реакции", 20, 2, imageChartStep}); // график зависимости ход штока/управляющий сигнал мА
 
-    quint16 excelRow = 23;
+    // Страница:Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
+    quint16 excelRow = 57;
     for (auto &r : telemetryStore.stepResults) {
         report.data.push_back({ "Результат теста шаговой реакции", excelRow, 3, r.range });
         report.data.push_back({ "Результат теста шаговой реакции", excelRow, 4, r.T86sec});
@@ -208,9 +211,9 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({"Отчет", 70, 4, objectInfo.FIO});
 
     // Страница: Отчет; Блок: Диагностические графики клапана, поз.
-    report.images.push_back({"Отчет", 82, 1, image1}); // график зависимости ход штока/управляющий сигнал мА
-    report.images.push_back({"Отчет", 106, 1, image2}); // график зависимости ход штока/давление в приводе
-    report.images.push_back({"Отчет", 132, 1, image3}); // график трения
+    report.images.push_back({"Отчет", 82, 1, imageChartTask}); // график зависимости ход штока/управляющий сигнал мА
+    report.images.push_back({"Отчет", 106, 1, imageChartPressure}); // график зависимости ход штока/давление в приводе
+    report.images.push_back({"Отчет", 132, 1, imageChartFriction}); // график трения
 
     // Страница: Отчет; Блок: Дата
     report.data.push_back({"Отчет", 156, 12, otherParams.date});

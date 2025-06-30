@@ -116,9 +116,10 @@ private:
     OtherTestSettings *m_resolutionTestSettings;
     CyclicTestSettings *m_cyclicTestSettings;
 
-    QImage m_image_1;
-    QImage m_image_2;
-    QImage m_image_3;
+    QImage m_imageChartTask;
+    QImage m_imageChartPressure;
+    QImage m_imageChartFriction;
+    QImage m_imageChartStep;
 
     void DisplayDependingPattern();
 

@@ -8,18 +8,12 @@ void ReportBuilder_B_CVT::buildReport(
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
-    const QImage& image1,
-    const QImage& image2,
-    const QImage& image3
+    const QImage& imageChartTask,
+    const QImage& imageChartPressure,
+    const QImage& imageChartFriction,
+    const QImage& imageChartStep
     )
 {
-    Q_UNUSED(image1);
-    Q_UNUSED(image2);
-    Q_UNUSED(image3);
-
-    Q_UNUSED(image1);
-    Q_UNUSED(image2);
-    Q_UNUSED(image3);
 
     // Страница: Отчет ЦТ; Блок: Данные по объекту
     report.data.push_back({"Отчет ЦТ", 4, 4, objectInfo.object});
