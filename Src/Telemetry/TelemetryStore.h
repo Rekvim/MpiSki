@@ -1,94 +1,96 @@
-    #ifndef TELEMETRYSTORE_H
-    #define TELEMETRYSTORE_H
+#ifndef TELEMETRYSTORE_H
+#define TELEMETRYSTORE_H
 
-    #pragma once
-    #include <QVector>
+#pragma once
 
-    struct StepRecord {
-        QString range;
-        QString T86sec;
-        QString overshoot;
-    };
+#include <QVector>
+#include <QString>
 
-    struct RangeDeviationRecord {
-        int rangePercent = 0;
-        double maxForwardValue = 0.0;
-        quint32 maxForwardCycle = 0;
+/** Результат одного шага StepTest */
+struct StepRecord {
+    QString range;
+    qint64 T_ms; // время достижения T-значения в миллисекундах (0 = ошибка)
+    double overshootPct; // перерегулирование, %
+};
 
-        double maxReverseValue = 0.0;
-        quint32 maxReverseCycle = 0;
-    };
+/** Описание точки в циклическом тесте */
+struct RangeDeviationRecord {
+    int rangePercent = 0;
+    double  maxForwardValue = 0.0;
+    quint32 maxForwardCycle = 0;
+    double maxReverseValue = 0.0;
+    quint32 maxReverseCycle = 0;
+};
 
-    struct CyclicTestRecord {
-        QString sequence = "";
-        QString cycles = "";
-        QString totalTime = "";
+/** Полные результаты циклического теста */
+struct CyclicTestRecord {
+    QString sequence; // например {0,50,100}
+    quint16 cycles = 0;
+    double totalTimeSec = 0; // миллисекунды
+    QVector<RangeDeviationRecord> ranges;
+    int switch3to0Count = 0;
+    int switch0to3Count = 0;
+};
 
-        QVector<RangeDeviationRecord> ranges;
+/** StrokeTest */
+struct StrokeTestRecord {
+    quint64 timeForwardMs = 0;
+    quint64 timeBackwardMs = 0;
+};
 
-        int switch_3_0_count = 0;
-        int switch_0_3_count = 0;
-    };
-    struct StrokeTestRecord {
-        QString timeForward = "";
-        QString timeBackward = "";
-    };
+struct MainTestRecord {
+    double dynamicError_mean = 0.0;
+    double dynamicError_meanPercent = 0.0;
 
-    struct DinamicRecord {
-        QString dinamicReal = "";
-        QString dinamicRecomend = "";
+    double dynamicError_max = 0.0;
+    double dynamicError_maxPercent = 0.0;
 
-        QString dinamicIpReal = "";
-        QString dinamicIpRecomend = "";
-    };
+    double dynamicReal = 0.0;
 
-    struct RangeRecord {
-        QString rangeReal = "";
-        QString rangeRecomend = "";
-        QString rangePressure = "";
-    };
+    double lowLimit = 0.0;
+    double highLimit = 0.0;
 
-    struct StrokeRecord {
-        QString strokeReal = "";
-        QString strokeRecomend = "";
-    };
+    double springLow = 0.0;
+    double springHigh = 0.0;
 
-    struct FrictionRecord {
-        QString friction = "";
-        QString frictionPercent = "";
-    };
+    double pressureDifference = 0.0;
+    double frictionForce = 0.0; // сила трения
+    double frictionPercent = 0.0;  // в процентах
+};
 
-    struct SupplyRecord {
-        QString supplyPressure = "";
-    };
+/** Stroke (ход штока) */
+struct StrokeRecord {
+    double strokeReal = 0.0;
+    double strokeRecomend = 0.0;
+};
 
-    class TelemetryStore {
-    public:
-        QVector<StepRecord> stepResults;
+/** Supply Pressure */
+struct SupplyRecord {
+    double pressure_bar = 0.0;
+};
 
-        CyclicTestRecord cyclicTestRecord;
-        StrokeTestRecord strokeTestRecord;
-        DinamicRecord dinamicRecord;
-        RangeRecord rangeRecord;
-        StrokeRecord strokeRecord;
-        FrictionRecord frictionRecord;
-        SupplyRecord supplyRecord;
+/** Хранилище всех телеметрийных данных */
+class TelemetryStore {
+public:
+    QVector<StepRecord> stepResults;
+    CyclicTestRecord cyclicTestRecord;
+    StrokeTestRecord strokeTestRecord;
+    StrokeRecord strokeRecord;
+    SupplyRecord supplyRecord;
+    MainTestRecord mainTestRecord;
 
-        QVector<int> doOnCounts;
-        QVector<int> doOffCounts;
+    QVector<int> doOnCounts;
+    QVector<int> doOffCounts;
 
-        void clearAll() {
-            stepResults.clear();
-            cyclicTestRecord = {};
-            strokeTestRecord = {};
-            dinamicRecord = {};
-            rangeRecord = {};
-            strokeRecord = {};
-            frictionRecord = {};
-            supplyRecord = {};
-            doOnCounts.clear();
-            doOffCounts.clear();
-        }
-    };
+    void clearAll() {
+        stepResults.clear();
+        cyclicTestRecord = {};
+        strokeTestRecord = {};
+        strokeRecord     = {};
+        supplyRecord     = {};
+        doOnCounts.clear();
+        doOffCounts.clear();
+    }
+};
 
-    #endif // TELEMETRYSTORE_H
+#endif // TELEMETRYSTORE_H

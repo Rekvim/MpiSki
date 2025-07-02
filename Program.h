@@ -55,7 +55,7 @@ enum class TextObjects {
     Label_strokeTest_forwardTime,
     Label_strokeTest_backwardTime,
 
-    LineEdit_dinamicError,
+    LineEdit_dinamicReal,
     lineEdit_strokeReal,
     lineEdit_rangeReal,
     LineEdit_friction,
@@ -98,8 +98,7 @@ private:
     Registry *m_registry;
 
     MPI m_mpi;
-    TelemetryStore m_store;
-
+    TelemetryStore m_telemetryStore;
 
     QTimer* m_diPollTimer = nullptr;
     int m_cyclicDI1Count = 0;
@@ -120,6 +119,8 @@ private:
 
     void pollDIForCyclic();
 signals:
+    void TelemetryUpdated(const TelemetryStore &store);
+
     void SetText(const TextObjects object, const QString &text);
     void SetTextColor(const TextObjects object, const QColor color);
     void SetTask(qreal task);
@@ -153,8 +154,6 @@ signals:
     void SetStepResults(QVector<StepTest::TestResult> results, quint32 T_value);
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
-public  slots:
-    void onDOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
 
 private slots:
     void SetMultipleDO(const QVector<bool>& states);
@@ -188,6 +187,7 @@ public slots:
     void StrokeTestStart();
     void StartOptionalTest(quint8 testNum);
     void CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p);
+    void onDOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
 
     void TerminateTest();
     void button_open();

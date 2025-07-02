@@ -25,7 +25,7 @@ struct ValveInfo
     QString PN = "";
     QString positionerModel = "";
     QString positionerType = "";
-    qreal dinamicError = 0.0;
+    qreal dinamicErrorRecomend = 0.0;
 
     QString solenoidValveModel = "";
     QString limitSwitchModel = "";
@@ -36,7 +36,7 @@ struct ValveInfo
     QString driveModel = "";
     quint32 safePosition = 0;
     quint32 driveType = 0;
-    QString driveRange = "";
+    QString driveRecomendRange = "";
     qreal driveDiameter = 0.0;
 
     quint32 toolNumber = 0;

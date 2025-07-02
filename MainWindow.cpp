@@ -52,18 +52,29 @@ MainWindow::MainWindow(QWidget *parent)
     m_labels[TextObjects::Label_connectedSensorsNumber] = ui->label_connectedSensorsNumber;
     m_labels[TextObjects::Label_startingPositionValue] = ui->label_startingPositionValue;
     m_labels[TextObjects::Label_finalPositionValue] = ui->label_finalPositionValue;
-    m_labels[TextObjects::Label_lowLimitValue] = ui->label_lowLimitValue;
-    m_labels[TextObjects::Label_highLimitValue] = ui->label_highLimitValue;
-    m_labels[TextObjects::Label_pressureDifferenceValue] = ui->label_pressureDifferenceValue;
-    m_labels[TextObjects::Label_frictionForceValue] = ui->label_frictionForceValue;
-    m_labels[TextObjects::label_frictionPercentValue] = ui->label_frictionPercentValue;
-    m_labels[TextObjects::Label_dynamicErrorMean] = ui->label_dynamicErrorMean;
-    m_labels[TextObjects::Label_dynamicErrorMeanPercent] = ui->label_dynamicErrorMeanPercent;
-    m_labels[TextObjects::Label_dynamicErrorMax] = ui->label_dynamicErrorMax;
-    m_labels[TextObjects::Label_dynamicErrorMaxPercent] = ui->label_dynamicErrorMaxPercent;
-    m_labels[TextObjects::Label_valveStroke_range] = ui->label_valveStroke_range;
+
+    //
+    // m_labels[TextObjects::Label_dynamicErrorMean] = ui->label_dynamicErrorMean;
+    // m_labels[TextObjects::Label_dynamicErrorMeanPercent] = ui->label_dynamicErrorMeanPercent;
+    // m_labels[TextObjects::Label_dynamicErrorMax] = ui->label_dynamicErrorMax;
+    // m_labels[TextObjects::Label_dynamicErrorMaxPercent] = ui->label_dynamicErrorMaxPercent;
+    // m_lineEdits[TextObjects::LineEdit_dinamicReal] = ui->lineEdit_dinamicReal;
+
+    // m_labels[TextObjects::Label_lowLimitValue] = ui->label_lowLimitValue;
+    // m_labels[TextObjects::Label_highLimitValue] = ui->label_highLimitValue;
+    // m_lineEdits[TextObjects::LineEdit_rangePressure] = ui->lineEdit_rangePressure;
+    // m_lineEdits[TextObjects::lineEdit_rangeReal] = ui->lineEdit_rangeReal;
+
+    // m_labels[TextObjects::Label_pressureDifferenceValue] = ui->label_pressureDifferenceValue;
+    // m_labels[TextObjects::Label_frictionForceValue] = ui->label_frictionForceValue;
+    // m_labels[TextObjects::label_frictionPercentValue] = ui->label_frictionPercentValue;
+    // m_lineEdits[TextObjects::LineEdit_friction] = ui->lineEdit_friction;
+    // m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercent;
+
+    //
     m_labels[TextObjects::Label_strokeTest_forwardTime] = ui->label_strokeTest_forwardTime;
     m_labels[TextObjects::Label_strokeTest_backwardTime] = ui->label_strokeTest_backwardTime;
+    m_labels[TextObjects::Label_valveStroke_range] = ui->label_valveStroke_range;
 
     m_lineEdits[TextObjects::LineEdit_linearSensor] = ui->lineEdit_linearSensor;
     m_lineEdits[TextObjects::LineEdit_linearSensorPercent] = ui->lineEdit_linearSensorPercent;
@@ -71,14 +82,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->LineEdit_pressureSensor_2;
     m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->LineEdit_pressureSensor_3;
     m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
-    m_lineEdits[TextObjects::LineEdit_dinamicError] = ui->lineEdit_dinamicReal;
     m_lineEdits[TextObjects::lineEdit_strokeReal] = ui->lineEdit_strokeReal;
-    m_lineEdits[TextObjects::lineEdit_rangeReal] = ui->lineEdit_rangeReal;
-    m_lineEdits[TextObjects::LineEdit_friction] = ui->lineEdit_friction;
-    m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercent;
+
     m_lineEdits[TextObjects::LineEdit_strokeTest_forwardTime] = ui->lineEdit_strokeTest_forwardTime;
     m_lineEdits[TextObjects::LineEdit_strokeTest_backwardTime] = ui->lineEdit_strokeTest_backwardTime;
-    m_lineEdits[TextObjects::LineEdit_rangePressure] = ui->lineEdit_rangePressure;
 
     m_program = new Program;
     m_programThread = new QThread(this);
@@ -352,7 +359,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         ReportSaver::Report report;
         reportBuilder->buildReport(report,
-                                   m_telemetry,
+                                   m_telemetryStore,
                                    *m_registry->GetObjectInfo(),
                                    *m_registry->GetValveInfo(),
                                    *m_registry->GetOtherParameters(),
@@ -394,6 +401,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_program, &Program::SetSolenoidResults,
             this, &MainWindow::SetSolenoidResults);
+
+    connect(m_program, &Program::TelemetryUpdated,
+            this, &MainWindow::onTelemetryUpdated);
 }
 
 MainWindow::~MainWindow()
@@ -401,6 +411,73 @@ MainWindow::~MainWindow()
     delete ui;
     m_programThread->quit();
     m_programThread->wait();
+}
+
+void MainWindow::onTelemetryUpdated(const TelemetryStore &s)
+{
+    m_telemetryStore = s;
+
+    // --- MainTestResults ---
+    // Динамическая погрешность
+    ui->label_dynamicErrorMean->setText(
+        QString::asprintf("%.3f mA", s.mainTestRecord.dynamicError_mean));
+    ui->label_dynamicErrorMeanPercent->setText(
+        QString::asprintf("%.2f %%", s.mainTestRecord.dynamicError_meanPercent));
+    ui->label_dynamicErrorMax->setText(
+        QString::asprintf("%.3f mA", s.mainTestRecord.dynamicError_max));
+    ui->label_dynamicErrorMaxPercent->setText(
+        QString::asprintf("%.2f %%", s.mainTestRecord.dynamicError_maxPercent));
+    ui->lineEdit_dynamicErrorReal->setText(
+        QString::asprintf("%.2f", s.mainTestRecord.dynamicReal));
+
+    // Границы диапазона
+    ui->label_lowLimitValue->setText(
+        QString::asprintf("%.2f bar", s.mainTestRecord.lowLimit));
+    ui->label_highLimitValue->setText(
+        QString::asprintf("%.2f bar", s.mainTestRecord.highLimit));
+    ui->lineEdit_rangePressure->setText(
+        QString::asprintf("%.2f – %.2f",
+                          s.mainTestRecord.lowLimit,
+                          s.mainTestRecord.highLimit));
+    ui->lineEdit_driveRangeReal->setText(
+        QString::asprintf("%.2f – %.2f",
+                          s.mainTestRecord.springLow,
+                          s.mainTestRecord.springHigh));
+
+    // Разница давления
+    ui->label_pressureDifferenceValue->setText(
+        QString::asprintf("%.3f bar", s.mainTestRecord.pressureDifference));
+
+    // Трение
+    ui->label_frictionForceValue->setText(
+        QString::asprintf("%.3f H", s.mainTestRecord.frictionForce));
+    ui->label_frictionPercentValue->setText(
+        QString::asprintf("%.2f %%", s.mainTestRecord.frictionPercent));
+    ui->lineEdit_friction->setText(
+        QString::asprintf("%.3f", s.mainTestRecord.frictionForce));
+    ui->lineEdit_frictionPercent->setText(
+        QString::asprintf("%.2f", s.mainTestRecord.frictionPercent));
+
+    // --- StrokeTestResults ---
+    // Время прямого хода
+    QTime tF(0, 0);
+    tF = tF.addMSecs(s.strokeTestRecord.timeForwardMs);
+    ui->label_strokeTest_forwardTime->setText(tF.toString("mm:ss.zzz"));
+    ui->lineEdit_strokeTest_forwardTime->setText(tF.toString("mm:ss.zzz"));
+    // Время обратного хода
+    QTime tB(0, 0);
+    tB = tB.addMSecs(s.strokeTestRecord.timeBackwardMs);
+    ui->label_strokeTest_backwardTime->setText(tB.toString("mm:ss.zzz"));
+    ui->lineEdit_strokeTest_backwardTime->setText(tB.toString("mm:ss.zzz"));
+
+    // --- CyclicTestResults ---
+    ui->lineEdit_cyclicTest_sequence->setText(s.cyclicTestRecord.sequence);
+    ui->lineEdit_cyclicTest_cycles->setText(
+        QString::number(s.cyclicTestRecord.cycles));
+    QTime tC(0, 0);
+    tC = tC.addMSecs(s.cyclicTestRecord.totalTimeSec);
+    ui->lineEdit_cyclicTest_totalTime->setText(
+        tC.toString("hh:mm:ss.zzz"));
 }
 
 void MainWindow::onCyclicCountdown()
@@ -509,12 +586,12 @@ void MainWindow::SetRegistry(Registry *registry)
     ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
     ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
     ui->lineEdit_safePosition->setText(otherParameters->safePosition);
-    ui->lineEdit_dinamicRecomend->setText(QString::number(valveInfo->dinamicError, 'f', 2));
+    ui->lineEdit_dynamicErrorRecomend->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
     ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo->materialStuffingBoxSeal);
 
 
     ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_rangeRecomend->setText(valveInfo->driveRange);
+    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
 
     if (valveInfo->safePosition != 0) {
         m_stepTestSettings->reverse();
@@ -588,7 +665,7 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
-    m_telemetry.stepResults.clear();
+    m_telemetryStore.stepResults.clear();
     for (const auto &r : results) {
 
         QString rangeStr = QString("%1-%2").arg(r.from).arg(r.to);
@@ -599,10 +676,10 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
 
         StepRecord rec;
         rec.range = rangeStr;
-        rec.T86sec = timeStr;
-        rec.overshoot = overshootStr;
+        rec.T_ms = T_value;
+        rec.overshootPct = r.overshoot;
 
-        m_telemetry.stepResults.push_back(rec);
+        m_telemetryStore.stepResults.push_back(rec);
     }
 }
 
@@ -623,7 +700,7 @@ void MainWindow::SetSolenoidResults(QString sequence, quint16 cycles, double tot
 
 void MainWindow::onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges)
 {
-    m_telemetry.cyclicTestRecord.ranges = ranges;
+    m_telemetryStore.cyclicTestRecord.ranges = ranges;
 }
 
 void MainWindow::ВideTabByWidget(QWidget *page) {
@@ -1215,37 +1292,35 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
 }
 
 void MainWindow::collectTestTelemetryData() {
-    // динамика
-    m_telemetry.dinamicRecord.dinamicReal = ui->lineEdit_dinamicReal->text();
-    m_telemetry.dinamicRecord.dinamicRecomend= ui->lineEdit_dinamicRecomend->text();
-    m_telemetry.dinamicRecord.dinamicIpReal = ui->lineEdit_dinamicIpReal->text();
-    m_telemetry.dinamicRecord.dinamicIpRecomend = ui->lineEdit_dinamicIpRecomend->text();
+       // динамика
+//     m_telemetryStore.mainTestRecord.dinamicReal = ui->lineEdit_dinamicReal->text();
+//     m_telemetryStore.dinamicRecord.dinamicRecomend= ui->lineEdit_dinamicRecomend->text();
 
-    // ход клапана
-    m_telemetry.strokeTestRecord.timeForward = ui->lineEdit_strokeTest_forwardTime->text();
-    m_telemetry.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text();
+//     // ход клапана
+//     m_telemetryStore.strokeTestRecord.timeForward = ui->lineEdit_strokeTest_forwardTime->text();
+//     m_telemetryStore.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text();
 
-    // Циклический тест
-    m_telemetry.cyclicTestRecord.sequence = ui->lineEdit_cyclicTest_sequence->text();
-    m_telemetry.cyclicTestRecord.cycles = ui->lineEdit_cyclicTest_cycles->text();
-    m_telemetry.cyclicTestRecord.totalTime = ui->lineEdit_cyclicTest_totalTime->text();
+//     // Циклический тест
+//     m_telemetryStore.cyclicTestRecord.sequence = ui->lineEdit_cyclicTest_sequence->text();
+//     m_telemetryStore.cyclicTestRecord.cycles = ui->lineEdit_cyclicTest_cycles->text();
+//     m_telemetryStore.cyclicTestRecord.totalTime = ui->lineEdit_cyclicTest_totalTime->text();
 
-    // ход штока / вала
-    m_telemetry.strokeRecord.strokeReal = ui->lineEdit_strokeReal->text();
-    m_telemetry.strokeRecord.strokeRecomend = ui->lineEdit_strokeRecomend->text();
+//     // ход штока / вала
+//     m_telemetryStore.strokeRecord.strokeReal = ui->lineEdit_strokeReal->text();
+//     m_telemetryStore.strokeRecord.strokeRecomend = ui->lineEdit_strokeRecomend->text();
 
-    // m_telemetry.data.push_back({30, 5, ui->lineEdit_strokeReal});
-    // m_telemetry.data.push_back({30, 8, ui->lineEdit_strokeRecomend});
+//     // m_telemetryStore.data.push_back({30, 5, ui->lineEdit_strokeReal});
+//     // m_telemetryStore.data.push_back({30, 8, ui->lineEdit_strokeRecomend});
 
-    // диапазон
-    m_telemetry.rangeRecord.rangeReal = ui->lineEdit_rangeReal->text();
-    m_telemetry.rangeRecord.rangeRecomend= ui->lineEdit_rangeRecomend->text();
-    m_telemetry.rangeRecord.rangePressure= ui->lineEdit_rangePressure->text();
+//     // диапазон
+//     m_telemetryStore.rangeRecord.rangeReal = ui->lineEdit_rangeReal->text();
+//     m_telemetryStore.rangeRecord.rangeRecomend= ui->lineEdit_rangeRecomend->text();
+//     m_telemetryStore.rangeRecord.rangePressure= ui->lineEdit_rangePressure->text();
 
-    // трение
-    m_telemetry.frictionRecord.friction  = ui->lineEdit_friction->text();
-    m_telemetry.frictionRecord.frictionPercent = ui->lineEdit_frictionPercent->text();
+//     // трение
+//     m_telemetryStore.frictionRecord.friction  = ui->lineEdit_friction->text();
+//     m_telemetryStore.frictionRecord.frictionPercent = ui->lineEdit_frictionPercent->text();
 
-    // подача
-    m_telemetry.supplyRecord.supplyPressure = ui->lineEdit_supplyPressure->text();
-}
+//     // подача
+//     m_telemetryStore.supplyRecord.supplyPressure = ui->lineEdit_supplyPressure->text();
+    }

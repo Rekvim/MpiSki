@@ -120,10 +120,16 @@ void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
 {
     QString forwardText = QTime(0, 0).addMSecs(forwardTime).toString("mm:ss.zzz");
     QString backwardText = QTime(0, 0).addMSecs(backwardTime).toString("mm:ss.zzz");
-    emit SetText(TextObjects::Label_strokeTest_forwardTime, forwardText);
-    emit SetText(TextObjects::LineEdit_strokeTest_forwardTime, forwardText);
-    emit SetText(TextObjects::Label_strokeTest_backwardTime, backwardText);
-    emit SetText(TextObjects::LineEdit_strokeTest_backwardTime, backwardText);
+    // emit SetText(TextObjects::Label_strokeTest_forwardTime, forwardText);
+    // emit SetText(TextObjects::LineEdit_strokeTest_forwardTime, forwardText);
+    // emit SetText(TextObjects::Label_strokeTest_backwardTime, backwardText);
+    // emit SetText(TextObjects::LineEdit_strokeTest_backwardTime, backwardText);
+
+    auto &r = m_telemetryStore.strokeTestRecord;
+    r.timeBackwardMs = forwardTime;
+    r.timeBackwardMs = backwardTime;
+
+    emit TelemetryUpdated(m_telemetryStore);
 }
 
 void Program::AddRegression(const QVector<QPointF> &points)
@@ -253,42 +259,59 @@ void Program::MainTestResults(MainTest::TestResults results)
     ValveInfo *valveInfo = m_registry->GetValveInfo();
 
     qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+    auto &r = m_telemetryStore.mainTestRecord;
+    // emit SetText(TextObjects::Label_dynamicErrorMeanPercent,
+    //              QString::asprintf("%.2f %%", results.dynamicErrorMean / 0.16));
+    // emit SetText(TextObjects::Label_dynamicErrorMean,
+    //              QString::asprintf("%.3f mA", results.dynamicErrorMean));
+    // emit SetText(TextObjects::Label_dynamicErrorMax,
+    //              QString::asprintf("%.3f mA", results.dynamicErrorMax));
+    // emit SetText(TextObjects::Label_dynamicErrorMaxPercent,
+    //              QString::asprintf("%.2f %%", results.dynamicErrorMax / 0.16));
+    // emit SetText(TextObjects::LineEdit_dinamicReal,
+    //              QString::asprintf("%.2f", results.dynamicErrorMean / 0.16));
 
-    emit SetText(TextObjects::Label_pressureDifferenceValue,
-                 QString::asprintf("%.3f bar", results.pressureDiff));
+    r.dynamicError_mean = results.dynamicErrorMean;
+    r.dynamicError_meanPercent = results.dynamicErrorMean / 0.16;
+    r.dynamicError_max = results.dynamicErrorMax;
+    r.dynamicError_maxPercent = results.dynamicErrorMax / 0.16;
 
-    emit SetText(TextObjects::Label_frictionForceValue,
-                 QString::asprintf("%.3f H", results.pressureDiff * k));
-    emit SetText(TextObjects::label_frictionPercentValue,
-                 QString::asprintf("%.2f %%", results.friction));
+    r.dynamicReal = results.dynamicErrorMean / 0.16;
 
-    emit SetText(TextObjects::Label_dynamicErrorMeanPercent,
-                 QString::asprintf("%.2f %%", results.dinErrorMean / 0.16));
-    emit SetText(TextObjects::Label_dynamicErrorMean,
-                 QString::asprintf("%.3f mA", results.dinErrorMean));
+    // emit SetText(TextObjects::Label_lowLimitValue,
+    //              QString::asprintf("%.2f bar", results.lowLimit));
+    // emit SetText(TextObjects::Label_highLimitValue,
+    //              QString::asprintf("%.2f bar", results.highLimit));
+    // emit SetText(TextObjects::LineEdit_rangePressure,
+    //              QString::asprintf("%.2f – %.2f", results.lowLimit, results.highLimit));
 
-    emit SetText(TextObjects::Label_dynamicErrorMax,
-                 QString::asprintf("%.3f mA", results.dinErrorMax));
-    emit SetText(TextObjects::Label_dynamicErrorMaxPercent,
-                 QString::asprintf("%.2f %%", results.dinErrorMax / 0.16));
+    r.lowLimit = results.lowLimit;
+    r.highLimit = results.highLimit;
 
+    // emit SetText(TextObjects::lineEdit_rangeReal,
+    //              QString::asprintf("%.2f – %.2f", results.springLow, results.springHigh));
 
+    r.springLow = results.springLow;
+    r.springHigh = results.springHigh;
 
+    // emit SetText(TextObjects::Label_pressureDifferenceValue,
+    //              QString::asprintf("%.3f bar", results.pressureDiff));
 
-    emit SetText(TextObjects::Label_lowLimitValue, QString::asprintf("%.2f bar", results.lowLimit));
-    emit SetText(TextObjects::Label_highLimitValue, QString::asprintf("%.2f bar", results.highLimit));
+    r.pressureDifference = results.pressureDiff;
 
-    emit SetText(TextObjects::LineEdit_dinamicError,
-                 QString::asprintf("%.2f", results.dinErrorMean / 0.16));
-    emit SetText(TextObjects::LineEdit_rangePressure,
-                 QString::asprintf("%.2f - %.2f", results.lowLimit, results.highLimit));
-    emit SetText(TextObjects::lineEdit_rangeReal,
-                 QString::asprintf("%.2f - %.2f", results.springLow, results.springHigh));
+    // emit SetText(TextObjects::Label_frictionForceValue,
+    //              QString::asprintf("%.3f H", results.pressureDiff * k));
+    // emit SetText(TextObjects::label_frictionPercentValue,
+    //              QString::asprintf("%.2f %%", results.friction));
+    // emit SetText(TextObjects::LineEdit_friction,
+    //              QString::asprintf("%.3f", results.pressureDiff * k));
+    // emit SetText(TextObjects::LineEdit_frictionPercent,
+    //              QString::asprintf("%.2f", results.friction));
 
-    emit SetText(TextObjects::LineEdit_friction,
-                 QString::asprintf("%.3f", results.pressureDiff * k));
-    emit SetText(TextObjects::LineEdit_frictionPercent,
-                 QString::asprintf("%.2f", results.friction));
+    r.frictionForce = results.pressureDiff * k;
+    r.frictionPercent = results.friction;
+
+    emit TelemetryUpdated(m_telemetryStore);
 }
 
 void Program::StepTestResults(QVector<StepTest::TestResult> results, quint32 T_value)
@@ -345,8 +368,6 @@ void Program::button_init()
 
     emit SetButtonInitEnabled(false);
     emit SetSensorNumber(0);
-
-    // emit SetGroupDOVisible(false);
 
     emit SetText(TextObjects::Label_deviceStatusValue, "");
     emit SetText(TextObjects::Label_deviceInitValue, "");
@@ -451,12 +472,20 @@ void Program::button_init()
 
     if (normalClosed) {
         emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
-        emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
+        // emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
+
+        auto &s = m_telemetryStore.strokeRecord;
+        s.strokeReal = m_mpi[0]->GetValue();
+        emit TelemetryUpdated(m_telemetryStore);
+
         SetDAC(0);
     } else {
         SetDAC(0, 10000, true);
         emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
-        emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
+        // emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
+        auto &s = m_telemetryStore.strokeRecord;
+        s.strokeReal = m_mpi[0]->GetValue();
+        emit TelemetryUpdated(m_telemetryStore);
     }
 
     emit SetTask(m_mpi.GetDAC()->GetValue());
@@ -490,55 +519,64 @@ void Program::MainTestStart()
 
     emit SetButtonInitEnabled(false);
 
-    // MainTest *main_test = parameters.is_cyclic ? new CyclicTestPositioner : new MainTest;
 
-    MainTest *main_test = new MainTest;
+    MainTest *mainTest = new MainTest;
 
-    main_test->SetParameters(parameters);
+    mainTest->SetParameters(parameters);
 
     QThread *threadTest = new QThread(this);
-    main_test->moveToThread(threadTest);
+    mainTest->moveToThread(threadTest);
 
-    // if (parameters.is_cyclic) {
-    //     connect(dynamic_cast<CyclicTestPositioner *>(main_test),
-    //             &CyclicTestPositioner::UpdateCyclicTred,
-    //             this,
-    //             &Program::UpdateCharts_CyclicTred);
-    //     connect(dynamic_cast<CyclicTestPositioner *>(main_test),
-    //             &CyclicTestPositioner::SetStartTime,
-    //             this,
-    //             &Program::SetTimeStart);
-    // }
+    connect(threadTest, &QThread::started,
+            mainTest, &MainTest::Process);
 
-    connect(threadTest, &QThread::started, main_test, &MainTest::Process);
-    connect(main_test, &MainTest::EndTest, threadTest, &QThread::quit);
+    connect(mainTest, &MainTest::EndTest,
+            threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest, main_test, &MainTest::Stop);
-    connect(threadTest, &QThread::finished, threadTest, &QThread::deleteLater);
-    connect(threadTest, &QThread::finished, main_test, &MainTest::deleteLater);
+    connect(this, &Program::StopTest,
+            mainTest, &MainTest::Stop);
 
-    connect(main_test, &MainTest::EndTest, this, &Program::EndTest);
-    connect(main_test, &MainTest::EndTest, this, &Program::MainTestFinished);
+    connect(threadTest, &QThread::finished,
+            threadTest, &QThread::deleteLater);
 
-    connect(main_test, &MainTest::UpdateGraph, this, &Program::UpdateCharts_maintest);
-    connect(main_test, &MainTest::SetDAC, this, &Program::SetDAC);
+    connect(threadTest, &QThread::finished,
+            mainTest, &MainTest::deleteLater);
 
-    connect(main_test, &MainTest::DublSeries, this, [&] { emit DublSeries(); });
-    connect(main_test,
-            &MainTest::GetPoints,
-            this,
-            &Program::GetPoints_maintest,
+    connect(mainTest, &MainTest::EndTest,
+            this, &Program::EndTest);
+
+    connect(mainTest, &MainTest::EndTest,
+            this, &Program::MainTestFinished);
+
+    connect(mainTest, &MainTest::UpdateGraph,
+            this, &Program::UpdateCharts_maintest);
+
+    connect(mainTest, &MainTest::SetDAC,
+            this, &Program::SetDAC);
+
+    connect(mainTest, &MainTest::DublSeries,
+            this, [&] { emit DublSeries(); });
+
+    connect(mainTest, &MainTest::GetPoints,
+            this, &Program::GetPoints_maintest,
             Qt::BlockingQueuedConnection);
 
-    connect(main_test, &MainTest::AddRegression, this, &Program::AddRegression);
-    connect(main_test, &MainTest::AddFriction, this, &Program::AddFriction);
+    connect(mainTest, &MainTest::AddRegression,
+            this, &Program::AddRegression);
 
-    connect(this, &Program::ReleaseBlock, main_test, &MainTest::ReleaseBlock);
-    connect(main_test, &MainTest::Results, this, &Program::MainTestResults);
+    connect(mainTest, &MainTest::AddFriction,
+            this, &Program::AddFriction);
 
-    connect(main_test, &MainTest::ShowDots, this, [&](bool visible) { emit ShowDots(visible); });
+    connect(this, &Program::ReleaseBlock,
+            mainTest, &MainTest::ReleaseBlock);
 
-    connect(main_test, &MainTest::ClearGraph, this, [&] {
+    connect(mainTest, &MainTest::Results,
+            this, &Program::MainTestResults);
+
+    connect(mainTest, &MainTest::ShowDots,
+            this, [&](bool visible) { emit ShowDots(visible); });
+
+    connect(mainTest, &MainTest::ClearGraph, this, [&] {
         emit ClearPoints(Charts::Task);
         emit ClearPoints(Charts::Pressure);
         emit ClearPoints(Charts::Friction);
@@ -634,11 +672,11 @@ void Program::pollDIForCyclic()
 
     QVector<Point> pts;
     if ((di & 0x01) && !(m_lastDI & 0x01)) {
-        ++m_store.cyclicTestRecord.switch_3_0_count;
+        ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
         pts.push_back({2, qreal(t), 100.0});
     }
     if ((di & 0x02) && !(m_lastDI & 0x02)) {
-        ++m_store.cyclicTestRecord.switch_0_3_count;
+        ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
         pts.push_back({3, qreal(t), 100.0});
     }
 
@@ -698,11 +736,11 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     QThread *thr = new QThread(this);
     sol->moveToThread(thr);
 
-    m_store.cyclicTestRecord.ranges.clear();
-    m_store.cyclicTestRecord.ranges.resize(recordCount);
+    m_telemetryStore.cyclicTestRecord.ranges.clear();
+    m_telemetryStore.cyclicTestRecord.ranges.resize(recordCount);
 
     for (int i = 0; i < recordCount; ++i) {
-        auto &rec = m_store.cyclicTestRecord.ranges[i];
+        auto &rec = m_telemetryStore.cyclicTestRecord.ranges[i];
         rec.rangePercent      = valuesReg[i];
         rec.maxForwardValue   = 0;
         rec.maxForwardCycle   = 0;
@@ -710,8 +748,8 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
         rec.maxReverseCycle   = 0;
     }
 
-    m_store.cyclicTestRecord.switch_3_0_count = 0;
-    m_store.cyclicTestRecord.switch_0_3_count = 0;
+    m_telemetryStore.cyclicTestRecord.switch3to0Count = 0;
+    m_telemetryStore.cyclicTestRecord.switch0to3Count = 0;
     m_lastDI = m_mpi.GetDIStatus();
     m_cyclicStartTs = QDateTime::currentMSecsSinceEpoch();
 
@@ -723,7 +761,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 
     connect(sol, &CyclicTestSolenoid::RegulatoryMeasurement,
             this, [&](int cycle, int step, bool forward) {
-                auto &rec = m_store.cyclicTestRecord.ranges[step];
+                auto &rec = m_telemetryStore.cyclicTestRecord.ranges[step];
                 qreal measured = m_mpi[0]->GetPersent();
                 if (forward) {
                     if (measured > rec.maxForwardValue) {
@@ -786,15 +824,15 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 }
 
 void Program::onDOCounts(const QVector<int>& on, const QVector<int>& off) {
-    m_store.doOnCounts  = on;
-    m_store.doOffCounts = off;
+    m_telemetryStore.doOnCounts  = on;
+    m_telemetryStore.doOffCounts = off;
 }
 
 void Program::SolenoidResults(QString sequence,
                               quint16 cycles,
                               double totalTimeSec)
 {
-    const auto& ranges = m_store.cyclicTestRecord.ranges;
+    const auto& ranges = m_telemetryStore.cyclicTestRecord.ranges;
     for (int i = 0; i < ranges.size(); ++i) {
         const auto& rec = ranges[i];
         qDebug() << QString("Range[%1]: maxForward=%2 at cycle=%3, minReverse=%4 at cycle=%5")
@@ -804,6 +842,14 @@ void Program::SolenoidResults(QString sequence,
                         .arg(rec.maxReverseValue)
                         .arg(rec.maxReverseCycle);
     }
+
+    // Заполняем запись в m_telemetryStore
+    auto &c = m_telemetryStore.cyclicTestRecord;
+    c.sequence     = sequence;
+    c.cycles       = cycles;
+    c.totalTimeSec = totalTimeSec;
+
+    emit TelemetryUpdated(m_telemetryStore);
 
     emit SetSolenoidResults(sequence, cycles, totalTimeSec);
     emit SetSolenoidRangesData(ranges);

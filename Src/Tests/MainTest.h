@@ -23,8 +23,8 @@ public:
     {
         qreal pressureDiff;
         qreal friction;
-        qreal dinErrorMean;
-        qreal dinErrorMax;
+        qreal dynamicErrorMean;
+        qreal dynamicErrorMax;
         qreal lowLimit;
         qreal highLimit;
         qreal springLow;

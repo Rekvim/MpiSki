@@ -28,56 +28,96 @@ void ReportBuilder_C_SOVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
     report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.solenoidValveModel});
     report.data.push_back({"Отчет ЦТ", 10, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({"Отчет ЦТ", 11, 13, telemetryStore.supplyRecord.supplyPressure});
+    report.data.push_back({ "Отчет ЦТ",11, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
     report.data.push_back({"Отчет ЦТ", 12, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 13, 13, valveInfo.driveModel});
     report.data.push_back({"Отчет ЦТ", 14, 13, otherParams.strokeMovement});
     report.data.push_back({"Отчет ЦТ", 15, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({"Отчет ЦТ", 20, 8, telemetryStore.strokeTestRecord.timeForward});
-    report.data.push_back({"Отчет ЦТ", 22, 8, telemetryStore.strokeTestRecord.timeBackward});
-    report.data.push_back({"Отчет ЦТ", 24, 8, telemetryStore.cyclicTestRecord.cycles});
-    report.data.push_back({"Отчет ЦТ", 26, 8, telemetryStore.cyclicTestRecord.sequence});
-    report.data.push_back({"Отчет ЦТ", 28, 8, telemetryStore.cyclicTestRecord.totalTime});
+    report.data.push_back({
+        "Отчет ЦТ", 20, 8,
+        QString::asprintf("%.2f s", telemetryStore.strokeTestRecord.timeForwardMs / 1000.0)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 22, 8,
+        QString::asprintf("%.2f s", telemetryStore.strokeTestRecord.timeBackwardMs / 1000.0)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 24, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 26, 8,
+        telemetryStore.cyclicTestRecord.sequence
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 28, 8,
+        QString::asprintf("%.2f s", telemetryStore.cyclicTestRecord.totalTimeSec)
+    });
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     // Задание диапазона (0% хода)
-    report.data.push_back({"Отчет ЦТ", 36, 8, telemetryStore.cyclicTestRecord.cycles});
+    report.data.push_back({
+        "Отчет ЦТ", 36, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
     // report.data.push_back({"Отчет ЦТ", 36, 10, safeToString(???)});
     // report.data.push_back({"Отчет ЦТ", 36, 13, safeToString(???)});
     // Задание диапазона (100% хода)
-    report.data.push_back({"Отчет ЦТ", 38, 8, telemetryStore.cyclicTestRecord.cycles});
+
+    report.data.push_back({
+        "Отчет ЦТ", 38, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
     // report.data.push_back({"Отчет ЦТ", 38, 10, safeToString(???)});
     // report.data.push_back({"Отчет ЦТ", 38, 13, safeToString(???)});
 
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения
-    report.data.push_back({"Отчет ЦТ", 44, 8, telemetryStore.cyclicTestRecord.cycles});
+    report.data.push_back({
+        "Отчет ЦТ", 44, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
     // report.data.push_back({"Отчет ЦТ", 44, 10, safeToString(???)});
     // report.data.push_back({"Отчет ЦТ", 44, 13, safeToString(???)});
 
-    report.data.push_back({"Отчет ЦТ", 46, 8, telemetryStore.cyclicTestRecord.cycles});
+    report.data.push_back({
+        "Отчет ЦТ", 46, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
     // report.data.push_back({"Отчет ЦТ", 46, 10, safeToString(???)});
     // report.data.push_back({"Отчет ЦТ", 46, 13, safeToString(???)});
 
-    int N = telemetryStore.doOnCounts.size();
-    for (int i = 0; i < N; ++i) {
-        quint16 row = 36 + i*2;
-        QString onCnt  = QString::number(telemetryStore.doOnCounts[i]);
-        QString offCnt = QString::number(telemetryStore.doOffCounts[i]);
-        report.data.push_back({"Отчет ЦТ", row, 10, onCnt});
-        report.data.push_back({"Отчет ЦТ", row, 13, offCnt});
+    for (int i = 0; i < telemetryStore.doOnCounts.size(); ++i) {
+        quint16 row = 36 + quint16(i) * 2;
+        report.data.push_back({
+            "Отчет ЦТ", row, 10,
+            QString::number(telemetryStore.doOnCounts[i])
+        });
+        report.data.push_back({
+            "Отчет ЦТ", row, 13,
+            QString::number(telemetryStore.doOffCounts.value(i, 0))
+        });
     }
 
-     int cnt30 = telemetryStore.cyclicTestRecord.switch_3_0_count;
-    int cnt03 = telemetryStore.cyclicTestRecord.switch_0_3_count;
-    // строка 44 — «O→3»
-    report.data.push_back({"Отчет ЦТ", 44, 10, QString::number(cnt30)});
-    report.data.push_back({"Отчет ЦТ", 44, 13, QString::number(0)});
-    // строка 46 — «3→O»
-    report.data.push_back({"Отчет ЦТ", 46, 10, QString::number(cnt03)});
-    report.data.push_back({"Отчет ЦТ", 46, 13, QString::number(0)});
+    // Блок: переключения по DI в цикле
+    report.data.push_back({
+        "Отчет ЦТ", 44, 10,
+        QString::number(telemetryStore.cyclicTestRecord.switch3to0Count)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 44, 13,
+        QString::number(telemetryStore.cyclicTestRecord.switch0to3Count)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 46, 10,
+        QString::number(telemetryStore.cyclicTestRecord.switch0to3Count)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 46, 13,
+        QString::number(telemetryStore.cyclicTestRecord.switch3to0Count)
+    });
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({"Отчет ЦТ", 53, 4, objectInfo.FIO});

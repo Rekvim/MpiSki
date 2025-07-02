@@ -94,8 +94,8 @@ void MainTest::Process()
 
     auto [mean, max] = GetMeanMax(points[0], points[1]);
 
-    testResults.dinErrorMean = mean / 2;
-    testResults.dinErrorMax = max;
+    testResults.dynamicErrorMean = mean / 2;
+    testResults.dynamicErrorMax = max;
 
     qreal range = qAbs((regressionLimits.minY - regressionForward.b) / regressionForward.k
                        - (regressionLimits.maxY - regressionForward.b) / regressionForward.k);

@@ -1346,7 +1346,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_mainTests">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_mainTests_task">
            <attribute name="title">
@@ -2490,7 +2490,7 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -2961,6 +2961,9 @@
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string/>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -3555,13 +3558,16 @@
               </item>
               <item row="2" column="2">
                <widget class="QLineEdit" name="lineEdit_dinamicIpRecomend">
+                <property name="text">
+                 <string>0.2–1.0</string>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="4" column="2">
-               <widget class="QLineEdit" name="lineEdit_rangeRecomend">
+               <widget class="QLineEdit" name="lineEdit_driveRangeRecomend">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -3575,14 +3581,14 @@
                </widget>
               </item>
               <item row="4" column="1">
-               <widget class="QLineEdit" name="lineEdit_rangeReal">
+               <widget class="QLineEdit" name="lineEdit_driveRangeReal">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEdit_dinamicReal">
+               <widget class="QLineEdit" name="lineEdit_dynamicErrorReal">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -3617,7 +3623,7 @@
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QLineEdit" name="lineEdit_dinamicRecomend">
+               <widget class="QLineEdit" name="lineEdit_dynamicErrorRecomend">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -3853,15 +3859,15 @@
   <tabstop>pushButton_imageChartTask</tabstop>
   <tabstop>pushButton_imageChartPressure</tabstop>
   <tabstop>pushButton_imageChartFriction</tabstop>
-  <tabstop>lineEdit_dinamicReal</tabstop>
+  <tabstop>lineEdit_dynamicErrorReal</tabstop>
   <tabstop>lineEdit_strokeReal</tabstop>
-  <tabstop>lineEdit_rangeReal</tabstop>
+  <tabstop>lineEdit_driveRangeReal</tabstop>
   <tabstop>lineEdit_friction</tabstop>
   <tabstop>lineEdit_frictionPercent</tabstop>
   <tabstop>lineEdit_strokeTest_forwardTime</tabstop>
   <tabstop>lineEdit_strokeTest_backwardTime</tabstop>
-  <tabstop>lineEdit_rangeRecomend</tabstop>
-  <tabstop>lineEdit_dinamicRecomend</tabstop>
+  <tabstop>lineEdit_driveRangeRecomend</tabstop>
+  <tabstop>lineEdit_dynamicErrorRecomend</tabstop>
   <tabstop>Chart_step</tabstop>
   <tabstop>lineEdit_strokeRecomend</tabstop>
   <tabstop>Chart_resolution</tabstop>

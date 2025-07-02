@@ -79,10 +79,14 @@ private slots:
 
     void onCountdownTimeout();
     void onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges);
+
+public slots:
+    void onTelemetryUpdated(const TelemetryStore &s);
+
 private:
     Ui::MainWindow *ui;
     void ВideTabByWidget(QWidget *page);
-    TelemetryStore m_telemetry;
+    TelemetryStore m_telemetryStore;
     void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
 
     QTimer m_cyclicCountdownTimer;

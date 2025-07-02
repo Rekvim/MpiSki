@@ -145,7 +145,7 @@ void ValveWindow::SaveValveInfo()
 
     m_valveInfo->positionerModel = ui->lineEdit_positionerModel->text();
     m_valveInfo->positionerType = ui->comboBox_positionerType->currentText();
-    m_valveInfo->dinamicError = ui->comboBox_dinamicError->currentText().toDouble();
+    m_valveInfo->dinamicErrorRecomend = ui->comboBox_dinamicError->currentText().toDouble();
 
     m_valveInfo->solenoidValveModel = ui->lineEdit_solenoidValveModel->text();
     m_valveInfo->limitSwitchModel = ui->lineEdit_limitSwitchModel->text();
@@ -156,7 +156,7 @@ void ValveWindow::SaveValveInfo()
     m_valveInfo->driveModel = ui->lineEdit_driveModel->text();
     m_valveInfo->safePosition = ui->comboBox_safePosition->currentIndex();
     m_valveInfo->driveType = ui->comboBox_driveType->currentIndex();
-    m_valveInfo->driveRange = ui->lineEdit_driveRange->text();
+    m_valveInfo->driveRecomendRange = ui->lineEdit_driveRange->text();
     m_valveInfo->driveDiameter = ui->lineEdit_driveDiameter->text().toDouble();
     m_valveInfo->toolNumber = ui->comboBox_toolNumber->currentIndex();
     // m_valveInfo->diameterPulley = ui->lineEdit_diameterPulley->text().toDouble();
@@ -192,7 +192,7 @@ void ValveWindow::PositionChanged(const QString &position)
 
     ui->lineEdit_positionNumber->setText(m_valveInfo->positionNumber);
     ui->lineEdit_driveModel->setText(m_valveInfo->driveModel);
-    ui->lineEdit_driveRange->setText(m_valveInfo->driveRange);
+    ui->lineEdit_driveRange->setText(m_valveInfo->driveRecomendRange);
     // ui->lineEdit_diameterPulley->setText(QString::number(m_valveInfo->diameterPulley));
 
     ui->lineEdit_driveDiameter->setText(QString::number(m_valveInfo->driveDiameter));
