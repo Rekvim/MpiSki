@@ -175,21 +175,23 @@ private slots:
     void SolenoidResults(QString sequence, quint16 cycles, double total_time_sec);
 
 public slots:
+    void onDOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
+
     void AddRegression(const QVector<QPointF> &points);
     void AddFriction(const QVector<QPointF> &points);
     void GetPoints_maintest(QVector<QVector<QPointF>> &points);
     void GetPoints_steptest(QVector<QVector<QPointF>> &points);
-    void EndTest();
     void SetDAC_real(qreal value);
     void SetDAC_int(quint16 value);
-    void button_init();
     void MainTestStart();
     void StrokeTestStart();
     void StartOptionalTest(quint8 testNum);
     void CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p);
-    void onDOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
+    void EndTest();
 
     void TerminateTest();
+
+    void button_init();
     void button_open();
     void button_report();
     void button_pixmap1();

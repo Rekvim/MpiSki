@@ -47,11 +47,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->checkBox_switch_0_3->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_switch_0_3->setFocusPolicy(Qt::NoFocus);
 
-    m_labels[TextObjects::Label_deviceStatusValue] = ui->label_deviceStatusValue;
-    m_labels[TextObjects::Label_deviceInitValue] = ui->label_deviceInitValue;
-    m_labels[TextObjects::Label_connectedSensorsNumber] = ui->label_connectedSensorsNumber;
-    m_labels[TextObjects::Label_startingPositionValue] = ui->label_startingPositionValue;
-    m_labels[TextObjects::Label_finalPositionValue] = ui->label_finalPositionValue;
+    // m_labels[TextObjects::Label_deviceStatusValue] = ui->label_deviceStatusValue;
+    // m_labels[TextObjects::Label_deviceInitValue] = ui->label_deviceInitValue;
+    // m_labels[TextObjects::Label_connectedSensorsNumber] = ui->label_connectedSensorsNumber;
+    // m_labels[TextObjects::Label_startingPositionValue] = ui->label_startingPositionValue;
+    // m_labels[TextObjects::Label_finalPositionValue] = ui->label_finalPositionValue;
 
     //
     // m_labels[TextObjects::Label_dynamicErrorMean] = ui->label_dynamicErrorMean;
@@ -72,20 +72,20 @@ MainWindow::MainWindow(QWidget *parent)
     // m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercent;
 
     //
-    m_labels[TextObjects::Label_strokeTest_forwardTime] = ui->label_strokeTest_forwardTime;
-    m_labels[TextObjects::Label_strokeTest_backwardTime] = ui->label_strokeTest_backwardTime;
-    m_labels[TextObjects::Label_valveStroke_range] = ui->label_valveStroke_range;
+    // m_labels[TextObjects::Label_strokeTest_forwardTime] = ui->label_strokeTest_forwardTime;
+    // m_labels[TextObjects::Label_strokeTest_backwardTime] = ui->label_strokeTest_backwardTime;
+    // m_labels[TextObjects::Label_valveStroke_range] = ui->label_valveStroke_range;
 
-    m_lineEdits[TextObjects::LineEdit_linearSensor] = ui->lineEdit_linearSensor;
-    m_lineEdits[TextObjects::LineEdit_linearSensorPercent] = ui->lineEdit_linearSensorPercent;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_1] = ui->lineEdit_pressureSensor_1;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->LineEdit_pressureSensor_2;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->LineEdit_pressureSensor_3;
-    m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
-    m_lineEdits[TextObjects::lineEdit_strokeReal] = ui->lineEdit_strokeReal;
+    // m_lineEdits[TextObjects::LineEdit_linearSensor] = ui->lineEdit_linearSensor;
+    // m_lineEdits[TextObjects::LineEdit_linearSensorPercent] = ui->lineEdit_linearSensorPercent;
+    // m_lineEdits[TextObjects::LineEdit_pressureSensor_1] = ui->lineEdit_pressureSensor_1;
+    // m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->LineEdit_pressureSensor_2;
+    // m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->LineEdit_pressureSensor_3;
+    // m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
+    // m_lineEdits[TextObjects::lineEdit_strokeReal] = ui->lineEdit_strokeReal;
 
-    m_lineEdits[TextObjects::LineEdit_strokeTest_forwardTime] = ui->lineEdit_strokeTest_forwardTime;
-    m_lineEdits[TextObjects::LineEdit_strokeTest_backwardTime] = ui->lineEdit_strokeTest_backwardTime;
+    // m_lineEdits[TextObjects::LineEdit_strokeTest_forwardTime] = ui->lineEdit_strokeTest_forwardTime;
+    // m_lineEdits[TextObjects::LineEdit_strokeTest_backwardTime] = ui->lineEdit_strokeTest_backwardTime;
 
     m_program = new Program;
     m_programThread = new QThread(this);
@@ -416,6 +416,40 @@ MainWindow::~MainWindow()
 void MainWindow::onTelemetryUpdated(const TelemetryStore &s)
 {
     m_telemetryStore = s;
+
+    // обновляем датчики:
+    ui->lineEdit_linearSensor->setText(s.sensors.linearValue);
+    ui->lineEdit_linearSensorPercent->setText(s.sensors.linearPercent);
+    ui->lineEdit_pressureSensor_1->setText(s.sensors.pressure1);
+    ui->LineEdit_pressureSensor_2->setText(s.sensors.pressure2);
+    ui->LineEdit_pressureSensor_3->setText(s.sensors.pressure3);
+    ui->lineEdit_feedback_4_20mA->setText(s.sensors.feedback4_20mA);
+
+    // ------ Инициализация ------
+    // Статус подключения
+    ui->label_deviceStatusValue->setText(s.init.deviceStatusText);
+    ui->label_deviceStatusValue->setStyleSheet(
+        QString("color:%1").arg(s.init.deviceStatusColor.name()));
+
+    // Статус инициализации
+    ui->label_deviceInitValue->setText(s.init.initStatusText);
+    ui->label_deviceInitValue->setStyleSheet(
+        QString("color:%1").arg(s.init.initStatusColor.name()));
+
+    // Количество датчиков
+    ui->label_connectedSensorsNumber->setText(s.init.connectedSensorsText);
+    ui->label_connectedSensorsNumber->setStyleSheet(
+        QString("color:%1").arg(s.init.connectedSensorsColor.name()));
+
+    // Начальное / конечное положение
+    ui->label_startingPositionValue->setText(s.init.startingPositionText);
+    ui->label_finalPositionValue  ->setText(s.init.finalPositionText);
+
+    // ===== StrokeReal =====
+    // У тебя есть поле strokeRecord.strokeReal, отображаем его в нужном месте:
+    ui->lineEdit_strokeReal->setText(
+        QString::asprintf("%.2f", s.strokeRecord.strokeReal));
+    ui->label_valveStroke_range->setText(s.strokeRecord.strokeRange);
 
     // --- MainTestResults ---
     // Динамическая погрешность

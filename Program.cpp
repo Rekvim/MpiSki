@@ -126,7 +126,7 @@ void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
     // emit SetText(TextObjects::LineEdit_strokeTest_backwardTime, backwardText);
 
     auto &r = m_telemetryStore.strokeTestRecord;
-    r.timeBackwardMs = forwardTime;
+    r.timeForwardMs = forwardTime;
     r.timeBackwardMs = backwardTime;
 
     emit TelemetryUpdated(m_telemetryStore);
@@ -160,31 +160,26 @@ void Program::AddFriction(const QVector<QPointF> &points)
 
 void Program::UpdateSensors()
 {
-    for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
-        switch (i) {
-        case 0:
-            emit SetText(TextObjects::LineEdit_linearSensor, m_mpi[i]->GetFormatedValue());
-            emit SetText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->GetPersentFormated());
-            break;
-        case 1:
-            emit SetText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->GetFormatedValue());
-            break;
-            break;
-        case 2:
-            emit SetText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->GetFormatedValue());
-            break;
+    auto &s = m_telemetryStore.sensors;
 
-            break;
-        case 3:
-            emit SetText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->GetFormatedValue());
-            break;
-        }
+    if (m_mpi.SensorCount() > 0) {
+        s.linearValue = m_mpi[0]->GetFormatedValue();
+        s.linearPercent = m_mpi[0]->GetPersentFormated();
+    }
+    if (m_mpi.SensorCount() > 1) {
+        s.pressure1 = m_mpi[1]->GetFormatedValue();
+    }
+    if (m_mpi.SensorCount() > 2) {
+        s.pressure2 = m_mpi[2]->GetFormatedValue();
+    }
+    if (m_mpi.SensorCount() > 3) {
+        s.pressure3 = m_mpi[3]->GetFormatedValue();
     }
 
     {
         Sensor *feedbackSensor = m_mpi.GetDAC();
         QString fbValue = feedbackSensor->GetFormatedValue();
-        emit SetText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
+        s.feedback4_20mA = m_mpi.GetDAC()->GetFormatedValue();
     }
 
     if (m_testing)
@@ -369,61 +364,54 @@ void Program::button_init()
     emit SetButtonInitEnabled(false);
     emit SetSensorNumber(0);
 
-    emit SetText(TextObjects::Label_deviceStatusValue, "");
-    emit SetText(TextObjects::Label_deviceInitValue, "");
-    emit SetText(TextObjects::Label_connectedSensorsNumber, "");
-    emit SetText(TextObjects::Label_startingPositionValue, "");
-    emit SetText(TextObjects::Label_finalPositionValue, "");
+    bool connected = m_mpi.Connect();
+    bool inited   = false;
 
-    if (!m_mpi.Connect()) {
-        emit SetText(TextObjects::Label_deviceStatusValue, "Ошибка подключения");
-        emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::red);
-        emit SetButtonInitEnabled(true);
-        return;
+    if (connected) {
+        inited = m_mpi.Initialize();
+        if ((m_mpi.Version() & 0x40) != 0) {
+            emit SetButtonsDOChecked(m_mpi.GetDOStatus());
+            m_timerDI->start();
+        }
     }
 
-    emit SetText(TextObjects::Label_deviceStatusValue, "Успешное подключение к порту " + m_mpi.PortName());
-    emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::darkGreen);
+    auto & s = m_telemetryStore;
 
-    if (!m_mpi.Initialize()) {
-        emit SetText(TextObjects::Label_deviceInitValue, "Ошибка инициализации");
-        emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::red);
-        emit SetButtonInitEnabled(true);
-        return;
-    }
+    s.init.deviceStatusText = connected
+                                  ? QString("Успешное подключение к порту %1").arg(m_mpi.PortName())
+                                  : "Ошибка подключения";
 
-    if ((m_mpi.Version() & 0x40) != 0) {
-        // emit SetGroupDOVisible(true);
-        emit SetButtonsDOChecked(m_mpi.GetDOStatus());
-        m_timerDI->start();
-    }
+    s.init.deviceStatusColor = connected
+                                   ? Qt::darkGreen
+                                   : Qt::red;
 
-    emit SetText(TextObjects::Label_deviceInitValue, "Успешная инициализация");
-    emit SetTextColor(TextObjects::Label_deviceInitValue, Qt::darkGreen);
+    s.init.initStatusText = inited
+                                ? "Успешная инициализация"
+                                : "Ошибка инициализации";
+    s.init.initStatusColor = inited
+                                 ? Qt::darkGreen
+                                 : Qt::red;
 
     m_isInitialized = true;
 
-    switch (m_mpi.SensorCount()) { // update
-    case 0:
-        emit SetText(TextObjects::Label_connectedSensorsNumber, "Дачики не обнаружены");
-        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::red);
-        // emit SetButtonInitEnabled(true);
-        // return;
-    case 1:
-        emit SetText(TextObjects::Label_connectedSensorsNumber, "Обнаружен 1 датчик");
-        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::darkYellow);
-        break;
-    default:
-        emit SetText(TextObjects::Label_connectedSensorsNumber,
-                     "Обнаружено " + QString::number(m_mpi.SensorCount()) + " датчика");
-        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::darkGreen);
+    if (m_mpi.SensorCount() == 0) {
+        s.init.connectedSensorsText  = "Датчики не обнаружены";
+        s.init.connectedSensorsColor = Qt::red;
+    } else if (m_mpi.SensorCount() == 1) {
+        s.init.connectedSensorsText  = "Обнаружен 1 датчик";
+        s.init.connectedSensorsColor = Qt::darkYellow;
+    } else {
+        s.init.connectedSensorsText  = QString("Обнаружено %1 датчика").arg(m_mpi.SensorCount());
+        s.init.connectedSensorsColor = Qt::darkGreen;
     }
 
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     bool normalClosed = (valveInfo->safePosition == 0);
 
-    emit SetText(TextObjects::Label_startingPositionValue, "Измерение");
-    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkYellow);
+    s.init.startingPositionText  = "Измерение";
+    s.init.finalPositionText = "Измерение";
+
+    emit TelemetryUpdated(s);
 
     SetDAC(0, 10000, true);
 
@@ -438,16 +426,10 @@ void Program::button_init()
     m_dacEventloop->exec();
     timer.stop();
 
-    if (normalClosed)
-        m_mpi[0]->SetMin();
-    else
-        m_mpi[0]->SetMax();
+    if (normalClosed) m_mpi[0]->SetMin(); else m_mpi[0]->SetMax();
 
-    emit SetText(TextObjects::Label_startingPositionValue, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_startingPositionValue, Qt::darkGreen);
-
-    emit SetText(TextObjects::Label_finalPositionValue, "Измерение");
-    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkYellow);
+    s.init.startingPositionText = m_mpi[0]->GetFormatedValue();
+    emit TelemetryUpdated(s);
 
     SetDAC(0xFFFF, 10000, true);
 
@@ -455,13 +437,10 @@ void Program::button_init()
     m_dacEventloop->exec();
     timer.stop();
 
-    if (normalClosed)
-        m_mpi[0]->SetMax();
-    else
-        m_mpi[0]->SetMin();
+    if (normalClosed) m_mpi[0]->SetMax(); else m_mpi[0]->SetMin();
 
-    emit SetText(TextObjects::Label_finalPositionValue, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkGreen);
+    s.init.finalPositionText = m_mpi[0]->GetFormatedValue();
+    emit TelemetryUpdated(s);
 
     qreal correctCoefficient = 1;
     if (valveInfo->strokeMovement != 0) {
@@ -471,22 +450,16 @@ void Program::button_init()
     m_mpi[0]->CorrectCoefficients(correctCoefficient);
 
     if (normalClosed) {
-        emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
-        // emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
-
-        auto &s = m_telemetryStore.strokeRecord;
-        s.strokeReal = m_mpi[0]->GetValue();
-        emit TelemetryUpdated(m_telemetryStore);
-
+        s.strokeRecord.strokeRange = m_mpi[0]->GetFormatedValue();
+        s.strokeRecord.strokeReal = m_mpi[0]->GetValue();
         SetDAC(0);
     } else {
         SetDAC(0, 10000, true);
-        emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
-        // emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
-        auto &s = m_telemetryStore.strokeRecord;
-        s.strokeReal = m_mpi[0]->GetValue();
-        emit TelemetryUpdated(m_telemetryStore);
+        s.strokeRecord.strokeRange = m_mpi[0]->GetFormatedValue();
+        s.strokeRecord.strokeReal = m_mpi[0]->GetValue();
     }
+
+    emit TelemetryUpdated(m_telemetryStore);
 
     emit SetTask(m_mpi.GetDAC()->GetValue());
 

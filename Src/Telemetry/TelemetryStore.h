@@ -5,6 +5,27 @@
 
 #include <QVector>
 #include <QString>
+#include <QColor>
+
+struct InitState {
+    QString  deviceStatusText;
+    QColor deviceStatusColor;
+    QString initStatusText;
+    QColor initStatusColor;
+    QString connectedSensorsText;
+    QColor connectedSensorsColor;
+    QString startingPositionText;
+    QString finalPositionText;
+};
+
+struct SensorState {
+    QString linearValue;
+    QString linearPercent;
+    QString pressure1;
+    QString pressure2;
+    QString pressure3;
+    QString feedback4_20mA;
+};
 
 /** Результат одного шага StepTest */
 struct StepRecord {
@@ -60,6 +81,7 @@ struct MainTestRecord {
 
 /** Stroke (ход штока) */
 struct StrokeRecord {
+    QString strokeRange = "";
     double strokeReal = 0.0;
     double strokeRecomend = 0.0;
 };
@@ -72,6 +94,8 @@ struct SupplyRecord {
 /** Хранилище всех телеметрийных данных */
 class TelemetryStore {
 public:
+    SensorState sensors;
+    InitState init;
     QVector<StepRecord> stepResults;
     CyclicTestRecord cyclicTestRecord;
     StrokeTestRecord strokeTestRecord;

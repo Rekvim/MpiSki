@@ -34,32 +34,11 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 14, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({
-        "Отчет ЦТ", 19, 8,
-        QTime(0,0)
-            .addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
-            .toString("mm:ss.zzz")
-    });
-    report.data.push_back({
-        "Отчет ЦТ", 21, 8,
-        QTime(0,0)
-            .addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
-            .toString("mm:ss.zzz")
-    });
-    report.data.push_back({
-        "Отчет ЦТ", 23, 8,
-        telemetryStore.cyclicTestRecord.sequence
-    });
-    report.data.push_back({
-        "Отчет ЦТ", 25, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
-    });
-    report.data.push_back({
-        "Отчет ЦТ", 27, 8,
-        QTime(0,0)
-            .addSecs(int(telemetryStore.cyclicTestRecord.totalTimeSec))
-            .toString("hh:mm:ss")
-    });
+    report.data.push_back({"Отчет ЦТ", 19, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs).toString("mm:ss.zzz")});
+    report.data.push_back({"Отчет ЦТ", 21, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs).toString("mm:ss.zzz")});
+    report.data.push_back({"Отчет ЦТ", 23, 8, telemetryStore.cyclicTestRecord.sequence});
+    report.data.push_back({"Отчет ЦТ", 25, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({"Отчет ЦТ", 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz")});
 
     {
         const QString sheet = QStringLiteral("Отчет ЦТ");
@@ -105,7 +84,6 @@ void ReportBuilder_C_CVT::buildReport(
 
     // Страница:Результат теста шаговой реакции; Блок: График теста шаговой реакции
     report.images.push_back({"Результат теста шаговой реакции", 18, 2, imageChartStep}); // график зависимости ход штока/управляющий сигнал мА
-
 
     // Страница:Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
     {
