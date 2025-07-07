@@ -15,9 +15,9 @@ void CyclicTestSolenoid::SetParameters(const Parameters& params)
 void CyclicTestSolenoid::Process()
 {
     switch (m_params.testType) {
-        case Parameters::Regulatory: processRegulatory(); break;
-        case Parameters::Shutoff: processShutoff(); break;
-        case Parameters::Combined: processCombined(); break;
+    case Parameters::Regulatory: processRegulatory(); break;
+    case Parameters::Shutoff: processShutoff(); break;
+    case Parameters::Combined: processCombined(); break;
     }
 
     emit EndTest();
@@ -52,48 +52,56 @@ void CyclicTestSolenoid::runLoop(const QVector<int>& values,
 
     for (int c = 0; c < cycles && !m_terminate; ++c) {
         for (int i = 0; i < N && !m_terminate; ++i) {
-            int pct = values[i];
-            int prevPct = (i == 0 ? values.first() : values[i-1]);
-            bool forward = (pct > prevPct);
+            int pct     = values[i];
+            int prevPct = i==0 ? values.last() : values[i-1];
+            bool forward = pct > prevPct;
 
+            // 1) точки графика «скачок»
             quint64 t0 = timer.elapsed();
             emit TaskPoint(t0, prevPct);
             emit TaskPoint(t0, pct);
 
+            // 2) переворот DO (для Shut-off-теста)
             if (isShutoff) {
-                for (quint8 d = 0; d < 4; ++d)
+                for (int d = 0; d < m_params.shutoff_DO.size(); ++d)
                     if (m_params.shutoff_DO[d])
-                        emit SetDO(d, true);
+                        emit SetDO(d, /*invert*/ !((i+c)%2));
             }
 
+            // 3) выдаём ШИМ и ждём delayMs, но не блокируем «Stop()»
             emit SetDAC(pct);
-            QThread::msleep(delayMs);
+            Sleep(delayMs);
+            if (m_terminate) return;
 
+            // 4) фиксируем точку конца delay
             quint64 t1 = timer.elapsed();
             emit TaskPoint(t1, pct);
 
-            QThread::msleep(holdMs);
+            // 5) «держим» holdMs, но опять же --- неблокирующе:
+            Sleep(holdMs);
+            if (m_terminate) return;
 
+            // 6) для Shut-off-теста можно тут снять DO
             if (isShutoff) {
-                for (quint8 d = 0; d < 4; ++d)
+                for (int d = 0; d < m_params.shutoff_DO.size(); ++d)
                     if (m_params.shutoff_DO[d])
                         emit SetDO(d, false);
             }
 
+            // 7) фиксируем точку конца hold
             quint64 t2 = timer.elapsed();
             emit TaskPoint(t2, pct);
-            emit UpdateCyclicTred();
 
-            if (&values == &m_valuesReg) {
+            emit UpdateCyclicTred();
+            if (!isShutoff)
                 emit RegulatoryMeasurement(c, i, forward);
-            }
         }
     }
 
+    // итоговое время и выдача результатов
     double totalSec = timer.elapsed() / 1000.0;
-
     QString seq = isShutoff && m_params.shutoff_enable_20mA
-                      ? QStringLiteral("20mA")
+                      ? "20mA"
                       : (isShutoff
                              ? m_params.shutoff_sequence
                              : m_params.regulatory_sequence);
@@ -101,8 +109,6 @@ void CyclicTestSolenoid::runLoop(const QVector<int>& values,
     emit SetSolenoidResults(seq,
                             quint16(cycles),
                             totalSec);
-
-    emit EndTest();
 }
 
 void CyclicTestSolenoid::processRegulatory()
@@ -147,7 +153,6 @@ void CyclicTestSolenoid::processShutoff()
             int pct     = m_valuesOff[i];
             int prevPct = (i == 0 ? m_valuesOff.first() : m_valuesOff[i-1]);
 
-            // график
             quint64 t0 = timer.elapsed();
             emit TaskPoint(t0, prevPct);
             emit TaskPoint(t0, pct);
@@ -164,12 +169,15 @@ void CyclicTestSolenoid::processShutoff()
             emit SetMultipleDO(currentStates);
 
             emit SetDAC(pct);
-            QThread::msleep(delayMs);
+
+            Sleep(delayMs);
+            if (m_terminate) return;
 
             quint64 t1 = timer.elapsed();
             emit TaskPoint(t1, pct);
 
-            QThread::msleep(holdMs);
+            Sleep(holdMs);
+            if (m_terminate) return;
 
             quint64 t2 = timer.elapsed();
             emit TaskPoint(t2, pct);
@@ -187,7 +195,6 @@ void CyclicTestSolenoid::processShutoff()
 
     // отдадим счётчики переключений и завершим тест
     emit DOCounts(onCounts, offCounts);
-    emit EndTest();
 }
 void CyclicTestSolenoid::processCombined()
 {

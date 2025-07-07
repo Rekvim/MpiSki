@@ -2,9 +2,9 @@
 #define MPISETTINGS_H
 
 #pragma once
+#include <QObject>
 #include <QApplication>
 #include <QSettings>
-#include <QObject>
 
 class MpiSettings : public QObject
 {
@@ -31,9 +31,10 @@ public:
 
 private:
     QVector<qreal> m_ADC;
-    DAC m_DAC;
-
     QVector<MinMax> m_sensors;
+    DAC m_DAC;
+signals:
+
 };
 
 #endif // MPISETTINGS_H

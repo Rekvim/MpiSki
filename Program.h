@@ -99,7 +99,7 @@ private:
 
     MPI m_mpi;
     TelemetryStore m_telemetryStore;
-
+    bool m_cyclicRunning = false;
     QTimer* m_diPollTimer = nullptr;
     int m_cyclicDI1Count = 0;
     int m_cyclicDI2Count = 0;

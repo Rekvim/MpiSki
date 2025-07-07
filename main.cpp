@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QTranslator>
+#include <QDebug>
 
 #include "MainWindow.h"
 #include "SelectTests.h"

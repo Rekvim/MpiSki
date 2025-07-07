@@ -1,6 +1,3 @@
-#ifndef UARTREADER_H
-#define UARTREADER_H
-
 #pragma once
 #include <QObject>
 #include <QTimer>
@@ -57,5 +54,3 @@ private:
     quint8 m_version;
     QTimer *m_adcTimer;
 };
-
-#endif // UARTREADER_H

@@ -80,9 +80,6 @@ private slots:
     void onCountdownTimeout();
     void onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges);
 
-public slots:
-    void onTelemetryUpdated(const TelemetryStore &s);
-
 private:
     Ui::MainWindow *ui;
     void ВideTabByWidget(QWidget *page);

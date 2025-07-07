@@ -6,6 +6,7 @@ MPI::MPI(QObject *parent)
 {
     m_uartReader = new UartReader;
     m_uartThread = new QThread(this);
+
     m_uartReader->moveToThread(m_uartThread);
     m_uartThread->start();
 
@@ -63,6 +64,7 @@ MPI::MPI(QObject *parent)
     connect(m_uartReader, &UartReader::UartConnected,
             this, &MPI::UartConnected,
             Qt::DirectConnection);
+
     connect(m_uartReader, &UartReader::UartDisconnected,
             this, &MPI::UartDisconnected,
             Qt::DirectConnection);
@@ -127,7 +129,7 @@ bool MPI::Initialize()
     DAC_MIN = 65536 * (mpiSettings.GetDAC().min - mpiSettings.GetDAC().bias) / 24;
     DAC_MAX = 65536 * (mpiSettings.GetDAC().max - mpiSettings.GetDAC().bias) / 24;
 
-    for (const auto sensor : m_sensors) {
+    for (const auto &sensor : m_sensors) {
         delete sensor;
     }
     m_sensors.clear();

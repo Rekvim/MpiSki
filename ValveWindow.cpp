@@ -25,22 +25,19 @@ ValveWindow::ValveWindow(QWidget *parent)
     ui->lineEdit_driveDiameter->setValidator(validatorDigitsDot);
     ui->lineEdit_pulleyDiameter->setValidator(validatorDigitsDot);
 
+    connect(ui->lineEdit_pulleyDiameter, &QLineEdit::textChanged,
+            this, &ValveWindow::DiameterChanged);
+
     ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
 
-    connect(ui->comboBox_strokeMovement,
-            &QComboBox::currentIndexChanged,
-            this,
-            &ValveWindow::StrokeChanged);
+    connect(ui->comboBox_strokeMovement, &QComboBox::currentIndexChanged,
+            this, &ValveWindow::StrokeChanged);
 
-    connect(ui->comboBox_toolNumber,
-            &QComboBox::currentIndexChanged,
-            this,
-            &ValveWindow::ToolChanged);
+    connect(ui->comboBox_toolNumber, &QComboBox::currentIndexChanged,
+            this, &ValveWindow::ToolChanged);
 
-    connect(ui->lineEdit_driveDiameter,
-            &QLineEdit::textChanged,
-            this,
-            &ValveWindow::DiameterChanged);
+    connect(ui->lineEdit_driveDiameter, &QLineEdit::textChanged,
+            this, &ValveWindow::DiameterChanged);
 
     connect(ui->pushButton, &QPushButton::clicked,
             this, &ValveWindow::ButtonClick);
@@ -159,7 +156,7 @@ void ValveWindow::SaveValveInfo()
     m_valveInfo->driveRecomendRange = ui->lineEdit_driveRange->text();
     m_valveInfo->driveDiameter = ui->lineEdit_driveDiameter->text().toDouble();
     m_valveInfo->toolNumber = ui->comboBox_toolNumber->currentIndex();
-    // m_valveInfo->diameterPulley = ui->lineEdit_diameterPulley->text().toDouble();
+    m_valveInfo->diameterPulley = ui->lineEdit_pulleyDiameter->text().toDouble();
     m_valveInfo->materialStuffingBoxSeal = ui->comboBox_materialStuffingBoxSeal->currentText();
 
     m_registry->SaveValveInfo();
@@ -193,7 +190,7 @@ void ValveWindow::PositionChanged(const QString &position)
     ui->lineEdit_positionNumber->setText(m_valveInfo->positionNumber);
     ui->lineEdit_driveModel->setText(m_valveInfo->driveModel);
     ui->lineEdit_driveRange->setText(m_valveInfo->driveRecomendRange);
-    // ui->lineEdit_diameterPulley->setText(QString::number(m_valveInfo->diameterPulley));
+    ui->lineEdit_pulleyDiameter->setText(QString::number(m_valveInfo->diameterPulley));
 
     ui->lineEdit_driveDiameter->setText(QString::number(m_valveInfo->driveDiameter));
 

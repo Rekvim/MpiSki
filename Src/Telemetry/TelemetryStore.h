@@ -8,33 +8,32 @@
 #include <QColor>
 
 struct InitState {
-    QString  deviceStatusText;
+    QString  deviceStatusText = "";
     QColor deviceStatusColor;
-    QString initStatusText;
+    QString initStatusText = "";
     QColor initStatusColor;
-    QString connectedSensorsText;
+    QString connectedSensorsText = "";
     QColor connectedSensorsColor;
-    QString startingPositionText;
-    QString finalPositionText;
+    QString startingPositionText = "";
+    QString finalPositionText = "";
 };
 
 struct SensorState {
-    QString linearValue;
-    QString linearPercent;
-    QString pressure1;
-    QString pressure2;
-    QString pressure3;
-    QString feedback4_20mA;
+    QString linearValue = "";
+    QString linearPercent = "";
+    QString pressure1 = "";
+    QString pressure2 = "";
+    QString pressure3 = "";
+    QString feedback4_20mA = "";
 };
 
-/** Результат одного шага StepTest */
-struct StepRecord {
-    QString range;
-    qint64 T_ms; // время достижения T-значения в миллисекундах (0 = ошибка)
-    double overshootPct; // перерегулирование, %
+struct StepTestRecord {
+    quint16 from;
+    quint16 to;
+    quint32 T_value;
+    qreal overshoot;
 };
 
-/** Описание точки в циклическом тесте */
 struct RangeDeviationRecord {
     int rangePercent = 0;
     double  maxForwardValue = 0.0;
@@ -43,17 +42,15 @@ struct RangeDeviationRecord {
     quint32 maxReverseCycle = 0;
 };
 
-/** Полные результаты циклического теста */
 struct CyclicTestRecord {
-    QString sequence; // например {0,50,100}
+    QString sequence = "";
     quint16 cycles = 0;
-    double totalTimeSec = 0; // миллисекунды
+    double totalTimeSec = 0;
     QVector<RangeDeviationRecord> ranges;
     int switch3to0Count = 0;
     int switch0to3Count = 0;
 };
 
-/** StrokeTest */
 struct StrokeTestRecord {
     quint64 timeForwardMs = 0;
     quint64 timeBackwardMs = 0;
@@ -75,28 +72,25 @@ struct MainTestRecord {
     double springHigh = 0.0;
 
     double pressureDifference = 0.0;
-    double frictionForce = 0.0; // сила трения
-    double frictionPercent = 0.0;  // в процентах
+    double frictionForce = 0.0;
+    double frictionPercent = 0.0;
 };
 
-/** Stroke (ход штока) */
 struct StrokeRecord {
     QString strokeRange = "";
     double strokeReal = 0.0;
     double strokeRecomend = 0.0;
 };
 
-/** Supply Pressure */
 struct SupplyRecord {
     double pressure_bar = 0.0;
 };
 
-/** Хранилище всех телеметрийных данных */
 class TelemetryStore {
 public:
     SensorState sensors;
     InitState init;
-    QVector<StepRecord> stepResults;
+    QVector<StepTestRecord> stepResults = {{12, 13, 40, 50.02}};
     CyclicTestRecord cyclicTestRecord;
     StrokeTestRecord strokeTestRecord;
     StrokeRecord strokeRecord;
@@ -106,8 +100,10 @@ public:
     QVector<int> doOnCounts;
     QVector<int> doOffCounts;
 
+    TelemetryStore() = default;
+
     void clearAll() {
-        stepResults.clear();
+        // stepResults.clear();
         cyclicTestRecord = {};
         strokeTestRecord = {};
         strokeRecord     = {};

@@ -8,7 +8,7 @@
 #include <QThread>
 
 #include "Sensor.h"
-#include "./Src/Uart/UartReader.h"
+#include "./src/Uart/UartReader.h"
 
 class MPI : public QObject
 {
@@ -30,7 +30,6 @@ public:
     const QString &PortName() const;
     Sensor *operator[](quint8 n);
     Sensor *GetDAC();
-
     void SetDiscreteOutput(quint8 DO_num, bool state);
 
 private:
@@ -41,9 +40,11 @@ private:
     QVector<Sensor *> m_sensors;
     Sensor *m_dac = new Sensor;
 
-    void Sleep(quint16 msecs);
     quint16 DAC_MIN = 65536 * 3 / 24;
     quint16 DAC_MAX = 65536 * 21 / 24;
+
+    void Sleep(quint16 msecs);
+
 public slots:
     void ADC(QVector<quint16> adc);
     void UartConnected(const QString portName);
