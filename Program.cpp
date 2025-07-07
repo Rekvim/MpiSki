@@ -118,22 +118,6 @@ void Program::SetTimeStart()
     m_startTime = QDateTime::currentMSecsSinceEpoch();
 }
 
-void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
-{
-
-    m_telemetryStore.strokeTestRecord.timeForwardMs  = forwardTime;
-    m_telemetryStore.strokeTestRecord.timeBackwardMs = backwardTime;
-
-    QString forwardText = QTime(0, 0).addMSecs(forwardTime).toString("mm:ss.zzz");
-    QString backwardText = QTime(0, 0).addMSecs(backwardTime).toString("mm:ss.zzz");
-    emit SetText(TextObjects::Label_strokeTest_forwardTime, forwardText);
-    emit SetText(TextObjects::LineEdit_strokeTest_forwardTime, forwardText);
-    emit SetText(TextObjects::Label_strokeTest_backwardTime, backwardText);
-    emit SetText(TextObjects::LineEdit_strokeTest_backwardTime, backwardText);
-
-    emit TelemetryUpdated(m_telemetryStore);
-}
-
 void Program::AddRegression(const QVector<QPointF> &points)
 {
     QVector<Point> chartPoints;
@@ -210,112 +194,11 @@ void Program::UpdateSensors()
     emit AddPoints(Charts::Trend, points);
 }
 
-void Program::UpdateCharts_maintest()
-{
-    QVector<Point> points;
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
 
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
-
-    qreal task = m_mpi[0]->GetValueFromPercent(percent);
-    qreal X = m_mpi.GetDAC()->GetValue();
-    points.push_back({0, X, task});
-
-    for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
-        points.push_back({static_cast<quint8>(i + 1), X, m_mpi[i]->GetValue()});
-    }
-
-    emit AddPoints(Charts::Task, points);
-
-    points.clear();
-    points.push_back({0, m_mpi[1]->GetValue(), m_mpi[0]->GetValue()});
-
-    emit AddPoints(Charts::Pressure, points);
-}
-
-void Program::UpdateCharts_optiontest(Charts chart)
-{
-    QVector<Point> points;
-
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
-
-    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-
-    points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
-
-    emit AddPoints(chart, points);
-}
-
-void Program::MainTestResults(MainTest::TestResults results)
-{
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-
-    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
-
-    emit SetText(TextObjects::Label_pressureDifferenceValue,
-                 QString::asprintf("%.3f bar", results.pressureDiff));
-
-    emit SetText(TextObjects::Label_frictionForceValue,
-                 QString::asprintf("%.3f H", results.pressureDiff * k));
-    emit SetText(TextObjects::label_frictionPercentValue,
-                 QString::asprintf("%.2f %%", results.friction));
-
-    emit SetText(TextObjects::Label_dynamicErrorMeanPercent,
-                 QString::asprintf("%.2f %%", results.dynamicErrorMean / 0.16));
-
-    emit SetText(TextObjects::Label_dynamicErrorMean,
-                 QString::asprintf("%.3f mA", results.dynamicErrorMean));
-
-    emit SetText(TextObjects::Label_dynamicErrorMax,
-                 QString::asprintf("%.3f mA", results.dynamicErrorMax));
-    emit SetText(TextObjects::Label_dynamicErrorMaxPercent,
-                 QString::asprintf("%.2f %%", results.dynamicErrorMax / 0.16));
-
-    emit SetText(TextObjects::Label_lowLimitValue,
-                 QString::asprintf("%.2f bar", results.lowLimit));
-
-    emit SetText(TextObjects::Label_highLimitValue,
-                 QString::asprintf("%.2f bar", results.highLimit));
-
-    emit SetText(TextObjects::LineEdit_dinamicReal,
-                 QString::asprintf("%.2f", results.dynamicErrorMean / 0.16));
-
-    emit SetText(TextObjects::LineEdit_rangePressure,
-                 QString::asprintf("%.2f - %.2f", results.lowLimit, results.highLimit));
-
-    emit SetText(TextObjects::lineEdit_rangeReal,
-                 QString::asprintf("%.2f - %.2f", results.springLow, results.springHigh));
-
-    emit SetText(TextObjects::LineEdit_friction,
-                 QString::asprintf("%.3f", results.pressureDiff * k));
-    emit SetText(TextObjects::LineEdit_frictionPercent,
-                 QString::asprintf("%.2f", results.friction));
-}
 
 void Program::StepTestResults(QVector<StepTest::TestResult> results, quint32 T_value)
 {
     emit SetStepResults(results, T_value);
-}
-
-void Program::GetPoints_maintest(QVector<QVector<QPointF> > &points)
-{
-    emit GetPoints(points, Charts::Task);
-}
-
-void Program::GetPoints_steptest(QVector<QVector<QPointF> > &points)
-{
-    emit GetPoints(points, Charts::Step);
 }
 
 void Program::EndTest()
@@ -325,7 +208,7 @@ void Program::EndTest()
     emit SetButtonInitEnabled(true);
 
     if (!m_cyclicRunning) {
-        SetDAC_int(0);    // затираем только для НЕ-циклических
+        SetDAC_int(0);
     }
 
     emit StopTest();
@@ -363,63 +246,48 @@ void Program::button_init()
     emit SetButtonInitEnabled(false);
     emit SetSensorNumber(0);
 
-    // emit SetGroupDOVisible(false);
+    auto &s = m_telemetryStore;
 
-    emit SetText(TextObjects::Label_deviceStatusValue, "");
-    emit SetText(TextObjects::Label_deviceInitValue, "");
-    emit SetText(TextObjects::Label_connectedSensorsNumber, "");
-    emit SetText(TextObjects::Label_startingPositionValue, "");
-    emit SetText(TextObjects::Label_finalPositionValue, "");
+    s.init.deviceStatusText = m_mpi.Connect()
+                                  ? QString("Успешное подключение к порту %1").arg(m_mpi.PortName())
+                                  : "Ошибка подключения";
+    s.init.deviceStatusColor = m_mpi.Connect() ? Qt::darkGreen : Qt::red;
 
-    if (!m_mpi.Connect()) {
-        emit SetText(TextObjects::Label_deviceStatusValue, "Ошибка подключения");
-        emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::red);
-        emit SetButtonInitEnabled(true);
-        return;
-    }
+    emit TelemetryUpdated(s);
 
-    emit SetText(TextObjects::Label_deviceStatusValue, "Успешное подключение к порту " + m_mpi.PortName());
-    emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::darkGreen);
+    s.init.initStatusText = m_mpi.Initialize()
+                                ? "Успешная инициализация"
+                                : "Ошибка инициализации";
+    s.init.initStatusColor = m_mpi.Initialize() ? Qt::darkGreen : Qt::red;
 
-    if (!m_mpi.Initialize()) {
-        emit SetText(TextObjects::Label_deviceInitValue, "Ошибка инициализации");
-        emit SetTextColor(TextObjects::Label_deviceStatusValue, Qt::red);
-        emit SetButtonInitEnabled(true);
-        return;
-    }
+    emit TelemetryUpdated(s);
 
     if ((m_mpi.Version() & 0x40) != 0) {
-        // emit SetGroupDOVisible(true);
         emit SetButtonsDOChecked(m_mpi.GetDOStatus());
         m_timerDI->start();
     }
 
-    emit SetText(TextObjects::Label_deviceInitValue, "Успешная инициализация");
-    emit SetTextColor(TextObjects::Label_deviceInitValue, Qt::darkGreen);
-
     m_isInitialized = true;
 
-    switch (m_mpi.SensorCount()) { // update
-    case 0:
-        emit SetText(TextObjects::Label_connectedSensorsNumber, "Дачики не обнаружены");
-        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::red);
-        // emit SetButtonInitEnabled(true);
-        // return;
-    case 1:
-        emit SetText(TextObjects::Label_connectedSensorsNumber, "Обнаружен 1 датчик");
-        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::darkYellow);
-        break;
-    default:
-        emit SetText(TextObjects::Label_connectedSensorsNumber,
-                     "Обнаружено " + QString::number(m_mpi.SensorCount()) + " датчика");
-        emit SetTextColor(TextObjects::Label_connectedSensorsNumber, Qt::darkGreen);
+    if (m_mpi.SensorCount() == 0) {
+        s.init.connectedSensorsText = "Датчики не обнаружены";
+        s.init.connectedSensorsColor = Qt::red;
+    } else if (m_mpi.SensorCount() == 1) {
+        s.init.connectedSensorsText = "Обнаружен 1 датчик";
+        s.init.connectedSensorsColor = Qt::darkYellow;
+    } else {
+        s.init.connectedSensorsText = QString("Обнаружено %1 датчика").arg(m_mpi.SensorCount());
+        s.init.connectedSensorsColor = Qt::darkGreen;
     }
 
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    bool normalClosed = (valveInfo->safePosition == 0);
+    emit TelemetryUpdated(s);
 
-    emit SetText(TextObjects::Label_startingPositionValue, "Измерение");
-    emit SetTextColor(TextObjects::Label_startingPositionValue, Qt::darkYellow);
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+
+    s.init.startingPositionText = "Измерение";
+    s.init.startingPositionColor = Qt::darkYellow;
+
+    emit TelemetryUpdated(s);
 
     SetDAC(0, 10000, true);
 
@@ -434,16 +302,17 @@ void Program::button_init()
     m_dacEventloop->exec();
     timer.stop();
 
-    if (normalClosed)
-        m_mpi[0]->SetMin();
-    else
-        m_mpi[0]->SetMax();
+    bool normalClosed = (valveInfo->safePosition == 0);
+    if (normalClosed) m_mpi[0]->SetMin();
+    else m_mpi[0]->SetMax();
 
-    emit SetText(TextObjects::Label_startingPositionValue, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_startingPositionValue, Qt::darkGreen);
+    s.init.startingPositionText = m_mpi[0]->GetFormatedValue();
+    s.init.startingPositionColor = Qt::darkGreen;
 
-    emit SetText(TextObjects::Label_finalPositionValue, "Измерение");
-    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkYellow);
+    s.init.finalPositionText = "Измерение";
+    s.init.finalPositionColor = Qt::darkYellow;
+
+    emit TelemetryUpdated(s);
 
     SetDAC(0xFFFF, 10000, true);
 
@@ -451,15 +320,13 @@ void Program::button_init()
     m_dacEventloop->exec();
     timer.stop();
 
-    if (normalClosed)
-        m_mpi[0]->SetMax();
-    else
-        m_mpi[0]->SetMin();
+    if (normalClosed) m_mpi[0]->SetMax();
+    else m_mpi[0]->SetMin();
 
-    emit SetText(TextObjects::Label_finalPositionValue, m_mpi[0]->GetFormatedValue());
-    emit SetTextColor(TextObjects::Label_finalPositionValue, Qt::darkGreen);
-    qDebug() << "strokeMovement =" << valveInfo->strokeMovement
-             << " pulleyDiameter ="  << valveInfo->diameterPulley;
+    s.init.finalPositionText = m_mpi[0]->GetFormatedValue();
+    s.init.finalPositionColor = Qt::darkGreen;
+
+    emit TelemetryUpdated(s);
 
     qreal correctCoefficient = 1;
     if (valveInfo->strokeMovement != 0) {
@@ -469,14 +336,15 @@ void Program::button_init()
     m_mpi[0]->CorrectCoefficients(correctCoefficient);
 
     if (normalClosed) {
-        emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
-        emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
+        m_telemetryStore.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
+        m_telemetryStore.valveStrokeRecord.real = m_mpi[0]->GetValue();
         SetDAC(0);
     } else {
         SetDAC(0, 10000, true);
-        emit SetText(TextObjects::Label_valveStroke_range, m_mpi[0]->GetFormatedValue());
-        emit SetText(TextObjects::lineEdit_strokeReal, QString::asprintf("%.2f", m_mpi[0]->GetValue()));
+        m_telemetryStore.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
+        m_telemetryStore.valveStrokeRecord.real = m_mpi[0]->GetValue();
     }
+    emit TelemetryUpdated(s);
 
     emit SetTask(m_mpi.GetDAC()->GetValue());
 
@@ -509,66 +377,131 @@ void Program::MainTestStart()
 
     emit SetButtonInitEnabled(false);
 
-    // MainTest *main_test = parameters.is_cyclic ? new CyclicTestPositioner : new MainTest;
+    MainTest *mainTest = new MainTest;
 
-    MainTest *main_test = new MainTest;
-
-    main_test->SetParameters(parameters);
+    mainTest->SetParameters(parameters);
 
     QThread *threadTest = new QThread(this);
-    main_test->moveToThread(threadTest);
+    mainTest->moveToThread(threadTest);
 
-    // if (parameters.is_cyclic) {
-    //     connect(dynamic_cast<CyclicTestPositioner *>(main_test),
-    //             &CyclicTestPositioner::UpdateCyclicTred,
-    //             this,
-    //             &Program::UpdateCharts_CyclicTred);
-    //     connect(dynamic_cast<CyclicTestPositioner *>(main_test),
-    //             &CyclicTestPositioner::SetStartTime,
-    //             this,
-    //             &Program::SetTimeStart);
-    // }
+    connect(threadTest, &QThread::started,
+            mainTest, &MainTest::Process);
 
-    connect(threadTest, &QThread::started, main_test, &MainTest::Process);
-    connect(main_test, &MainTest::EndTest, threadTest, &QThread::quit);
+    connect(mainTest, &MainTest::EndTest,
+            threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest, main_test, &MainTest::Stop);
-    connect(threadTest, &QThread::finished, threadTest, &QThread::deleteLater);
-    connect(threadTest, &QThread::finished, main_test, &MainTest::deleteLater);
+    connect(this, &Program::StopTest,
+            mainTest, &MainTest::Stop);
 
-    connect(main_test, &MainTest::EndTest, this, &Program::EndTest);
-    connect(main_test, &MainTest::EndTest, this, &Program::MainTestFinished);
+    connect(threadTest, &QThread::finished,
+            threadTest, &QThread::deleteLater);
 
-    connect(main_test, &MainTest::UpdateGraph, this, &Program::UpdateCharts_maintest);
-    connect(main_test, &MainTest::SetDAC, this, &Program::SetDAC);
+    connect(threadTest, &QThread::finished,
+            mainTest, &MainTest::deleteLater);
 
-    connect(main_test, &MainTest::DublSeries, this, [&] { emit DublSeries(); });
-    connect(main_test,
-            &MainTest::GetPoints,
-            this,
-            &Program::GetPoints_maintest,
+    connect(mainTest, &MainTest::EndTest,
+            this, &Program::EndTest);
+
+    connect(mainTest, &MainTest::EndTest,
+            this, &Program::MainTestFinished);
+
+    connect(mainTest, &MainTest::UpdateGraph,
+            this, &Program::UpdateCharts_mainTest);
+
+    connect(mainTest, &MainTest::SetDAC,
+            this, &Program::SetDAC);
+
+    connect(mainTest, &MainTest::DublSeries,
+            this, [&] { emit DublSeries(); });
+    connect(mainTest, &MainTest::GetPoints,
+            this, &Program::GetPoints_mainTest,
             Qt::BlockingQueuedConnection);
 
-    connect(main_test, &MainTest::AddRegression, this, &Program::AddRegression);
-    connect(main_test, &MainTest::AddFriction, this, &Program::AddFriction);
+    connect(mainTest, &MainTest::AddRegression,
+            this, &Program::AddRegression);
 
-    connect(this, &Program::ReleaseBlock, main_test, &MainTest::ReleaseBlock);
-    connect(main_test, &MainTest::Results, this, &Program::MainTestResults);
+    connect(mainTest, &MainTest::AddFriction,
+            this, &Program::AddFriction);
 
-    connect(main_test, &MainTest::ShowDots, this, [&](bool visible) { emit ShowDots(visible); });
+    connect(this, &Program::ReleaseBlock,
+            mainTest, &MainTest::ReleaseBlock);
 
-    connect(main_test, &MainTest::ClearGraph, this, [&] {
+    connect(mainTest, &MainTest::Results,
+            this, &Program::MainTestResults);
+
+    connect(mainTest, &MainTest::ShowDots,
+            this, [&](bool visible) { emit ShowDots(visible); });
+
+    connect(mainTest, &MainTest::ClearGraph, this, [&] {
         emit ClearPoints(Charts::Task);
         emit ClearPoints(Charts::Pressure);
         emit ClearPoints(Charts::Friction);
         emit SetRegressionEnable(false);
     });
 
-    // emit ClearPoints(Charts::Cyclic);
-
     m_testing = true;
     emit EnableSetTask(false);
     threadTest->start();
+}
+
+void Program::MainTestResults(MainTest::TestResults results)
+{
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+
+    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+
+    auto &s = m_telemetryStore.mainTestRecord;
+
+    s.pressureDifference = results.pressureDiff;
+
+    s.frictionForce = results.pressureDiff * k;
+    s.frictionPercent = results.friction;
+
+    s.dynamicError_mean = results.dynamicErrorMean;
+    s.dynamicError_meanPercent = results.dynamicErrorMean / 0.16;
+    s.dynamicError_max = results.dynamicErrorMax;
+    s.dynamicError_maxPercent = results.dynamicErrorMean / 0.16;
+    s.dynamicErrorReal = results.dynamicErrorMean / 0.16;
+
+    s.lowLimitPressure = results.lowLimitPressure;
+    s.highLimitPressure = results.highLimitPressure;
+
+    s.springLow = results.springLow;
+    s.springHigh = results.springHigh;
+
+    emit TelemetryUpdated(m_telemetryStore);
+}
+
+void Program::GetPoints_mainTest(QVector<QVector<QPointF>> &points)
+{
+    emit GetPoints(points, Charts::Task);
+}
+
+void Program::UpdateCharts_mainTest()
+{
+    QVector<Point> points;
+    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
+    percent = qMin(qMax(percent, 0.0), 100.0);
+
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    if (valveInfo->safePosition != 0) {
+        percent = 100 - percent;
+    }
+
+    qreal task = m_mpi[0]->GetValueFromPercent(percent);
+    qreal X = m_mpi.GetDAC()->GetValue();
+    points.push_back({0, X, task});
+
+    for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
+        points.push_back({static_cast<quint8>(i + 1), X, m_mpi[i]->GetValue()});
+    }
+
+    emit AddPoints(Charts::Task, points);
+
+    points.clear();
+    points.push_back({0, m_mpi[1]->GetValue(), m_mpi[0]->GetValue()});
+
+    emit AddPoints(Charts::Pressure, points);
 }
 
 void Program::StrokeTestStart()
@@ -591,7 +524,7 @@ void Program::StrokeTestStart()
 
     connect(strokeTest, &StrokeTest::EndTest, this, &Program::EndTest);
 
-    connect(strokeTest, &StrokeTest::UpdateGraph, this, &Program::UpdateCharts_stroketest);
+    connect(strokeTest, &StrokeTest::UpdateGraph, this, &Program::UpdateCharts_strokeTest);
     connect(strokeTest, &StrokeTest::SetDAC, this, &Program::SetDAC);
     connect(strokeTest, &StrokeTest::SetStartTime, this, &Program::SetTimeStart);
     connect(strokeTest, &StrokeTest::Results, this, &Program::StrokeTestResults);
@@ -601,7 +534,24 @@ void Program::StrokeTestStart()
     threadTest->start();
 }
 
-void Program::UpdateCharts_stroketest()
+
+void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
+{
+
+    m_telemetryStore.strokeTestRecord.timeForwardMs  = forwardTime;
+    m_telemetryStore.strokeTestRecord.timeBackwardMs = backwardTime;
+
+    QString forwardText = QTime(0, 0).addMSecs(forwardTime).toString("mm:ss.zzz");
+    QString backwardText = QTime(0, 0).addMSecs(backwardTime).toString("mm:ss.zzz");
+    emit SetText(TextObjects::Label_strokeTest_forwardTime, forwardText);
+    emit SetText(TextObjects::LineEdit_strokeTest_forwardTime, forwardText);
+    emit SetText(TextObjects::Label_strokeTest_backwardTime, backwardText);
+    emit SetText(TextObjects::LineEdit_strokeTest_backwardTime, backwardText);
+
+    emit TelemetryUpdated(m_telemetryStore);
+}
+
+void Program::UpdateCharts_strokeTest()
 {
     QVector<Point> points;
 
@@ -819,8 +769,8 @@ void Program::SolenoidResults(QString sequence,
                               double totalTimeSec)
 {
 
-    m_telemetryStore.cyclicTestRecord.sequence     = sequence;
-    m_telemetryStore.cyclicTestRecord.cycles       = cycles;
+    m_telemetryStore.cyclicTestRecord.sequence = sequence;
+    m_telemetryStore.cyclicTestRecord.cycles = cycles;
     m_telemetryStore.cyclicTestRecord.totalTimeSec = totalTimeSec;
 
     const auto& ranges = m_telemetryStore.cyclicTestRecord.ranges;
@@ -884,7 +834,7 @@ void Program::StartOptionalTest(quint8 testNum)
         optionalTest->SetTask(task);
 
         connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            UpdateCharts_optiontest(Charts::Response);
+            UpdateCharts_optionTest(Charts::Response);
         });
 
         emit ClearPoints(Charts::Response);
@@ -927,7 +877,7 @@ void Program::StartOptionalTest(quint8 testNum)
         optionalTest->SetTask(task);
 
         connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            UpdateCharts_optiontest(Charts::Resolution);
+            UpdateCharts_optionTest(Charts::Resolution);
         });
 
         emit ClearPoints(Charts::Resolution);
@@ -952,12 +902,12 @@ void Program::StartOptionalTest(quint8 testNum)
         qreal startValue = 4.0;
         qreal endValue = 20.0;
 
-        bool normal_open = (valveInfo->safePosition != 0);
+        bool normalOpen = (valveInfo->safePosition != 0);
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
 
         for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
-            qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
+            qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
             qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
             task.value.push_back(dacValue);
         }
@@ -965,7 +915,7 @@ void Program::StartOptionalTest(quint8 testNum)
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(endValue));
 
         for (auto it = parameters.points.rbegin(); it != parameters.points.rend(); ++it) {
-            qreal current = 16.0 * (normal_open ? 100 - *it : *it) / 100 + 4.0;
+            qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
             qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
             task.value.push_back(dacValue);
         }
@@ -976,17 +926,16 @@ void Program::StartOptionalTest(quint8 testNum)
         dynamic_cast<StepTest *>(optionalTest)->Set_T_value(parameters.test_value);
 
         connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            UpdateCharts_optiontest(Charts::Step);
+            UpdateCharts_optionTest(Charts::Step);
         });
-        connect(dynamic_cast<StepTest *>(optionalTest),
-                &StepTest::GetPoints,
-                this,
-                &Program::GetPoints_steptest,
+
+        connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::GetPoints,
+                this, &Program::GetPoints_stepTest,
                 Qt::BlockingQueuedConnection);
-        connect(dynamic_cast<StepTest *>(optionalTest),
-                &StepTest::Results,
-                this,
-                &Program::StepTestResults);
+
+        connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::Results,
+                this, &Program::StepTestResults);
+
         emit ClearPoints(Charts::Step);
 
         break;
@@ -1021,23 +970,37 @@ void Program::StartOptionalTest(quint8 testNum)
     threadTest->start();
 }
 
+void Program::GetPoints_stepTest(QVector<QVector<QPointF>> &points)
+{
+    emit GetPoints(points, Charts::Step);
+}
+
+void Program::UpdateCharts_optionTest(Charts chart)
+{
+    QVector<Point> points;
+
+    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
+    percent = qMin(qMax(percent, 0.0), 100.0);
+
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    if (valveInfo->safePosition != 0) {
+        percent = 100 - percent;
+    }
+
+    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
+
+    points.push_back({0, qreal(time), percent});
+    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+
+    emit AddPoints(chart, points);
+}
+
 void Program::TerminateTest()
 {
     m_stopSetDac = true;
     m_dacEventloop->quit();
     emit StopTest();
 }
-
-
-void Program::button_open() {}
-
-void Program::button_report() {}
-
-void Program::button_pixmap1() {}
-
-void Program::button_pixmap2() {}
-
-void Program::button_pixmap3() {}
 
 void Program::button_set_position()
 {
@@ -1051,7 +1014,7 @@ void Program::button_DO(quint8 DO_num, bool state)
     emit SetButtonsDOChecked(m_mpi.GetDOStatus());
 }
 
-void Program::checkbox_autoinit(int state)
+void Program::checkbox_autoInit(int state)
 {
     m_waitForButton = (state == 0);
 }

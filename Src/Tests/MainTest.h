@@ -25,8 +25,8 @@ public:
         qreal friction;
         qreal dynamicErrorMean;
         qreal dynamicErrorMax;
-        qreal lowLimit;
-        qreal highLimit;
+        qreal lowLimitPressure;
+        qreal highLimitPressure;
         qreal springLow;
         qreal springHigh;
     };

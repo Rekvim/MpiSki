@@ -38,6 +38,7 @@ public:
     void SetBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
 
 private slots:
+    void onTelemetryUpdated(const TelemetryStore &TS);
     void SetSensorsNumber(quint8 num);
     void AddPoints(Charts chart, QVector<Point> points);
     void ClearPoints(Charts chart);

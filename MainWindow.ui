@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1346,7 +1346,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_mainTests">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_mainTests_task">
            <attribute name="title">
@@ -2166,7 +2166,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_tests">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -2493,7 +2493,7 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -3527,7 +3527,7 @@
                 </property>
                 <property name="text">
                  <string>Нижнее/верхнее значение
-давления в приводе, бар</string>
+давления в приводе, bar</string>
                 </property>
                </widget>
               </item>
@@ -3553,7 +3553,7 @@
                </widget>
               </item>
               <item row="6" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_friction">
+               <widget class="QLineEdit" name="lineEdit_frictionForceValue">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -3642,7 +3642,7 @@
                 </property>
                 <property name="text">
                  <string>Диапазон i/p
-преобразователя, бар</string>
+преобразователя, bar</string>
                 </property>
                </widget>
               </item>
@@ -3719,7 +3719,7 @@
                </widget>
               </item>
               <item row="7" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_frictionPercent">
+               <widget class="QLineEdit" name="lineEdit_frictionPercentValue">
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -3865,8 +3865,8 @@
   <tabstop>lineEdit_dynamicErrorReal</tabstop>
   <tabstop>lineEdit_strokeReal</tabstop>
   <tabstop>lineEdit_driveRangeReal</tabstop>
-  <tabstop>lineEdit_friction</tabstop>
-  <tabstop>lineEdit_frictionPercent</tabstop>
+  <tabstop>lineEdit_frictionForceValue</tabstop>
+  <tabstop>lineEdit_frictionPercentValue</tabstop>
   <tabstop>lineEdit_strokeTest_forwardTime</tabstop>
   <tabstop>lineEdit_strokeTest_backwardTime</tabstop>
   <tabstop>lineEdit_driveRangeRecomend</tabstop>

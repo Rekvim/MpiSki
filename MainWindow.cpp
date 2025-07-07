@@ -74,8 +74,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_lineEdits[TextObjects::LineEdit_dinamicReal] = ui->lineEdit_dynamicErrorReal;
     m_lineEdits[TextObjects::lineEdit_strokeReal] = ui->lineEdit_strokeReal;
     m_lineEdits[TextObjects::lineEdit_rangeReal] = ui->lineEdit_driveRangeReal;
-    m_lineEdits[TextObjects::LineEdit_friction] = ui->lineEdit_friction;
-    m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercent;
+    m_lineEdits[TextObjects::LineEdit_friction] = ui->lineEdit_frictionForceValue;
+    m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercentValue;
     m_lineEdits[TextObjects::LineEdit_strokeTest_forwardTime] = ui->lineEdit_strokeTest_forwardTime;
     m_lineEdits[TextObjects::LineEdit_strokeTest_backwardTime] = ui->lineEdit_strokeTest_backwardTime;
     m_lineEdits[TextObjects::LineEdit_rangePressure] = ui->lineEdit_rangePressure;
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
-            m_program, &Program::checkbox_autoinit);
+            m_program, &Program::checkbox_autoInit);
 
     connect(this, &MainWindow::SetDO,
             m_program, &Program::button_DO);
@@ -372,6 +372,9 @@ MainWindow::MainWindow(QWidget *parent)
             this, [&](const TelemetryStore &store){
                 m_telemetryStore = store;
             });
+
+    connect(m_program, &Program::TelemetryUpdated,
+            this, &MainWindow::onTelemetryUpdated);
 }
 
 MainWindow::~MainWindow()
@@ -380,6 +383,111 @@ MainWindow::~MainWindow()
     m_programThread->quit();
     m_programThread->wait();
     delete m_program;
+}
+
+void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
+    // Init
+    ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
+    ui->label_deviceStatusValue->setStyleSheet(
+        "color:" + TS.init.deviceStatusColor.name(QColor::HexRgb));
+
+    ui->label_deviceInitValue->setText(TS.init.initStatusText);
+    ui->label_connectedSensorsNumber->setText(TS.init.connectedSensorsText);
+    ui->label_connectedSensorsNumber->setStyleSheet(
+        "color:" + TS.init.connectedSensorsColor.name(QColor::HexRgb));
+    ui->label_startingPositionValue->setText(TS.init.startingPositionText);
+    ui->label_finalPositionValue->setText(TS.init.finalPositionText);
+
+    // MainTest
+    ui->label_pressureDifferenceValue->setText(
+        QString("%1 bar")
+            .arg(TS.mainTestRecord.pressureDifference, 0, 'f', 3)
+    );
+
+    ui->label_frictionForceValue->setText(
+        QString("%1 H")
+            .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
+    );
+    ui->label_frictionPercentValue->setText(
+        QString("%1 %")
+            .arg(TS.mainTestRecord.frictionPercent, 0, 'f', 2)
+    );
+    ui->lineEdit_frictionForceValue->setText(
+        QString("%1")
+            .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
+        );
+    ui->lineEdit_frictionPercentValue->setText(
+        QString("%1")
+            .arg(TS.mainTestRecord.frictionPercent, 0, 'f', 2)
+    );
+
+    ui->label_dynamicErrorMeanPercent->setText(
+        QString("%1 %")
+            .arg(TS.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
+    );
+    ui->label_dynamicErrorMean->setText(
+        QString("%1 mA")
+            .arg(TS.mainTestRecord.dynamicError_mean, 0, 'f', 3)
+    );
+    ui->label_dynamicErrorMaxPercent->setText(
+        QString("%1 %")
+            .arg(TS.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
+    );
+    ui->label_dynamicErrorMax->setText(
+        QString("%1 mA")
+            .arg(TS.mainTestRecord.dynamicError_max, 0, 'f', 3)
+    );
+    ui->lineEdit_dynamicErrorReal->setText(
+        QString("%1 mA")
+            .arg(TS.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
+    );
+
+    ui->label_dynamicErrorMax->setText(
+        QString("%1 bar")
+            .arg(TS.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+    );
+    ui->label_dynamicErrorMax->setText(
+        QString("%1 bar")
+            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
+    );
+
+    ui->lineEdit_rangePressure->setText(
+        QString("%1—%2")
+            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
+            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
+    );
+
+    ui->lineEdit_driveRangeReal->setText(
+        QString("%1—%2")
+            .arg(TS.mainTestRecord.springLow, 0, 'f', 2)
+            .arg(TS.mainTestRecord.springHigh, 0, 'f', 2)
+    );
+
+    // StrokeTest
+    QTime tF(0, 0);
+    tF = tF.addMSecs(TS.strokeTestRecord.timeForwardMs);
+    ui->label_strokeTest_forwardTime->setText(tF.toString("mm:ss.zzz"));
+    ui->lineEdit_strokeTest_forwardTime->setText(tF.toString("mm:ss.zzz"));
+    QTime tB(0, 0);
+    tB = tB.addMSecs(TS.strokeTestRecord.timeBackwardMs);
+    ui->label_strokeTest_backwardTime->setText(tB.toString("mm:ss.zzz"));
+    ui->lineEdit_strokeTest_backwardTime->setText(tB.toString("mm:ss.zzz"));
+
+    // CyclicTestResults
+    ui->lineEdit_cyclicTest_sequence->setText(TS.cyclicTestRecord.sequence);
+
+    ui->lineEdit_cyclicTest_cycles->setText(
+        QString::number(TS.cyclicTestRecord.cycles));
+
+    QTime tC(0, 0);
+    tC = tC.addMSecs(TS.cyclicTestRecord.totalTimeSec);
+    ui->lineEdit_cyclicTest_totalTime->setText(
+        tC.toString("hh:mm:ss.zzz"));
+
+    // StrokeRecord
+    ui->lineEdit_strokeReal->setText(
+        QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
+
 }
 
 void MainWindow::onCyclicCountdown()

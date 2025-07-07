@@ -57,7 +57,7 @@ void ReportBuilder_C_CVT::buildReport(
             report.data.push_back({sheet_1, row,  2,
                                    QString::number(ranges[i].rangePercent)});
             report.data.push_back({sheet_1, row,  8,
-                QString("%1 %/ №%2")
+                QString("%1 %/ № %2")
                     .arg(ranges[i].maxForwardValue, 0, 'f', 2)
                     .arg(ranges[i].maxForwardCycle)
             });
@@ -136,7 +136,7 @@ void ReportBuilder_C_CVT::buildReport(
 
     // Страница: Отчет; Блок: Результат испытаний
     report.data.push_back({sheet_3, 20, 5, QString("%1 %")
-                                                .arg(telemetryStore.mainTestRecord.dynamicReal, 0, 'f', 2)});
+                                                .arg(telemetryStore.mainTestRecord.dynamicErrorReal, 0, 'f', 2)});
 
     report.data.push_back({sheet_3, 20, 8, QString("%1 %")
                                                .arg(valveInfo.dinamicErrorRecomend, 0, 'f', 2)});
@@ -145,38 +145,32 @@ void ReportBuilder_C_CVT::buildReport(
     // report.data.push_back({sheet_3, 22, 8, telemetryStore.dinamicRecord.dinamicIpRecomend});
 
     report.data.push_back({sheet_3, 24, 8, QString("%1")
-                                               .arg(telemetryStore.strokeRecord.strokeReal, 0, 'f', 2)});
-    report.data.push_back({sheet_3, 24, 8, QString("%1")
-                                               .arg(telemetryStore.strokeRecord.strokeRecomend, 0, 'f', 2)});
-    report.data.push_back({sheet_3, 24, 8, safeToString(telemetryStore.strokeRecord.strokeRecomend)});
+                                               .arg(telemetryStore.valveStrokeRecord.real, 0, 'f', 2)});
+    report.data.push_back({sheet_3, 24, 8, valveInfo.driveRecomendRange});
 
-    report.data.push_back({
-        sheet_3, 26, 5,
-        QString::asprintf("%.2f–%.2f",
-            telemetryStore.mainTestRecord.springLow,
-            telemetryStore.mainTestRecord.springHigh
-          )
+    report.data.push_back({sheet_3, 26, 5,
+        QString("%1—%2")
+            .arg(telemetryStore.mainTestRecord.springLow, 0, 'f', 2)
+            .arg(telemetryStore.mainTestRecord.springHigh, 0, 'f', 2)
     });
     report.data.push_back({sheet_3, 26, 8, valveInfo.driveRecomendRange});
 
-    report.data.push_back({
-        sheet_3, 28, 5, 
-        QString::asprintf("%.2f–%.2f", 
-            telemetryStore.mainTestRecord.lowLimit, 
-            telemetryStore.mainTestRecord.highLimit 
-        )
+    report.data.push_back({sheet_3, 28, 5,
+        QString("%1—%2")
+            .arg(telemetryStore.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+            .arg(telemetryStore.mainTestRecord.highLimitPressure, 0, 'f', 2)
     });
-
-
 
     report.data.push_back({
         sheet_3, 30, 5, 
-        QString::asprintf("%.2f %%", telemetryStore.mainTestRecord.frictionPercent)
+        QString("%1")
+           .arg(telemetryStore.mainTestRecord.frictionPercent, 0, 'f', 2)
     });
 
     report.data.push_back({
         sheet_3, 32, 5,
-        QString::asprintf("%.3f", telemetryStore.mainTestRecord.frictionForce)
+        QString("%1")
+           .arg(telemetryStore.mainTestRecord.frictionForce, 0, 'f', 3)
     });
     report.data.push_back({
         sheet_3, 46, 5,

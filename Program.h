@@ -158,9 +158,9 @@ signals:
 private slots:
     void SetMultipleDO(const QVector<bool>& states);
     void UpdateSensors();
-    void UpdateCharts_maintest();
-    void UpdateCharts_stroketest();
-    void UpdateCharts_optiontest(Charts chart);
+    void UpdateCharts_mainTest();
+    void UpdateCharts_strokeTest();
+    void UpdateCharts_optionTest(Charts chart);
     // void UpdateCharts_CyclicTred();
     void UpdateCharts_CyclicSolenoid();
     void MainTestResults(MainTest::TestResults results);
@@ -179,8 +179,8 @@ public slots:
 
     void AddRegression(const QVector<QPointF> &points);
     void AddFriction(const QVector<QPointF> &points);
-    void GetPoints_maintest(QVector<QVector<QPointF>> &points);
-    void GetPoints_steptest(QVector<QVector<QPointF>> &points);
+    void GetPoints_mainTest(QVector<QVector<QPointF>> &points);
+    void GetPoints_stepTest(QVector<QVector<QPointF>> &points);
     void SetDAC_real(qreal value);
     void SetDAC_int(quint16 value);
     void MainTestStart();
@@ -192,14 +192,9 @@ public slots:
     void TerminateTest();
 
     void button_init();
-    void button_open();
-    void button_report();
-    void button_pixmap1();
-    void button_pixmap2();
-    void button_pixmap3();
     void button_set_position();
     void button_DO(quint8 DO_num, bool state);
-    void checkbox_autoinit(int state);
+    void checkbox_autoInit(int state);
 };
 
 #endif // PROGRAM_H

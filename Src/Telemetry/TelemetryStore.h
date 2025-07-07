@@ -15,7 +15,9 @@ struct InitState {
     QString connectedSensorsText = "";
     QColor connectedSensorsColor;
     QString startingPositionText = "";
+    QColor startingPositionColor = "";
     QString finalPositionText = "";
+    QColor finalPositionColor = "";
 };
 
 struct SensorState {
@@ -63,10 +65,10 @@ struct MainTestRecord {
     double dynamicError_max = 0.0;
     double dynamicError_maxPercent = 0.0;
 
-    double dynamicReal = 0.0;
+    double dynamicErrorReal = 0.0;
 
-    double lowLimit = 0.0;
-    double highLimit = 0.0;
+    double lowLimitPressure = 0.0;
+    double highLimitPressure = 0.0;
 
     double springLow = 0.0;
     double springHigh = 0.0;
@@ -76,10 +78,9 @@ struct MainTestRecord {
     double frictionPercent = 0.0;
 };
 
-struct StrokeRecord {
-    QString strokeRange = "";
-    double strokeReal = 0.0;
-    double strokeRecomend = 0.0;
+struct ValveStrokeRecord {
+    QString range = "";
+    double real = 0.0;
 };
 
 struct SupplyRecord {
@@ -93,7 +94,7 @@ public:
     QVector<StepTestRecord> stepResults = {{12, 13, 40, 50.02}};
     CyclicTestRecord cyclicTestRecord;
     StrokeTestRecord strokeTestRecord;
-    StrokeRecord strokeRecord;
+    ValveStrokeRecord valveStrokeRecord;
     SupplyRecord supplyRecord;
     MainTestRecord mainTestRecord;
 
@@ -106,8 +107,8 @@ public:
         // stepResults.clear();
         cyclicTestRecord = {};
         strokeTestRecord = {};
-        strokeRecord     = {};
-        supplyRecord     = {};
+        valveStrokeRecord = {};
+        supplyRecord = {};
         doOnCounts.clear();
         doOffCounts.clear();
     }

@@ -102,12 +102,12 @@ void MainTest::Process()
 
     testResults.friction = 50.0 * testResults.pressureDiff / range;
 
-    auto [lowLimit, highLimit] = GetRangeLimits(regressionForward,
+    auto [lowLimitPressure, highLimitPressure] = GetRangeLimits(regressionForward,
                                                   regressionBackward,
                                                   regressionLimits);
 
-    testResults.lowLimit = lowLimit;
-    testResults.highLimit = highLimit;
+    testResults.lowLimitPressure = lowLimitPressure;
+    testResults.highLimitPressure = highLimitPressure;
 
     auto [springLow, springHigh] = GetSpringLimits(regressionForward,
                                                      regressionBackward,
