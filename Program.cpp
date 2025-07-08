@@ -146,27 +146,30 @@ void Program::AddFriction(const QVector<QPointF> &points)
 
 void Program::UpdateSensors()
 {
-
     for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
         switch (i) {
         case 0:
             emit SetText(TextObjects::LineEdit_linearSensor, m_mpi[i]->GetFormatedValue());
             emit SetText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->GetPersentFormated());
+            m_telemetryStore.sensors.linearValue = m_mpi[i]->GetFormatedValue();
+            m_telemetryStore.sensors.linearPercent = m_mpi[i]->GetPersentFormated();
             break;
         case 1:
             emit SetText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->GetFormatedValue());
-            break;
+            m_telemetryStore.sensors.pressure1 = m_mpi[i]->GetFormatedValue();
             break;
         case 2:
             emit SetText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->GetFormatedValue());
-            break;
-
+            m_telemetryStore.sensors.pressure2 = m_mpi[i]->GetFormatedValue();
             break;
         case 3:
             emit SetText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->GetFormatedValue());
+            m_telemetryStore.sensors.pressure3 = m_mpi[i]->GetFormatedValue();
             break;
         }
     }
+
+    emit TelemetryUpdated(m_telemetryStore);
 
     if (m_testing)
         emit SetTask(m_mpi.GetDAC()->GetValue());
@@ -653,7 +656,6 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     const auto parts = p.regulatory_sequence.split('-', Qt::SkipEmptyParts);
     int recordCount = parts.size();
 
-    // парсим в QVector<int>
     QVector<int> valuesReg;
     valuesReg.reserve(recordCount);
     for (auto &part : parts) {
@@ -661,7 +663,6 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
         int v = part.trimmed().toInt(&ok);
         if (ok) valuesReg.append(v);
     }
-
 
     auto *sol = new CyclicTestSolenoid;
     sol->SetParameters(p);
@@ -674,11 +675,11 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 
     for (int i = 0; i < recordCount; ++i) {
         auto &rec = m_telemetryStore.cyclicTestRecord.ranges[i];
-        rec.rangePercent      = valuesReg[i];
-        rec.maxForwardValue   = 0;
-        rec.maxForwardCycle   = 0;
-        rec.maxReverseValue   = 0;
-        rec.maxReverseCycle   = 0;
+        rec.rangePercent = valuesReg[i];
+        rec.maxForwardValue = 0;
+        rec.maxForwardCycle = 0;
+        rec.maxReverseValue = 0;
+        rec.maxReverseCycle = 0;
     }
 
     m_telemetryStore.cyclicTestRecord.switch3to0Count = 0;
@@ -760,8 +761,10 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 }
 
 void Program::onDOCounts(const QVector<int>& on, const QVector<int>& off) {
-    m_telemetryStore.doOnCounts  = on;
-    m_telemetryStore.doOffCounts = off;
+    m_telemetryStore.cyclicTestRecord.doOnCounts  = on;
+    m_telemetryStore.cyclicTestRecord.doOffCounts = off;
+
+    emit TelemetryUpdated(m_telemetryStore);
 }
 
 void Program::SolenoidResults(QString sequence,
@@ -773,20 +776,7 @@ void Program::SolenoidResults(QString sequence,
     m_telemetryStore.cyclicTestRecord.cycles = cycles;
     m_telemetryStore.cyclicTestRecord.totalTimeSec = totalTimeSec;
 
-    const auto& ranges = m_telemetryStore.cyclicTestRecord.ranges;
-    for (int i = 0; i < ranges.size(); ++i) {
-        const auto& rec = ranges[i];
-        qDebug() << QString("Range[%1]: maxForward=%2 at cycle=%3, minReverse=%4 at cycle=%5")
-                        .arg(i)
-                        .arg(rec.maxForwardValue)
-                        .arg(rec.maxForwardCycle)
-                        .arg(rec.maxReverseValue)
-                        .arg(rec.maxReverseCycle);
-    }
-
     emit TelemetryUpdated(m_telemetryStore);
-    emit SetSolenoidResults(sequence, cycles, totalTimeSec);
-    emit SetSolenoidRangesData(ranges);
 }
 
 void Program::StartOptionalTest(quint8 testNum)

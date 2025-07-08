@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
     if (qtTranslator.load("qt_ru.qm", ":/translations"))
         a.installTranslator(&qtTranslator);
 
+    qRegisterMetaType<TelemetryStore>("TelemetryStore");
+
     Registry registry;
 
     MainWindow mainWindow;

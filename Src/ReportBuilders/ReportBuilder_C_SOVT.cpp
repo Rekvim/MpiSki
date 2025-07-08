@@ -25,32 +25,24 @@ void ReportBuilder_C_SOVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 5, 13, valveInfo.serialNumber});
     report.data.push_back({"Отчет ЦТ", 6, 13, valveInfo.valveModel});
     report.data.push_back({"Отчет ЦТ", 7, 13, valveInfo.manufacturer});
-    report.data.push_back({"Отчет ЦТ", 8, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({"Отчет ЦТ", 8, 13, QString("%1 / %2")
+                                                  .arg(valveInfo.DN)
+                                                  .arg(valveInfo.PN)});
     report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.solenoidValveModel});
-    report.data.push_back({"Отчет ЦТ", 10, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({ "Отчет ЦТ",11, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
+    report.data.push_back({"Отчет ЦТ", 10, 13, QString("%1 / %2")
+                                                   .arg(valveInfo.limitSwitchModel)
+                                                   .arg(valveInfo.materialStuffingBoxSeal)});
+    report.data.push_back({"Отчет ЦТ",11, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
     report.data.push_back({"Отчет ЦТ", 12, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 13, 13, valveInfo.driveModel});
     report.data.push_back({"Отчет ЦТ", 14, 13, otherParams.strokeMovement});
     report.data.push_back({"Отчет ЦТ", 15, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({
-        "Отчет ЦТ", 20, 8,
-        QString::asprintf("%.2f s", telemetryStore.strokeTestRecord.timeForwardMs / 1000.0)
-    });
-    report.data.push_back({
-        "Отчет ЦТ", 22, 8,
-        QString::asprintf("%.2f s", telemetryStore.strokeTestRecord.timeBackwardMs / 1000.0)
-    });
-    report.data.push_back({
-        "Отчет ЦТ", 24, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
-    });
-    report.data.push_back({
-        "Отчет ЦТ", 26, 8,
-        telemetryStore.cyclicTestRecord.sequence
-    });
+    report.data.push_back({"Отчет ЦТ", 20, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs).toString("mm:ss.zzz")});
+    report.data.push_back({"Отчет ЦТ", 22, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs).toString("mm:ss.zzz")});
+    report.data.push_back({"Отчет ЦТ", 24, 8, QString::number(telemetryStore.cyclicTestRecord.cycles) });
+    report.data.push_back({ "Отчет ЦТ", 26, 8, telemetryStore.cyclicTestRecord.sequence });
     report.data.push_back({
         "Отчет ЦТ", 28, 8,
         QString::asprintf("%.2f s", telemetryStore.cyclicTestRecord.totalTimeSec)
@@ -89,15 +81,15 @@ void ReportBuilder_C_SOVT::buildReport(
     // report.data.push_back({"Отчет ЦТ", 46, 10, safeToString(???)});
     // report.data.push_back({"Отчет ЦТ", 46, 13, safeToString(???)});
 
-    for (int i = 0; i < telemetryStore.doOnCounts.size(); ++i) {
+    for (int i = 0; i < telemetryStore.cyclicTestRecord.doOnCounts.size(); ++i) {
         quint16 row = 36 + quint16(i) * 2;
         report.data.push_back({
             "Отчет ЦТ", row, 10,
-            QString::number(telemetryStore.doOnCounts[i])
+            QString::number(telemetryStore.cyclicTestRecord.doOnCounts[i])
         });
         report.data.push_back({
             "Отчет ЦТ", row, 13,
-            QString::number(telemetryStore.doOffCounts.value(i, 0))
+            QString::number(telemetryStore.cyclicTestRecord.doOffCounts.value(i, 0))
         });
     }
 

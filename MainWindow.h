@@ -29,7 +29,6 @@ struct CTSRule {
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -66,7 +65,6 @@ private slots:
     void SetText(const TextObjects object, const QString &text);
     void SetTask(qreal task);
     void SetTextColor(const TextObjects object, const QColor color);
-    void SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec);
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
@@ -92,8 +90,6 @@ private:
     qint64 m_cyclicTotalMs = 0;
 
     Registry *m_registry = nullptr;
-    void collectTestTelemetryData();
-    QString m_lastSolenoidSequence;
 
     ReportSaver *m_reportSaver = nullptr;
     Program *m_program;

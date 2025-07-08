@@ -26,7 +26,9 @@ void ReportBuilder_B_SACVT::buildReport(
     report.data.push_back({sheet_1, 5, 13, valveInfo.serialNumber});
     report.data.push_back({sheet_1, 6, 13, valveInfo.valveModel});
     report.data.push_back({sheet_1, 7, 13, valveInfo.manufacturer});
-    report.data.push_back({sheet_1, 8, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({sheet_1, 8, 13, QString("%1 / %2")
+                                               .arg(valveInfo.DN)
+                                               .arg(valveInfo.PN)});
     report.data.push_back({sheet_1, 9, 13, valveInfo.positionerModel});
     report.data.push_back({sheet_1, 10, 13, valveInfo.solenoidValveModel});
     report.data.push_back({sheet_1, 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
@@ -37,38 +39,36 @@ void ReportBuilder_B_SACVT::buildReport(
     report.data.push_back({sheet_1, 16, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({sheet_1, 21, 8, safeToString(telemetryStore.strokeTestRecord.timeForwardMs)});
-    report.data.push_back({sheet_1, 23, 8, safeToString(telemetryStore.strokeTestRecord.timeBackwardMs)});
-    report.data.push_back({sheet_1, 25, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({sheet_1, 21, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
+                                               .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 23, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
+                                               .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 25, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
     report.data.push_back({sheet_1, 27, 8, telemetryStore.cyclicTestRecord.sequence});
-    report.data.push_back({sheet_1, 29, 8, safeToString(telemetryStore.cyclicTestRecord.totalTimeSec)});
+    report.data.push_back({sheet_1, 29, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
+                                               .toString("mm:ss.zzz")});
 
     // // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
-    // using Getter = std::function<double(const RangeDeviationRecord&)>;
-    // static const struct {
-    //     quint16 col;
-    //     Getter get;
-    // } map[] = {
-    //            {  8, [](auto& r){ return r.avgErrorLinear; }},
-    //            { 10, [](auto& r){ return r.maxErrorLinear; }},
-    //            { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
-    //            { 13, [](auto& r){ return r.avgErrorPositioner; }},
-    //            { 15, [](auto& r){ return r.maxErrorPositioner; }},
-    //            { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
-    //            };
+    {
+        const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+        constexpr quint16 rowStart = 35, rowStep = 2;
+        for (int i = 0; i < qMin(ranges.size(), 10); ++i) {
+            quint16 row = rowStart + i * rowStep;
+            report.data.push_back({sheet_1, row,  2,
+                                   QString::number(ranges[i].rangePercent)});
+            report.data.push_back({sheet_1, row,  8,
+                QString("%1 %/ № %2")
+                    .arg(ranges[i].maxForwardValue, 0, 'f', 2)
+                    .arg(ranges[i].maxForwardCycle)
+            });
+            report.data.push_back({sheet_1, row, 10,
+                QString("%1 %/ №%2")
+                    .arg(ranges[i].maxReverseValue, 0, 'f', 2)
+                    .arg(ranges[i].maxReverseCycle)
+            });
+        }
+    }
 
-    // static const quint16 rowStart[] = {35,37,39,41,43,45,47,49,51,53};
-
-    // for (quint16 i = 0; i < 10; ++i) {
-    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
-    //     quint16 row = rowStart[i];
-    //     for (auto& m : map) {
-    //         report.data.push_back({
-    //             sheet_1, row, m.col,
-    //             safeToString(m.get(rec))
-    //         });
-    //     }
-    // }
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({sheet_1, 58, 4, objectInfo.FIO});
     // Страница: Отчет ЦТ; Блок: Дата
@@ -84,42 +84,51 @@ void ReportBuilder_B_SACVT::buildReport(
     report.data.push_back({sheet_1, 69, 13, valveInfo.serialNumber});
     report.data.push_back({sheet_1, 70, 13, valveInfo.valveModel});
     report.data.push_back({sheet_1, 71, 13, valveInfo.manufacturer});
-    report.data.push_back({sheet_1, 72, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({sheet_1, 72, 13, QString("%1 / %2")
+                                                .arg(valveInfo.DN)
+                                                .arg(valveInfo.PN)});
     report.data.push_back({sheet_1, 73, 13, valveInfo.positionerModel});
     report.data.push_back({sheet_1, 74, 13, valveInfo.solenoidValveModel});
-    report.data.push_back({sheet_1, 75, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({sheet_1, 76, 13, safeToString(telemetryStore.supplyRecord.pressure_bar)});
+    report.data.push_back({sheet_1, 75, 13, QString("%1 / %2")
+                                                .arg(valveInfo.limitSwitchModel)
+                                                .arg(valveInfo.positionSensorModel)});
+    report.data.push_back({sheet_1, 76, 13, QString("%1 бар")
+                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
     report.data.push_back({sheet_1, 77, 13, otherParams.safePosition});
     report.data.push_back({sheet_1, 78, 13, valveInfo.driveModel});
     report.data.push_back({sheet_1, 79, 13, otherParams.strokeMovement});
     report.data.push_back({sheet_1, 80, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({sheet_1, 85, 8, safeToString(telemetryStore.strokeTestRecord.timeForwardMs)});
-    report.data.push_back({sheet_1, 87, 8, safeToString(telemetryStore.strokeTestRecord.timeBackwardMs)});
-    report.data.push_back({sheet_1, 89, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({sheet_1, 85, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
+                                               .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 87, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
+                                               .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 89, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
     report.data.push_back({sheet_1, 91, 8, telemetryStore.cyclicTestRecord.sequence});
-    report.data.push_back({sheet_1, 93, 8, safeToString(telemetryStore.cyclicTestRecord.totalTimeSec)});
+    report.data.push_back({sheet_1, 93, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
+                                               .toString("mm:ss.zzz")});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     // Задание диапазона (0% хода)
-    report.data.push_back({sheet_1, 101, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
-    // report.data.push_back({sheet_1, 101, 10, safeToString(???)});
-    // report.data.push_back({sheet_1, 101, 13, safeToString(???)});
+    report.data.push_back({sheet_1, 101, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)}); // Количество циклов
+    // report.data.push_back({sheet_1, 101, 10, safeToString(???)}); // Количество включений
+    // report.data.push_back({sheet_1, 101, 13, safeToString(???)}); // Количество выключений
     // Задание диапазона (100% хода)
-    report.data.push_back({sheet_1, 103, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
-    // report.data.push_back({sheet_1, 103, 10, safeToString(???)});
-    // report.data.push_back({sheet_1, 103, 13, safeToString(???)});
-
+    report.data.push_back({sheet_1, 103, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)}); // Количество циклов
+    // report.data.push_back({sheet_1, 103, 10, safeToString(???)}); // Количество включений
+    // report.data.push_back({sheet_1, 103, 13, safeToString(???)}); // Количество выключений
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения
-    report.data.push_back({sheet_1, 109, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
-    // report.data.push_back({sheet_1, 109, 10, safeToString(???)}); // Положение "О-3"
-    // report.data.push_back({sheet_1, 109, 13, safeToString(???)}); // Положение "О-3"
+    // Положение 0-3
+    report.data.push_back({sheet_1, 109, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});  // Количество циклов
+    // report.data.push_back({sheet_1, 109, 10, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество срабатываний
+    // report.data.push_back({sheet_1, 109, 13, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество ошибок на срабатыввание
 
-    report.data.push_back({sheet_1, 111, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});
-    // report.data.push_back({sheet_1, 111, 10, safeToString(???)}); // Положение "З-О"
-    // report.data.push_back({sheet_1, 111, 13, safeToString(???)}); // Положение "З-О"
+    // Положение 3-0
+    report.data.push_back({sheet_1, 111, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)}); // Количество циклов
+    // report.data.push_back({sheet_1, 111, 10, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество срабатываний
+    // report.data.push_back({sheet_1, 111, 13, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество ошибок на срабатыввание
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({sheet_1, 118, 4, objectInfo.FIO});

@@ -26,9 +26,12 @@ void ReportBuilder_B_CVT::buildReport(
     report.data.push_back({sheet_1, 5, 13, valveInfo.serialNumber});
     report.data.push_back({sheet_1, 6, 13, valveInfo.valveModel});
     report.data.push_back({sheet_1, 7, 13, valveInfo.manufacturer});
-    report.data.push_back({sheet_1, 8, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({sheet_1, 8, 13, QString("%1 / %2")
+                                               .arg(valveInfo.DN)
+                                               .arg(valveInfo.PN)});
     report.data.push_back({sheet_1, 9, 13, valveInfo.positionerModel});
-    report.data.push_back({sheet_1, 10, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
+    report.data.push_back({sheet_1, 10, 13, QString("%1 бар")
+                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
     report.data.push_back({sheet_1, 11, 13, otherParams.safePosition});
     report.data.push_back({sheet_1, 12, 13, valveInfo.driveModel});
     report.data.push_back({sheet_1, 13, 13, otherParams.strokeMovement});
@@ -47,16 +50,17 @@ void ReportBuilder_B_CVT::buildReport(
         constexpr quint16 rowStart = 33, rowStep = 2;
         for (int i = 0; i < qMin(ranges.size(), 10); ++i) {
             quint16 row = rowStart + i * rowStep;
-            report.data.push_back({sheet_1, row,  2, QString::number(ranges[i].rangePercent)});
-            report.data.push_back({sheet_1, row,  8, 
-                QString::number(ranges[i].maxForwardValue, 'f', 2) + 
-                "/" + 
-                QString::number(ranges[i].maxForwardCycle)
+            report.data.push_back({sheet_1, row,  2,
+                                   QString::number(ranges[i].rangePercent)});
+            report.data.push_back({sheet_1, row,  8,
+                QString("%1 %/ № %2")
+                    .arg(ranges[i].maxForwardValue, 0, 'f', 2)
+                    .arg(ranges[i].maxForwardCycle)
             });
-            report.data.push_back({sheet_1, row, 10, 
-                QString::number(ranges[i].maxReverseValue, 'f', 2) + 
-                "/" + 
-                QString::number(ranges[i].maxReverseCycle)
+            report.data.push_back({sheet_1, row, 10,
+                QString("%1 %/ №%2")
+                    .arg(ranges[i].maxReverseValue, 0, 'f', 2)
+                    .arg(ranges[i].maxReverseCycle)
             });
         }
     }

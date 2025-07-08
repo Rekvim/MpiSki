@@ -52,34 +52,28 @@ void ReportBuilder_C_SACVT::buildReport(
 
 
     // // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
-    // using Getter = std::function<double(const RangeDeviationRecord&)>;
-    // static const struct {
-    //     quint16 col;
-    //     Getter get;
-    // } map[] = {
-    //            {  8, [](auto& r){ return r.avgErrorLinear; }},
-    //            { 10, [](auto& r){ return r.maxErrorLinear; }},
-    //            { 12, [](auto& r){ return r.maxErrorLinearCycle; }},
-    //            { 13, [](auto& r){ return r.avgErrorPositioner; }},
-    //            { 15, [](auto& r){ return r.maxErrorPositioner; }},
-    //            { 17, [](auto& r){ return r.maxErrorPositionerCycle; }},
-    //            };
-
-    // static const quint16 rowStart[] = {35,37,39,41,43,45,47,49,51,53};
-
-    // for (quint16 i = 0; i < 10; ++i) {
-    //     const auto& rec = telemetryStore.cyclicTestRecord.ranges[i];
-    //     quint16 row = rowStart[i];
-    //     for (auto& m : map) {
-    //         report.data.push_back({
-    //             sheet_1, row, m.col,
-    //             safeToString(m.get(rec))
-    //         });
-    //     }
-    // }
+    {
+        const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+        constexpr quint16 rowStart = 35, rowStep = 2;
+        for (int i = 0; i < qMin(ranges.size(), 10); ++i) {
+            quint16 row = rowStart + i * rowStep;
+            report.data.push_back({sheet_1, row,  2,
+                                   QString::number(ranges[i].rangePercent)});
+            report.data.push_back({sheet_1, row,  8,
+                QString("%1 %/ № %2")
+                    .arg(ranges[i].maxForwardValue, 0, 'f', 2)
+                    .arg(ranges[i].maxForwardCycle)
+            });
+            report.data.push_back({sheet_1, row, 10,
+                QString("%1 %/ №%2")
+                    .arg(ranges[i].maxReverseValue, 0, 'f', 2)
+                    .arg(ranges[i].maxReverseCycle)
+            });
+        }
+    }
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
-    report.data.push_back({sheet_1, 58, 4, objectInfo.FIO});
+    report.data.push_back({sheet_2, 58, 4, objectInfo.FIO});
     // Страница: Отчет ЦТ; Блок: Дата
     report.data.push_back({sheet_1, 62, 12, otherParams.date});
 
@@ -93,31 +87,30 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({sheet_1, 69, 13, valveInfo.serialNumber});
     report.data.push_back({sheet_1, 70, 13, valveInfo.valveModel});
     report.data.push_back({sheet_1, 71, 13, valveInfo.manufacturer});
-    report.data.push_back({sheet_1, 72, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({sheet_1, 72, 13, QString("%1 / %2")
+                                                .arg(valveInfo.DN)
+                                                .arg(valveInfo.PN)});
     report.data.push_back({sheet_1, 73, 13, valveInfo.positionerModel});
     report.data.push_back({sheet_1, 74, 13, valveInfo.solenoidValveModel});
-    report.data.push_back({sheet_1, 75, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({sheet_1, 76, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
+    report.data.push_back({sheet_1, 75, 13, QString("%1 / %2")
+                                                .arg(valveInfo.limitSwitchModel)
+                                                .arg(valveInfo.positionSensorModel)});
+    report.data.push_back({sheet_1, 76, 13, QString("%1 бар")
+                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
     report.data.push_back({sheet_1, 77, 13, otherParams.safePosition});
     report.data.push_back({sheet_1, 78, 13, valveInfo.driveModel});
     report.data.push_back({sheet_1, 79, 13, otherParams.strokeMovement});
     report.data.push_back({sheet_1, 80, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({
-        sheet_1, 85, 8,
-        QString::asprintf("%.2f s", telemetryStore.strokeTestRecord.timeForwardMs / 1000.0)
-    });
-    report.data.push_back({
-        sheet_1, 87, 8,
-        QString::asprintf("%.2f s", telemetryStore.strokeTestRecord.timeBackwardMs / 1000.0)
-    });
-    report.data.push_back({ sheet_1, 89, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
-    report.data.push_back({ sheet_1, 91, 8, telemetryStore.cyclicTestRecord.sequence });
-    report.data.push_back({
-        sheet_1, 93, 8,
-        QString::asprintf("%.2f s", telemetryStore.cyclicTestRecord.totalTimeSec)
-    });
+    report.data.push_back({sheet_1, 85, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
+                                               .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 87, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
+                                               .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 89, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({sheet_1, 91, 8, telemetryStore.cyclicTestRecord.sequence});
+    report.data.push_back({sheet_1, 93, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
+                                               .toString("mm:ss.zzz")});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     // Задание диапазона (0% хода)
@@ -158,11 +151,15 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({sheet_2, 5, 13, valveInfo.serialNumber});
     report.data.push_back({sheet_2, 6, 13, valveInfo.valveModel});
     report.data.push_back({sheet_2, 7, 13, valveInfo.manufacturer});
-    report.data.push_back({sheet_2, 8, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({sheet_2, 8, 13, QString("%1 / %2")
+                                               .arg(valveInfo.DN)
+                                               .arg(valveInfo.PN)});
     report.data.push_back({sheet_2, 9, 13, valveInfo.positionerModel});
     report.data.push_back({sheet_2, 10, 13, valveInfo.solenoidValveModel});
-    report.data.push_back({sheet_2, 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({ sheet_3,12, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
+    report.data.push_back({sheet_2, 11, 13, QString("%1 / %2")
+                                                .arg(valveInfo.limitSwitchModel)
+                                                .arg(valveInfo.positionSensorModel)});
+    report.data.push_back({sheet_2, 12, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
     report.data.push_back({sheet_2, 13, 13, otherParams.safePosition});
     report.data.push_back({sheet_2, 14, 13, valveInfo.driveModel});
     report.data.push_back({sheet_2, 15, 13, otherParams.strokeMovement});
@@ -199,11 +196,16 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({sheet_3, 5, 13, valveInfo.serialNumber});
     report.data.push_back({sheet_3, 6, 13, valveInfo.valveModel});
     report.data.push_back({sheet_3, 7, 13, valveInfo.manufacturer});
-    report.data.push_back({sheet_3, 8, 13, valveInfo.DN + "/" + valveInfo.PN});
+    report.data.push_back({sheet_3, 8, 13, QString("%1 / %2")
+                                               .arg(valveInfo.DN)
+                                               .arg(valveInfo.PN)});
     report.data.push_back({sheet_3, 9, 13, valveInfo.positionerModel});
     report.data.push_back({sheet_3, 10, 13, valveInfo.solenoidValveModel});
-    report.data.push_back({sheet_3, 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({ sheet_3,12, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
+    report.data.push_back({sheet_3, 11, 13, QString("%1 / %2")
+                                                .arg(valveInfo.limitSwitchModel)
+                                                .arg(valveInfo.positionSensorModel)});
+    report.data.push_back({ sheet_3,12, 13, QString("%1 бар")
+                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
     report.data.push_back({sheet_3, 13, 13, otherParams.safePosition});
     report.data.push_back({sheet_3, 14, 13, valveInfo.driveModel});
     report.data.push_back({sheet_3, 15, 13, otherParams.strokeMovement});
@@ -215,32 +217,31 @@ void ReportBuilder_C_SACVT::buildReport(
     // report.data.push_back({sheet_3, 24, 5, telemetryStore.dinamicRecord.dinamicIpReal});
     // report.data.push_back({sheet_3, 24, 8, telemetryStore.dinamicRecord.dinamicIpRecomend});
 
-    report.data.push_back({sheet_3, 26, 5, safeToString(telemetryStore.strokeRecord.strokeReal)});
-    report.data.push_back({sheet_3, 26, 8, safeToString(telemetryStore.strokeRecord.strokeRecomend)});
+    report.data.push_back({sheet_3, 26, 5, safeToString(telemetryStore.valveStrokeRecord.real)});
+    report.data.push_back({sheet_3, 26, 8, valveInfo.driveRecomendRange});
 
     report.data.push_back({
         sheet_3, 28, 5,
-        QString::asprintf("%.2f–%.2f",
-                          telemetryStore.mainTestRecord.springLow,
-                          telemetryStore.mainTestRecord.springHigh
-                          )
+        QString("%1—%2")
+            .arg(telemetryStore.mainTestRecord.springLow, 0, 'f', 2)
+            .arg(telemetryStore.mainTestRecord.springHigh, 0, 'f', 2)
     });
     report.data.push_back({sheet_3, 28, 8, valveInfo.driveRecomendRange});
 
     report.data.push_back({sheet_3, 30, 5,
-                           QString::asprintf("%.2f–%.2f",
-                                             telemetryStore.mainTestRecord.lowLimit,
-                                             telemetryStore.mainTestRecord.highLimit
-                                             )});
-
-
+        QString("%1—%2")
+            .arg(telemetryStore.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+            .arg(telemetryStore.mainTestRecord.highLimitPressure, 0, 'f', 2)
+    });
 
     report.data.push_back({ sheet_3, 32, 5,
-        QString::asprintf("%.2f %%", telemetryStore.mainTestRecord.frictionPercent)
+        QString("%1")
+            .arg(telemetryStore.mainTestRecord.frictionPercent, 0, 'f', 2)
     });
 
     report.data.push_back({ sheet_3, 34, 5,
-        QString::asprintf("%.3f", telemetryStore.mainTestRecord.frictionForce)
+        QString("%1")
+            .arg(telemetryStore.mainTestRecord.frictionForce, 0, 'f', 3)
     });
     report.data.push_back({ sheet_3, 48, 5,
         QTime(0,0)

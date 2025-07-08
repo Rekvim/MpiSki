@@ -7,6 +7,8 @@
 #include <QString>
 #include <QColor>
 
+#include <QMetaType>
+
 struct InitState {
     QString  deviceStatusText = "";
     QColor deviceStatusColor;
@@ -51,6 +53,14 @@ struct CyclicTestRecord {
     QVector<RangeDeviationRecord> ranges;
     int switch3to0Count = 0;
     int switch0to3Count = 0;
+
+    QVector<int> doOnCounts;
+    QVector<int> doOffCounts;
+
+    int pos_0to3_hits = 0;    // число срабатываний при движении 0→3
+    int pos_0to3_errors = 0;    // число «пропущенных» или ошибочных срабатываний
+    int pos_3to0_hits = 0;    // аналогично для 3→0
+    int pos_3to0_errors = 0;
 };
 
 struct StrokeTestRecord {
@@ -97,9 +107,6 @@ public:
     ValveStrokeRecord valveStrokeRecord;
     SupplyRecord supplyRecord;
     MainTestRecord mainTestRecord;
-
-    QVector<int> doOnCounts;
-    QVector<int> doOffCounts;
 
     TelemetryStore() = default;
 

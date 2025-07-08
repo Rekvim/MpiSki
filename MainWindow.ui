@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -476,7 +476,7 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <widget class="QLineEdit" name="LineEdit_pressureSensor_2">
+               <widget class="QLineEdit" name="lineEdit_pressureSensor_2">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -503,7 +503,7 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
-               <widget class="QLineEdit" name="LineEdit_pressureSensor_3">
+               <widget class="QLineEdit" name="lineEdit_pressureSensor_3">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -2493,7 +2493,7 @@
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -3837,8 +3837,8 @@
   <tabstop>lineEdit_linearSensor</tabstop>
   <tabstop>lineEdit_linearSensorPercent</tabstop>
   <tabstop>lineEdit_pressureSensor_1</tabstop>
-  <tabstop>LineEdit_pressureSensor_2</tabstop>
-  <tabstop>LineEdit_pressureSensor_3</tabstop>
+  <tabstop>lineEdit_pressureSensor_2</tabstop>
+  <tabstop>lineEdit_pressureSensor_3</tabstop>
   <tabstop>pushButton_init</tabstop>
   <tabstop>tabWidget_mainTests</tabstop>
   <tabstop>Chart_task</tabstop>

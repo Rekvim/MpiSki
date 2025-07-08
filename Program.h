@@ -129,8 +129,6 @@ signals:
     void SetGroupDOVisible(bool visible);
     void SetVisible(Charts chart, quint16 series, bool visible);
     void SetRegressionEnable(bool enable);
-    void SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec);
-    void SetSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges);
 
     void GetPoints(QVector<QVector<QPointF>> &points, Charts chart);
 

@@ -68,8 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_lineEdits[TextObjects::LineEdit_linearSensor] = ui->lineEdit_linearSensor;
     m_lineEdits[TextObjects::LineEdit_linearSensorPercent] = ui->lineEdit_linearSensorPercent;
     m_lineEdits[TextObjects::LineEdit_pressureSensor_1] = ui->lineEdit_pressureSensor_1;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->LineEdit_pressureSensor_2;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->LineEdit_pressureSensor_3;
+    m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->lineEdit_pressureSensor_2;
+    m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->lineEdit_pressureSensor_3;
     m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
     m_lineEdits[TextObjects::LineEdit_dinamicReal] = ui->lineEdit_dynamicErrorReal;
     m_lineEdits[TextObjects::lineEdit_strokeReal] = ui->lineEdit_strokeReal;
@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_lineEdits[TextObjects::LineEdit_strokeTest_backwardTime] = ui->lineEdit_strokeTest_backwardTime;
     m_lineEdits[TextObjects::LineEdit_rangePressure] = ui->lineEdit_rangePressure;
 
-    m_program = new Program;
+    m_program = new Program(this);
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
@@ -154,21 +154,20 @@ MainWindow::MainWindow(QWidget *parent)
                 SaveChart(Charts::CyclicSolenoid);
             });
 
+    // connect(ui->pushButton_open, &QPushButton::clicked,
+    //         m_program, &Program::button_open);
 
-    connect(ui->pushButton_open, &QPushButton::clicked,
-            m_program, &Program::button_open);
+    // connect(ui->pushButton_report, &QPushButton::clicked,
+    //         m_program, &Program::button_report);
 
-    connect(ui->pushButton_report, &QPushButton::clicked,
-            m_program, &Program::button_report);
+    // connect(ui->pushButton_imageChartTask, &QPushButton::clicked,
+    //         m_program, &Program::button_pixmap1);
 
-    connect(ui->pushButton_imageChartTask, &QPushButton::clicked,
-            m_program, &Program::button_pixmap1);
+    // connect(ui->pushButton_imageChartPressure, &QPushButton::clicked,
+    //         m_program, &Program::button_pixmap2);
 
-    connect(ui->pushButton_imageChartPressure, &QPushButton::clicked,
-            m_program, &Program::button_pixmap2);
-
-    connect(ui->pushButton_imageChartFriction, &QPushButton::clicked,
-            m_program, &Program::button_pixmap3);
+    // connect(ui->pushButton_imageChartFriction, &QPushButton::clicked,
+    //         m_program, &Program::button_pixmap3);
 
     connect(this, &MainWindow::StartMainTest,
             m_program, &Program::MainTestStart);
@@ -193,9 +192,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_program, &Program::SetTextColor,
             this, &MainWindow::SetTextColor);
-
-    connect(m_program, &Program::SetSolenoidResults,
-            this, &MainWindow::SetSolenoidResults);
 
     connect(m_program, &Program::SetGroupDOVisible,
             this, [&](bool visible) {
@@ -292,9 +288,6 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::Question,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::SetSolenoidRangesData,
-            this, &MainWindow::onSolenoidRangesData);
-
     connect(m_reportSaver, &ReportSaver::Question,
             this, &MainWindow::Question,
             Qt::DirectConnection);
@@ -319,7 +312,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton_report, &QPushButton::clicked,
             this, [&] {
-                collectTestTelemetryData();
                 std::unique_ptr<ReportBuilder> reportBuilder;
 
                 switch (m_patternType) {
@@ -369,12 +361,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->label_arrowDown->installEventFilter(this);
 
     connect(m_program, &Program::TelemetryUpdated,
-            this, [&](const TelemetryStore &store){
-                m_telemetryStore = store;
-            });
-
-    connect(m_program, &Program::TelemetryUpdated,
-            this, &MainWindow::onTelemetryUpdated);
+            this, &MainWindow::onTelemetryUpdated,
+            Qt::QueuedConnection);
 }
 
 MainWindow::~MainWindow()
@@ -382,7 +370,6 @@ MainWindow::~MainWindow()
     delete ui;
     m_programThread->quit();
     m_programThread->wait();
-    delete m_program;
 }
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
@@ -390,7 +377,6 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
     ui->label_deviceStatusValue->setStyleSheet(
         "color:" + TS.init.deviceStatusColor.name(QColor::HexRgb));
-
     ui->label_deviceInitValue->setText(TS.init.initStatusText);
     ui->label_connectedSensorsNumber->setText(TS.init.connectedSensorsText);
     ui->label_connectedSensorsNumber->setStyleSheet(
@@ -398,12 +384,18 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     ui->label_startingPositionValue->setText(TS.init.startingPositionText);
     ui->label_finalPositionValue->setText(TS.init.finalPositionText);
 
+    // Sensors
+    ui->lineEdit_linearSensor->setText(TS.sensors.linearValue);
+    ui->lineEdit_linearSensorPercent->setText(TS.sensors.linearPercent);
+    ui->lineEdit_pressureSensor_1->setText(TS.sensors.pressure1);
+    ui->lineEdit_pressureSensor_2->setText(TS.sensors.pressure2);
+    ui->lineEdit_pressureSensor_3->setText(TS.sensors.pressure3);
+
     // MainTest
     ui->label_pressureDifferenceValue->setText(
         QString("%1 bar")
             .arg(TS.mainTestRecord.pressureDifference, 0, 'f', 3)
     );
-
     ui->label_frictionForceValue->setText(
         QString("%1 H")
             .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
@@ -688,21 +680,6 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
 
         m_telemetryStore.stepResults.push_back(rec);
     }
-}
-
-void MainWindow::SetSolenoidResults(QString sequence, quint16 cycles, double totalTimeSec)
-{
-    m_lastSolenoidSequence = sequence;
-
-    qint64 totalMs = qRound(totalTimeSec * 1000.0);
-    QTime t(0, 0);
-    t = t.addMSecs(totalMs);
-
-    ui->lineEdit_cyclicTest_sequence->setText(sequence);
-    ui->lineEdit_cyclicTest_totalTime->setText(
-        t.toString("hh:mm:ss.zzz"));
-    ui->lineEdit_cyclicTest_cycles->setText(
-        QString::number(cycles));
 }
 
 void MainWindow::onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges)
@@ -1205,10 +1182,8 @@ void MainWindow::InitCharts()
         m_charts[Charts::Pressure]->visible(1, k != 0);
     });
 
-    connect(m_program,
-            &Program::GetPoints,
-            this,
-            &MainWindow::GetPoints,
+    connect(m_program, &Program::GetPoints,
+            this, &MainWindow::GetPoints,
             Qt::BlockingQueuedConnection);
 
     // ui->checkBox_showCurve_task->setCheckState(Qt::Unchecked);
@@ -1295,40 +1270,4 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
         *image = img.scaled(1000, 430, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(img));
     }
-}
-
-void MainWindow::collectTestTelemetryData() {
-    // динамика
-    // m_telemetry.dinamicRecord.dinamicReal = ui->lineEdit_dinamicReal->text();
-    // m_telemetry.dinamicRecord.dinamicRecomend= ui->lineEdit_dinamicRecomend->text();
-    // m_telemetry.dinamicRecord.dinamicIpReal = ui->lineEdit_dinamicIpReal->text();
-    // m_telemetry.dinamicRecord.dinamicIpRecomend = ui->lineEdit_dinamicIpRecomend->text();
-
-    // // ход клапана
-    // m_telemetry.strokeTestRecord.timeForward = ui->lineEdit_strokeTest_forwardTime->text();
-    // m_telemetry.strokeTestRecord.timeBackward= ui->lineEdit_strokeTest_backwardTime->text();
-
-    // // Циклический тест
-    // m_telemetry.cyclicTestRecord.sequence = ui->lineEdit_cyclicTest_sequence->text();
-    // m_telemetry.cyclicTestRecord.cycles = ui->lineEdit_cyclicTest_cycles->text();
-    // m_telemetry.cyclicTestRecord.totalTime = ui->lineEdit_cyclicTest_totalTime->text();
-
-    // // ход штока / вала
-    // m_telemetry.strokeRecord.strokeReal = ui->lineEdit_strokeReal->text();
-    // m_telemetry.strokeRecord.strokeRecomend = ui->lineEdit_strokeRecomend->text();
-
-    // // m_telemetry.data.push_back({30, 5, ui->lineEdit_strokeReal});
-    // // m_telemetry.data.push_back({30, 8, ui->lineEdit_strokeRecomend});
-
-    // // диапазон
-    // m_telemetry.rangeRecord.rangeReal = ui->lineEdit_rangeReal->text();
-    // m_telemetry.rangeRecord.rangeRecomend= ui->lineEdit_rangeRecomend->text();
-    // m_telemetry.rangeRecord.rangePressure= ui->lineEdit_rangePressure->text();
-
-    // // трение
-    // m_telemetry.frictionRecord.friction  = ui->lineEdit_friction->text();
-    // m_telemetry.frictionRecord.frictionPercent = ui->lineEdit_frictionPercent->text();
-
-    // // подача
-    // m_telemetry.supplyRecord.supplyPressure = ui->lineEdit_supplyPressure->text();
 }

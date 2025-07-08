@@ -24,31 +24,31 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({sheet_1, 6, 4, objectInfo.department});
 
     // Страница:Отчет ЦТ; Блок: Краткая спецификация на клапан
-    report.data.push_back({sheet_2, 4, 13, valveInfo.positionNumber});
-    report.data.push_back({sheet_2, 5, 13, valveInfo.serialNumber});
-    report.data.push_back({sheet_2, 6, 13, valveInfo.valveModel});
-    report.data.push_back({sheet_2, 7, 13, valveInfo.manufacturer});
-    report.data.push_back({sheet_2, 8, 13, QString("%1 / %2")
+    report.data.push_back({sheet_1, 4, 13, valveInfo.positionNumber});
+    report.data.push_back({sheet_1, 5, 13, valveInfo.serialNumber});
+    report.data.push_back({sheet_1, 6, 13, valveInfo.valveModel});
+    report.data.push_back({sheet_1, 7, 13, valveInfo.manufacturer});
+    report.data.push_back({sheet_1, 8, 13, QString("%1 / %2")
                                                .arg(valveInfo.DN)
                                                .arg(valveInfo.PN)});
-    report.data.push_back({sheet_2, 9, 13, valveInfo.positionerModel});
-    report.data.push_back({sheet_2, 10, 13, QString("%1 бар")
-                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});    
-    report.data.push_back({sheet_2, 11, 13, otherParams.safePosition});
-    report.data.push_back({sheet_2, 12, 13, valveInfo.driveModel});
-    report.data.push_back({sheet_2, 13, 13, otherParams.strokeMovement});
-    report.data.push_back({sheet_2, 14, 13, valveInfo.materialStuffingBoxSeal});
+    report.data.push_back({sheet_1, 9, 13, valveInfo.positionerModel});
+    report.data.push_back({sheet_1, 10, 13, QString("%1 бар")
+                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
+    report.data.push_back({sheet_1, 11, 13, otherParams.safePosition});
+    report.data.push_back({sheet_1, 12, 13, valveInfo.driveModel});
+    report.data.push_back({sheet_1, 13, 13, otherParams.strokeMovement});
+    report.data.push_back({sheet_1, 14, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
     report.data.push_back({sheet_1, 19, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
                                                      .toString("mm:ss.zzz")});
     report.data.push_back({sheet_1, 21, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
                                                      .toString("mm:ss.zzz")});
-    report.data.push_back({sheet_1, 23, 8, telemetryStore.cyclicTestRecord.sequence});
-    report.data.push_back({sheet_1, 25, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({sheet_1, 23, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({sheet_1, 25, 8, telemetryStore.cyclicTestRecord.sequence});
     report.data.push_back({sheet_1, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
                                                      .toString("mm:ss.zzz")});
-
+    // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
         const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
         constexpr quint16 rowStart = 33, rowStep = 2;
