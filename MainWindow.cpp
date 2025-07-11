@@ -148,9 +148,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::SetText,
             this, &MainWindow::SetText);
 
-    connect(m_program, &Program::SetTextColor,
-            this, &MainWindow::SetTextColor);
-
     connect(m_program, &Program::SetGroupDOVisible,
             this, [&](bool visible) {
                 ui->groupBox_DO->setVisible(visible);
@@ -575,10 +572,6 @@ void MainWindow::SetText(TextObjects object, const QString &text)
     if (m_lineEdits.contains(object)) {
         m_lineEdits[object]->setText(text);
     }
-
-    if (m_labels.contains(object)) {
-        m_labels[object]->setText(text);
-    }
 }
 
 void MainWindow::SetTask(qreal task)
@@ -591,13 +584,6 @@ void MainWindow::SetTask(qreal task)
 
     if (ui->verticalSlider_task->value() != i_task) {
         ui->verticalSlider_task->setSliderPosition(i_task);
-    }
-}
-
-void MainWindow::SetTextColor(TextObjects object, const QColor color)
-{
-    if (m_labels.contains(object)) {
-        m_labels[object]->setStyleSheet("color:" + color.name(QColor::HexRgb));
     }
 }
 

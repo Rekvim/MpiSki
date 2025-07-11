@@ -6,7 +6,6 @@
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
 
-
 Program::Program(QObject *parent)
     : QObject{parent}
 {

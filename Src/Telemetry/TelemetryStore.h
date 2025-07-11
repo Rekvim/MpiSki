@@ -48,9 +48,9 @@ struct CyclicTestRecord {
     QVector<int> doOnCounts;
     QVector<int> doOffCounts;
 
-    int pos_0to3_hits = 0;    // число срабатываний при движении 0→3
-    int pos_0to3_errors = 0;    // число «пропущенных» или ошибочных срабатываний
-    int pos_3to0_hits = 0;    // аналогично для 3→0
+    int pos_0to3_hits = 0;
+    int pos_0to3_errors = 0;
+    int pos_3to0_hits = 0;
     int pos_3to0_errors = 0;
 };
 
@@ -101,9 +101,11 @@ public:
     TelemetryStore() = default;
 
     void clearAll() {
+        init = {};
+        strokeTestRecord = {};
+        mainTestRecord = {};
         // stepResults.clear();
         cyclicTestRecord = {};
-        strokeTestRecord = {};
         valveStrokeRecord = {};
         supplyRecord = {};
     }

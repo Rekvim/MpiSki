@@ -64,7 +64,6 @@ private slots:
 
     void SetText(const TextObjects object, const QString &text);
     void SetTask(qreal task);
-    void SetTextColor(const TextObjects object, const QColor color);
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
@@ -105,7 +104,6 @@ private:
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
     SelectTests::BlockCTS m_blockCTS;
 
-    QHash<TextObjects, QLabel *> m_labels;
     QHash<TextObjects, QLineEdit *> m_lineEdits;
     QHash<Charts, MyChart *> m_charts;
 
