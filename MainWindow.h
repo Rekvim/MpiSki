@@ -88,6 +88,7 @@ private:
     QTimer m_cyclicCountdownTimer;
     QElapsedTimer m_cyclicElapsedTimer;
     qint64 m_cyclicTotalMs = 0;
+    bool m_userCanceled = false;
 
     Registry *m_registry = nullptr;
 

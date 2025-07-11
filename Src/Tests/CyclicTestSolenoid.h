@@ -44,7 +44,7 @@ signals:
 
 private:
     MPI   m_mpi;
-    Parameters   m_params;
+    Parameters m_params;
     QVector<int> m_valuesReg;
     QVector<int> m_valuesOff;
 

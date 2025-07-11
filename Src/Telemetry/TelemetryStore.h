@@ -22,15 +22,6 @@ struct InitState {
     QColor finalPositionColor = "";
 };
 
-struct SensorState {
-    QString linearValue = "";
-    QString linearPercent = "";
-    QString pressure1 = "";
-    QString pressure2 = "";
-    QString pressure3 = "";
-    QString feedback4_20mA = "";
-};
-
 struct StepTestRecord {
     quint16 from;
     quint16 to;
@@ -99,9 +90,8 @@ struct SupplyRecord {
 
 class TelemetryStore {
 public:
-    SensorState sensors;
     InitState init;
-    QVector<StepTestRecord> stepResults = {{12, 13, 40, 50.02}};
+    QVector<StepTestRecord> stepResults;
     CyclicTestRecord cyclicTestRecord;
     StrokeTestRecord strokeTestRecord;
     ValveStrokeRecord valveStrokeRecord;
@@ -116,8 +106,6 @@ public:
         strokeTestRecord = {};
         valveStrokeRecord = {};
         supplyRecord = {};
-        doOnCounts.clear();
-        doOffCounts.clear();
     }
 };
 

@@ -30,39 +30,6 @@ enum class TextObjects {
     LineEdit_pressureSensor_3,
 
     LineEdit_feedback_4_20mA,
-
-    Label_deviceStatusValue,
-    Label_deviceInitValue,
-    Label_connectedSensorsNumber,
-    Label_startingPositionValue,
-    Label_finalPositionValue,
-
-    Label_pressureDifferenceValue,
-    Label_frictionForceValue,
-    label_frictionPercentValue,
-
-    Label_dynamicErrorMean,
-    Label_dynamicErrorMeanPercent,
-
-    Label_dynamicErrorMax,
-    Label_dynamicErrorMaxPercent,
-
-    Label_valveStroke_range,
-
-    Label_lowLimitValue,
-    Label_highLimitValue,
-
-    Label_strokeTest_forwardTime,
-    Label_strokeTest_backwardTime,
-
-    LineEdit_dinamicReal,
-    lineEdit_strokeReal,
-    lineEdit_rangeReal,
-    LineEdit_friction,
-    LineEdit_frictionPercent,
-    LineEdit_strokeTest_forwardTime,
-    LineEdit_strokeTest_backwardTime,
-    LineEdit_rangePressure
 };
 
 enum class Charts {

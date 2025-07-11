@@ -48,6 +48,7 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({sheet_1, 25, 8, telemetryStore.cyclicTestRecord.sequence});
     report.data.push_back({sheet_1, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
                                                      .toString("mm:ss.zzz")});
+
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
         const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
@@ -62,7 +63,7 @@ void ReportBuilder_C_CVT::buildReport(
                     .arg(ranges[i].maxForwardCycle)
             });
             report.data.push_back({sheet_1, row, 10,
-                QString("%1 %/ №%2")
+                QString("%1 %/ № %2")
                     .arg(ranges[i].maxReverseValue, 0, 'f', 2)
                     .arg(ranges[i].maxReverseCycle)
             });
@@ -71,6 +72,7 @@ void ReportBuilder_C_CVT::buildReport(
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({sheet_1, 56, 4, objectInfo.FIO});
+    report.data.push_back({sheet_1, 56, 4, otherParams.date});
 
     // Страница: Результат теста шаговой реакции; Блок: Данные по объекту
     report.data.push_back({sheet_2, 4, 4, objectInfo.object});
@@ -108,10 +110,8 @@ void ReportBuilder_C_CVT::buildReport(
         }
     }
 
-    report.data.push_back({sheet_2, 44, 12, otherParams.date});
-
     // Страница: Отчет ЦТ; Блок: Дата
-    report.data.push_back({sheet_2, 60, 12, otherParams.date});
+    report.data.push_back({sheet_2, 76, 12, otherParams.date});
 
     // Страница: Отчет; Блок: Данные по объекту
     report.data.push_back({sheet_3, 4, 4, objectInfo.object});
@@ -135,28 +135,30 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({sheet_3, 14, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница: Отчет; Блок: Результат испытаний
-    report.data.push_back({sheet_3, 20, 5, QString("%1 %")
-                                                .arg(telemetryStore.mainTestRecord.dynamicErrorReal, 0, 'f', 2)});
+    report.data.push_back({sheet_3, 20, 5,
+                            QString("%1 %")
+                               .arg(telemetryStore.mainTestRecord.dynamicErrorReal, 0, 'f', 2)});
 
-    report.data.push_back({sheet_3, 20, 8, QString("%1 %")
-                                               .arg(valveInfo.dinamicErrorRecomend, 0, 'f', 2)});
+    report.data.push_back({sheet_3, 20, 8,
+                           QString("%1 %")
+                                .arg(valveInfo.dinamicErrorRecomend, 0, 'f', 2)});
 
     // report.data.push_back({sheet_3, 22, 5, telemetryStore.dinamicRecord.dinamicIpReal});
     // report.data.push_back({sheet_3, 22, 8, telemetryStore.dinamicRecord.dinamicIpRecomend});
 
-    report.data.push_back({sheet_3, 24, 8, QString("%1")
+    report.data.push_back({sheet_3, 24, 5, QString("%1")
                                                .arg(telemetryStore.valveStrokeRecord.real, 0, 'f', 2)});
-    report.data.push_back({sheet_3, 24, 8, valveInfo.driveRecomendRange});
+    report.data.push_back({sheet_3, 24, 8, valveInfo.strokValve});
 
     report.data.push_back({sheet_3, 26, 5,
-        QString("%1—%2")
+        QString("%1–%2")
             .arg(telemetryStore.mainTestRecord.springLow, 0, 'f', 2)
             .arg(telemetryStore.mainTestRecord.springHigh, 0, 'f', 2)
     });
     report.data.push_back({sheet_3, 26, 8, valveInfo.driveRecomendRange});
 
     report.data.push_back({sheet_3, 28, 5,
-        QString("%1—%2")
+        QString("%1–%2")
             .arg(telemetryStore.mainTestRecord.lowLimitPressure, 0, 'f', 2)
             .arg(telemetryStore.mainTestRecord.highLimitPressure, 0, 'f', 2)
     });

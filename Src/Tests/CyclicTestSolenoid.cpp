@@ -56,32 +56,26 @@ void CyclicTestSolenoid::runLoop(const QVector<int>& values,
             int prevPct = i==0 ? values.last() : values[i-1];
             bool forward = pct > prevPct;
 
-            // 1) точки графика «скачок»
             quint64 t0 = timer.elapsed();
             emit TaskPoint(t0, prevPct);
             emit TaskPoint(t0, pct);
 
-            // 2) переворот DO (для Shut-off-теста)
             if (isShutoff) {
                 for (int d = 0; d < m_params.shutoff_DO.size(); ++d)
                     if (m_params.shutoff_DO[d])
                         emit SetDO(d, /*invert*/ !((i+c)%2));
             }
 
-            // 3) выдаём ШИМ и ждём delayMs, но не блокируем «Stop()»
             emit SetDAC(pct);
             Sleep(delayMs);
             if (m_terminate) return;
 
-            // 4) фиксируем точку конца delay
             quint64 t1 = timer.elapsed();
             emit TaskPoint(t1, pct);
 
-            // 5) «держим» holdMs, но опять же --- неблокирующе:
             Sleep(holdMs);
             if (m_terminate) return;
 
-            // 6) для Shut-off-теста можно тут снять DO
             if (isShutoff) {
                 for (int d = 0; d < m_params.shutoff_DO.size(); ++d)
                     if (m_params.shutoff_DO[d])
@@ -193,7 +187,6 @@ void CyclicTestSolenoid::processShutoff()
                       : m_params.shutoff_sequence;
     emit SetSolenoidResults(seq, quint16(cycles), totalSec);
 
-    // отдадим счётчики переключений и завершим тест
     emit DOCounts(onCounts, offCounts);
 }
 void CyclicTestSolenoid::processCombined()

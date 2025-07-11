@@ -1,4 +1,4 @@
-#include "Program.h"
+    #include "Program.h"
 
 // #include "./Src/Tests/CyclicTestPositioner.h"
 #include "./Src/Tests/CyclicTestSolenoid.h"
@@ -151,25 +151,18 @@ void Program::UpdateSensors()
         case 0:
             emit SetText(TextObjects::LineEdit_linearSensor, m_mpi[i]->GetFormatedValue());
             emit SetText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->GetPersentFormated());
-            m_telemetryStore.sensors.linearValue = m_mpi[i]->GetFormatedValue();
-            m_telemetryStore.sensors.linearPercent = m_mpi[i]->GetPersentFormated();
             break;
         case 1:
             emit SetText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->GetFormatedValue());
-            m_telemetryStore.sensors.pressure1 = m_mpi[i]->GetFormatedValue();
             break;
         case 2:
             emit SetText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->GetFormatedValue());
-            m_telemetryStore.sensors.pressure2 = m_mpi[i]->GetFormatedValue();
             break;
         case 3:
             emit SetText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->GetFormatedValue());
-            m_telemetryStore.sensors.pressure3 = m_mpi[i]->GetFormatedValue();
             break;
         }
     }
-
-    emit TelemetryUpdated(m_telemetryStore);
 
     if (m_testing)
         emit SetTask(m_mpi.GetDAC()->GetValue());
@@ -178,7 +171,6 @@ void Program::UpdateSensors()
     Sensor *feedbackSensor = m_mpi.GetDAC();
     QString fbValue = feedbackSensor->GetFormatedValue();
     emit SetText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
-
 
     QVector<Point> points;
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
@@ -201,6 +193,18 @@ void Program::UpdateSensors()
 
 void Program::StepTestResults(QVector<StepTest::TestResult> results, quint32 T_value)
 {
+    m_telemetryStore.stepResults.clear();
+    for (auto &r : results) {
+        StepTestRecord rec;
+        rec.from = r.from;
+        rec.to = r.to;
+        rec.T_value = r.T_value;
+        rec.overshoot = r.overshoot;
+        m_telemetryStore.stepResults.push_back(rec);
+    }
+
+    emit TelemetryUpdated(m_telemetryStore);
+
     emit SetStepResults(results, T_value);
 }
 
@@ -212,6 +216,10 @@ void Program::EndTest()
 
     if (!m_cyclicRunning) {
         SetDAC_int(0);
+    }
+
+    if (m_diPollTimer && m_diPollTimer->isActive()) {
+        m_diPollTimer->stop();
     }
 
     emit StopTest();
@@ -416,6 +424,7 @@ void Program::MainTestStart()
 
     connect(mainTest, &MainTest::DublSeries,
             this, [&] { emit DublSeries(); });
+
     connect(mainTest, &MainTest::GetPoints,
             this, &Program::GetPoints_mainTest,
             Qt::BlockingQueuedConnection);
@@ -544,13 +553,6 @@ void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
     m_telemetryStore.strokeTestRecord.timeForwardMs  = forwardTime;
     m_telemetryStore.strokeTestRecord.timeBackwardMs = backwardTime;
 
-    QString forwardText = QTime(0, 0).addMSecs(forwardTime).toString("mm:ss.zzz");
-    QString backwardText = QTime(0, 0).addMSecs(backwardTime).toString("mm:ss.zzz");
-    emit SetText(TextObjects::Label_strokeTest_forwardTime, forwardText);
-    emit SetText(TextObjects::LineEdit_strokeTest_forwardTime, forwardText);
-    emit SetText(TextObjects::Label_strokeTest_backwardTime, backwardText);
-    emit SetText(TextObjects::LineEdit_strokeTest_backwardTime, backwardText);
-
     emit TelemetryUpdated(m_telemetryStore);
 }
 
@@ -576,7 +578,7 @@ void Program::UpdateCharts_strokeTest()
 
 void Program::UpdateCharts_CyclicSolenoid()
 {
-    if (!m_testing)
+    if (!m_cyclicRunning)
         return;
 
     qreal task = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
@@ -598,6 +600,9 @@ void Program::UpdateCharts_CyclicSolenoid()
 
 void Program::pollDIForCyclic()
 {
+    if (!m_cyclicRunning)
+        return;
+
     quint8 di = m_mpi.GetDIStatus();
     if (di == m_lastDI)
         return;
@@ -638,15 +643,15 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     bool ok = true;
     if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
         ok &= !p.regulatory_sequence.isEmpty()
-        &&  p.regulatory_delaySec   > 0
-            &&  p.regulatory_holdTimeSec >= 0
-            &&  p.regulatory_numCycles   > 0;
+        && p.regulatory_delaySec > 0
+        && p.regulatory_holdTimeSec >= 0
+        && p.regulatory_numCycles > 0;
     }
-    if (p.testType == TP::Shutoff    || p.testType == TP::Combined) {
+    if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
         ok &= !p.shutoff_sequence.isEmpty()
-        &&  p.shutoff_delaySec     > 0
-            &&  p.shutoff_holdTimeSec  >= 0
-            &&  p.shutoff_numCycles    > 0;
+        && p.shutoff_delaySec > 0
+        && p.shutoff_holdTimeSec >= 0
+        && p.shutoff_numCycles > 0;
     }
     if (!ok) {
         emit StopTest();
@@ -655,46 +660,65 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 
     const auto parts = p.regulatory_sequence.split('-', Qt::SkipEmptyParts);
     int recordCount = parts.size();
-
-    QVector<int> valuesReg;
-    valuesReg.reserve(recordCount);
-    for (auto &part : parts) {
-        bool ok = false;
-        int v = part.trimmed().toInt(&ok);
-        if (ok) valuesReg.append(v);
+    QVector<int> valuesReg; valuesReg.reserve(recordCount);
+    for (const QString &part : parts) {
+        bool convOk = false;
+        int v = part.trimmed().toInt(&convOk);
+        if (convOk) valuesReg.append(v);
     }
-
-    auto *sol = new CyclicTestSolenoid;
-    sol->SetParameters(p);
-
-    QThread *thr = new QThread(this);
-    sol->moveToThread(thr);
 
     m_telemetryStore.cyclicTestRecord.ranges.clear();
     m_telemetryStore.cyclicTestRecord.ranges.resize(recordCount);
-
     for (int i = 0; i < recordCount; ++i) {
         auto &rec = m_telemetryStore.cyclicTestRecord.ranges[i];
-        rec.rangePercent = valuesReg[i];
-        rec.maxForwardValue = 0;
-        rec.maxForwardCycle = 0;
-        rec.maxReverseValue = 0;
-        rec.maxReverseCycle = 0;
+        rec.rangePercent     = valuesReg[i];
+        rec.maxForwardValue  = 0;
+        rec.maxForwardCycle  = 0;
+        rec.maxReverseValue  = 0;
+        rec.maxReverseCycle  = 0;
     }
-
     m_telemetryStore.cyclicTestRecord.switch3to0Count = 0;
     m_telemetryStore.cyclicTestRecord.switch0to3Count = 0;
     m_lastDI = m_mpi.GetDIStatus();
     m_cyclicStartTs = QDateTime::currentMSecsSinceEpoch();
 
-
     m_diPollTimer = new QTimer(this);
     m_diPollTimer->setInterval(50);
-    connect(m_diPollTimer, &QTimer::timeout, this, &Program::pollDIForCyclic);
+    connect(m_diPollTimer, &QTimer::timeout,
+            this, &Program::pollDIForCyclic);
     m_diPollTimer->start();
 
+    auto *sol = new CyclicTestSolenoid;
+    sol->SetParameters(p);
+
+    QThread *thr = new QThread;
+    sol->moveToThread(thr);
+
+    connect(thr, &QThread::started,
+            sol, &CyclicTestSolenoid::Process,
+            Qt::QueuedConnection);
+
+    connect(this, &Program::StopTest,
+            sol, &CyclicTestSolenoid::Stop,
+            Qt::QueuedConnection);
+
+    connect(sol, &CyclicTestSolenoid::EndTest,
+            thr, &QThread::quit,
+            Qt::QueuedConnection);
+    connect(sol, &CyclicTestSolenoid::EndTest,
+            this, &Program::EndTest,
+            Qt::QueuedConnection);
+
+    connect(thr, &QThread::finished,
+            sol, &QObject::deleteLater,
+            Qt::QueuedConnection);
+
+    connect(thr, &QThread::finished,
+            thr, &QObject::deleteLater,
+            Qt::QueuedConnection);
+
     connect(sol, &CyclicTestSolenoid::RegulatoryMeasurement,
-            this, [&](int cycle, int step, bool forward) {
+            this, [this](int cycle, int step, bool forward) {
                 auto &rec = m_telemetryStore.cyclicTestRecord.ranges[step];
                 qreal measured = m_mpi[0]->GetPersent();
                 if (forward) {
@@ -710,34 +734,26 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
                 }
             });
 
-    connect(sol, &CyclicTestSolenoid::EndTest, this, [this](){
-        if (m_diPollTimer) {
-            m_diPollTimer->stop();
-            m_diPollTimer->deleteLater();
-            m_diPollTimer = nullptr;
-        }
-    });
     connect(sol, &CyclicTestSolenoid::DOCounts,
             this, &Program::onDOCounts);
+
     connect(sol, &CyclicTestSolenoid::SetMultipleDO,
             this, &Program::SetMultipleDO);
-    connect(thr, &QThread::started, sol, &CyclicTestSolenoid::Process);
-    connect(sol, &CyclicTestSolenoid::EndTest, thr, &QThread::quit);
-    connect(sol, &CyclicTestSolenoid::EndTest, this, &Program::EndTest);
-    connect(this, &Program::StopTest, sol, &CyclicTestSolenoid::Stop);
-
-    connect(thr, &QThread::finished, sol,  &QObject::deleteLater);
-    connect(thr, &QThread::finished, thr,  &QObject::deleteLater);
 
     connect(sol, &CyclicTestSolenoid::SetDO,
             this, &Program::button_DO);
 
-    connect(sol, &CyclicTestSolenoid::ClearGraph, this,
-            [&]{ emit ClearPoints(Charts::CyclicSolenoid); });
+    connect(sol, &CyclicTestSolenoid::ClearGraph,
+            this, [&] {
+                emit ClearPoints(Charts::CyclicSolenoid);
+            });
 
-    connect(sol, &CyclicTestSolenoid::TaskPoint, this,
-            [this](quint64 t, int pct){
-                emit AddPoints(Charts::CyclicSolenoid, QVector<Point>{{0, qreal(t), qreal(pct)}});
+    connect(sol, &CyclicTestSolenoid::TaskPoint,
+            this, [this](quint64 t, int pct) {
+                if (m_cyclicRunning) {
+                    emit AddPoints(Charts::CyclicSolenoid,
+                                   QVector<Point>{{0, qreal(t), qreal(pct)}});
+                }
             });
 
     connect(sol, &CyclicTestSolenoid::SetStartTime,
@@ -750,7 +766,11 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
             this, &Program::SetDAC_int);
 
     connect(this, &Program::ReleaseBlock,
-            sol,  &CyclicTestSolenoid::ReleaseBlock);
+            sol, &CyclicTestSolenoid::ReleaseBlock);
+
+    connect(m_timerSensors, &QTimer::timeout,
+            this, &Program::UpdateCharts_CyclicSolenoid,
+            Qt::UniqueConnection);
 
     emit ClearPoints(Charts::CyclicSolenoid);
     m_testing = true;
@@ -761,7 +781,7 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
 }
 
 void Program::onDOCounts(const QVector<int>& on, const QVector<int>& off) {
-    m_telemetryStore.cyclicTestRecord.doOnCounts  = on;
+    m_telemetryStore.cyclicTestRecord.doOnCounts = on;
     m_telemetryStore.cyclicTestRecord.doOffCounts = off;
 
     emit TelemetryUpdated(m_telemetryStore);

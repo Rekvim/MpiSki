@@ -110,26 +110,48 @@ void ReportBuilder_B_SACVT::buildReport(
                                                .toString("mm:ss.zzz")});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
-    // Задание диапазона (0% хода)
-    report.data.push_back({sheet_1, 101, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)}); // Количество циклов
-    // report.data.push_back({sheet_1, 101, 10, safeToString(???)}); // Количество включений
-    // report.data.push_back({sheet_1, 101, 13, safeToString(???)}); // Количество выключений
-    // Задание диапазона (100% хода)
-    report.data.push_back({sheet_1, 103, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)}); // Количество циклов
-    // report.data.push_back({sheet_1, 103, 10, safeToString(???)}); // Количество включений
-    // report.data.push_back({sheet_1, 103, 13, safeToString(???)}); // Количество выключений
+    const auto &ons  = telemetryStore.cyclicTestRecord.doOnCounts;
+    const auto &offs = telemetryStore.cyclicTestRecord.doOffCounts;
+    for (int i = 0; i < ons.size(); ++i) {
+        if (ons[i] == 0 && offs.value(i, 0) == 0)
+            continue;
+
+        quint16 row = 101 + quint16(i) * 2;
+        report.data.push_back({
+            "Отчет ЦТ", row, 10,
+            QString::number(ons[i])
+        });
+        report.data.push_back({
+            "Отчет ЦТ", row, 13,
+            QString::number(offs.value(i, 0))
+        });
+    }
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения
-    // Положение 0-3
-    report.data.push_back({sheet_1, 109, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)});  // Количество циклов
-    // report.data.push_back({sheet_1, 109, 10, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество срабатываний
-    // report.data.push_back({sheet_1, 109, 13, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество ошибок на срабатыввание
-
-    // Положение 3-0
-    report.data.push_back({sheet_1, 111, 8, safeToString(telemetryStore.cyclicTestRecord.cycles)}); // Количество циклов
-    // report.data.push_back({sheet_1, 111, 10, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество срабатываний
-    // report.data.push_back({sheet_1, 111, 13, safeToString(telemetryStore.cyclicTestRecord.)}); // Количество ошибок на срабатыввание
-
+    report.data.push_back({
+        "Отчет ЦТ", 109, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 109, 10,
+        QString::number(telemetryStore.cyclicTestRecord.switch3to0Count)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 109, 13,
+        QString::number(telemetryStore.cyclicTestRecord.switch0to3Count)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 111, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 111, 10,
+        QString::number(telemetryStore.cyclicTestRecord.switch0to3Count)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 111, 13,
+        QString::number(telemetryStore.cyclicTestRecord.switch3to0Count)
+    });
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({sheet_1, 118, 4, objectInfo.FIO});
     // Страница: Отчет ЦТ; Блок: Дата

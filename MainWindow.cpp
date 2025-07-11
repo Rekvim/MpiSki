@@ -26,9 +26,10 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::onCountdownTimeout);
 
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget->setTabEnabled(2, true);
-    ui->tabWidget->setTabEnabled(3, true);
-    ui->tabWidget->setTabEnabled(4, true);
+    ui->tabWidget->setTabEnabled(1, false);
+    ui->tabWidget->setTabEnabled(2, false);
+    ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
 
     m_cyclicCountdownTimer.setInterval(100);
     connect(&m_cyclicCountdownTimer, &QTimer::timeout,
@@ -47,40 +48,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->checkBox_switch_0_3->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_switch_0_3->setFocusPolicy(Qt::NoFocus);
 
-    m_labels[TextObjects::Label_deviceStatusValue] = ui->label_deviceStatusValue;
-    m_labels[TextObjects::Label_deviceInitValue] = ui->label_deviceInitValue;
-    m_labels[TextObjects::Label_connectedSensorsNumber] = ui->label_connectedSensorsNumber;
-    m_labels[TextObjects::Label_startingPositionValue] = ui->label_startingPositionValue;
-    m_labels[TextObjects::Label_finalPositionValue] = ui->label_finalPositionValue;
-    m_labels[TextObjects::Label_lowLimitValue] = ui->label_lowLimitValue;
-    m_labels[TextObjects::Label_highLimitValue] = ui->label_highLimitValue;
-    m_labels[TextObjects::Label_pressureDifferenceValue] = ui->label_pressureDifferenceValue;
-    m_labels[TextObjects::Label_frictionForceValue] = ui->label_frictionForceValue;
-    m_labels[TextObjects::label_frictionPercentValue] = ui->label_frictionPercentValue;
-    m_labels[TextObjects::Label_dynamicErrorMean] = ui->label_dynamicErrorMean;
-    m_labels[TextObjects::Label_dynamicErrorMeanPercent] = ui->label_dynamicErrorMeanPercent;
-    m_labels[TextObjects::Label_dynamicErrorMax] = ui->label_dynamicErrorMax;
-    m_labels[TextObjects::Label_dynamicErrorMaxPercent] = ui->label_dynamicErrorMaxPercent;
-    m_labels[TextObjects::Label_valveStroke_range] = ui->label_valveStroke_range;
-    m_labels[TextObjects::Label_strokeTest_forwardTime] = ui->label_strokeTest_forwardTime;
-    m_labels[TextObjects::Label_strokeTest_backwardTime] = ui->label_strokeTest_backwardTime;
-
     m_lineEdits[TextObjects::LineEdit_linearSensor] = ui->lineEdit_linearSensor;
     m_lineEdits[TextObjects::LineEdit_linearSensorPercent] = ui->lineEdit_linearSensorPercent;
     m_lineEdits[TextObjects::LineEdit_pressureSensor_1] = ui->lineEdit_pressureSensor_1;
     m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->lineEdit_pressureSensor_2;
     m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->lineEdit_pressureSensor_3;
     m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
-    m_lineEdits[TextObjects::LineEdit_dinamicReal] = ui->lineEdit_dynamicErrorReal;
-    m_lineEdits[TextObjects::lineEdit_strokeReal] = ui->lineEdit_strokeReal;
-    m_lineEdits[TextObjects::lineEdit_rangeReal] = ui->lineEdit_driveRangeReal;
-    m_lineEdits[TextObjects::LineEdit_friction] = ui->lineEdit_frictionForceValue;
-    m_lineEdits[TextObjects::LineEdit_frictionPercent] = ui->lineEdit_frictionPercentValue;
-    m_lineEdits[TextObjects::LineEdit_strokeTest_forwardTime] = ui->lineEdit_strokeTest_forwardTime;
-    m_lineEdits[TextObjects::LineEdit_strokeTest_backwardTime] = ui->lineEdit_strokeTest_backwardTime;
-    m_lineEdits[TextObjects::LineEdit_rangePressure] = ui->lineEdit_rangePressure;
 
-    m_program = new Program(this);
+    m_program = new Program;
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
@@ -121,10 +96,8 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    connect(ui->pushButton_strokeTest_start,
-            &QPushButton::clicked,
-            this,
-            &MainWindow::ButtonStartStroke);
+    connect(ui->pushButton_strokeTest_start, &QPushButton::clicked,
+            this, &MainWindow::ButtonStartStroke);
 
     connect(ui->pushButton_strokeTest_save, &QPushButton::clicked, this, [&] {
         SaveChart(Charts::Stroke);
@@ -153,21 +126,6 @@ MainWindow::MainWindow(QWidget *parent)
             this, [&](){
                 SaveChart(Charts::CyclicSolenoid);
             });
-
-    // connect(ui->pushButton_open, &QPushButton::clicked,
-    //         m_program, &Program::button_open);
-
-    // connect(ui->pushButton_report, &QPushButton::clicked,
-    //         m_program, &Program::button_report);
-
-    // connect(ui->pushButton_imageChartTask, &QPushButton::clicked,
-    //         m_program, &Program::button_pixmap1);
-
-    // connect(ui->pushButton_imageChartPressure, &QPushButton::clicked,
-    //         m_program, &Program::button_pixmap2);
-
-    // connect(ui->pushButton_imageChartFriction, &QPushButton::clicked,
-    //         m_program, &Program::button_pixmap3);
 
     connect(this, &MainWindow::StartMainTest,
             m_program, &Program::MainTestStart);
@@ -277,6 +235,7 @@ MainWindow::MainWindow(QWidget *parent)
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::GetResponseTestParameters,
+
             this, &MainWindow::GetResponseTestParameters,
             Qt::BlockingQueuedConnection);
 
@@ -373,37 +332,22 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
-    // Init
-    ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
-    ui->label_deviceStatusValue->setStyleSheet(
-        "color:" + TS.init.deviceStatusColor.name(QColor::HexRgb));
-    ui->label_deviceInitValue->setText(TS.init.initStatusText);
-    ui->label_connectedSensorsNumber->setText(TS.init.connectedSensorsText);
-    ui->label_connectedSensorsNumber->setStyleSheet(
-        "color:" + TS.init.connectedSensorsColor.name(QColor::HexRgb));
-    ui->label_startingPositionValue->setText(TS.init.startingPositionText);
-    ui->label_finalPositionValue->setText(TS.init.finalPositionText);
 
-    // Sensors
-    ui->lineEdit_linearSensor->setText(TS.sensors.linearValue);
-    ui->lineEdit_linearSensorPercent->setText(TS.sensors.linearPercent);
-    ui->lineEdit_pressureSensor_1->setText(TS.sensors.pressure1);
-    ui->lineEdit_pressureSensor_2->setText(TS.sensors.pressure2);
-    ui->lineEdit_pressureSensor_3->setText(TS.sensors.pressure3);
+    m_telemetryStore = TS;
 
     // MainTest
     ui->label_pressureDifferenceValue->setText(
         QString("%1 bar")
             .arg(TS.mainTestRecord.pressureDifference, 0, 'f', 3)
-    );
+        );
     ui->label_frictionForceValue->setText(
         QString("%1 H")
             .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
-    );
+        );
     ui->label_frictionPercentValue->setText(
         QString("%1 %")
             .arg(TS.mainTestRecord.frictionPercent, 0, 'f', 2)
-    );
+        );
     ui->lineEdit_frictionForceValue->setText(
         QString("%1")
             .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
@@ -411,49 +355,63 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     ui->lineEdit_frictionPercentValue->setText(
         QString("%1")
             .arg(TS.mainTestRecord.frictionPercent, 0, 'f', 2)
-    );
+        );
 
     ui->label_dynamicErrorMeanPercent->setText(
         QString("%1 %")
             .arg(TS.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
-    );
+        );
     ui->label_dynamicErrorMean->setText(
         QString("%1 mA")
             .arg(TS.mainTestRecord.dynamicError_mean, 0, 'f', 3)
-    );
+        );
     ui->label_dynamicErrorMaxPercent->setText(
         QString("%1 %")
             .arg(TS.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
-    );
+        );
     ui->label_dynamicErrorMax->setText(
         QString("%1 mA")
             .arg(TS.mainTestRecord.dynamicError_max, 0, 'f', 3)
-    );
+        );
     ui->lineEdit_dynamicErrorReal->setText(
-        QString("%1 mA")
+        QString("%1 %")
             .arg(TS.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
-    );
+        );
 
     ui->label_dynamicErrorMax->setText(
         QString("%1 bar")
             .arg(TS.mainTestRecord.lowLimitPressure, 0, 'f', 2)
-    );
+        );
     ui->label_dynamicErrorMax->setText(
         QString("%1 bar")
             .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
     );
 
-    ui->lineEdit_rangePressure->setText(
-        QString("%1—%2")
-            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
-            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
+    ui->label_valveStroke_range->setText(
+        QString("%1")
+            .arg(TS.valveStrokeRecord.range)
     );
 
+    ui->label_lowLimitValue->setText(
+        QString("%1")
+            .arg(TS.mainTestRecord.lowLimitPressure)
+    );
+    ui->label_highLimitValue->setText(
+        QString("%1")
+            .arg(TS.mainTestRecord.highLimitPressure)
+    );
+
+    ui->lineEdit_rangePressure->setText(
+        QString("%1–%2")
+            .arg(TS.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
+        );
+
     ui->lineEdit_driveRangeReal->setText(
-        QString("%1—%2")
+        QString("%1–%2")
             .arg(TS.mainTestRecord.springLow, 0, 'f', 2)
             .arg(TS.mainTestRecord.springHigh, 0, 'f', 2)
-    );
+        );
 
     // StrokeTest
     QTime tF(0, 0);
@@ -467,15 +425,15 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
 
     // CyclicTestResults
     ui->lineEdit_cyclicTest_sequence->setText(TS.cyclicTestRecord.sequence);
-
     ui->lineEdit_cyclicTest_cycles->setText(
         QString::number(TS.cyclicTestRecord.cycles));
 
+    // totalTimeSec в секундах, а QTime::addMSecs ждёт миллисекунды
+    qint64 millis = qint64(TS.cyclicTestRecord.totalTimeSec * 1000.0);
     QTime tC(0, 0);
-    tC = tC.addMSecs(TS.cyclicTestRecord.totalTimeSec);
+    tC = tC.addMSecs(millis);
     ui->lineEdit_cyclicTest_totalTime->setText(
         tC.toString("hh:mm:ss.zzz"));
-
     // StrokeRecord
     ui->lineEdit_strokeReal->setText(
         QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
@@ -603,7 +561,6 @@ void MainWindow::SetRegistry(Registry *registry)
 
 
 
-    DisplayDependingPattern();
 
     InitCharts();
 
@@ -696,23 +653,39 @@ void MainWindow::DisplayDependingPattern() {
     switch (m_patternType) {
     case SelectTests::Pattern_B_CVT:
         ui->groupBox_DO->setVisible(false);
-
+        ui->tabWidget->setTabEnabled(1, true);
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
+        ui->tabWidget->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_B_SACVT:
+        ui->groupBox_DO->setEnabled(true);
+        ui->tabWidget->setTabEnabled(1, true);
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
+        ui->tabWidget->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_C_CVT:
         ui->groupBox_DO->setVisible(false);
+        ui->tabWidget->setTabEnabled(1, true);
+        ui->tabWidget->setTabEnabled(2, true);
+        ui->tabWidget->setTabEnabled(3, true);
+        ui->tabWidget->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_C_SACVT:
+        ui->groupBox_DO->setEnabled(true);
+        ui->tabWidget->setTabEnabled(1, true);
+        ui->tabWidget->setTabEnabled(2, true);
+        ui->tabWidget->setTabEnabled(3, true);
+        ui->tabWidget->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_C_SOVT:
         ui->groupBox_SettingCurrentSignal->setVisible(false);
+        ui->groupBox_DO->setEnabled(true);
+        ui->tabWidget->setTabEnabled(1, true);
         ui->tabWidget->setTabEnabled(2, false);
         ui->tabWidget->setTabEnabled(3, false);
+        ui->tabWidget->setTabEnabled(4, true);
         break;
     default:
         break;
@@ -725,9 +698,7 @@ void MainWindow::SetSensorsNumber(quint8 num)
 
     if (!m_blockCTS.moving) {
         ui->label_startingPositionValue->setVisible(false);
-        // ui->label_finalPositionValue->setVisible(false);
         ui->label_startingPosition->setVisible(false);
-        // ui->label_finalPosition->setVisible(false);
     }
 
     ui->groupBox_SettingCurrentSignal->setEnabled(!noSensors);
@@ -739,6 +710,8 @@ void MainWindow::SetSensorsNumber(quint8 num)
 
     ui->doubleSpinBox_task->setEnabled(!noSensors);
     ui->verticalSlider_task->setEnabled(!noSensors);
+
+    DisplayDependingPattern();
 
     if (num > 0) {
         ui->checkBox_showCurve_task->setVisible(num > 1);
@@ -911,7 +884,18 @@ void MainWindow::StartTest()
 void MainWindow::EndTest()
 {
     m_testing = false;
-    ui->statusbar->showMessage("Тест завершен");
+
+    m_durationTimer->stop();
+    m_cyclicCountdownTimer.stop();
+
+    ui->statusbar->showMessage("Тест завершён");
+
+    ui->lineEdit_testDuration->clear();
+    if (m_userCanceled) {
+        ui->lineEdit_cyclicTest_totalTime->clear();
+        ui->lineEdit_cyclicTest_cycles->clear();
+        ui->lineEdit_cyclicTest_sequence->clear();
+    }
 }
 
 void MainWindow::ButtonStartMain()
@@ -919,10 +903,11 @@ void MainWindow::ButtonStartMain()
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
+            m_userCanceled = true;
             emit StopTest();
         }
     } else {
-
+        m_userCanceled = false;
         emit StartMainTest();
         StartTest();
     }
@@ -957,14 +942,14 @@ void MainWindow::ButtonStartOptional()
 }
 
 void MainWindow::ButtonStartCyclicSolenoid() {
-    qDebug() << "[MW] ButtonStartCyclicSolenoid called; m_testing =" << m_testing;
-
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
+            m_userCanceled = true;
             emit StopTest();
         }
     } else {
+        m_userCanceled = false;
 
         CyclicTestSettings::AvailableTests avail;
         using PT = SelectTests::PatternType;
@@ -979,16 +964,35 @@ void MainWindow::ButtonStartCyclicSolenoid() {
         } else {
             avail = CyclicTestSettings::ZipRegulatory;
         }
-
         m_cyclicTestSettings->setAvailableTests(avail);
+
         if (m_cyclicTestSettings->exec() != QDialog::Accepted)
             return;
-
         using TP = CyclicTestSettings::TestParameters;
         auto p = m_cyclicTestSettings->getParameters();
 
+        switch (p.testType) {
+        case TP::Regulatory:
+            ui->lineEdit_cyclicTest_sequence->setText(p.regulatory_sequence);
+            ui->lineEdit_cyclicTest_cycles->setText(QString::number(p.regulatory_numCycles));
+            break;
+        case TP::Shutoff:
+            ui->lineEdit_cyclicTest_sequence->setText(p.shutoff_sequence);
+            ui->lineEdit_cyclicTest_cycles->setText(QString::number(p.shutoff_numCycles));
+            break;
+        case TP::Combined:
+            ui->lineEdit_cyclicTest_sequence->setText(
+                p.regulatory_sequence + " / " + p.shutoff_sequence);
+            ui->lineEdit_cyclicTest_cycles  ->setText(
+                QString::number(qMax(p.regulatory_numCycles, p.shutoff_numCycles)));
+            break;
+        default:
+            ui->lineEdit_cyclicTest_sequence->clear();
+            ui->lineEdit_cyclicTest_cycles->clear();
+        }
+
         if ((p.testType == TP::Shutoff || p.testType == TP::Combined)
-            &&  p.shutoff_enable_20mA)
+            && p.shutoff_enable_20mA)
         {
             emit SetDAC(20.0);
         }
@@ -997,18 +1001,14 @@ void MainWindow::ButtonStartCyclicSolenoid() {
             return seq.split('-', Qt::SkipEmptyParts).size();
         };
         qint64 totalMs = 0;
-        if (p.testType == CyclicTestSettings::TestParameters::Regulatory ||
-            p.testType == CyclicTestSettings::TestParameters::Combined)
-        {
+        if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
             int steps = countSteps(p.regulatory_sequence);
             totalMs += qint64(steps)
                        * p.regulatory_numCycles
                        * (p.regulatory_delaySec + p.regulatory_holdTimeSec)
                        * 1000;
         }
-        if (p.testType == CyclicTestSettings::TestParameters::Shutoff ||
-            p.testType == CyclicTestSettings::TestParameters::Combined)
-        {
+        if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
             int steps = countSteps(p.shutoff_sequence);
             totalMs += qint64(steps)
                        * p.shutoff_numCycles
@@ -1018,8 +1018,7 @@ void MainWindow::ButtonStartCyclicSolenoid() {
 
         QTime t0(0, 0);
         t0 = t0.addMSecs(totalMs);
-        ui->lineEdit_cyclicTest_totalTime->setText(
-            t0.toString("hh:mm:ss.zzz"));
+        ui->lineEdit_cyclicTest_totalTime->setText(t0.toString("hh:mm:ss.zzz"));
 
         m_cyclicTotalMs = totalMs;
         m_cyclicElapsedTimer.restart();
@@ -1144,8 +1143,8 @@ void MainWindow::InitCharts()
     // m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
 
     if (m_patternType == SelectTests::Pattern_C_SOVT || m_patternType == SelectTests::Pattern_B_SACVT || m_patternType ==  SelectTests::Pattern_C_SACVT) {
-        m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI1", QColor::fromRgb(200, 200, 0));
-        m_charts[Charts::CyclicSolenoid]->addSeries(0, "DI2", QColor::fromRgb(0, 200, 0));
+        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв закрыто ->", QColor::fromRgb(200, 200, 0));
+        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв открыто ->", QColor::fromRgb(0, 200, 0));
 
         m_charts[Charts::CyclicSolenoid]->setPointsVisible(2, true);
         m_charts[Charts::CyclicSolenoid]->setPointsVisible(3, true);
@@ -1195,6 +1194,9 @@ void MainWindow::InitCharts()
 
 void MainWindow::promptSaveCharts()
 {
+    if (m_userCanceled)
+        return;
+
     auto answer = QMessageBox::question(
         this,
         tr("Сохранение результатов"),
