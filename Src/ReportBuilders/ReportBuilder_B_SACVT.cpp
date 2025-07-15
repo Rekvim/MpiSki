@@ -32,7 +32,8 @@ void ReportBuilder_B_SACVT::buildReport(
     report.data.push_back({sheet_1, 9, 13, valveInfo.positionerModel});
     report.data.push_back({sheet_1, 10, 13, valveInfo.solenoidValveModel});
     report.data.push_back({sheet_1, 11, 13, valveInfo.limitSwitchModel + "/" + valveInfo.positionSensorModel});
-    report.data.push_back({sheet_1, 12, 13, safeToString(telemetryStore.supplyRecord.pressure_bar)});
+    report.data.push_back({sheet_1, 12, 13, QString("%1 бар")
+                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
     report.data.push_back({sheet_1, 13, 13, otherParams.safePosition});
     report.data.push_back({sheet_1, 14, 13, valveInfo.driveModel});
     report.data.push_back({sheet_1, 15, 13, otherParams.strokeMovement});

@@ -25,6 +25,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_durationTimer, &QTimer::timeout,
             this, &MainWindow::onCountdownTimeout);
 
+    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    // ui->tabWidget->setTabEnabled(1, true);
+    // ui->tabWidget->setTabEnabled(2, true);
+    // ui->tabWidget->setTabEnabled(3, true);
+    // ui->tabWidget->setTabEnabled(4, true);
+
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
     ui->tabWidget->setTabEnabled(1, false);
     ui->tabWidget->setTabEnabled(2, false);
@@ -124,8 +130,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton_cyclicTest_save, &QPushButton::clicked,
             this, [&](){
-                SaveChart(Charts::CyclicSolenoid);
-            });
+            SaveChart(Charts::CyclicSolenoid);
+    });
 
     connect(this, &MainWindow::StartMainTest,
             m_program, &Program::MainTestStart);
@@ -256,6 +262,7 @@ MainWindow::MainWindow(QWidget *parent)
             &QPushButton::clicked, this, [&] {
                 GetImage(ui->label_imageChartTask, &m_imageChartTask);
             });
+
     connect(ui->pushButton_imageChartPressure, &QPushButton::clicked,
             this, [&] {
                 GetImage(ui->label_imageChartPressure, &m_imageChartPressure);
@@ -319,6 +326,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::TelemetryUpdated,
             this, &MainWindow::onTelemetryUpdated,
             Qt::QueuedConnection);
+
+    connect(m_program, &Program::CyclicCycleCompleted,
+            this, [this](int completed){
+                int remaining = completed;
+                ui->label_cyclicTest_completedCyclesValue->setText(QString::number(remaining));
+            });
 }
 
 MainWindow::~MainWindow()
@@ -331,6 +344,26 @@ MainWindow::~MainWindow()
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
 
     m_telemetryStore = TS;
+    // Init
+    ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
+    ui->label_deviceStatusValue->setStyleSheet(
+        "color:" + TS.init.deviceStatusColor.name(QColor::HexRgb));
+
+    ui->label_deviceInitValue->setText(TS.init.initStatusText);
+    ui->label_deviceInitValue->setStyleSheet(
+        "color:" + TS.init.initStatusColor.name(QColor::HexRgb));
+
+    ui->label_connectedSensorsNumber->setText(TS.init.connectedSensorsText);
+    ui->label_connectedSensorsNumber->setStyleSheet(
+        "color:" + TS.init.connectedSensorsColor.name(QColor::HexRgb));
+
+    ui->label_startingPositionValue->setText(TS.init.startingPositionText);
+    ui->label_startingPositionValue->setStyleSheet(
+        "color:" + TS.init.startingPositionColor.name(QColor::HexRgb));
+
+    ui->label_finalPositionValue->setText(TS.init.finalPositionText);
+    ui->label_finalPositionValue->setStyleSheet(
+        "color:" + TS.init.finalPositionColor.name(QColor::HexRgb));
 
     // MainTest
     ui->label_pressureDifferenceValue->setText(
@@ -421,20 +454,19 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     ui->lineEdit_strokeTest_backwardTime->setText(tB.toString("mm:ss.zzz"));
 
     // CyclicTestResults
-    ui->lineEdit_cyclicTest_sequence->setText(TS.cyclicTestRecord.sequence);
-    ui->lineEdit_cyclicTest_cycles->setText(
+    ui->label_cyclicTest_sequenceValue->setText(TS.cyclicTestRecord.sequence);
+    ui->label_cyclicTest_specifiedCyclesValue->setText(
         QString::number(TS.cyclicTestRecord.cycles));
 
-    // totalTimeSec в секундах, а QTime::addMSecs ждёт миллисекунды
     qint64 millis = qint64(TS.cyclicTestRecord.totalTimeSec * 1000.0);
     QTime tC(0, 0);
     tC = tC.addMSecs(millis);
-    ui->lineEdit_cyclicTest_totalTime->setText(
+    ui->label_cyclicTest_totalTimeValue->setText(
         tC.toString("hh:mm:ss.zzz"));
+
     // StrokeRecord
     ui->lineEdit_strokeReal->setText(
         QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
-
 }
 
 void MainWindow::onCyclicCountdown()
@@ -445,7 +477,7 @@ void MainWindow::onCyclicCountdown()
 
     QTime t(0, 0);
     t = t.addMSecs(remaining);
-    ui->lineEdit_cyclicTest_totalTime->setText(
+    ui->label_cyclicTest_totalTimeValue->setText(
         t.toString("hh:mm:ss.zzz"));
 
     if (remaining == 0) {
@@ -605,7 +637,8 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
         QString overshoot = QString("%1%").arg(results.at(i).overshoot, 4, 'f', 2);
         ui->tableWidget_stepResults->setItem(i, 1, new QTableWidgetItem(overshoot));
 
-        QString rowName = QString("%1-%2").arg(results.at(i).from).arg(results.at(i).to);
+        QString rowName = QString("%1-%2").arg(results.at(i).from)
+                                          .arg(results.at(i).to);
         rowNames << rowName;
     }
     ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
@@ -878,9 +911,11 @@ void MainWindow::EndTest()
 
     ui->lineEdit_testDuration->clear();
     if (m_userCanceled) {
-        ui->lineEdit_cyclicTest_totalTime->clear();
-        ui->lineEdit_cyclicTest_cycles->clear();
-        ui->lineEdit_cyclicTest_sequence->clear();
+        ui->label_cyclicTest_totalTimeValue->clear();
+        ui->label_cyclicTest_specifiedCyclesValue->clear();
+        ui->label_cyclicTest_sequenceValue->clear();
+        ui->label_cyclicTest_sequenceValue->clear();
+        ui->label_cyclicTest_completedCyclesValue->clear();
     }
 }
 
@@ -921,7 +956,6 @@ void MainWindow::ButtonStartOptional()
             emit StopTest();
         }
     } else {
-
         emit StartOptionalTest(ui->tabWidget_tests->currentIndex());
         StartTest();
     }
@@ -959,22 +993,22 @@ void MainWindow::ButtonStartCyclicSolenoid() {
 
         switch (p.testType) {
         case TP::Regulatory:
-            ui->lineEdit_cyclicTest_sequence->setText(p.regulatory_sequence);
-            ui->lineEdit_cyclicTest_cycles->setText(QString::number(p.regulatory_numCycles));
+            ui->label_cyclicTest_sequenceValue->setText(p.regulatory_sequence);
+            ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.regulatory_numCycles));
             break;
         case TP::Shutoff:
-            ui->lineEdit_cyclicTest_sequence->setText(p.shutoff_sequence);
-            ui->lineEdit_cyclicTest_cycles->setText(QString::number(p.shutoff_numCycles));
+            ui->label_cyclicTest_sequenceValue->setText(p.shutoff_sequence);
+            ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.shutoff_numCycles));
             break;
         case TP::Combined:
-            ui->lineEdit_cyclicTest_sequence->setText(
+            ui->label_cyclicTest_sequenceValue->setText(
                 p.regulatory_sequence + " / " + p.shutoff_sequence);
-            ui->lineEdit_cyclicTest_cycles  ->setText(
+            ui->label_cyclicTest_specifiedCyclesValue  ->setText(
                 QString::number(qMax(p.regulatory_numCycles, p.shutoff_numCycles)));
             break;
         default:
-            ui->lineEdit_cyclicTest_sequence->clear();
-            ui->lineEdit_cyclicTest_cycles->clear();
+            ui->label_cyclicTest_sequenceValue->clear();
+            ui->label_cyclicTest_specifiedCyclesValue->clear();
         }
 
         if ((p.testType == TP::Shutoff || p.testType == TP::Combined)
@@ -1004,7 +1038,7 @@ void MainWindow::ButtonStartCyclicSolenoid() {
 
         QTime t0(0, 0);
         t0 = t0.addMSecs(totalMs);
-        ui->lineEdit_cyclicTest_totalTime->setText(t0.toString("hh:mm:ss.zzz"));
+        ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
 
         m_cyclicTotalMs = totalMs;
         m_cyclicElapsedTimer.restart();

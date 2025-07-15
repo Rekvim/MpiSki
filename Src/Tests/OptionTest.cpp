@@ -23,7 +23,7 @@ void OptionTest::Process()
 
     m_graphTimer->start(50);
 
-    for (const auto value : m_task.value) {
+    for (const auto &value : m_task.value) {
         SetDACBlocked(value, m_task.delay);
 
         if (m_terminate) {

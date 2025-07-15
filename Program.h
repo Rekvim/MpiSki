@@ -72,6 +72,7 @@ private:
     int m_cyclicDI2Count = 0;
     quint8  m_lastDI = 0;
     quint64 m_cyclicStartTs = 0;
+    QTimer m_cyclicGraphTimer;
     QTimer *m_timerSensors;
     QTimer *m_timerDI;
     quint64 m_startTime;
@@ -87,7 +88,7 @@ private:
     void pollDIForCyclic();
 signals:
     void TelemetryUpdated(const TelemetryStore &store);
-
+    void CyclicCycleCompleted(int completedCycles);
     void SetText(const TextObjects object, const QString &text);
     void SetTextColor(const TextObjects object, const QColor color);
     void SetTask(qreal task);

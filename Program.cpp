@@ -1,4 +1,4 @@
-    #include "Program.h"
+#include "Program.h"
 
 // #include "./Src/Tests/CyclicTestPositioner.h"
 #include "./Src/Tests/CyclicTestSolenoid.h"
@@ -26,9 +26,10 @@ Program::Program(QObject *parent)
         emit SetCheckboxDIChecked(DI);
     });
 
-    connect(m_timerSensors, &QTimer::timeout,
-            this, &Program::UpdateCharts_CyclicSolenoid);
-
+    m_diPollTimer = new QTimer(this);
+    m_diPollTimer->setInterval(50);
+    connect(m_diPollTimer, &QTimer::timeout,
+            this, &Program::pollDIForCyclic);
 }
 
 void Program::SetRegistry(Registry *registry)
@@ -173,7 +174,7 @@ void Program::UpdateSensors()
 
     QVector<Point> points;
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
+    percent = qBound<qreal>(0.0, percent, 100.0);
 
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     if (valveInfo->safePosition != 0) {
@@ -217,9 +218,7 @@ void Program::EndTest()
         SetDAC_int(0);
     }
 
-    if (m_diPollTimer && m_diPollTimer->isActive()) {
-        m_diPollTimer->stop();
-    }
+    m_diPollTimer->stop();
 
     emit StopTest();
     emit SetTask(m_mpi.GetDAC()->GetValue());
@@ -492,7 +491,7 @@ void Program::UpdateCharts_mainTest()
 {
     QVector<Point> points;
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
+    percent = qBound<qreal>(0.0, percent, 100.0);
 
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     if (valveInfo->safePosition != 0) {
@@ -560,7 +559,7 @@ void Program::UpdateCharts_strokeTest()
     QVector<Point> points;
 
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
+    percent = qBound<qreal>(0.0, percent, 100.0);
 
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     if (valveInfo->safePosition != 0) {
@@ -580,18 +579,20 @@ void Program::UpdateCharts_CyclicSolenoid()
     if (!m_cyclicRunning)
         return;
 
-    qreal task = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    task = qBound<qreal>(0.0, task, 100.0);
+    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
+    percent = qBound<qreal>(0.0, percent, 100.0);
 
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    if (valveInfo->safePosition != 0) {
+        percent = 100.0 - percent;
+    }
 
     qreal measured = m_mpi[0]->GetPersent();
-
 
     quint64 t = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
     QVector<Point> pts;
-
-    pts.push_back({0, qreal(t), task});
+    pts.push_back({0, qreal(t), percent});
     pts.push_back({1, qreal(t), measured});
 
     emit AddPoints(Charts::CyclicSolenoid, pts);
@@ -643,14 +644,14 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
         ok &= !p.regulatory_sequence.isEmpty()
         && p.regulatory_delaySec > 0
-        && p.regulatory_holdTimeSec >= 0
-        && p.regulatory_numCycles > 0;
+            && p.regulatory_holdTimeSec >= 0
+            && p.regulatory_numCycles > 0;
     }
     if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
         ok &= !p.shutoff_sequence.isEmpty()
         && p.shutoff_delaySec > 0
-        && p.shutoff_holdTimeSec >= 0
-        && p.shutoff_numCycles > 0;
+            && p.shutoff_holdTimeSec >= 0
+            && p.shutoff_numCycles > 0;
     }
     if (!ok) {
         emit StopTest();
@@ -670,21 +671,17 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     m_telemetryStore.cyclicTestRecord.ranges.resize(recordCount);
     for (int i = 0; i < recordCount; ++i) {
         auto &rec = m_telemetryStore.cyclicTestRecord.ranges[i];
-        rec.rangePercent     = valuesReg[i];
-        rec.maxForwardValue  = 0;
-        rec.maxForwardCycle  = 0;
-        rec.maxReverseValue  = 0;
-        rec.maxReverseCycle  = 0;
+        rec.rangePercent = valuesReg[i];
+        rec.maxForwardValue = 0;
+        rec.maxForwardCycle = 0;
+        rec.maxReverseValue = 0;
+        rec.maxReverseCycle = 0;
     }
     m_telemetryStore.cyclicTestRecord.switch3to0Count = 0;
     m_telemetryStore.cyclicTestRecord.switch0to3Count = 0;
     m_lastDI = m_mpi.GetDIStatus();
     m_cyclicStartTs = QDateTime::currentMSecsSinceEpoch();
 
-    m_diPollTimer = new QTimer(this);
-    m_diPollTimer->setInterval(50);
-    connect(m_diPollTimer, &QTimer::timeout,
-            this, &Program::pollDIForCyclic);
     m_diPollTimer->start();
 
     auto *sol = new CyclicTestSolenoid;
@@ -743,17 +740,9 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
             this, &Program::button_DO);
 
     connect(sol, &CyclicTestSolenoid::ClearGraph,
-            this, [&] {
-                emit ClearPoints(Charts::CyclicSolenoid);
-            });
-
-    connect(sol, &CyclicTestSolenoid::TaskPoint,
-            this, [this](quint64 t, int pct) {
-                if (m_cyclicRunning) {
-                    emit AddPoints(Charts::CyclicSolenoid,
-                                   QVector<Point>{{0, qreal(t), qreal(pct)}});
-                }
-            });
+            this, [&] { emit ClearPoints(Charts::CyclicSolenoid); });
+    connect(sol, &CyclicTestSolenoid::UpdateGraph,
+            this, &Program::UpdateCharts_CyclicSolenoid);
 
     connect(sol, &CyclicTestSolenoid::SetStartTime,
             this, &Program::SetTimeStart);
@@ -767,16 +756,16 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
     connect(this, &Program::ReleaseBlock,
             sol, &CyclicTestSolenoid::ReleaseBlock);
 
-    connect(m_timerSensors, &QTimer::timeout,
-            this, &Program::UpdateCharts_CyclicSolenoid,
-            Qt::UniqueConnection);
+    connect(sol, &CyclicTestSolenoid::CycleCompleted,
+            this, &Program::CyclicCycleCompleted);
+
+
 
     emit ClearPoints(Charts::CyclicSolenoid);
     m_testing = true;
     emit EnableSetTask(false);
 
     thr->start();
-    m_timerSensors->start();
 }
 
 void Program::onDOCounts(const QVector<int>& on, const QVector<int>& off) {
@@ -790,7 +779,6 @@ void Program::SolenoidResults(QString sequence,
                               quint16 cycles,
                               double totalTimeSec)
 {
-
     m_telemetryStore.cyclicTestRecord.sequence = sequence;
     m_telemetryStore.cyclicTestRecord.cycles = cycles;
     m_telemetryStore.cyclicTestRecord.totalTimeSec = totalTimeSec;
@@ -989,7 +977,7 @@ void Program::UpdateCharts_optionTest(Charts chart)
     QVector<Point> points;
 
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qMin(qMax(percent, 0.0), 100.0);
+    percent = qBound<qreal>(0.0, percent, 100.0);
 
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     if (valveInfo->safePosition != 0) {

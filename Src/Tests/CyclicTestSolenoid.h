@@ -31,8 +31,6 @@ public slots:
 signals:
     void SetMultipleDO(const QVector<bool>& states);
     void SetDO(quint8 index, bool state);
-    void TaskPoint(quint64 timeMs, int percent);
-    void UpdateCyclicTred();
     void SetStartTime();
 
     void SetSolenoidResults(QString sequence,
@@ -41,6 +39,7 @@ signals:
     void CyclicDeviationResults(const QVector<RangeDeviationRecord>& recs);
     void DOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
     void RegulatoryMeasurement(int cycle, int step, bool forward);
+    void CycleCompleted(int completedCycles);
 
 private:
     MPI   m_mpi;

@@ -72,7 +72,7 @@ void ReportBuilder_C_CVT::buildReport(
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     report.data.push_back({sheet_1, 56, 4, objectInfo.FIO});
-    report.data.push_back({sheet_1, 56, 4, otherParams.date});
+    report.data.push_back({sheet_1, 60, 12, otherParams.date});
 
     // Страница: Результат теста шаговой реакции; Блок: Данные по объекту
     report.data.push_back({sheet_2, 4, 4, objectInfo.object});
@@ -194,12 +194,12 @@ void ReportBuilder_C_CVT::buildReport(
     // ------------------------------------------------------------------------
     // Страница: Отчет; Блок: Диагностические графики
     // ------------------------------------------------------------------------
-    report.images.push_back({sheet_3,  80, 1, imageChartTask});
-    report.images.push_back({sheet_3, 105, 1, imageChartPressure});
-    report.images.push_back({sheet_3, 130, 1, imageChartFriction});
+    report.images.push_back({sheet_3,  78, 1, imageChartTask});
+    report.images.push_back({sheet_3, 103, 1, imageChartPressure});
+    report.images.push_back({sheet_3, 128, 1, imageChartFriction});
 
     // Страница: Отчет; Блок: Дата
-    report.data.push_back({sheet_3, 156, 12, otherParams.date});
+    report.data.push_back({sheet_3, 153, 12, otherParams.date});
 
     report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
