@@ -65,8 +65,11 @@ MainWindow::MainWindow(QWidget *parent)
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
-    connect(ui->pushButton_init, &QPushButton::clicked,
+    connect(this, &MainWindow::InitializeWithPattern,
             m_program, &Program::button_init);
+
+    connect(this, &MainWindow::InitDOSelected,
+            m_program, &Program::SetInitDOStates);
 
     connect(ui->pushButton_set, &QPushButton::clicked,
             m_program, &Program::button_set_position);
@@ -140,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::promptSaveCharts);
 
     connect(this, &MainWindow::StartStrokeTest,
-            m_program, &Program::StrokeTestStart);
+            m_program, &Program::onStartStrokeTest);
 
     connect(this, &MainWindow::StartOptionalTest,
             m_program, &Program::StartOptionalTest);
@@ -154,10 +157,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::SetText,
             this, &MainWindow::SetText);
 
-    connect(m_program, &Program::SetGroupDOVisible,
-            this, [&](bool visible) {
-                ui->groupBox_DO->setVisible(visible);
-            });
+    // connect(m_program, &Program::SetGroupDOVisible,
+    //         this, [&](bool visible) {
+    //             ui->groupBox_DO->setVisible(visible);
+    //         });
 
     connect(m_program, &Program::SetButtonsDOChecked,
             this, &MainWindow::SetButtonsDOChecked);
@@ -209,6 +212,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_signal_20mA, &QPushButton::clicked, this, [this]() {
         ui->doubleSpinBox_task->setValue(20.0);
     });
+
+    connect(this, &MainWindow::PatternChanged,
+            m_program, &Program::SetPattern);
 
     connect(m_program, &Program::SetTask,
             this, &MainWindow::SetTask);
@@ -342,6 +348,9 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
+
+    qDebug() << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
+    << "GUI update on thread" << QThread::currentThread();
 
     m_telemetryStore = TS;
     // Init
@@ -578,7 +587,6 @@ void MainWindow::SetRegistry(Registry *registry)
     ui->lineEdit_dynamicErrorRecomend->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
     ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo->materialStuffingBoxSeal);
 
-
     ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
     ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
 
@@ -587,9 +595,6 @@ void MainWindow::SetRegistry(Registry *registry)
         m_responseTestSettings->reverse();
         m_resolutionTestSettings->reverse();
     }
-
-
-
 
     InitCharts();
 
@@ -656,16 +661,6 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
 
         m_telemetryStore.stepResults.push_back(rec);
     }
-}
-
-void MainWindow::onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges)
-{
-    m_telemetryStore.cyclicTestRecord.ranges = ranges;
-}
-
-void MainWindow::ВideTabByWidget(QWidget *page) {
-    int idx = ui->tabWidget->indexOf(page);
-    if (idx >= 0) ui->tabWidget->setTabVisible(idx, false);
 }
 
 void MainWindow::DisplayDependingPattern() {
@@ -963,90 +958,102 @@ void MainWindow::ButtonStartOptional()
 
 void MainWindow::ButtonStartCyclicSolenoid() {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
+        if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             m_userCanceled = true;
             emit StopTest();
         }
-    } else {
-        m_userCanceled = false;
-
-        CyclicTestSettings::AvailableTests avail;
-        using PT = SelectTests::PatternType;
-        if (m_patternType == PT::Pattern_B_CVT || m_patternType == PT::Pattern_C_CVT) {
-            avail = CyclicTestSettings::OnlyRegulatory;
-        }
-        else if (m_patternType == PT::Pattern_C_SOVT) {
-            avail = CyclicTestSettings::OnlyShutoff;
-        }
-        else if (m_patternType == PT::Pattern_B_SACVT || m_patternType == PT::Pattern_C_SACVT) {
-            avail = CyclicTestSettings::ZipRegulatory;
-        } else {
-            avail = CyclicTestSettings::ZipRegulatory;
-        }
-        m_cyclicTestSettings->setAvailableTests(avail);
-
-        if (m_cyclicTestSettings->exec() != QDialog::Accepted)
-            return;
-        using TP = CyclicTestSettings::TestParameters;
-        auto p = m_cyclicTestSettings->getParameters();
-
-        switch (p.testType) {
-        case TP::Regulatory:
-            ui->label_cyclicTest_sequenceValue->setText(p.regulatory_sequence);
-            ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.regulatory_numCycles));
-            break;
-        case TP::Shutoff:
-            ui->label_cyclicTest_sequenceValue->setText(p.shutoff_sequence);
-            ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.shutoff_numCycles));
-            break;
-        case TP::Combined:
-            ui->label_cyclicTest_sequenceValue->setText(
-                p.regulatory_sequence + " / " + p.shutoff_sequence);
-            ui->label_cyclicTest_specifiedCyclesValue  ->setText(
-                QString::number(qMax(p.regulatory_numCycles, p.shutoff_numCycles)));
-            break;
-        default:
-            ui->label_cyclicTest_sequenceValue->clear();
-            ui->label_cyclicTest_specifiedCyclesValue->clear();
-        }
-
-        if ((p.testType == TP::Shutoff || p.testType == TP::Combined)
-            && p.shutoff_enable_20mA)
-        {
-            emit SetDAC(20.0);
-        }
-
-        auto countSteps = [](const QString& seq){
-            return seq.split('-', Qt::SkipEmptyParts).size();
-        };
-        qint64 totalMs = 0;
-        if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
-            int steps = countSteps(p.regulatory_sequence);
-            totalMs += qint64(steps)
-                       * p.regulatory_numCycles
-                       * (p.regulatory_delaySec + p.regulatory_holdTimeSec)
-                       * 1000;
-        }
-        if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
-            int steps = countSteps(p.shutoff_sequence);
-            totalMs += qint64(steps)
-                       * p.shutoff_numCycles
-                       * (p.shutoff_delaySec + p.shutoff_holdTimeSec)
-                       * 1000;
-        }
-
-        QTime t0(0, 0);
-        t0 = t0.addMSecs(totalMs);
-        ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
-
-        m_cyclicTotalMs = totalMs;
-        m_cyclicElapsedTimer.restart();
-        m_cyclicCountdownTimer.start();
-
-        StartTest();
-        emit StartCyclicSolenoidTest(p);
+        return;
     }
+
+    m_userCanceled = false;
+
+    // Выбираем доступные режимы теста
+    CyclicTestSettings::AvailableTests avail;
+    using PT = SelectTests::PatternType;
+    if (m_patternType == PT::Pattern_B_CVT || m_patternType == PT::Pattern_C_CVT) {
+        avail = CyclicTestSettings::OnlyRegulatory;
+    }
+    else if (m_patternType == PT::Pattern_C_SOVT) {
+        avail = CyclicTestSettings::OnlyShutoff;
+    }
+    else {
+        avail = CyclicTestSettings::ZipRegulatory;
+    }
+    m_cyclicTestSettings->setAvailableTests(avail);
+
+    // Открываем диалог настроек
+    if (m_cyclicTestSettings->exec() != QDialog::Accepted)
+        return;
+
+    // Получаем параметры
+    using TP = CyclicTestSettings::TestParameters;
+    auto p = m_cyclicTestSettings->getParameters();
+
+    // Обновляем UI: последовательность и число циклов
+    switch (p.testType) {
+    case TP::Regulatory:
+        ui->label_cyclicTest_sequenceValue->setText(p.regulatory_sequence);
+        ui->label_cyclicTest_specifiedCyclesValue->setText(
+            QString::number(p.regulatory_numCycles));
+        break;
+    case TP::Shutoff:
+        ui->label_cyclicTest_sequenceValue->setText(p.shutoff_sequence);
+        ui->label_cyclicTest_specifiedCyclesValue->setText(
+            QString::number(p.shutoff_numCycles));
+        break;
+    default:
+        ui->label_cyclicTest_sequenceValue->clear();
+        ui->label_cyclicTest_specifiedCyclesValue->clear();
+        break;
+    }
+
+    // При включённой 20 mA только для Regulatory
+    if (p.testType == TP::Regulatory && p.regulatory_enable_20mA) {
+        emit SetDAC(20.0);
+    }
+
+    // Считаем общее время строго по выбранному типу
+    qint64 totalMs = 0;
+    switch (p.testType) {
+    case TP::Regulatory: {
+        QStringList parts = p.shutoff_sequence.split('-', Qt::SkipEmptyParts);
+        int n = parts.size();
+        totalMs = n
+                  * p.regulatory_numCycles
+                  * (p.regulatory_delaySec * 1000
+                     + p.regulatory_holdTimeSec * 1000);
+        break;
+    }
+    case TP::Shutoff: {
+        QStringList parts = p.shutoff_sequence.split('-', Qt::SkipEmptyParts);
+        int n = parts.size();
+        totalMs = n
+                  * p.shutoff_numCycles
+                  * (p.shutoff_delaySec * 1000
+                     + p.shutoff_holdTimeSec * 1000);
+        break;
+    }
+    default:
+        // Других вариантов нет
+        break;
+    }
+
+    // Отображаем рассчитанное время в label
+    QTime t0(0, 0);
+    t0 = t0.addMSecs(totalMs);
+    ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
+
+    // Запускаем таймер обратного отсчёта
+    m_cyclicTotalMs = totalMs;
+    m_cyclicElapsedTimer.restart();
+    m_cyclicCountdownTimer.start();
+
+    // Флаг, что тест в процессе
+    StartTest();
+
+    // Стартуем сам тест в Program
+    emit StartCyclicSolenoidTest(p);
 }
 
 void MainWindow::SetButtonsDOChecked(quint8 status)
@@ -1065,6 +1072,9 @@ void MainWindow::SetButtonsDOChecked(quint8 status)
     ui->pushButton_DO1->blockSignals(false);
     ui->pushButton_DO2->blockSignals(false);
     ui->pushButton_DO3->blockSignals(false);
+
+    ui->groupBox_DO->setEnabled(true);
+
 }
 
 void MainWindow::SetCheckboxDIChecked(quint8 status)
@@ -1103,7 +1113,6 @@ void MainWindow::InitCharts()
     } else {
         m_charts[Charts::Friction]->setLabelXformat("%.2f deg");
     }
-
 
     m_charts[Charts::Pressure] = ui->Chart_pressure;
     m_charts[Charts::Pressure]->setName("Pressure");
@@ -1162,12 +1171,30 @@ void MainWindow::InitCharts()
     m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     // m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
 
-    if (m_patternType == SelectTests::Pattern_C_SOVT || m_patternType == SelectTests::Pattern_B_SACVT || m_patternType ==  SelectTests::Pattern_C_SACVT) {
-        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв закрыто ->", QColor::fromRgb(200, 200, 0));
-        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв открыто ->", QColor::fromRgb(0, 200, 0));
+    if (m_patternType == SelectTests::Pattern_C_SOVT
+        || m_patternType == SelectTests::Pattern_B_SACVT
+        || m_patternType == SelectTests::Pattern_C_SACVT) {
+        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв закрыто →", QColor::fromRgb(200,200,0));
+        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв открыто →", QColor::fromRgb(0,200,0));
 
         m_charts[Charts::CyclicSolenoid]->setPointsVisible(2, true);
         m_charts[Charts::CyclicSolenoid]->setPointsVisible(3, true);
+
+        QChart *chart = m_charts[Charts::CyclicSolenoid]->chart();
+        const auto all = chart->series();
+        int total = all.size();
+
+        for (int i = total - 4; i < total; ++i) {
+            if (auto *xy = qobject_cast<QXYSeries*>(all.at(i))) {
+                xy->setPointsVisible(true);
+                QPen pen = xy->pen();
+                pen.setStyle(Qt::NoPen);
+                xy->setPen(pen);
+                #if QT_VERSION >= QT_VERSION_CHECK(6,2,0)
+                    xy->setMarkerSize(6.0);
+                #endif
+            }
+        }
     }
 
     connect(m_program, &Program::AddPoints, this, &MainWindow::AddPoints);
@@ -1292,4 +1319,12 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
         *image = img.scaled(1000, 430, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(img));
     }
+}
+
+void MainWindow::on_pushButton_init_clicked()
+{
+        QVector<bool> states = { ui->pushButton_DO0->isChecked(), ui->pushButton_DO1->isChecked(), ui->pushButton_DO2->isChecked(), ui->pushButton_DO3->isChecked() };
+        emit InitDOSelected(states);
+        emit InitializeWithPattern(m_patternType);
+        emit PatternChanged(m_patternType);
 }

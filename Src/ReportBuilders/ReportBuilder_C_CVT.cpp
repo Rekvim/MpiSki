@@ -52,20 +52,64 @@ void ReportBuilder_C_CVT::buildReport(
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
         const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+
+        // 1. Агрегация
+        struct Agg {
+            qreal rangePercent;
+            qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
+            qreal maxRevVal = std::numeric_limits<qreal>::lowest();
+            int maxFwdCycle = -1;
+            int maxRevCycle = -1;
+        };
+        QMap<qreal, Agg> aggMap;
+        for (const auto& rec : ranges) {
+            auto it = aggMap.find(rec.rangePercent);
+            if (it == aggMap.end()) {
+                Agg a;
+                a.rangePercent = rec.rangePercent;
+                a.maxFwdVal = rec.maxForwardValue;
+                a.maxFwdCycle = rec.maxForwardCycle;
+                a.maxRevVal = rec.maxReverseValue;
+                a.maxRevCycle = rec.maxReverseCycle;
+                aggMap.insert(rec.rangePercent, a);
+            } else {
+                Agg &a = it.value();
+                if (rec.maxForwardValue > a.maxFwdVal) {
+                    a.maxFwdVal = rec.maxForwardValue;
+                    a.maxFwdCycle = rec.maxForwardCycle;
+                }
+                if (rec.maxReverseValue > a.maxRevVal) {
+                    a.maxRevVal   = rec.maxReverseValue;
+                    a.maxRevCycle = rec.maxReverseCycle;
+                }
+            }
+        }
+
+        // 2. Порядок (возрастание процентов)
+        QVector<qreal> percents;
+        percents.reserve(aggMap.size());
+        for (auto it = aggMap.constBegin(); it != aggMap.constEnd(); ++it)
+            percents.append(it.key());
+
+        // 3. Заполнение report.data
         constexpr quint16 rowStart = 33, rowStep = 2;
-        for (int i = 0; i < qMin(ranges.size(), 10); ++i) {
+        for (int i = 0; i < percents.size() && i < 10; ++i) {
             quint16 row = rowStart + i * rowStep;
-            report.data.push_back({sheet_1, row,  2,
-                                   QString::number(ranges[i].rangePercent)});
-            report.data.push_back({sheet_1, row,  8,
+            const Agg &a = aggMap[percents[i]];
+
+            report.data.push_back({ sheet_1, row,  2,
+                                   QString::number(a.rangePercent) });
+
+            report.data.push_back({ sheet_1, row,  8,
                 QString("%1 %/ № %2")
-                    .arg(ranges[i].maxForwardValue, 0, 'f', 2)
-                    .arg(ranges[i].maxForwardCycle)
+                    .arg(a.maxFwdVal, 0, 'f', 2)
+                    .arg(a.maxFwdCycle)
             });
-            report.data.push_back({sheet_1, row, 10,
+
+            report.data.push_back({ sheet_1, row, 10,
                 QString("%1 %/ № %2")
-                    .arg(ranges[i].maxReverseValue, 0, 'f', 2)
-                    .arg(ranges[i].maxReverseCycle)
+                    .arg(a.maxRevVal, 0, 'f', 2)
+                    .arg(a.maxRevCycle)
             });
         }
     }

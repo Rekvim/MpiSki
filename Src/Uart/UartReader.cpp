@@ -39,11 +39,26 @@ QByteArray UartReader::SendMessage(const UartMessage &message)
     for (quint8 attempt = 0; attempt < m_maxAttempts; ++attempt) {
         QByteArray readData;
         emit Write_Read(message.ToByteArray(), readData);
+
+        // ### DEBUG: print both the raw request and the raw response ###
+        qDebug() << m_portName
+                 << "TX:" << message.ToByteArray().toHex()
+                 << "RX:" << readData.toHex();
+
         UartMessage response(readData);
-        if (response.CheckCrc() && response.GetCommand() == Command::OK)
+        // accept either an "OK" ack or the echoed command (e.g. GetADC, GetDI, etc.)
+        if (response.CheckCrc()
+            && (response.GetCommand() == Command::OK
+                || response.GetCommand() == message.GetCommand()))
+        {
             return response.GetData();
-        else
-            qDebug() << m_portName << message.ToByteArray() << Qt::endl;
+        }
+        else {
+            qDebug() << m_portName
+                     << "Bad CRC or wrong cmd:"
+                     << "expected" << int(message.GetCommand())
+                     << "got"      << int(response.GetCommand());
+        }
     }
     return QByteArray();
 }

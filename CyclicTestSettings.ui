@@ -257,6 +257,13 @@
          </layout>
         </item>
         <item>
+         <widget class="QCheckBox" name="checkBox_20mA_enable">
+          <property name="text">
+           <string>Задать токовый сигнал в  20 mA </string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
@@ -469,13 +476,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_20mA_enable">
-          <property name="text">
-           <string>20 mA включить</string>
-          </property>
-         </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_DO_ShutOff">

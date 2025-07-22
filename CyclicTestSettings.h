@@ -31,14 +31,17 @@ public:
     struct TestParameters {
         enum Type { Regulatory, Shutoff, Combined } testType;
         QString regulatory_sequence;
+        QVector<quint16> rawRegValues;
         int regulatory_delaySec;
         int regulatory_holdTimeSec;
         int regulatory_numCycles;
+        bool regulatory_enable_20mA;
+
         QString shutoff_sequence;
+        QVector<quint16> rawOffValues;
         int shutoff_delaySec;
         int shutoff_holdTimeSec;
         int shutoff_numCycles;
-        bool shutoff_enable_20mA;
         std::array<bool,4> shutoff_DO;
         bool shutoff_DI[2];
     };

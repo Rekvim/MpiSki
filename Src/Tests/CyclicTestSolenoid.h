@@ -33,19 +33,22 @@ signals:
     void SetDO(quint8 index, bool state);
     void SetStartTime();
 
-    void SetSolenoidResults(QString sequence,
-                            quint16 cycles,
-                            double totalTimeSec);
+    void testResults(QString sequence,
+                     quint16 cycles,
+                     double totalTimeSec);
     void CyclicDeviationResults(const QVector<RangeDeviationRecord>& recs);
     void DOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
     void RegulatoryMeasurement(int cycle, int step, bool forward);
     void CycleCompleted(int completedCycles);
 
 private:
-    MPI   m_mpi;
+    MPI m_mpi;
     Parameters m_params;
     QVector<int> m_valuesReg;
     QVector<int> m_valuesOff;
+
+    QVector<quint16> m_rawValuesReg;
+    QVector<quint16> m_rawValuesOff;
 
     void parseSequence(const QString& seq, QVector<int>& out);
     void runLoop(const QVector<int>& values,

@@ -411,6 +411,11 @@ void MyChart::clear()
     m_xaxisValue->setRange(0, m_minR);
     m_xaxisTime->setRange(QDateTime::fromMSecsSinceEpoch(0),
                           QDateTime::fromMSecsSinceEpoch(m_minRTime));
+
+    m_min_X = 0;
+    m_max_X = 0;
+    m_axisX_min = 0;
+    m_axisX_max = 0;
 }
 
 void MyChart::visible(quint8 seriesN, bool visible)

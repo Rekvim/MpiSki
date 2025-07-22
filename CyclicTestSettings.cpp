@@ -2,6 +2,26 @@
 #include "ui_CyclicTestSettings.h"
 #include "./Src/ValidatorFactory/RegexPatterns.h"
 
+void CyclicTestSettings::onTestSelectionChanged()
+{
+    const QString sel = ui->comboBox_testSelection->currentText();
+    if (sel == "Регулирующий") {
+        m_parameters.testType = TestParameters::Regulatory;
+        ui->widget_retentionTimeRegulatory->setVisible(true);
+        ui->widget_shutOff->setVisible(false);
+    }
+    else if (sel == "Отсечной") {
+        m_parameters.testType = TestParameters::Shutoff;
+        ui->widget_retentionTimeRegulatory->setVisible(false);
+        ui->widget_shutOff->setVisible(true);
+    }
+    else {
+        m_parameters.testType = TestParameters::Combined;
+        ui->widget_retentionTimeRegulatory->setVisible(true);
+        ui->widget_shutOff->setVisible(true);
+    }
+}
+
 CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::CyclicTestSettings)
@@ -72,26 +92,6 @@ void CyclicTestSettings::setAvailableTests(AvailableTests at)
         break;
     }
     onTestSelectionChanged();
-}
-
-void CyclicTestSettings::onTestSelectionChanged()
-{
-    const QString sel = ui->comboBox_testSelection->currentText();
-    if (sel == "Регулирующий") {
-        m_parameters.testType = TestParameters::Regulatory;
-        ui->widget_retentionTimeRegulatory->setVisible(true);
-        ui->widget_shutOff->setVisible(false);
-    }
-    else if (sel == "Отсечной") {
-        m_parameters.testType = TestParameters::Shutoff;
-        ui->widget_retentionTimeRegulatory->setVisible(false);
-        ui->widget_shutOff->setVisible(true);
-    }
-    else {
-        m_parameters.testType = TestParameters::Combined;
-        ui->widget_retentionTimeRegulatory->setVisible(true);
-        ui->widget_shutOff->setVisible(true);
-    }
 }
 
 // --- Регулирующий
@@ -242,6 +242,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
             }
             m_parameters.regulatory_numCycles = txt.toInt();
         }
+        m_parameters.regulatory_enable_20mA = ui->checkBox_20mA_enable->isChecked();
 
     }
     else {
@@ -250,6 +251,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
         m_parameters.regulatory_delaySec = 0;
         m_parameters.regulatory_holdTimeSec = 0;
         m_parameters.regulatory_numCycles = 0;
+        m_parameters.regulatory_enable_20mA = false;
     }
 
     // --- Shutoff или Combined
@@ -302,9 +304,6 @@ void CyclicTestSettings::onPushButtonStartClicked()
             m_parameters.shutoff_numCycles = txt.toInt();
         }
 
-        // 20mA
-        m_parameters.shutoff_enable_20mA = ui->checkBox_20mA_enable->isChecked();
-
         m_parameters.shutoff_DO[0] = ui->pushButton_DO0_ShutOff->isChecked();
         m_parameters.shutoff_DO[1] = ui->pushButton_DO1_ShutOff->isChecked();
         m_parameters.shutoff_DO[2] = ui->pushButton_DO2_ShutOff->isChecked();
@@ -314,12 +313,10 @@ void CyclicTestSettings::onPushButtonStartClicked()
         m_parameters.shutoff_DI[1] = ui->checkBox_switch_0_3_ShutOff->isChecked();
     }
     else {
-        // сбросить ненужные
         m_parameters.shutoff_sequence.clear();
-        m_parameters.shutoff_delaySec    = 0;
+        m_parameters.shutoff_delaySec = 0;
         m_parameters.shutoff_holdTimeSec = 0;
-        m_parameters.shutoff_numCycles   = 0;
-        m_parameters.shutoff_enable_20mA = false;
+        m_parameters.shutoff_numCycles = 0;
     }
 
     accept();

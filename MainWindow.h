@@ -48,7 +48,6 @@ private slots:
     void DublSeries();
     void EnableSetTask(bool enable);
 
-    void Question(QString title, QString text, bool &result);
 
     void StartTest();
     void EndTest();
@@ -76,18 +75,19 @@ private slots:
     void ButtonStartCyclicSolenoid();
 
     void onCountdownTimeout();
-    void onSolenoidRangesData(const QVector<RangeDeviationRecord>& ranges);
+
+    void on_pushButton_init_clicked();
+    void Question(QString title, QString text, bool &result);
 
 private:
     Ui::MainWindow *ui;
-    void ВideTabByWidget(QWidget *page);
     TelemetryStore m_telemetryStore;
-    void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
 
     QTimer m_cyclicCountdownTimer;
     QElapsedTimer m_cyclicElapsedTimer;
     qint64 m_cyclicTotalMs = 0;
     bool m_userCanceled = false;
+    bool m_testing;
 
     Registry *m_registry = nullptr;
 
@@ -121,13 +121,19 @@ private:
     void DisplayDependingPattern();
 
     void onCyclicCountdown();
-    bool m_testing;
     void InitCharts();
     void SaveChart(Charts chart);
     void GetImage(QLabel *label, QImage *image);
+
+    void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
+
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 signals:
+    void InitializeWithPattern(SelectTests::PatternType pattern);
+    void PatternChanged(SelectTests::PatternType pattern);
+
+    void InitDOSelected(const QVector<bool> &states);
     void StartCyclicSolenoidTest(const CyclicTestSettings::TestParameters &p);
     void SetDAC(qreal value);
     void StartMainTest();

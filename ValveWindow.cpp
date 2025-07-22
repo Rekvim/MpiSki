@@ -61,7 +61,7 @@ ValveWindow::~ValveWindow()
 void ValveWindow::SetPatternType(SelectTests::PatternType pattern)
 {
     m_patternType = pattern;
-    qDebug() << "Установлен паттерн (as int):" << static_cast<int>(m_patternType);
+    // qDebug() << "Установлен паттерн (as int):" << static_cast<int>(m_patternType);
     applyPatternVisibility();
 }
 

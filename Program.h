@@ -1,4 +1,4 @@
-#ifndef PROGRAM_H
+    #ifndef PROGRAM_H
 #define PROGRAM_H
 
 #pragma once
@@ -58,7 +58,6 @@ class Program : public QObject
 public:
     explicit Program(QObject *parent = nullptr);
     void SetRegistry(Registry *registry);
-    void SetBlockCTS(const SelectTests::BlockCTS &blockCTS);
     bool isInitialized() const;
 
 private:
@@ -68,9 +67,7 @@ private:
     TelemetryStore m_telemetryStore;
     bool m_cyclicRunning = false;
     QTimer* m_diPollTimer = nullptr;
-    int m_cyclicDI1Count = 0;
-    int m_cyclicDI2Count = 0;
-    quint8  m_lastDI = 0;
+    quint8 m_lastDI = 0;
     quint64 m_cyclicStartTs = 0;
     QTimer m_cyclicGraphTimer;
     QTimer *m_timerSensors;
@@ -81,11 +78,32 @@ private:
     QEventLoop *m_dacEventloop;
     bool m_stopSetDac;
     bool m_waitForButton = false;
-    SelectTests::BlockCTS m_blockCts;
+    QVector<bool> m_initDOStates;
+    QVector<bool> m_savedInitDOStates;
 
     bool m_isInitialized = false;
+    SelectTests::PatternType m_patternType;
+
+    qreal currentPercent();
 
     void pollDIForCyclic();
+
+    // init
+    void connectAndInitDevice();
+    void detectAndReportSensors();
+    void waitForDacCycle();
+    void measureStartPosition(bool normalClosed);
+    void measureStartPositionShutoff(bool normalClosed);
+
+    void measureEndPosition(bool normalClosed);
+    void measureEndPositionShutoff(bool normalClosed);
+
+    void calculateAndApplyCoefficients();
+    void recordStrokeRange(bool normalClosed);
+    void finalizeInitialization();
+    QVector<quint16> makeRawValues(const QString &seq, bool normalOpen);
+
+
 signals:
     void TelemetryUpdated(const TelemetryStore &store);
     void CyclicCycleCompleted(int completedCycles);
@@ -122,6 +140,8 @@ signals:
     void SetCheckboxDIChecked(quint8 status);
 
 private slots:
+
+
     void SetMultipleDO(const QVector<bool>& states);
     void UpdateSensors();
     void UpdateCharts_mainTest();
@@ -141,6 +161,9 @@ private slots:
     void SolenoidResults(QString sequence, quint16 cycles, double total_time_sec);
 
 public slots:
+    void SetInitDOStates(const QVector<bool> &states);
+    void SetPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
+
     void onDOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
 
     void AddRegression(const QVector<QPointF> &points);
@@ -148,16 +171,18 @@ public slots:
     void GetPoints_mainTest(QVector<QVector<QPointF>> &points);
     void GetPoints_stepTest(QVector<QVector<QPointF>> &points);
     void SetDAC_real(qreal value);
-    void SetDAC_int(quint16 value);
+
     void MainTestStart();
-    void StrokeTestStart();
+    void onStartStrokeTest();
     void StartOptionalTest(quint8 testNum);
     void CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p);
     void EndTest();
 
     void TerminateTest();
 
-    void button_init();
+    void button_init(SelectTests::PatternType pattern);
+
+
     void button_set_position();
     void button_DO(quint8 DO_num, bool state);
     void checkbox_autoInit(int state);

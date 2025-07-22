@@ -66,7 +66,6 @@ public:
     void saveToStream(QDataStream &stream) const;
     void loadFromStream(QDataStream &dataStream);
     void setPointsVisible(quint8 seriesN, bool visible);
-
 public slots:
     void useTimeaxis(bool);
     void addAxis(QString);
