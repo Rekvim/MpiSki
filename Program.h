@@ -159,14 +159,17 @@ private slots:
     void CyclicTestsResults(const CyclicTests::TestResults& r);
 
 public slots:
+    void initialization();
+
     void SetInitDOStates(const QVector<bool> &states);
     void SetPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
 
-    void AddRegression(const QVector<QPointF> &points);
-    void AddFriction(const QVector<QPointF> &points);
-    void GetPoints_mainTest(QVector<QVector<QPointF>> &points);
-    void GetPoints_stepTest(QVector<QVector<QPointF>> &points);
-    void GetPoints_cyclicTest(QVector<QVector<QPointF>> &points);
+    void addRegression(const QVector<QPointF> &points);
+    void addFriction(const QVector<QPointF> &points);
+
+    void getPoints_mainTest(QVector<QVector<QPointF>> &points);
+    void getPoints_stepTest(QVector<QVector<QPointF>> &points);
+    void getPoints_cyclicTest(QVector<QVector<QPointF>> &points);
 
     void SetDAC_real(qreal value);
 
@@ -175,16 +178,15 @@ public slots:
     void runningOptionalTest(quint8 testNum);
     void runningCyclicTest(const CyclicTestSettings::TestParameters &p);
 
-    void EndTest();
-
-    void TerminateTest();
-
-    void Initialization();
+    void endTest();
+    void terminateTest();
 
 
     void button_set_position();
     void button_DO(quint8 DO_num, bool state);
     void checkbox_autoInit(int state);
+
+
 };
 
 #endif // PROGRAM_H

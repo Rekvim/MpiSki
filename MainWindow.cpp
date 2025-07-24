@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_program->moveToThread(m_programThread);
 
     connect(this, &MainWindow::Initialize,
-            m_program, &Program::Initialization);
+            m_program, &Program::initialization);
 
     connect(this, &MainWindow::InitDOSelected,
             m_program, &Program::SetInitDOStates);
@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent)
             m_program, &Program::runningOptionalTest);
 
     connect(this, &MainWindow::stopTheTest,
-            m_program, &Program::TerminateTest);
+            m_program, &Program::terminateTest);
 
     connect(m_program, &Program::stopTheTest,
             this, &MainWindow::EndTest);

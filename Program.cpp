@@ -104,20 +104,6 @@ void Program::SetTimeStart()
     m_startTime = QDateTime::currentMSecsSinceEpoch();
 }
 
-void Program::AddFriction(const QVector<QPointF> &points)
-{
-    QVector<Point> chartPoints;
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-
-    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
-
-    for (QPointF point : points) {
-        chartPoints.push_back({0, point.x(), point.y() * k});
-    }
-    emit AddPoints(Charts::Friction, chartPoints);
-}
-
 qreal Program::currentPercent() // add
 {
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4.0) / 16.0) * 100.0;
@@ -187,7 +173,7 @@ void Program::StepTestResults(QVector<StepTest::TestResult> results, quint32 T_v
     emit SetStepResults(results, T_value);
 }
 
-void Program::EndTest()
+void Program::endTest()
 {
     m_testing = false;
     emit EnableSetTask(true);
@@ -211,7 +197,7 @@ void Program::SetInitDOStates(const QVector<bool> &states)
     m_savedInitDOStates = states;
 }
 
-void Program::Initialization()
+void Program::initialization()
 {
     m_timerSensors->stop();
     m_timerDI->stop();
@@ -454,18 +440,6 @@ bool Program::isInitialized() const {
     return m_isInitialized;
 }
 
-void Program::AddRegression(const QVector<QPointF> &points)
-{
-    QVector<Point> chartPoints;
-    for (QPointF point : points) {
-        chartPoints.push_back({1, point.x(), point.y()});
-    }
-    emit AddPoints(Charts::Pressure, chartPoints);
-
-    //emit SetVisible(Charts::Pressure, 1, true);
-    emit SetRegressionEnable(true);
-}
-
 void Program::runningMainTest()
 {
     MainTestSettings::TestParameters parameters;
@@ -505,7 +479,7 @@ void Program::runningMainTest()
             mainTest, &MainTest::deleteLater);
 
     connect(mainTest, &MainTest::EndTest,
-            this, &Program::EndTest);
+            this, &Program::endTest);
 
     connect(mainTest, &MainTest::EndTest,
             this, &Program::MainTestFinished);
@@ -520,14 +494,14 @@ void Program::runningMainTest()
             this, [&] { emit DublSeries(); });
 
     connect(mainTest, &MainTest::GetPoints,
-            this, &Program::GetPoints_mainTest,
+            this, &Program::getPoints_mainTest,
             Qt::BlockingQueuedConnection);
 
     connect(mainTest, &MainTest::AddRegression,
-            this, &Program::AddRegression);
+            this, &Program::addRegression);
 
     connect(mainTest, &MainTest::AddFriction,
-            this, &Program::AddFriction);
+            this, &Program::addFriction);
 
     connect(this, &Program::ReleaseBlock,
             mainTest, &MainTest::ReleaseBlock);
@@ -548,6 +522,11 @@ void Program::runningMainTest()
     m_testing = true;
     emit EnableSetTask(false);
     threadTest->start();
+}
+
+void Program::getPoints_mainTest(QVector<QVector<QPointF>> &points)
+{
+    emit GetPoints(points, Charts::Task);
 }
 
 void Program::MainTestResults(MainTest::TestResults results)
@@ -578,11 +557,6 @@ void Program::MainTestResults(MainTest::TestResults results)
     emit TelemetryUpdated(m_telemetryStore);
 }
 
-void Program::GetPoints_mainTest(QVector<QVector<QPointF>> &points)
-{
-    emit GetPoints(points, Charts::Task);
-}
-
 void Program::UpdateCharts_mainTest()
 {
     QVector<Point> points;
@@ -607,6 +581,32 @@ void Program::UpdateCharts_mainTest()
     points.push_back({0, m_mpi[1]->GetValue(), m_mpi[0]->GetValue()});
 
     emit AddPoints(Charts::Pressure, points);
+}
+
+void Program::addFriction(const QVector<QPointF> &points)
+{
+    QVector<Point> chartPoints;
+
+    ValveInfo *valveInfo = m_registry->GetValveInfo();
+
+    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+
+    for (QPointF point : points) {
+        chartPoints.push_back({0, point.x(), point.y() * k});
+    }
+    emit AddPoints(Charts::Friction, chartPoints);
+}
+
+void Program::addRegression(const QVector<QPointF> &points)
+{
+    QVector<Point> chartPoints;
+    for (QPointF point : points) {
+        chartPoints.push_back({1, point.x(), point.y()});
+    }
+    emit AddPoints(Charts::Pressure, chartPoints);
+
+    //emit SetVisible(Charts::Pressure, 1, true);
+    emit SetRegressionEnable(true);
 }
 
 void Program::runningStrokeTest()
@@ -643,7 +643,7 @@ void Program::runningStrokeTest()
             strokeTest, &MainTest::ReleaseBlock);
 
     connect(strokeTest, &StrokeTest::EndTest,
-            this, &Program::EndTest);
+            this, &Program::endTest);
 
     connect(strokeTest, &StrokeTest::UpdateGraph,
             this, &Program::UpdateCharts_strokeTest);
@@ -755,7 +755,7 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
     return raw;
 }
 
-void Program::GetPoints_cyclicTest(QVector<QVector<QPointF>> &points)
+void Program::getPoints_cyclicTest(QVector<QVector<QPointF>> &points)
 {
     emit GetPoints(points, Charts::Cyclic);
 }
@@ -837,7 +837,7 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
             cyclicTests, &QObject::deleteLater);
 
     connect(cyclicTests, &CyclicTests::EndTest,
-            this, &Program::EndTest);
+            this, &Program::endTest);
 
     connect(cyclicTests, &CyclicTests::UpdateGraph,
             this, &Program::UpdateCharts_CyclicSolenoid);
@@ -846,7 +846,7 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
             this, &Program::SetDAC);
 
     connect(cyclicTests, &CyclicTests::GetPoints,
-            this, &Program::GetPoints_cyclicTest,
+            this, &Program::getPoints_cyclicTest,
             Qt::BlockingQueuedConnection);
 
     // if (p.testType == TP::Regulatory
@@ -1047,7 +1047,7 @@ void Program::runningOptionalTest(quint8 testNum)
         });
 
         connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::GetPoints,
-                this, &Program::GetPoints_stepTest,
+                this, &Program::getPoints_stepTest,
                 Qt::BlockingQueuedConnection);
 
         connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::Results,
@@ -1086,7 +1086,7 @@ void Program::runningOptionalTest(quint8 testNum)
             optionalTest, &MainTest::ReleaseBlock);
 
     connect(optionalTest, &OptionTest::EndTest,
-            this, &Program::EndTest);
+            this, &Program::endTest);
 
     connect(optionalTest, &OptionTest::SetDAC,
             this, &Program::SetDAC);
@@ -1100,7 +1100,7 @@ void Program::runningOptionalTest(quint8 testNum)
     threadTest->start();
 }
 
-void Program::GetPoints_stepTest(QVector<QVector<QPointF>> &points)
+void Program::getPoints_stepTest(QVector<QVector<QPointF>> &points)
 {
     emit GetPoints(points, Charts::Step);
 }
@@ -1120,13 +1120,6 @@ void Program::UpdateCharts_optionTest(Charts chart)
     points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
 
     emit AddPoints(chart, points);
-}
-
-void Program::TerminateTest()
-{
-    m_stopSetDac = true;
-    m_dacEventloop->quit();
-    emit stopTheTest();
 }
 
 void Program::button_set_position()
@@ -1158,4 +1151,11 @@ void Program::button_DO(quint8 DO_num, bool state)
 void Program::checkbox_autoInit(int state)
 {
     m_waitForButton = (state == 0);
+}
+
+void Program::terminateTest()
+{
+    m_stopSetDac = true;
+    m_dacEventloop->quit();
+    emit stopTheTest();
 }
