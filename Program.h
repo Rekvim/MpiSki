@@ -42,8 +42,7 @@ enum class Charts {
     Stroke,
     Step,
     Trend,
-    Cyclic,
-    CyclicSolenoid
+    Cyclic
 };
 
 struct Point
@@ -60,6 +59,48 @@ public:
     explicit Program(QObject *parent = nullptr);
     void SetRegistry(Registry *registry);
     bool isInitialized() const;
+
+signals:
+
+    void errorOccured(const QString&);
+
+    void TelemetryUpdated(const TelemetryStore &store);
+    void CyclicCycleCompleted(int completedCycles);
+    void SetText(const TextObjects object, const QString &text);
+    void SetTextColor(const TextObjects object, const QColor color);
+    void SetTask(qreal task);
+    void SetSensorNumber(quint8 num);
+    void SetButtonInitEnabled(bool enable);
+    void SetGroupDOVisible(bool visible);
+    void SetVisible(Charts chart, quint16 series, bool visible);
+    void SetRegressionEnable(bool enable);
+
+    void getPoints(QVector<QVector<QPointF>> &points, Charts chart);
+
+    void getPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void getPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void getPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
+
+    void AddPoints(Charts chart, QVector<Point> points);
+    void ClearPoints(Charts chart);
+
+    void stopTheTest();
+    void ShowDots(bool visible);
+    void EnableSetTask(bool enable);
+    void DublSeries();
+    void ReleaseBlock();
+
+    void MainTestFinished();
+    void getParameters_mainTest(MainTestSettings::TestParameters &parameters);
+    void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
+    void getParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
+    void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
+    void getParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
+
+    void Question(QString title, QString text, bool &result);
+    void SetStepResults(QVector<StepTest::TestResult> results, quint32 T_value);
+    void SetButtonsDOChecked(quint8 status);
+    void SetCheckboxDIChecked(quint8 status);
 
 private:
     Registry *m_registry;
@@ -101,75 +142,39 @@ private:
     void recordStrokeRange(bool normalClosed);
     void finalizeInitialization();
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
-
-signals:
-    void TelemetryUpdated(const TelemetryStore &store);
-    void CyclicCycleCompleted(int completedCycles);
-    void SetText(const TextObjects object, const QString &text);
-    void SetTextColor(const TextObjects object, const QColor color);
-    void SetTask(qreal task);
-    void SetSensorNumber(quint8 num);
-    void SetButtonInitEnabled(bool enable);
-    void SetGroupDOVisible(bool visible);
-    void SetVisible(Charts chart, quint16 series, bool visible);
-    void SetRegressionEnable(bool enable);
-
-    void GetPoints(QVector<QVector<QPointF>> &points, Charts chart);
-
-    void AddPoints(Charts chart, QVector<Point> points);
-    void ClearPoints(Charts chart);
-
-    void stopTheTest();
-    void ShowDots(bool visible);
-    void EnableSetTask(bool enable);
-    void DublSeries();
-    void ReleaseBlock();
-
-    void MainTestFinished();
-    void GetMainTestParameters(MainTestSettings::TestParameters &parameters);
-    void GetStepTestParameters(StepTestSettings::TestParameters &parameters);
-    void GetResolutionTestParameters(OtherTestSettings::TestParameters &parameters);
-    void GetResponseTestParameters(OtherTestSettings::TestParameters &parameters);
-    void GetCyclicTestParameters(CyclicTestSettings::TestParameters &parameters);
-
-    void Question(QString title, QString text, bool &result);
-    void SetStepResults(QVector<StepTest::TestResult> results, quint32 T_value);
-    void SetButtonsDOChecked(quint8 status);
-    void SetCheckboxDIChecked(quint8 status);
-
 private slots:
+    void updateSensors();
 
-
-    void SetMultipleDO(const QVector<bool>& states);
-    void UpdateSensors();
-    void UpdateCharts_mainTest();
-    void UpdateCharts_strokeTest();
-    void UpdateCharts_optionTest(Charts chart);
-    // void UpdateCharts_CyclicTred();
-    void UpdateCharts_CyclicSolenoid();
-    void MainTestResults(MainTest::TestResults results);
-
-    void StepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
     void SetDAC(quint16 dac,
                 quint32 sleep_ms = 0,
-                bool wait_for_stop = false,
-                bool wait_for_start = false);
+                bool waitForStop = false,
+                bool waitForStart = false);
+    void SetMultipleDO(const QVector<bool>& states);
+
+    void updateCharts_mainTest();
+    void updateCharts_strokeTest();
+    void updateCharts_optionTest(Charts chart);
+    void updateCharts_CyclicTest();
+
+    void results_mainTest(MainTest::TestResults results);
+    void results_strokeTest(const quint64 forwardTime, const quint64 backwardTime);
+    void results_stepTest(QVector<StepTest::TestResult> results, quint32 T_value);
+    void results_cyclicTests(const CyclicTests::TestResults& r);
+
     void SetTimeStart();
-    void StrokeTestResults(quint64 forward_time, quint64 backward_time);
-    void CyclicTestsResults(const CyclicTests::TestResults& r);
 
 public slots:
     void initialization();
 
     void SetInitDOStates(const QVector<bool> &states);
-    void SetPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
+    void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
 
     void addRegression(const QVector<QPointF> &points);
     void addFriction(const QVector<QPointF> &points);
 
-    void getPoints_mainTest(QVector<QVector<QPointF>> &points);
-    void getPoints_stepTest(QVector<QVector<QPointF>> &points);
-    void getPoints_cyclicTest(QVector<QVector<QPointF>> &points);
+    void receivedPoints_mainTest(QVector<QVector<QPointF>> &points);
+    void receivedPoints_stepTest(QVector<QVector<QPointF>> &points);
+    void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points);
 
     void SetDAC_real(qreal value);
 
@@ -185,8 +190,6 @@ public slots:
     void button_set_position();
     void button_DO(quint8 DO_num, bool state);
     void checkbox_autoInit(int state);
-
-
 };
 
 #endif // PROGRAM_H

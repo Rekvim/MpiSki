@@ -36,6 +36,9 @@ public:
     void SetBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
 
 private slots:
+
+    void appendLog(const QString& text);
+
     void onTelemetryUpdated(const TelemetryStore &TS);
     void SetSensorsNumber(quint8 num);
     void AddPoints(Charts chart, QVector<Point> points);
@@ -47,18 +50,21 @@ private slots:
     void DublSeries();
     void EnableSetTask(bool enable);
 
-
-    void StartTest();
-    void EndTest();
+    void startTest();
+    void endTest();
 
     void GetDirectory(QString current_path, QString &result);
-    void GetPoints(QVector<QVector<QPointF>> &points, Charts chart);
+    // void receivedPoints(QVector<QVector<QPointF>> &points, Charts chart);
 
-    void GetMainTestParameters(MainTestSettings::TestParameters &parameters);
-    void GetStepTestParameters(StepTestSettings::TestParameters &parameters);
-    void GetResolutionTestParameters(OtherTestSettings::TestParameters &parameters);
-    void GetResponseTestParameters(OtherTestSettings::TestParameters &parameters);
-    void GetCyclicTestParameters(CyclicTestSettings::TestParameters &parameters);
+    void receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void receivedPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
+
+    void receivedParameters_mainTest(MainTestSettings::TestParameters &parameters);
+    void receivedParameters_stepTest(StepTestSettings::TestParameters &parameters);
+    void receivedParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
+    void receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters);
+    void receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
 
     void SetText(const TextObjects object, const QString &text);
     void SetTask(qreal task);
@@ -102,6 +108,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     TelemetryStore m_telemetryStore;
+
+    QPlainTextEdit* logOutput;
 
     QTimer m_cyclicCountdownTimer;
     QElapsedTimer m_cyclicElapsedTimer;
@@ -152,6 +160,7 @@ protected:
 signals:
     void Initialize();
     void PatternChanged(SelectTests::PatternType pattern);
+
 
     void InitDOSelected(const QVector<bool> &states);
     void SetDAC(qreal value);

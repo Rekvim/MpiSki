@@ -15,7 +15,7 @@ Program::Program(QObject *parent)
     m_dacEventloop = new QEventLoop(this);
 
     connect(m_timerSensors, &QTimer::timeout,
-            this, &Program::UpdateSensors);
+            this, &Program::updateSensors);
 
     m_testing = false;
 
@@ -25,6 +25,8 @@ Program::Program(QObject *parent)
         quint8 DI = m_mpi.GetDIStatus();
         emit SetCheckboxDIChecked(DI);
     });
+
+    emit errorOccured("Не удалось установить связь с устройством");
 }
 
 void Program::SetRegistry(Registry *registry)
@@ -32,7 +34,7 @@ void Program::SetRegistry(Registry *registry)
     m_registry = registry;
 }
 
-void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool wait_for_stop, bool wait_for_start)
+void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool waitForStop, bool waitForStart)
 {
     m_stopSetDac = false;
 
@@ -42,7 +44,7 @@ void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool wait_for_stop, bool wai
     }
 
     m_mpi.SetDAC_Raw(dac);
-    if (wait_for_start) {
+    if (waitForStart) {
         QTimer timer;
         timer.setInterval(50);
         QList<quint16> lineSensor;
@@ -75,7 +77,7 @@ void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool wait_for_stop, bool wai
 
     if (m_stopSetDac) { emit ReleaseBlock(); return; }
 
-    if (wait_for_stop) {
+    if (waitForStop) {
         QTimer timer;
         timer.setInterval(50);
         QList<quint16> lineSensor;
@@ -113,7 +115,7 @@ qreal Program::currentPercent() // add
     return percent;
 }
 
-void Program::UpdateSensors()
+void Program::updateSensors()
 {
     for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
         switch (i) {
@@ -154,23 +156,6 @@ void Program::UpdateSensors()
     points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
 
     emit AddPoints(Charts::Trend, points);
-}
-
-void Program::StepTestResults(QVector<StepTest::TestResult> results, quint32 T_value)
-{
-    m_telemetryStore.stepResults.clear();
-    for (auto &r : results) {
-        StepTestRecord rec;
-        rec.from = r.from;
-        rec.to = r.to;
-        rec.T_value = r.T_value;
-        rec.overshoot = r.overshoot;
-        m_telemetryStore.stepResults.push_back(rec);
-    }
-
-    emit TelemetryUpdated(m_telemetryStore);
-
-    emit SetStepResults(results, T_value);
 }
 
 void Program::endTest()
@@ -443,7 +428,7 @@ bool Program::isInitialized() const {
 void Program::runningMainTest()
 {
     MainTestSettings::TestParameters parameters;
-    emit GetMainTestParameters(parameters);
+    emit getParameters_mainTest(parameters);
 
     if (parameters.delay == 0) {
         emit stopTheTest();
@@ -485,7 +470,7 @@ void Program::runningMainTest()
             this, &Program::MainTestFinished);
 
     connect(mainTest, &MainTest::UpdateGraph,
-            this, &Program::UpdateCharts_mainTest);
+            this, &Program::updateCharts_mainTest);
 
     connect(mainTest, &MainTest::SetDAC,
             this, &Program::SetDAC);
@@ -494,7 +479,7 @@ void Program::runningMainTest()
             this, [&] { emit DublSeries(); });
 
     connect(mainTest, &MainTest::GetPoints,
-            this, &Program::getPoints_mainTest,
+            this, &Program::receivedPoints_mainTest,
             Qt::BlockingQueuedConnection);
 
     connect(mainTest, &MainTest::AddRegression,
@@ -507,7 +492,7 @@ void Program::runningMainTest()
             mainTest, &MainTest::ReleaseBlock);
 
     connect(mainTest, &MainTest::Results,
-            this, &Program::MainTestResults);
+            this, &Program::results_mainTest);
 
     connect(mainTest, &MainTest::ShowDots,
             this, [&](bool visible) { emit ShowDots(visible); });
@@ -524,12 +509,12 @@ void Program::runningMainTest()
     threadTest->start();
 }
 
-void Program::getPoints_mainTest(QVector<QVector<QPointF>> &points)
+void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
 {
-    emit GetPoints(points, Charts::Task);
+    emit getPoints_mainTest(points, Charts::Task);
 }
 
-void Program::MainTestResults(MainTest::TestResults results)
+void Program::results_mainTest(MainTest::TestResults results)
 {
     ValveInfo *valveInfo = m_registry->GetValveInfo();
 
@@ -557,7 +542,7 @@ void Program::MainTestResults(MainTest::TestResults results)
     emit TelemetryUpdated(m_telemetryStore);
 }
 
-void Program::UpdateCharts_mainTest()
+void Program::updateCharts_mainTest()
 {
     QVector<Point> points;
 
@@ -646,7 +631,7 @@ void Program::runningStrokeTest()
             this, &Program::endTest);
 
     connect(strokeTest, &StrokeTest::UpdateGraph,
-            this, &Program::UpdateCharts_strokeTest);
+            this, &Program::updateCharts_strokeTest);
 
     connect(strokeTest, &StrokeTest::SetDAC,
             this, &Program::SetDAC);
@@ -655,7 +640,7 @@ void Program::runningStrokeTest()
             this, &Program::SetTimeStart);
 
     connect(strokeTest, &StrokeTest::Results,
-            this, &Program::StrokeTestResults);
+            this, &Program::results_strokeTest);
 
     m_testing = true;
     emit EnableSetTask(false);
@@ -663,7 +648,7 @@ void Program::runningStrokeTest()
 }
 
 
-void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
+void Program::results_strokeTest(const quint64 forwardTime, const  quint64 backwardTime)
 {
 
     m_telemetryStore.strokeTestRecord.timeForwardMs = forwardTime;
@@ -672,7 +657,7 @@ void Program::StrokeTestResults(quint64 forwardTime, quint64 backwardTime)
     emit TelemetryUpdated(m_telemetryStore);
 }
 
-void Program::UpdateCharts_strokeTest()
+void Program::updateCharts_strokeTest()
 {
     QVector<Point> points;
 
@@ -692,7 +677,7 @@ void Program::UpdateCharts_strokeTest()
     emit AddPoints(Charts::Stroke, points);
 }
 
-void Program::UpdateCharts_CyclicSolenoid()
+void Program::updateCharts_CyclicTest()
 {
     if (!m_cyclicRunning) return;
 
@@ -755,9 +740,9 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
     return raw;
 }
 
-void Program::getPoints_cyclicTest(QVector<QVector<QPointF>> &points)
+void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
 {
-    emit GetPoints(points, Charts::Cyclic);
+    emit getPoints_cyclicTest(points, Charts::Cyclic);
 }
 
 void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
@@ -840,13 +825,13 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
             this, &Program::endTest);
 
     connect(cyclicTests, &CyclicTests::UpdateGraph,
-            this, &Program::UpdateCharts_CyclicSolenoid);
+            this, &Program::updateCharts_CyclicTest);
 
     connect(cyclicTests, &CyclicTests::SetDAC,
             this, &Program::SetDAC);
 
     connect(cyclicTests, &CyclicTests::GetPoints,
-            this, &Program::getPoints_cyclicTest,
+            this, &Program::receivedPoints_cyclicTest,
             Qt::BlockingQueuedConnection);
 
     // if (p.testType == TP::Regulatory
@@ -867,7 +852,7 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
             this, &Program::SetTimeStart);
 
     connect(cyclicTests, &CyclicTests::Results,
-            this, &Program::CyclicTestsResults);
+            this, &Program::results_cyclicTests);
 
     connect(cyclicTests, &CyclicTests::CycleCompleted,
             this, &Program::CyclicCycleCompleted);
@@ -880,7 +865,7 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
     threadTest->start();
 }
 
-void Program::CyclicTestsResults(const CyclicTests::TestResults& r)
+void Program::results_cyclicTests(const CyclicTests::TestResults& r)
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
     dst.sequence = r.sequence;
@@ -916,7 +901,7 @@ void Program::runningOptionalTest(quint8 testNum)
         optionalTest = new OptionTest;
 
         OtherTestSettings::TestParameters parameters;
-        emit GetResponseTestParameters(parameters);
+        emit getParameters_responseTest(parameters);
 
         if (parameters.points.empty()) {
             delete optionalTest;
@@ -951,7 +936,7 @@ void Program::runningOptionalTest(quint8 testNum)
         optionalTest->SetTask(task);
 
         connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            UpdateCharts_optionTest(Charts::Response);
+            updateCharts_optionTest(Charts::Response);
         });
 
         emit ClearPoints(Charts::Response);
@@ -961,7 +946,7 @@ void Program::runningOptionalTest(quint8 testNum)
     case 1: {
         optionalTest = new OptionTest;
         OtherTestSettings::TestParameters parameters;
-        emit GetResolutionTestParameters(parameters);
+        emit getParameters_resolutionTest(parameters);
 
         if (parameters.points.empty()) {
             delete optionalTest;
@@ -994,7 +979,7 @@ void Program::runningOptionalTest(quint8 testNum)
         optionalTest->SetTask(task);
 
         connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            UpdateCharts_optionTest(Charts::Resolution);
+            updateCharts_optionTest(Charts::Resolution);
         });
 
         emit ClearPoints(Charts::Resolution);
@@ -1005,7 +990,7 @@ void Program::runningOptionalTest(quint8 testNum)
     case 2: {
         optionalTest = new StepTest;
         StepTestSettings::TestParameters parameters;
-        emit GetStepTestParameters(parameters);
+        emit getParameters_stepTest(parameters);
 
         if (parameters.points.empty()) {
             delete optionalTest;
@@ -1043,15 +1028,15 @@ void Program::runningOptionalTest(quint8 testNum)
         dynamic_cast<StepTest *>(optionalTest)->Set_T_value(parameters.test_value);
 
         connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            UpdateCharts_optionTest(Charts::Step);
+            updateCharts_optionTest(Charts::Step);
         });
 
         connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::GetPoints,
-                this, &Program::getPoints_stepTest,
+                this, &Program::receivedPoints_stepTest,
                 Qt::BlockingQueuedConnection);
 
         connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::Results,
-                this, &Program::StepTestResults);
+                this, &Program::results_stepTest);
 
         emit ClearPoints(Charts::Step);
 
@@ -1100,12 +1085,29 @@ void Program::runningOptionalTest(quint8 testNum)
     threadTest->start();
 }
 
-void Program::getPoints_stepTest(QVector<QVector<QPointF>> &points)
+void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
 {
-    emit GetPoints(points, Charts::Step);
+    emit getPoints_optionTest(points, Charts::Step);
 }
 
-void Program::UpdateCharts_optionTest(Charts chart)
+void Program::results_stepTest(QVector<StepTest::TestResult> results, quint32 T_value)
+{
+    m_telemetryStore.stepResults.clear();
+    for (auto &r : results) {
+        StepTestRecord rec;
+        rec.from = r.from;
+        rec.to = r.to;
+        rec.T_value = r.T_value;
+        rec.overshoot = r.overshoot;
+        m_telemetryStore.stepResults.push_back(rec);
+    }
+
+    emit TelemetryUpdated(m_telemetryStore);
+
+    emit SetStepResults(results, T_value);
+}
+
+void Program::updateCharts_optionTest(Charts chart)
 {
     QVector<Point> points;
 

@@ -8,6 +8,8 @@
 #include "Src/ReportBuilders/ReportBuilder_C_SACVT.h"
 #include "Src/ReportBuilders/ReportBuilder_C_SOVT.h"
 
+#include <QPlainTextEdit>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -64,6 +66,25 @@ MainWindow::MainWindow(QWidget *parent)
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
+    auto *layout = new QVBoxLayout;
+
+    layout->setContentsMargins(0,0,0,0);
+    ui->centralwidget->setLayout(layout);
+
+    logOutput = new QPlainTextEdit(this);
+    logOutput->setReadOnly(true);
+    logOutput->setMinimumHeight(180);
+    logOutput->setMinimumWidth(150);
+    logOutput->setStyleSheet("font-size: 8pt;");
+
+    appendLog("Логовое окно инициализировано");
+
+
+    layout->addWidget(logOutput);
+
+    connect(m_program, &Program::errorOccured,
+            this, &MainWindow::appendLog);
+
     connect(this, &MainWindow::Initialize,
             m_program, &Program::initialization);
 
@@ -109,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent)
             m_program, &Program::terminateTest);
 
     connect(m_program, &Program::stopTheTest,
-            this, &MainWindow::EndTest);
+            this, &MainWindow::endTest);
 
     connect(m_program, &Program::SetText,
             this, &MainWindow::SetText);
@@ -143,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent)
             });
 
     connect(this, &MainWindow::PatternChanged,
-            m_program, &Program::SetPattern);
+            m_program, &Program::setPattern);
 
     connect(m_program, &Program::SetTask,
             this, &MainWindow::SetTask);
@@ -160,25 +181,24 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::SetStepResults,
             this, &MainWindow::SetStepTestResults);
 
-    connect(m_program, &Program::GetMainTestParameters,
-            this, &MainWindow::GetMainTestParameters,
+    connect(m_program, &Program::getParameters_mainTest,
+            this, &MainWindow::receivedParameters_mainTest,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::GetStepTestParameters,
-            this, &MainWindow::GetStepTestParameters,
+    connect(m_program, &Program::getParameters_stepTest,
+            this, &MainWindow::receivedParameters_stepTest,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::GetResolutionTestParameters,
-            this, &MainWindow::GetResolutionTestParameters,
+    connect(m_program, &Program::getParameters_resolutionTest,
+            this, &MainWindow::receivedParameters_resolutionTest,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::GetResponseTestParameters,
-
-            this, &MainWindow::GetResponseTestParameters,
+    connect(m_program, &Program::getParameters_responseTest,
+            this, &MainWindow::receivedParameters_responseTest,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::GetCyclicTestParameters,
-            this, &MainWindow::GetCyclicTestParameters,
+    connect(m_program, &Program::getParameters_cyclicTest,
+            this, &MainWindow::receivedParameters_cyclicTest,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::Question,
@@ -352,6 +372,12 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     // StrokeRecord
     ui->lineEdit_strokeReal->setText(
         QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
+}
+
+void MainWindow::appendLog(const QString& text) {
+    const QString stamp = QDateTime::currentDateTime()
+    .toString("[hh:mm:ss.zzz] ");
+    logOutput->appendPlainText(stamp + text);
 }
 
 void MainWindow::onCyclicCountdown()
@@ -678,8 +704,42 @@ void MainWindow::DublSeries()
     m_charts[Charts::Pressure]->dublSeries(0);
 }
 
+// void MainWindow::receivedPoints(QVector<QVector<QPointF>> &points, Charts chart)
+// {
+//     points.clear();
+//     if (chart == Charts::Task) {
+//         QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Task]->getPoints(1);
 
-void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
+//         QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_charts[Charts::Pressure]->getPoints(0);
+
+//         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+//         points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
+//         points.push_back({pointsPressure.first.begin(), pointsPressure.first.end()});
+//         points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
+//     }
+//     if (chart == Charts::Step) {
+//         QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Step]->getPoints(1);
+//         QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getPoints(0);
+
+//         points.clear();
+//         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+//         points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
+//     }
+//     if (chart == Charts::Cyclic) {
+//         QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
+//         QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
+//         QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Cyclic]->getPoints(1);
+//         QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Cyclic]->getPoints(0);
+
+//         points.clear();
+//         points.push_back({opened.first.begin(), opened.first.end()});
+//         points.push_back({closed.first.begin(), closed.first.end()});
+//         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+//         points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
+//     }
+// }
+
+void MainWindow::receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
     if (chart == Charts::Task) {
@@ -692,6 +752,11 @@ void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
         points.push_back({pointsPressure.first.begin(), pointsPressure.first.end()});
         points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
     }
+}
+void MainWindow::receivedPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart)
+{
+    points.clear();
+
     if (chart == Charts::Step) {
         QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Step]->getPoints(1);
         QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getPoints(0);
@@ -700,18 +765,20 @@ void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
         points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
     }
-    if (chart == Charts::Cyclic) {
-        QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
-        QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
-        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Cyclic]->getPoints(1);
-        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Cyclic]->getPoints(0);
+}
+void MainWindow::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart)
+{
+    points.clear();
 
-        points.clear();
-        points.push_back({opened.first.begin(), opened.first.end()});
-        points.push_back({closed.first.begin(), closed.first.end()});
-        points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-        points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
-    }
+    QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
+    QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
+    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Cyclic]->getPoints(1);
+    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Cyclic]->getPoints(0);
+
+    points.push_back({opened.first.begin(), opened.first.end()});
+    points.push_back({closed.first.begin(), closed.first.end()});
+    points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+    points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
 
 void MainWindow::SetRegressionEnable(bool enable)
@@ -720,7 +787,7 @@ void MainWindow::SetRegressionEnable(bool enable)
     ui->checkBox_regression->setCheckState(enable ? Qt::Checked : Qt::Unchecked);
 }
 
-void MainWindow::GetMainTestParameters(MainTestSettings::TestParameters &parameters)
+void MainWindow::receivedParameters_mainTest(MainTestSettings::TestParameters &parameters)
 {
     if (m_mainTestSettings->exec() == QDialog::Accepted) {
         parameters = m_mainTestSettings->getParameters();
@@ -748,7 +815,7 @@ void MainWindow::GetMainTestParameters(MainTestSettings::TestParameters &paramet
     return;
 }
 
-void MainWindow::GetStepTestParameters(StepTestSettings::TestParameters &parameters)
+void MainWindow::receivedParameters_stepTest(StepTestSettings::TestParameters &parameters)
 {
     parameters.points.clear();
 
@@ -757,17 +824,7 @@ void MainWindow::GetStepTestParameters(StepTestSettings::TestParameters &paramet
     }
 }
 
-void MainWindow::GetCyclicTestParameters(CyclicTestSettings::TestParameters &parameters)
-{
-    if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
-        parameters = m_cyclicTestSettings->getParameters();
-    }
-    else {
-        parameters = {};
-    }
-}
-
-void MainWindow::GetResolutionTestParameters(OtherTestSettings::TestParameters &parameters)
+void MainWindow::receivedParameters_resolutionTest(OtherTestSettings::TestParameters &parameters)
 {
     parameters.points.clear();
 
@@ -776,12 +833,22 @@ void MainWindow::GetResolutionTestParameters(OtherTestSettings::TestParameters &
     }
 }
 
-void MainWindow::GetResponseTestParameters(OtherTestSettings::TestParameters &parameters)
+void MainWindow::receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters)
 {
     parameters.points.clear();
 
     if (m_responseTestSettings->exec() == QDialog::Accepted) {
         parameters = m_responseTestSettings->getParameters();
+    }
+}
+
+void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters)
+{
+    if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
+        parameters = m_cyclicTestSettings->getParameters();
+    }
+    else {
+        parameters = {};
     }
 }
 
@@ -797,13 +864,13 @@ void MainWindow::GetDirectory(QString current_path, QString &result)
                                                current_path);
 }
 
-void MainWindow::StartTest()
+void MainWindow::startTest()
 {
     m_testing = true;
     ui->statusbar->showMessage("Тест в процессе");
 }
 
-void MainWindow::EndTest()
+void MainWindow::endTest()
 {
     m_testing = false;
 
@@ -833,7 +900,7 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
     } else {
         m_userCanceled = false;
         emit runMainTest();
-        StartTest();
+        startTest();
     }
 }
 
@@ -858,7 +925,7 @@ void MainWindow::on_pushButton_strokeTest_start_clicked()
     } else {
 
         emit runStrokeTest();
-        StartTest();
+        startTest();
     }
 }
 void MainWindow::on_pushButton_strokeTest_save_clicked()
@@ -875,7 +942,7 @@ void MainWindow::on_pushButton_optionalTests_start_clicked()
         }
     } else {
         emit runOptionalTest(ui->tabWidget_tests->currentIndex());
-        StartTest();
+        startTest();
     }
 }
 void MainWindow::on_pushButton_optionalTests_save_clicked()
@@ -978,13 +1045,13 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
     m_cyclicElapsedTimer.restart();
     m_cyclicCountdownTimer.start();
 
-    StartTest();
+    startTest();
 
     emit runCyclicTest(p);
 }
 void MainWindow::on_pushButton_cyclicTest_save_clicked()
 {
-    SaveChart(Charts::CyclicSolenoid);
+    SaveChart(Charts::Cyclic);
 }
 
 void MainWindow::SetButtonsDOChecked(quint8 status)
@@ -1169,15 +1236,21 @@ void MainWindow::InitCharts()
         m_charts[Charts::Pressure]->visible(1, k != 0);
     });
 
-    connect(m_program, &Program::GetPoints,
-            this, &MainWindow::GetPoints,
+    // connect(m_program, &Program::GetPoints,
+    //         this, &MainWindow::GetPoints,
+    //         Qt::BlockingQueuedConnection);
+
+    connect(m_program, &Program::getPoints_mainTest,
+            this, &MainWindow::receivedPoints_mainTest,
             Qt::BlockingQueuedConnection);
 
-    // ui->checkBox_showCurve_task->setCheckState(Qt::Unchecked);
-    // ui->checkBox_showCurve_moving->setCheckState(Qt::Unchecked);
-    // ui->checkBox_showCurve_pressure_1->setCheckState(Qt::Unchecked);
-    // ui->checkBox_showCurve_pressure_2->setCheckState(Qt::Unchecked);
-    // ui->checkBox_showCurve_pressure_3->setCheckState(Qt::Unchecked);
+    connect(m_program, &Program::getPoints_optionTest,
+            this, &MainWindow::receivedPoints_optionTest,
+            Qt::BlockingQueuedConnection);
+
+    connect(m_program, &Program::getPoints_cyclicTest,
+            this, &MainWindow::receivedPoints_cyclicTest,
+            Qt::BlockingQueuedConnection);
 }
 
 void MainWindow::promptSaveCharts()
@@ -1237,7 +1310,7 @@ void MainWindow::SaveChart(Charts chart)
         break;
     case Charts::Trend:
         break;
-    case Charts::CyclicSolenoid:
+    case Charts::Cyclic:
         break;
     default:
         break;
