@@ -11,9 +11,9 @@
 
 struct InitState {
     QString  deviceStatusText = "";
-    QColor deviceStatusColor;
+    QColor deviceStatusColor  = "";
     QString initStatusText = "";
-    QColor initStatusColor;
+    QColor initStatusColor  = "";
     QString connectedSensorsText = "";
     QColor connectedSensorsColor;
     QString startingPositionText = "";
@@ -23,10 +23,10 @@ struct InitState {
 };
 
 struct StepTestRecord {
-    quint16 from;
-    quint16 to;
-    quint32 T_value;
-    qreal overshoot;
+    quint16 from = 0;
+    quint16 to = 0;
+    quint32 T_value = 0;
+    qreal overshoot = 0.0;
 };
 
 struct RangeDeviationRecord {
@@ -104,7 +104,7 @@ public:
         init = {};
         strokeTestRecord = {};
         mainTestRecord = {};
-        // stepResults.clear();
+        //stepResults.clear();
         cyclicTestRecord = {};
         valveStrokeRecord = {};
         supplyRecord = {};

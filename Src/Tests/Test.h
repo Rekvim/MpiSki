@@ -27,7 +27,7 @@ protected:
 
 public slots:
     virtual void Process() = 0;
-    void Stop();
+    void StoppingTheTest();
     void ReleaseBlock();
 
 signals:

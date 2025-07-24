@@ -28,7 +28,7 @@ SOURCES += \
     Src/ReportBuilders/ReportSaver.cpp \
     Src/Telemetry/TelemetryStore.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
-    Src/Tests/CyclicTestSolenoid.cpp \
+    Src/Tests/CyclicTests.cpp \
     Src/Tests/MainTest.cpp \
     Src/Tests/OptionTest.cpp \
     Src/Tests/StepTest.cpp \
@@ -73,7 +73,7 @@ HEADERS += \
     Src/ReportBuilders/ReportSaver.h \
     Src/Telemetry/TelemetryStore.h \
     Src/Tests/CyclicTestPositioner.h \
-    Src/Tests/CyclicTestSolenoid.h \
+    Src/Tests/CyclicTests.h \
     Src/Tests/MainTest.h \
     Src/Tests/OptionTest.h \
     Src/Tests/StepTest.h \

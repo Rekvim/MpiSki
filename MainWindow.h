@@ -9,7 +9,6 @@
 #include <QThread>
 #include <QDateTime>
 #include <QDebug>
-#include <vector>
 
 #include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
@@ -69,15 +68,36 @@ private slots:
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
 
-    void ButtonStartMain();
-    void ButtonStartStroke();
-    void ButtonStartOptional();
-    void ButtonStartCyclicSolenoid();
-
     void onCountdownTimeout();
 
-    void on_pushButton_init_clicked();
     void Question(QString title, QString text, bool &result);
+
+    void on_pushButton_init_clicked();
+
+    void on_pushButton_report_generate_clicked();
+    void on_pushButton_report_open_clicked();
+
+    void on_pushButton_mainTest_start_clicked();
+    void on_pushButton_mainTest_save_clicked();
+
+    void on_pushButton_strokeTest_start_clicked();
+    void on_pushButton_strokeTest_save_clicked();
+
+    void on_pushButton_optionalTests_start_clicked();
+    void on_pushButton_optionalTests_save_clicked();
+
+    void on_pushButton_cyclicTest_start_clicked();
+    void on_pushButton_cyclicTest_save_clicked();
+
+    void on_pushButton_imageChartTask_clicked();
+    void on_pushButton_imageChartPressure_clicked();
+    void on_pushButton_imageChartFriction_clicked();
+
+    void on_pushButton_signal_4mA_clicked();
+    void on_pushButton_signal_8mA_clicked();
+    void on_pushButton_signal_12mA_clicked();
+    void on_pushButton_signal_16mA_clicked();
+    void on_pushButton_signal_20mA_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -130,16 +150,19 @@ private:
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 signals:
-    void InitializeWithPattern(SelectTests::PatternType pattern);
+    void Initialize();
     void PatternChanged(SelectTests::PatternType pattern);
 
     void InitDOSelected(const QVector<bool> &states);
-    void StartCyclicSolenoidTest(const CyclicTestSettings::TestParameters &p);
     void SetDAC(qreal value);
-    void StartMainTest();
-    void StartStrokeTest();
-    void StartOptionalTest(quint8 testNum);
-    void StopTest();
+
+    void runMainTest();
+    void runStrokeTest();
+    void runCyclicTest(const CyclicTestSettings::TestParameters &p);
+    void runOptionalTest(quint8 testNum);
+
+    void stopTheTest();
+
     void SetDO(quint8 DO_num, bool state);
 };
 #endif // MAINWINDOW_H

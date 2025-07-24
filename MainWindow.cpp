@@ -7,7 +7,6 @@
 #include "Src/ReportBuilders/ReportBuilder_C_CVT.h"
 #include "Src/ReportBuilders/ReportBuilder_C_SACVT.h"
 #include "Src/ReportBuilders/ReportBuilder_C_SOVT.h"
-#include "./Src/Tests/CyclicTestSolenoid.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,17 +24,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_durationTimer, &QTimer::timeout,
             this, &MainWindow::onCountdownTimeout);
 
-    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget->setTabEnabled(1, true);
-    // ui->tabWidget->setTabEnabled(2, true);
-    // ui->tabWidget->setTabEnabled(3, true);
-    // ui->tabWidget->setTabEnabled(4, true);
-
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget->setTabEnabled(1, false);
-    ui->tabWidget->setTabEnabled(2, false);
-    ui->tabWidget->setTabEnabled(3, false);
-    ui->tabWidget->setTabEnabled(4, false);
+    ui->tabWidget->setTabEnabled(1, true);
+    ui->tabWidget->setTabEnabled(2, true);
+    ui->tabWidget->setTabEnabled(3, true);
+    ui->tabWidget->setTabEnabled(4, true);
+
+    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    // ui->tabWidget->setTabEnabled(1, false);
+    // ui->tabWidget->setTabEnabled(2, false);
+    // ui->tabWidget->setTabEnabled(3, false);
+    // ui->tabWidget->setTabEnabled(4, false);
 
     m_cyclicCountdownTimer.setInterval(100);
     connect(&m_cyclicCountdownTimer, &QTimer::timeout,
@@ -65,15 +64,14 @@ MainWindow::MainWindow(QWidget *parent)
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
-    connect(this, &MainWindow::InitializeWithPattern,
-            m_program, &Program::button_init);
+    connect(this, &MainWindow::Initialize,
+            m_program, &Program::Initialization);
 
     connect(this, &MainWindow::InitDOSelected,
             m_program, &Program::SetInitDOStates);
 
     connect(ui->pushButton_set, &QPushButton::clicked,
             m_program, &Program::button_set_position);
-
 
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
             m_program, &Program::checkbox_autoInit);
@@ -92,75 +90,29 @@ MainWindow::MainWindow(QWidget *parent)
                 });
     }
 
-    connect(ui->pushButton_mainTest_start, &QPushButton::clicked,
-            this, &MainWindow::ButtonStartMain);
+    connect(this, &MainWindow::runCyclicTest,
+            m_program, &Program::runningCyclicTest);
 
-    connect(ui->pushButton_mainTest_save, &QPushButton::clicked, this, [&] {
-        if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_task) {
-            SaveChart(Charts::Task);
-        } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_pressure) {
-            SaveChart(Charts::Pressure);
-        } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_friction) {
-            SaveChart(Charts::Friction);
-        }
-    });
-
-    connect(ui->pushButton_strokeTest_start, &QPushButton::clicked,
-            this, &MainWindow::ButtonStartStroke);
-
-    connect(ui->pushButton_strokeTest_save, &QPushButton::clicked, this, [&] {
-        SaveChart(Charts::Stroke);
-    });
-
-    connect(ui->pushButton_optionalTests_start, &QPushButton::clicked,
-            this, &MainWindow::ButtonStartOptional);
-
-    connect(this, &MainWindow::StartCyclicSolenoidTest,
-            m_program, &Program::CyclicSolenoidTestStart);
-
-    connect(ui->pushButton_optionalTests_save, &QPushButton::clicked, this, [&] {
-        if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_response) {
-            SaveChart(Charts::Response);
-        } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_resolution) {
-            SaveChart(Charts::Resolution);
-        } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_step) {
-            SaveChart(Charts::Step);
-        }
-    });
-
-    connect(ui->pushButton_cyclicTest_start, &QPushButton::clicked,
-            this, &MainWindow::ButtonStartCyclicSolenoid);
-
-    connect(ui->pushButton_cyclicTest_save, &QPushButton::clicked,
-            this, [&](){
-            SaveChart(Charts::CyclicSolenoid);
-    });
-
-    connect(this, &MainWindow::StartMainTest,
-            m_program, &Program::MainTestStart);
+    connect(this, &MainWindow::runMainTest,
+            m_program, &Program::runningMainTest);
 
     connect(m_program, &Program::MainTestFinished,
             this, &MainWindow::promptSaveCharts);
 
-    connect(this, &MainWindow::StartStrokeTest,
-            m_program, &Program::onStartStrokeTest);
+    connect(this, &MainWindow::runStrokeTest,
+            m_program, &Program::runningStrokeTest);
 
-    connect(this, &MainWindow::StartOptionalTest,
-            m_program, &Program::StartOptionalTest);
+    connect(this, &MainWindow::runOptionalTest,
+            m_program, &Program::runningOptionalTest);
 
-    connect(this, &MainWindow::StopTest,
+    connect(this, &MainWindow::stopTheTest,
             m_program, &Program::TerminateTest);
 
-    connect(m_program, &Program::StopTest,
+    connect(m_program, &Program::stopTheTest,
             this, &MainWindow::EndTest);
 
     connect(m_program, &Program::SetText,
             this, &MainWindow::SetText);
-
-    // connect(m_program, &Program::SetGroupDOVisible,
-    //         this, [&](bool visible) {
-    //             ui->groupBox_DO->setVisible(visible);
-    //         });
 
     connect(m_program, &Program::SetButtonsDOChecked,
             this, &MainWindow::SetButtonsDOChecked);
@@ -189,29 +141,6 @@ MainWindow::MainWindow(QWidget *parent)
                     ui->doubleSpinBox_task->setValue(value / 1000.0);
                 }
             });
-
-    connect(ui->pushButton_signal_4mA, &QPushButton::clicked,
-            this, [this]() {
-                ui->doubleSpinBox_task->setValue(4.0);
-            });
-
-    connect(ui->pushButton_signal_8mA, &QPushButton::clicked,
-            this, [this]() {
-                ui->doubleSpinBox_task->setValue(8.0);
-            });
-
-    connect(ui->pushButton_signal_12mA, &QPushButton::clicked,
-            this, [this]() {
-                ui->doubleSpinBox_task->setValue(12.0);
-            });
-
-    connect(ui->pushButton_signal_16mA, &QPushButton::clicked, this, [this]() {
-        ui->doubleSpinBox_task->setValue(16.0);
-    });
-
-    connect(ui->pushButton_signal_20mA, &QPushButton::clicked, this, [this]() {
-        ui->doubleSpinBox_task->setValue(20.0);
-    });
 
     connect(this, &MainWindow::PatternChanged,
             m_program, &Program::SetPattern);
@@ -264,56 +193,6 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::GetDirectory,
             Qt::DirectConnection);
 
-    connect(ui->pushButton_imageChartTask,
-            &QPushButton::clicked, this, [&] {
-                GetImage(ui->label_imageChartTask, &m_imageChartTask);
-            });
-
-    connect(ui->pushButton_imageChartPressure, &QPushButton::clicked,
-            this, [&] {
-                GetImage(ui->label_imageChartPressure, &m_imageChartPressure);
-            });
-
-    connect(ui->pushButton_imageChartFriction, &QPushButton::clicked,
-            this, [&] {
-                GetImage(ui->label_imageChartFriction, &m_imageChartFriction);
-            });
-
-    connect(ui->pushButton_report, &QPushButton::clicked,
-            this, [&] {
-                std::unique_ptr<ReportBuilder> reportBuilder;
-
-                switch (m_patternType) {
-                case SelectTests::Pattern_B_CVT: reportBuilder = std::make_unique<ReportBuilder_B_CVT>(); break;
-                case SelectTests::Pattern_B_SACVT: reportBuilder = std::make_unique<ReportBuilder_B_SACVT>(); break;
-                case SelectTests::Pattern_C_CVT: reportBuilder = std::make_unique<ReportBuilder_C_CVT>(); break;
-                case SelectTests::Pattern_C_SACVT: reportBuilder = std::make_unique<ReportBuilder_C_SACVT>(); break;
-                case SelectTests::Pattern_C_SOVT: reportBuilder = std::make_unique<ReportBuilder_C_SOVT>(); break;
-                default:
-                    QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн отчёта!");
-                    return;
-                }
-
-                ReportSaver::Report report;
-                reportBuilder->buildReport(report,
-                                           m_telemetryStore,
-                                           *m_registry->GetObjectInfo(),
-                                           *m_registry->GetValveInfo(),
-                                           *m_registry->GetOtherParameters(),
-                                           m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
-
-                qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
-
-                bool saved = m_reportSaver->SaveReport(report, reportBuilder->templatePath());
-                ui->pushButton_open->setEnabled(saved);
-            });
-
-    connect(ui->pushButton_open, &QPushButton::clicked,
-            this, [&] {
-                QDesktopServices::openUrl(
-                    QUrl::fromLocalFile(m_reportSaver->Directory().filePath("report.xlsx")));
-            });
-
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
             this, [&](int state) {
                 ui->pushButton_set->setEnabled(!state);
@@ -348,9 +227,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
-
-    qDebug() << QDateTime::currentDateTime().toString("hh:mm:ss.zzz")
-    << "GUI update on thread" << QThread::currentThread();
 
     m_telemetryStore = TS;
     // Init
@@ -494,6 +370,31 @@ void MainWindow::onCyclicCountdown()
     }
 }
 
+void MainWindow::on_pushButton_signal_4mA_clicked()
+{
+    ui->doubleSpinBox_task->setValue(4.0);
+}
+void MainWindow::on_pushButton_signal_8mA_clicked()
+{
+    ui->doubleSpinBox_task->setValue(8.0);
+}
+void MainWindow::on_pushButton_signal_12mA_clicked()
+{
+    ui->doubleSpinBox_task->setValue(12.0);
+}
+void MainWindow::on_pushButton_signal_16mA_clicked()
+{
+    ui->doubleSpinBox_task->setValue(16.0);
+}
+void MainWindow::on_pushButton_signal_20mA_clicked()
+{
+    ui->doubleSpinBox_task->setValue(20.0);
+}
+void MainWindow::EnableSetTask(bool enable)
+{
+    ui->verticalSlider_task->setEnabled(enable);
+    ui->doubleSpinBox_task->setEnabled(enable);
+}
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (auto w = qobject_cast<QWidget*>(watched)) {
@@ -777,11 +678,6 @@ void MainWindow::DublSeries()
     m_charts[Charts::Pressure]->dublSeries(0);
 }
 
-void MainWindow::EnableSetTask(bool enable)
-{
-    ui->verticalSlider_task->setEnabled(enable);
-    ui->doubleSpinBox_task->setEnabled(enable);
-}
 
 void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
 {
@@ -801,6 +697,18 @@ void MainWindow::GetPoints(QVector<QVector<QPointF>> &points, Charts chart)
         QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getPoints(0);
 
         points.clear();
+        points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+        points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
+    }
+    if (chart == Charts::Cyclic) {
+        QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
+        QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
+        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Cyclic]->getPoints(1);
+        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Cyclic]->getPoints(0);
+
+        points.clear();
+        points.push_back({opened.first.begin(), opened.first.end()});
+        points.push_back({closed.first.begin(), closed.first.end()});
         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
         points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
     }
@@ -914,91 +822,111 @@ void MainWindow::EndTest()
     }
 }
 
-void MainWindow::ButtonStartMain()
+void MainWindow::on_pushButton_mainTest_start_clicked()
 {
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
             m_userCanceled = true;
-            emit StopTest();
+            emit stopTheTest();
         }
     } else {
         m_userCanceled = false;
-        emit StartMainTest();
+        emit runMainTest();
         StartTest();
     }
 }
 
-void MainWindow::ButtonStartStroke()
+void MainWindow::on_pushButton_mainTest_save_clicked()
+{
+    if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_task) {
+        SaveChart(Charts::Task);
+    } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_pressure) {
+        SaveChart(Charts::Pressure);
+    } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_friction) {
+        SaveChart(Charts::Friction);
+    }
+}
+
+void MainWindow::on_pushButton_strokeTest_start_clicked()
 {
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
-            emit StopTest();
+            emit stopTheTest();
         }
     } else {
 
-        emit StartStrokeTest();
+        emit runStrokeTest();
         StartTest();
     }
 }
+void MainWindow::on_pushButton_strokeTest_save_clicked()
+{
+    SaveChart(Charts::Stroke);
+}
 
-void MainWindow::ButtonStartOptional()
+void MainWindow::on_pushButton_optionalTests_start_clicked()
 {
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
-            emit StopTest();
+            emit stopTheTest();
         }
     } else {
-        emit StartOptionalTest(ui->tabWidget_tests->currentIndex());
+        emit runOptionalTest(ui->tabWidget_tests->currentIndex());
         StartTest();
     }
 }
+void MainWindow::on_pushButton_optionalTests_save_clicked()
+{
+    if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_response) {
+        SaveChart(Charts::Response);
+    } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_resolution) {
+        SaveChart(Charts::Resolution);
+    } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_step) {
+        SaveChart(Charts::Step);
+    }
+}
 
-void MainWindow::ButtonStartCyclicSolenoid() {
+static QString seqToString(const QVector<quint16>& seq)
+{
+    QStringList parts;
+    parts.reserve(seq.size());
+    for (quint16 v : seq) parts << QString::number(v);
+    return parts.join('-');
+}
+
+void MainWindow::on_pushButton_cyclicTest_start_clicked()
+{
     if (m_testing) {
-        if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
+        if (QMessageBox::question(this, tr("Внимание!"),
+                                  tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             m_userCanceled = true;
-            emit StopTest();
+            emit stopTheTest();
         }
         return;
     }
 
     m_userCanceled = false;
 
-    // Выбираем доступные режимы теста
-    CyclicTestSettings::AvailableTests avail;
-    using PT = SelectTests::PatternType;
-    if (m_patternType == PT::Pattern_B_CVT || m_patternType == PT::Pattern_C_CVT) {
-        avail = CyclicTestSettings::OnlyRegulatory;
-    }
-    else if (m_patternType == PT::Pattern_C_SOVT) {
-        avail = CyclicTestSettings::OnlyShutoff;
-    }
-    else {
-        avail = CyclicTestSettings::ZipRegulatory;
-    }
-    m_cyclicTestSettings->setAvailableTests(avail);
+    m_cyclicTestSettings->setPattern(m_patternType);
 
-    // Открываем диалог настроек
     if (m_cyclicTestSettings->exec() != QDialog::Accepted)
         return;
 
-    // Получаем параметры
     using TP = CyclicTestSettings::TestParameters;
-    auto p = m_cyclicTestSettings->getParameters();
+    TP p = m_cyclicTestSettings->getParameters();
 
-    // Обновляем UI: последовательность и число циклов
     switch (p.testType) {
     case TP::Regulatory:
-        ui->label_cyclicTest_sequenceValue->setText(p.regulatory_sequence);
+        ui->label_cyclicTest_sequenceValue->setText(seqToString(p.regSeqValues));
         ui->label_cyclicTest_specifiedCyclesValue->setText(
             QString::number(p.regulatory_numCycles));
         break;
     case TP::Shutoff:
-        ui->label_cyclicTest_sequenceValue->setText(p.shutoff_sequence);
+        ui->label_cyclicTest_sequenceValue->setText(seqToString(p.offSeqValues));
         ui->label_cyclicTest_specifiedCyclesValue->setText(
             QString::number(p.shutoff_numCycles));
         break;
@@ -1008,52 +936,55 @@ void MainWindow::ButtonStartCyclicSolenoid() {
         break;
     }
 
-    // При включённой 20 mA только для Regulatory
     if (p.testType == TP::Regulatory && p.regulatory_enable_20mA) {
         emit SetDAC(20.0);
     }
 
-    // Считаем общее время строго по выбранному типу
     qint64 totalMs = 0;
     switch (p.testType) {
     case TP::Regulatory: {
-        QStringList parts = p.shutoff_sequence.split('-', Qt::SkipEmptyParts);
-        int n = parts.size();
-        totalMs = n
-                  * p.regulatory_numCycles
-                  * (p.regulatory_delaySec * 1000
-                     + p.regulatory_holdTimeSec * 1000);
+        qint64 n = p.regSeqValues.size();
+        totalMs = n * p.regulatory_numCycles *
+                  ((qint64)p.regulatory_delaySec * 1000 +
+                   (qint64)p.regulatory_holdTimeSec * 1000 );
         break;
     }
     case TP::Shutoff: {
-        QStringList parts = p.shutoff_sequence.split('-', Qt::SkipEmptyParts);
-        int n = parts.size();
-        totalMs = n
-                  * p.shutoff_numCycles
-                  * (p.shutoff_delaySec * 1000
-                     + p.shutoff_holdTimeSec * 1000);
+        int n = p.offSeqValues.size();
+        totalMs = static_cast<qint64>(n) * p.shutoff_numCycles *
+                  ((qint64)p.shutoff_delaySec * 1000 +
+                   (qint64)p.shutoff_holdTimeSec * 1000 );
+        break;
+    }
+    case TP::Combined: {
+        qint64 regMs = p.regSeqValues.size() * p.regulatory_numCycles *
+                       ( (qint64)p.regulatory_delaySec * 1000 +
+                        (qint64)p.regulatory_holdTimeSec * 1000 );
+        qint64 offMs = p.offSeqValues.size() * p.shutoff_numCycles *
+                       ( (qint64)p.shutoff_delaySec * 1000 +
+                        (qint64)p.shutoff_holdTimeSec * 1000 );
+        totalMs = regMs + offMs;
         break;
     }
     default:
-        // Других вариантов нет
         break;
     }
 
-    // Отображаем рассчитанное время в label
     QTime t0(0, 0);
     t0 = t0.addMSecs(totalMs);
     ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
 
-    // Запускаем таймер обратного отсчёта
     m_cyclicTotalMs = totalMs;
     m_cyclicElapsedTimer.restart();
     m_cyclicCountdownTimer.start();
 
-    // Флаг, что тест в процессе
     StartTest();
 
-    // Стартуем сам тест в Program
-    emit StartCyclicSolenoidTest(p);
+    emit runCyclicTest(p);
+}
+void MainWindow::on_pushButton_cyclicTest_save_clicked()
+{
+    SaveChart(Charts::CyclicSolenoid);
 }
 
 void MainWindow::SetButtonsDOChecked(quint8 status)
@@ -1074,7 +1005,6 @@ void MainWindow::SetButtonsDOChecked(quint8 status)
     ui->pushButton_DO3->blockSignals(false);
 
     ui->groupBox_DO->setEnabled(true);
-
 }
 
 void MainWindow::SetCheckboxDIChecked(quint8 status)
@@ -1163,24 +1093,24 @@ void MainWindow::InitCharts()
     m_charts[Charts::Trend]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Trend]->setMaxRange(60000);
 
-    m_charts[Charts::CyclicSolenoid] = ui->Chart_cyclicSolenoid;
-    m_charts[Charts::CyclicSolenoid]->setName("Cyclic_solenoid");
-    m_charts[Charts::CyclicSolenoid]->useTimeaxis(true);
-    m_charts[Charts::CyclicSolenoid]->addAxis("%.2f%%");
-    m_charts[Charts::CyclicSolenoid]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::CyclicSolenoid]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
-    // m_charts[Charts::CyclicSolenoid]->setMaxRange(160000);
+    m_charts[Charts::Cyclic] = ui->Chart_cyclicTests;
+    m_charts[Charts::Cyclic]->setName("Cyclic");
+    m_charts[Charts::Cyclic]->useTimeaxis(true);
+    m_charts[Charts::Cyclic]->addAxis("%.2f%%");
+    m_charts[Charts::Cyclic]->addSeries(0, "Задание", QColor::fromRgb(0, 0, 0));
+    m_charts[Charts::Cyclic]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
+    // m_charts[Charts::Cyclic]->setMaxRange(80000);
 
     if (m_patternType == SelectTests::Pattern_C_SOVT
         || m_patternType == SelectTests::Pattern_B_SACVT
         || m_patternType == SelectTests::Pattern_C_SACVT) {
-        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв закрыто →", QColor::fromRgb(200,200,0));
-        m_charts[Charts::CyclicSolenoid]->addSeries(0, "Кв открыто →", QColor::fromRgb(0,200,0));
+        m_charts[Charts::Cyclic]->addSeries(0, "Кв закрыто →", QColor::fromRgb(200,200,0));
+        m_charts[Charts::Cyclic]->addSeries(0, "Кв открыто →", QColor::fromRgb(0,200,0));
 
-        m_charts[Charts::CyclicSolenoid]->setPointsVisible(2, true);
-        m_charts[Charts::CyclicSolenoid]->setPointsVisible(3, true);
+        m_charts[Charts::Cyclic]->setPointsVisible(2, true);
+        m_charts[Charts::Cyclic]->setPointsVisible(3, true);
 
-        QChart *chart = m_charts[Charts::CyclicSolenoid]->chart();
+        QChart *chart = m_charts[Charts::Cyclic]->chart();
         const auto all = chart->series();
         int total = all.size();
 
@@ -1197,12 +1127,23 @@ void MainWindow::InitCharts()
         }
     }
 
-    connect(m_program, &Program::AddPoints, this, &MainWindow::AddPoints);
-    connect(m_program, &Program::ClearPoints, this, &MainWindow::ClearPoints);
-    connect(m_program, &Program::DublSeries, this, &MainWindow::DublSeries);
-    connect(m_program, &Program::SetVisible, this, &MainWindow::SetChartVisible);
-    connect(m_program, &Program::SetRegressionEnable, this, &MainWindow::SetRegressionEnable);
-    connect(m_program, &Program::ShowDots, this, &MainWindow::ShowDots);
+    connect(m_program, &Program::AddPoints, this,
+            &MainWindow::AddPoints);
+
+    connect(m_program, &Program::ClearPoints,
+            this, &MainWindow::ClearPoints);
+
+    connect(m_program, &Program::DublSeries,
+            this, &MainWindow::DublSeries);
+
+    connect(m_program, &Program::SetVisible,
+            this, &MainWindow::SetChartVisible);
+
+    connect(m_program, &Program::SetRegressionEnable,
+            this, &MainWindow::SetRegressionEnable);
+
+    connect(m_program, &Program::ShowDots,
+            this, &MainWindow::ShowDots);
 
     connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Task]->visible(0, k != 0);
@@ -1323,8 +1264,61 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
 
 void MainWindow::on_pushButton_init_clicked()
 {
-        QVector<bool> states = { ui->pushButton_DO0->isChecked(), ui->pushButton_DO1->isChecked(), ui->pushButton_DO2->isChecked(), ui->pushButton_DO3->isChecked() };
+        QVector<bool> states = {
+            ui->pushButton_DO0->isChecked(),
+            ui->pushButton_DO1->isChecked(),
+            ui->pushButton_DO2->isChecked(),
+            ui->pushButton_DO3->isChecked()
+        };
+
         emit InitDOSelected(states);
-        emit InitializeWithPattern(m_patternType);
+        emit Initialize();
         emit PatternChanged(m_patternType);
+}
+
+void MainWindow::on_pushButton_imageChartTask_clicked()
+{
+    GetImage(ui->label_imageChartTask, &m_imageChartTask);
+}
+void MainWindow::on_pushButton_imageChartPressure_clicked()
+{
+    GetImage(ui->label_imageChartPressure, &m_imageChartPressure);
+}
+void MainWindow::on_pushButton_imageChartFriction_clicked()
+{
+    GetImage(ui->label_imageChartFriction, &m_imageChartFriction);
+}
+
+void MainWindow::on_pushButton_report_generate_clicked()
+{
+    std::unique_ptr<ReportBuilder> reportBuilder;
+
+    switch (m_patternType) {
+    case SelectTests::Pattern_B_CVT: reportBuilder = std::make_unique<ReportBuilder_B_CVT>(); break;
+    case SelectTests::Pattern_B_SACVT: reportBuilder = std::make_unique<ReportBuilder_B_SACVT>(); break;
+    case SelectTests::Pattern_C_CVT: reportBuilder = std::make_unique<ReportBuilder_C_CVT>(); break;
+    case SelectTests::Pattern_C_SACVT: reportBuilder = std::make_unique<ReportBuilder_C_SACVT>(); break;
+    case SelectTests::Pattern_C_SOVT: reportBuilder = std::make_unique<ReportBuilder_C_SOVT>(); break;
+    default:
+        QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн отчёта!");
+        return;
+    }
+
+    ReportSaver::Report report;
+    reportBuilder->buildReport(report,
+                               m_telemetryStore,
+                               *m_registry->GetObjectInfo(),
+                               *m_registry->GetValveInfo(),
+                               *m_registry->GetOtherParameters(),
+                               m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
+
+    qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
+
+    bool saved = m_reportSaver->SaveReport(report, reportBuilder->templatePath());
+    ui->pushButton_report_open->setEnabled(saved);
+}
+void MainWindow::on_pushButton_report_open_clicked()
+{
+    QDesktopServices::openUrl(
+        QUrl::fromLocalFile(m_reportSaver->Directory().filePath("report.xlsx")));
 }

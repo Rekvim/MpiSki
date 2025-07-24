@@ -18,6 +18,7 @@
 #include "./Src/Telemetry/TelemetryStore.h"
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/MainTest.h"
+#include "./Src/Tests/CyclicTests.h"
 #include "SelectTests.h"
 
 enum class TextObjects {
@@ -86,8 +87,6 @@ private:
 
     qreal currentPercent();
 
-    void pollDIForCyclic();
-
     // init
     void connectAndInitDevice();
     void detectAndReportSensors();
@@ -101,8 +100,7 @@ private:
     void calculateAndApplyCoefficients();
     void recordStrokeRange(bool normalClosed);
     void finalizeInitialization();
-    QVector<quint16> makeRawValues(const QString &seq, bool normalOpen);
-
+    QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
 
 signals:
     void TelemetryUpdated(const TelemetryStore &store);
@@ -121,7 +119,7 @@ signals:
     void AddPoints(Charts chart, QVector<Point> points);
     void ClearPoints(Charts chart);
 
-    void StopTest();
+    void stopTheTest();
     void ShowDots(bool visible);
     void EnableSetTask(bool enable);
     void DublSeries();
@@ -158,29 +156,30 @@ private slots:
                 bool wait_for_start = false);
     void SetTimeStart();
     void StrokeTestResults(quint64 forward_time, quint64 backward_time);
-    void SolenoidResults(QString sequence, quint16 cycles, double total_time_sec);
+    void CyclicTestsResults(const CyclicTests::TestResults& r);
 
 public slots:
     void SetInitDOStates(const QVector<bool> &states);
     void SetPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
 
-    void onDOCounts(const QVector<int>& onCounts, const QVector<int>& offCounts);
-
     void AddRegression(const QVector<QPointF> &points);
     void AddFriction(const QVector<QPointF> &points);
     void GetPoints_mainTest(QVector<QVector<QPointF>> &points);
     void GetPoints_stepTest(QVector<QVector<QPointF>> &points);
+    void GetPoints_cyclicTest(QVector<QVector<QPointF>> &points);
+
     void SetDAC_real(qreal value);
 
-    void MainTestStart();
-    void onStartStrokeTest();
-    void StartOptionalTest(quint8 testNum);
-    void CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p);
+    void runningMainTest();
+    void runningStrokeTest();
+    void runningOptionalTest(quint8 testNum);
+    void runningCyclicTest(const CyclicTestSettings::TestParameters &p);
+
     void EndTest();
 
     void TerminateTest();
 
-    void button_init(SelectTests::PatternType pattern);
+    void Initialization();
 
 
     void button_set_position();

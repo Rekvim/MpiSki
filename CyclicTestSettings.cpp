@@ -2,6 +2,31 @@
 #include "ui_CyclicTestSettings.h"
 #include "./Src/ValidatorFactory/RegexPatterns.h"
 
+
+void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
+{
+    ui->comboBox_testSelection->clear();
+    m_pattern = pattern;
+    switch (m_pattern) {
+    case SelectTests::Pattern_B_CVT:
+    case SelectTests::Pattern_C_CVT:
+        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
+        break;
+    case SelectTests::Pattern_C_SOVT:
+        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
+        break;
+    case SelectTests::Pattern_B_SACVT:
+    case SelectTests::Pattern_C_SACVT:
+        ui->comboBox_testSelection->addItem(QStringLiteral("Запорно-регулирующий"));
+        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
+        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
+        break;
+    default:
+        break;
+    }
+    onTestSelectionChanged();
+}
+
 void CyclicTestSettings::onTestSelectionChanged()
 {
     const QString sel = ui->comboBox_testSelection->currentText();
@@ -21,6 +46,8 @@ void CyclicTestSettings::onTestSelectionChanged()
         ui->widget_shutOff->setVisible(true);
     }
 }
+
+
 
 CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     : QDialog(parent)
@@ -75,23 +102,28 @@ CyclicTestSettings::~CyclicTestSettings()
     delete ui;
 }
 
-void CyclicTestSettings::setAvailableTests(AvailableTests at)
+static bool parseSequence(const QString& src,
+                          QVector<quint16>& dst,
+                          QString& error)
 {
-    ui->comboBox_testSelection->clear();
-    switch (at) {
-    case OnlyRegulatory:
-        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
-        break;
-    case OnlyShutoff:
-        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
-        break;
-    case ZipRegulatory:
-        ui->comboBox_testSelection->addItem(QStringLiteral("Запорно-регулирующий"));
-        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
-        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
-        break;
+    const QString s = src.trimmed();
+    static const QRegularExpression re(R"(^(?:\d+)(?:-\d+)*$)");
+    if (!re.match(s).hasMatch()) {
+        error = "Только цифры и дефисы допустимы.";
+        return false;
     }
-    onTestSelectionChanged();
+
+    dst.clear();
+    for (const QString& part : s.split('-', Qt::SkipEmptyParts)) {
+        bool ok = false;
+        uint v = part.toUInt(&ok);
+        if (!ok) { error = "Не удалось преобразовать число."; return false; }
+        if (v > std::numeric_limits<quint16>::max()) {
+            error = QString("Значение «%1» > 65535.").arg(part); return false;
+        }
+        dst.push_back(static_cast<quint16>(v));
+    }
+    return true;
 }
 
 // --- Регулирующий
@@ -201,14 +233,13 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите хотя бы одну последовательность (регулирующий).");
             return;
         }
-        QString sReg = ui->listWidget_testRangeRegulatory->currentItem()->text().trimmed();
-        auto m1 = RegexPatterns::digitsHyphens().match(sReg);
-        if (!m1.hasMatch() || m1.capturedLength() != sReg.length()) {
-            QMessageBox::warning(this, "Ошибка",
-                                 "Регулирующая последовательность: только цифры и дефисы.");
+        QString seqReg = ui->listWidget_testRangeRegulatory->currentItem()->text().trimmed();
+        QString err;
+        if (!parseSequence(seqReg, m_parameters.regSeqValues, err)) {
+            QMessageBox::warning(this, "Ошибка", "Регулирующая последовательность: " + err);
             return;
         }
-        m_parameters.regulatory_sequence = sReg;
+        // m_parameters.regSeqValues = sReg;
 
         // задержка
         if (!ui->listWidget_delayTimeRegulatory->currentItem()) {
@@ -222,7 +253,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
         // удержание
         {
             QTime hold = ui->timeEdit_retentionTimeRegulatory->time();
-            int secs = hold.minute()*60 + hold.second();
+            int secs = hold.hour()*3600 + hold.minute()*60 + hold.second();
             if (secs <= 0) {
                 QMessageBox::warning(this, "Ошибка",
                                     "Время удержания (регулирующий) > 00:00.");
@@ -247,7 +278,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
     }
     else {
         // сбросить ненужные
-        m_parameters.regulatory_sequence.clear();
+        m_parameters.regSeqValues.clear();
         m_parameters.regulatory_delaySec = 0;
         m_parameters.regulatory_holdTimeSec = 0;
         m_parameters.regulatory_numCycles = 0;
@@ -262,14 +293,13 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите хотя бы одну последовательность (отсечной).");
             return;
         }
-        QString sOff = ui->listWidget_testRangeShutOff->currentItem()->text().trimmed();
-        auto m4 = RegexPatterns::digitsHyphens().match(sOff);
-        if (!m4.hasMatch() || m4.capturedLength() != sOff.length()) {
-            QMessageBox::warning(this, "Ошибка",
-                                 "Отсечной: только цифры и дефисы.");
+        QString seqOff = ui->listWidget_testRangeShutOff->currentItem()->text().trimmed();
+        QString err;
+        if (!parseSequence(seqOff, m_parameters.offSeqValues, err)) {
+            QMessageBox::warning(this, "Ошибка", "Отсечной: " + err);
             return;
         }
-        m_parameters.shutoff_sequence = sOff;
+        // m_parameters.shutoff_sequence = sOff;
 
         // задержка
         if (!ui->listWidget_delayTimeShutOff->currentItem()) {
@@ -283,7 +313,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
         // удержание
         {
             QTime hold = ui->timeEdit_retentionTimeShutOff->time();
-            int secs = hold.minute()*60 + hold.second();
+            int secs = hold.hour()*3600 + hold.minute()*60 + hold.second();
             if (secs <= 0) {
                 QMessageBox::warning(this, "Ошибка",
                                      "Время удержания (отсечной) > 00:00.");
@@ -313,7 +343,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
         m_parameters.shutoff_DI[1] = ui->checkBox_switch_0_3_ShutOff->isChecked();
     }
     else {
-        m_parameters.shutoff_sequence.clear();
+        m_parameters.offSeqValues.clear();
         m_parameters.shutoff_delaySec = 0;
         m_parameters.shutoff_holdTimeSec = 0;
         m_parameters.shutoff_numCycles = 0;

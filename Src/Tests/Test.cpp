@@ -22,7 +22,7 @@ void Test::SetDACBlocked(quint16 value, quint32 sleepMs, bool waitForStop, bool 
     m_eventLoop->exec();
 }
 
-void Test::Stop()
+void Test::StoppingTheTest()
 {
     m_terminate = true;
     m_eventLoop->quit();

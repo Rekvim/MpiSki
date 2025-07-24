@@ -1,7 +1,7 @@
 #include "Program.h"
 #include <QPushButton>
 // #include "./Src/Tests/CyclicTestPositioner.h"
-#include "./Src/Tests/CyclicTestSolenoid.h"
+#include "./Src/Tests/CyclicTests.h"
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
@@ -25,11 +25,6 @@ Program::Program(QObject *parent)
         quint8 DI = m_mpi.GetDIStatus();
         emit SetCheckboxDIChecked(DI);
     });
-
-    m_diPollTimer = new QTimer(this);
-    m_diPollTimer->setInterval(50);
-    connect(m_diPollTimer, &QTimer::timeout,
-            this, &Program::pollDIForCyclic);
 }
 
 void Program::SetRegistry(Registry *registry)
@@ -198,9 +193,7 @@ void Program::EndTest()
     emit EnableSetTask(true);
     emit SetButtonInitEnabled(true);
 
-    m_diPollTimer->stop();
-
-    emit StopTest();
+    emit stopTheTest();
     emit SetTask(m_mpi.GetDAC()->GetValue());
 
     m_cyclicRunning = false;
@@ -214,13 +207,12 @@ void Program::SetDAC_real(qreal value)
 
 void Program::SetInitDOStates(const QVector<bool> &states)
 {
-    m_initDOStates      = states;
+    m_initDOStates = states;
     m_savedInitDOStates = states;
 }
 
-void Program::button_init(SelectTests::PatternType pattern)
+void Program::Initialization()
 {
-    // 0. Подготовка UI
     m_timerSensors->stop();
     m_timerDI->stop();
     emit SetButtonInitEnabled(false);
@@ -230,14 +222,13 @@ void Program::button_init(SelectTests::PatternType pattern)
 
     detectAndReportSensors();
 
-    // Подготовка информации о клапане
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     bool normalClosed = (valveInfo->safePosition == 0);
 
     // Измерение начального и конечного положения соленоида
-    if (pattern == SelectTests::Pattern_B_SACVT ||
-        pattern == SelectTests::Pattern_C_SACVT ||
-        pattern ==  SelectTests::Pattern_C_SOVT) {
+    if (m_patternType == SelectTests::Pattern_B_SACVT ||
+        m_patternType == SelectTests::Pattern_C_SACVT ||
+        m_patternType == SelectTests::Pattern_C_SOVT) {
 
         if ((m_mpi.Version() & 0x40) != 0) {
             emit SetButtonsDOChecked(m_mpi.GetDOStatus());
@@ -250,28 +241,25 @@ void Program::button_init(SelectTests::PatternType pattern)
     }
 
     // Измерение начального и конечного положения позиционера
-    if (pattern == SelectTests::Pattern_B_CVT ||
-        pattern == SelectTests::Pattern_C_CVT ||
-        pattern ==  SelectTests::Pattern_B_SACVT||
-        pattern ==  SelectTests::Pattern_C_SACVT) {
+    if (m_patternType == SelectTests::Pattern_B_CVT ||
+        m_patternType == SelectTests::Pattern_C_CVT ||
+        m_patternType == SelectTests::Pattern_B_SACVT||
+        m_patternType == SelectTests::Pattern_C_SACVT) {
 
         measureStartPosition(normalClosed);
         measureEndPosition(normalClosed);
     }
 
-
-    // Остановка дискретных выходов
     calculateAndApplyCoefficients();
 
     // Запись хода клапана (позиционера)
-    if (pattern == SelectTests::Pattern_B_CVT ||
-        pattern == SelectTests::Pattern_C_CVT ||
-        pattern ==  SelectTests::Pattern_B_SACVT||
-        pattern ==  SelectTests::Pattern_C_SACVT) {
+    if (m_patternType == SelectTests::Pattern_B_CVT ||
+        m_patternType == SelectTests::Pattern_C_CVT ||
+        m_patternType == SelectTests::Pattern_B_SACVT||
+        m_patternType == SelectTests::Pattern_C_SACVT) {
 
         recordStrokeRange(normalClosed);
     }
-    // Финализация и возврат UI в рабочее состояние
     finalizeInitialization();
 }
 
@@ -283,14 +271,13 @@ void Program::connectAndInitDevice()
 
     ok = m_mpi.Connect();
     ts.init.deviceStatusText  = ok ? QString("Успешное подключение к порту %1").arg(m_mpi.PortName())
-                                   : "Ошибка подключения";
+                                  : "Ошибка подключения";
     ts.init.deviceStatusColor = ok ? Qt::darkGreen : Qt::red;
     emit TelemetryUpdated(ts);
 
-    // initialize
     ok = m_mpi.Initialize();
     ts.init.initStatusText  = ok ? "Успешная инициализация"
-                                 : "Ошибка инициализации";
+                                : "Ошибка инициализации";
     ts.init.initStatusColor = ok ? Qt::darkGreen : Qt::red;
     emit TelemetryUpdated(ts);
 
@@ -479,14 +466,13 @@ void Program::AddRegression(const QVector<QPointF> &points)
     emit SetRegressionEnable(true);
 }
 
-
-void Program::MainTestStart()
+void Program::runningMainTest()
 {
     MainTestSettings::TestParameters parameters;
     emit GetMainTestParameters(parameters);
 
     if (parameters.delay == 0) {
-        emit StopTest();
+        emit stopTheTest();
         return;
     }
 
@@ -509,8 +495,8 @@ void Program::MainTestStart()
     connect(mainTest, &MainTest::EndTest,
             threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest,
-            mainTest, &MainTest::Stop);
+    connect(this, &Program::stopTheTest,
+            mainTest, &MainTest::StoppingTheTest);
 
     connect(threadTest, &QThread::finished,
             threadTest, &QThread::deleteLater);
@@ -603,10 +589,9 @@ void Program::UpdateCharts_mainTest()
 
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
     percent = qBound<qreal>(0.0, percent, 100.0);
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
+
+    if (m_registry->GetValveInfo()->safePosition != 0)
+        percent = 100.0 - percent;
 
     qreal task = m_mpi[0]->GetValueFromPercent(percent);
     qreal X = m_mpi.GetDAC()->GetValue();
@@ -624,7 +609,7 @@ void Program::UpdateCharts_mainTest()
     emit AddPoints(Charts::Pressure, points);
 }
 
-void Program::onStartStrokeTest()
+void Program::runningStrokeTest()
 {
     emit SetButtonInitEnabled(false);
     emit ClearPoints(Charts::Stroke);
@@ -645,8 +630,8 @@ void Program::onStartStrokeTest()
     connect(strokeTest, &StrokeTest::EndTest,
             threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest,
-            strokeTest, &StrokeTest::Stop);
+    connect(this, &Program::stopTheTest,
+            strokeTest, &StrokeTest::StoppingTheTest);
 
     connect(threadTest, &QThread::finished,
             threadTest, &QThread::deleteLater);
@@ -709,64 +694,43 @@ void Program::UpdateCharts_strokeTest()
 
 void Program::UpdateCharts_CyclicSolenoid()
 {
-    if (!m_cyclicRunning)
-        return;
+    if (!m_cyclicRunning) return;
 
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
     percent = qBound<qreal>(0.0, percent, 100.0);
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
+    if (m_registry->GetValveInfo()->safePosition != 0)
         percent = 100.0 - percent;
-    }
 
-    quint64 t = QDateTime::currentMSecsSinceEpoch() - m_startTime;
+    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
-    QVector<Point> pts;
-    pts.push_back({0, qreal(t), percent});
-    pts.push_back({1, qreal(t), m_mpi[0]->GetPersent()});
+    QVector<Point> points;
+    points.push_back({0, qreal(time), percent});
+    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+    emit AddPoints(Charts::Cyclic, points);
 
-    emit AddPoints(Charts::CyclicSolenoid, pts);
-}
-
-void Program::pollDIForCyclic()
-{
-    if (!m_cyclicRunning) return;
     quint8 di = m_mpi.GetDIStatus();
-    if (di == m_lastDI) return;
+    if (di != m_lastDI) {
+        QVector<Point> diPts;
+        bool lastClosed = (m_lastDI & 0x01);
+        bool lastOpen = (m_lastDI & 0x02);
+        bool nowClosed = (di & 0x01);
+        bool nowOpen = (di & 0x02);
 
-    qreal t = QDateTime::currentMSecsSinceEpoch() - m_cyclicStartTs;
-    QVector<Point> pts;
+        if (nowClosed && !lastClosed) {
+            ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
+            diPts.push_back({2, qreal(time), 0.0});
+        } if (!nowClosed && lastClosed) {
+            diPts.push_back({2, qreal(time), 0.0});
+        } if (nowOpen && !lastOpen) {
+            ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
+            diPts.push_back({3, qreal(time), 100.0});
+        } if (!nowOpen && lastOpen) {
+            diPts.push_back({3, qreal(time), 100.0});
+        }
 
-    // Извлекаем старый/новый статус каждого бит-канала
-    bool lastClosed = (m_lastDI & 0x01);
-    bool lastOpen = (m_lastDI & 0x02);
-    bool nowClosed = (di & 0x01);
-    bool nowOpen = (di & 0x02);
-
-    // Кв закрыто: начало закрытой фазы
-    if ( nowClosed && !lastClosed ) {
-        ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
-        pts.push_back({ 2, t, 0.0 });
+        if (!diPts.isEmpty()) emit AddPoints(Charts::Cyclic, diPts);
+        m_lastDI = di;
     }
-    // Кв закрыто: конец закрытой фазы
-    if ( !nowClosed && lastClosed ) {
-        pts.push_back({ 2, t, 0.0 });
-    }
-    // Кв открыто: начало открытой фазы
-    if ( nowOpen && !lastOpen ) {
-        ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
-        pts.push_back({ 3, t, 100.0 });
-    }
-    // Кв открыто: конец открытой фазы
-    if ( !nowOpen && lastOpen ) {
-        pts.push_back({ 3, t, 100.0 });
-    }
-
-    if (!pts.isEmpty())
-        emit AddPoints(Charts::CyclicSolenoid, pts);
-
-    m_lastDI = di;
 }
 
 void Program::SetMultipleDO(const QVector<bool>& states)
@@ -779,60 +743,50 @@ void Program::SetMultipleDO(const QVector<bool>& states)
     emit SetButtonsDOChecked(mask);
 }
 
-QVector<quint16> Program::makeRawValues(const QString &seq, bool normalOpen)
+QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normalOpen)
 {
     QVector<quint16> raw;
-    raw.reserve(seq.count('-') + 1);
+    raw.reserve(seq.size());
 
-    for (const QString &part : seq.split('-', Qt::SkipEmptyParts)) {
-        int pct = part.trimmed().toInt();
-        qreal current = 16.0 * (normalOpen ? 100 - pct : pct) / 100.0 + 4.0;
+    for (quint16 pct : seq) {
+        qreal current = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
         raw.push_back(m_mpi.GetDAC()->GetRawFromValue(current));
     }
     return raw;
 }
 
-void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &p)
+void Program::GetPoints_cyclicTest(QVector<QVector<QPointF>> &points)
+{
+    emit GetPoints(points, Charts::Cyclic);
+}
+
+void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
 {
     using TP = CyclicTestSettings::TestParameters;
-
     m_cyclicRunning = true;
 
-    // Валидация входных параметров
     bool ok = true;
-    if (p.testType == TP::Regulatory
-        || p.testType == TP::Combined) {
-        ok &= !p.regulatory_sequence.isEmpty()
-            &&  p.regulatory_delaySec > 0
-            &&  p.regulatory_holdTimeSec >= 0
-            &&  p.regulatory_numCycles > 0;
+    if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
+        ok &= !p.regSeqValues.isEmpty()
+        &&  p.regulatory_delaySec > 0
+        &&  p.regulatory_holdTimeSec >= 0
+        &&  p.regulatory_numCycles > 0;
     }
-    if (p.testType == TP::Shutoff
-        || p.testType == TP::Combined) {
-        ok &= !p.shutoff_sequence.isEmpty()
-            &&  p.shutoff_delaySec > 0
-            &&  p.shutoff_holdTimeSec >= 0
-            &&  p.shutoff_numCycles > 0;
+    if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
+        ok &= !p.offSeqValues.isEmpty()
+        &&  p.shutoff_delaySec > 0
+        &&  p.shutoff_holdTimeSec >= 0
+        &&  p.shutoff_numCycles > 0;
     }
-    if (!ok) {
-        emit StopTest();
-        return;
-    }
+    if (!ok) { emit stopTheTest(); return; }
 
-    // Парсим процентные значения для Regulatory
-    QStringList partsReg = p.regulatory_sequence.split('-', Qt::SkipEmptyParts);
-    QVector<int> valuesReg;
-    valuesReg.reserve(partsReg.size());
-    for (const QString &s : partsReg) {
-        bool convOk = false;
-        int v = s.trimmed().toInt(&convOk);
-        if (convOk) valuesReg.append(v);
-    }
+    const QVector<quint16> &valuesReg = p.regSeqValues;
 
-    // Инициализация телеметрии
     int recordCount = valuesReg.size();
+
     m_telemetryStore.cyclicTestRecord.ranges.clear();
     m_telemetryStore.cyclicTestRecord.ranges.resize(recordCount);
+
     for (int i = 0; i < recordCount; ++i) {
         auto &rec = m_telemetryStore.cyclicTestRecord.ranges[i];
         rec.rangePercent = valuesReg[i];
@@ -841,137 +795,118 @@ void Program::CyclicSolenoidTestStart(const CyclicTestSettings::TestParameters &
         rec.maxReverseValue = 0;
         rec.maxReverseCycle = 0;
     }
+
     m_telemetryStore.cyclicTestRecord.switch3to0Count = 0;
     m_telemetryStore.cyclicTestRecord.switch0to3Count = 0;
+
     m_lastDI = m_mpi.GetDIStatus();
     m_cyclicStartTs= QDateTime::currentMSecsSinceEpoch();
 
-    m_diPollTimer->start();
-
-    // процент → ток [4…20] → raw DAC
+    // процент -> ток
     ValveInfo *vi = m_registry->GetValveInfo();
     bool normalOpen = (vi->safePosition != 0);
 
-    QVector<quint16> rawReg = makeRawValues(p.regulatory_sequence, normalOpen);
-    QVector<quint16> rawOff;
-    if (!p.shutoff_sequence.isEmpty()) {
-        rawOff = makeRawValues(p.shutoff_sequence, normalOpen);
-    }
+    QVector<quint16> rawReg = makeRawValues(p.regSeqValues, normalOpen);
+    QVector<quint16> rawOff = makeRawValues(p.offSeqValues, normalOpen);
 
-    // Формируем параметры для теста
     TP params = p;
     params.rawRegValues = std::move(rawReg);
     params.rawOffValues = std::move(rawOff);
 
     emit SetButtonInitEnabled(false);
 
-    // Создаём и настраиваем CyclicTestSolenoid
-    auto *cyclicTestSolenoid = new CyclicTestSolenoid;
-    cyclicTestSolenoid->SetParameters(params);
+    auto *cyclicTests = new CyclicTests;
+    cyclicTests->SetParameters(params);
 
-    QThread *threadTest = new QThread;
-    cyclicTestSolenoid->moveToThread(threadTest);
+    QThread *threadTest = new QThread(this);
+    cyclicTests->moveToThread(threadTest);
 
-    // Подключаем все сигналы и слоты
     connect(threadTest, &QThread::started,
-            cyclicTestSolenoid, &CyclicTestSolenoid::Process);
+            cyclicTests, &CyclicTests::Process);
 
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::EndTest,
+    connect(cyclicTests, &CyclicTests::EndTest,
             threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest,
-            cyclicTestSolenoid, &CyclicTestSolenoid::Stop);
-
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::EndTest,
-            this, &Program::EndTest);
+    connect(this, &Program::stopTheTest,
+            cyclicTests, &CyclicTests::StoppingTheTest);
 
     connect(threadTest, &QThread::finished,
             threadTest, &QObject::deleteLater);
 
     connect(threadTest, &QThread::finished,
-            cyclicTestSolenoid, &QObject::deleteLater);
+            cyclicTests, &QObject::deleteLater);
 
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::UpdateGraph,
+    connect(cyclicTests, &CyclicTests::EndTest,
+            this, &Program::EndTest);
+
+    connect(cyclicTests, &CyclicTests::UpdateGraph,
             this, &Program::UpdateCharts_CyclicSolenoid);
 
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::SetDAC,
+    connect(cyclicTests, &CyclicTests::SetDAC,
             this, &Program::SetDAC);
 
-    if (p.testType == TP::Regulatory
-        || p.testType == TP::Combined) {
+    connect(cyclicTests, &CyclicTests::GetPoints,
+            this, &Program::GetPoints_cyclicTest,
+            Qt::BlockingQueuedConnection);
 
-        connect(cyclicTestSolenoid, &CyclicTestSolenoid::RegulatoryMeasurement,
-                this, [this](int cycle, int step, bool forward) {
-                    auto &rec = m_telemetryStore.cyclicTestRecord.ranges[step];
-                    qreal measured = m_mpi[0]->GetPersent();
-                    if (forward) {
-                        if (measured > rec.maxForwardValue) {
-                            rec.maxForwardValue = measured;
-                            rec.maxForwardCycle = cycle;
-                        }
-                    } else {
-                        if (measured > rec.maxReverseValue) {
-                            rec.maxReverseValue = measured;
-                            rec.maxReverseCycle = cycle;
-                        }
-                    }
-            }
-        );
-    }
+    // if (p.testType == TP::Regulatory
+    //     || p.testType == TP::Combined) {
+
+    // }
 
     if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
-        connect(cyclicTestSolenoid, &CyclicTestSolenoid::SetMultipleDO,
+
+        connect(cyclicTests, &CyclicTests::SetMultipleDO,
                 this, &Program::SetMultipleDO);
-
-        connect(cyclicTestSolenoid, &CyclicTestSolenoid::SetDO,
-                this, &Program::button_DO);
-
-        connect(cyclicTestSolenoid, &CyclicTestSolenoid::DOCounts,
-                this, &Program::onDOCounts);
     }
 
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::ClearGraph,
-            this, [&] { emit ClearPoints(Charts::CyclicSolenoid); });
-
     connect(this, &Program::ReleaseBlock,
-            cyclicTestSolenoid, &CyclicTestSolenoid::ReleaseBlock);
+            cyclicTests, &CyclicTests::ReleaseBlock);
 
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::SetStartTime,
+    connect(cyclicTests, &CyclicTests::SetStartTime,
             this, &Program::SetTimeStart);
 
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::testResults,
-            this, &Program::SolenoidResults);
+    connect(cyclicTests, &CyclicTests::Results,
+            this, &Program::CyclicTestsResults);
 
-    connect(cyclicTestSolenoid, &CyclicTestSolenoid::CycleCompleted,
+    connect(cyclicTests, &CyclicTests::CycleCompleted,
             this, &Program::CyclicCycleCompleted);
 
-    // Финальная подготовка UI и старт
-    emit ClearPoints(Charts::CyclicSolenoid);
+    connect(cyclicTests, &CyclicTests::ClearGraph,
+            this, [&] { emit ClearPoints(Charts::Cyclic); });
+
     m_testing = true;
     emit EnableSetTask(false);
     threadTest->start();
 }
 
-
-void Program::onDOCounts(const QVector<int>& on, const QVector<int>& off) {
-    m_telemetryStore.cyclicTestRecord.doOnCounts = on;
-    m_telemetryStore.cyclicTestRecord.doOffCounts = off;
-
-    emit TelemetryUpdated(m_telemetryStore);
-}
-
-void Program::SolenoidResults(QString sequence,
-                              quint16 cycles,
-                              double totalTimeSec)
+void Program::CyclicTestsResults(const CyclicTests::TestResults& r)
 {
-    m_telemetryStore.cyclicTestRecord.sequence = sequence;
-    m_telemetryStore.cyclicTestRecord.cycles = cycles;
-    m_telemetryStore.cyclicTestRecord.totalTimeSec = totalTimeSec;
+    auto &dst = m_telemetryStore.cyclicTestRecord;
+    dst.sequence = r.sequence;
+    dst.cycles = r.cycles;
+    dst.totalTimeSec = r.totalTimeSec;
+
+    dst.ranges.resize(r.ranges.size());
+    for (int i = 0; i < r.ranges.size(); ++i) {
+        const auto &src = r.ranges[i];
+        auto &d = dst.ranges[i];
+        d.rangePercent = src.rangePercent;
+        d.maxForwardValue = src.maxForwardValue;
+        d.maxForwardCycle = src.maxForwardCycle;
+        d.maxReverseValue = src.maxReverseValue;
+        d.maxReverseCycle = src.maxReverseCycle;
+    }
+
+    dst.doOnCounts = r.doOnCounts;
+    dst.doOffCounts = r.doOffCounts;
+    dst.switch3to0Count = r.switch3to0Count / 2;
+    dst.switch0to3Count = r.switch0to3Count / 2;
 
     emit TelemetryUpdated(m_telemetryStore);
 }
 
-void Program::StartOptionalTest(quint8 testNum)
+void Program::runningOptionalTest(quint8 testNum)
 {
     OptionTest::Task task;
     OptionTest *optionalTest;
@@ -985,7 +920,7 @@ void Program::StartOptionalTest(quint8 testNum)
 
         if (parameters.points.empty()) {
             delete optionalTest;
-            emit StopTest();
+            emit stopTheTest();
             return;
         }
 
@@ -1030,7 +965,7 @@ void Program::StartOptionalTest(quint8 testNum)
 
         if (parameters.points.empty()) {
             delete optionalTest;
-            emit StopTest();
+            emit stopTheTest();
             return;
         }
 
@@ -1074,7 +1009,7 @@ void Program::StartOptionalTest(quint8 testNum)
 
         if (parameters.points.empty()) {
             delete optionalTest;
-            emit StopTest();
+            emit stopTheTest();
             return;
         }
 
@@ -1123,7 +1058,7 @@ void Program::StartOptionalTest(quint8 testNum)
         break;
     }
     default:
-        emit StopTest();
+        emit stopTheTest();
         return;
     }
 
@@ -1138,8 +1073,8 @@ void Program::StartOptionalTest(quint8 testNum)
     connect(optionalTest, &OptionTest::EndTest,
             threadTest, &QThread::quit);
 
-    connect(this, &Program::StopTest,
-            optionalTest, &OptionTest::Stop);
+    connect(this, &Program::stopTheTest,
+            optionalTest, &OptionTest::StoppingTheTest);
 
     connect(threadTest, &QThread::finished,
             threadTest, &QThread::deleteLater);
@@ -1161,7 +1096,7 @@ void Program::StartOptionalTest(quint8 testNum)
 
     m_testing = true;
     emit EnableSetTask(false);
-    emit ClearPoints(Charts::CyclicSolenoid);
+    emit ClearPoints(Charts::Cyclic);
     threadTest->start();
 }
 
@@ -1176,11 +1111,8 @@ void Program::UpdateCharts_optionTest(Charts chart)
 
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
     percent = qBound<qreal>(0.0, percent, 100.0);
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
+    if (m_registry->GetValveInfo()->safePosition != 0)
+        percent = 100.0 - percent;
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
@@ -1194,7 +1126,7 @@ void Program::TerminateTest()
 {
     m_stopSetDac = true;
     m_dacEventloop->quit();
-    emit StopTest();
+    emit stopTheTest();
 }
 
 void Program::button_set_position()
@@ -1211,7 +1143,6 @@ void Program::button_DO(quint8 DO_num, bool state)
 
         m_initDOStates[DO_num] = state;
 
-        // сразу отражаем в UI
         quint8 mask = 0;
         for (int i = 0; i < m_initDOStates.size(); ++i)
             if (m_initDOStates[i]) mask |= (1 << i);
