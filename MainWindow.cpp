@@ -81,7 +81,6 @@ MainWindow::MainWindow(Registry& registry, QWidget* parent)
 
     appendLog("Логовое окно инициализировано");
 
-
     layout->addWidget(logOutput);
 
     connect(m_program, &Program::errorOccured,
@@ -399,6 +398,12 @@ void MainWindow::onCyclicCountdown()
     }
 }
 
+void MainWindow::EnableSetTask(bool enable)
+{
+    ui->verticalSlider_task->setEnabled(enable);
+    ui->doubleSpinBox_task->setEnabled(enable);
+}
+
 void MainWindow::on_pushButton_signal_4mA_clicked()
 {
     ui->doubleSpinBox_task->setValue(4.0);
@@ -419,11 +424,7 @@ void MainWindow::on_pushButton_signal_20mA_clicked()
 {
     ui->doubleSpinBox_task->setValue(20.0);
 }
-void MainWindow::EnableSetTask(bool enable)
-{
-    ui->verticalSlider_task->setEnabled(enable);
-    ui->doubleSpinBox_task->setEnabled(enable);
-}
+
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (auto w = qobject_cast<QWidget*>(watched)) {
@@ -576,6 +577,19 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     }
     ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
     ui->tableWidget_stepResults->resizeColumnsToContents();
+
+    // m_telemetryStore.stepResults.clear();
+
+    // for (const auto &r : results) {
+    //     StepTestRecord rec;
+
+    //     rec.from = r.from;
+    //     rec.to = r.from;
+    //     rec.T_value = r.T_value;
+    //     rec.overshoot = r.overshoot;
+
+    //     m_telemetryStore.stepResults.push_back(rec);
+    // }
 }
 
 void MainWindow::DisplayDependingPattern() {

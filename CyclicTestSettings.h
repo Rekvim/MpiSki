@@ -49,16 +49,17 @@ private slots:
 
     void onPushButtonStartClicked();
 
-    void onAddValueClicked();
-    void onEditValueClicked();
-    void onRemoveValueClicked();
-    void onAddDelayClicked();
-    void onEditDelayClicked();
-    void onRemoveDelayClicked();
+    void on_pushButton_addRangeRegulatory_clicked();
+    void on_pushButton_editRangeRegulatory_clicked();
+    void on_pushButton_removeRangeRegulatory_clicked();
 
-    void onAddDelayShutOffClicked();
-    void onEditDelayShutOffClicked();
-    void onRemoveDelayShutOffClicked();
+    void on_pushButton_addDelayRegulatory_clicked();
+    void on_pushButton_editDelayRegulatory_clicked();
+    void on_pushButton_removeDelayRegulatory_clicked();
+
+    void on_pushButton_addDelayShutOff_clicked();
+    void on_pushButton_editDelayShutOff_clicked();
+    void on_pushButton_removeDelayShutOff_clicked();
 
 private:
     Ui::CyclicTestSettings *ui;
