@@ -47,8 +47,6 @@ void CyclicTestSettings::onTestSelectionChanged()
     }
 }
 
-
-
 CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::CyclicTestSettings)
@@ -57,9 +55,7 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 
     // Регулирующий
 
-
     // Отсечной
-
 
     // Общие
     connect(ui->pushButton_cancel, &QPushButton::clicked,
@@ -104,7 +100,6 @@ static bool parseSequence(const QString& src,
 }
 
 // --- Регулирующий
-
 void CyclicTestSettings::on_pushButton_addRangeRegulatory_clicked()
 {
     bool ok;
@@ -168,7 +163,6 @@ void CyclicTestSettings::on_pushButton_removeDelayRegulatory_clicked()
 }
 
 // --- Отсечной
-
 void CyclicTestSettings::on_pushButton_addDelayShutOff_clicked()
 {
     bool ok;
@@ -201,7 +195,6 @@ void CyclicTestSettings::on_pushButton_removeDelayShutOff_clicked()
 }
 
 // --- Общая обработка «Старт»
-
 void CyclicTestSettings::onPushButtonStartClicked()
 {
     using TP = TestParameters;

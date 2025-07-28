@@ -250,6 +250,47 @@ MainWindow::~MainWindow()
     m_programThread->wait();
 }
 
+void MainWindow::initializeFromRegistry(Registry *registry)
+{
+    ObjectInfo *objectInfo = registry->GetObjectInfo();
+    ValveInfo *valveInfo = registry->GetValveInfo();
+    OtherParameters *otherParameters = registry->GetOtherParameters();
+
+    ui->lineEdit_date->setText(otherParameters->date);
+
+    ui->lineEdit_object->setText(objectInfo->object);
+    ui->lineEdit_manufacture->setText(objectInfo->manufactory);
+    ui->lineEdit_department->setText(objectInfo->department);
+    ui->lineEdit_FIO->setText(objectInfo->FIO);
+
+    ui->lineEdit_positionNumber->setText(valveInfo->positionNumber);
+    ui->lineEdit_manufacturer->setText(valveInfo->manufacturer);
+    ui->lineEdit_valveModel->setText(valveInfo->valveModel);
+    ui->lineEdit_serialNumber->setText(valveInfo->serialNumber);
+    ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
+    ui->lineEdit_driveModel->setText(valveInfo->driveModel);
+    ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
+    ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
+    ui->lineEdit_safePosition->setText(otherParameters->safePosition);
+    ui->lineEdit_dynamicErrorRecomend->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
+    ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo->materialStuffingBoxSeal);
+
+    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
+    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
+
+    if (valveInfo->safePosition != 0) {
+        m_stepTestSettings->reverse();
+        m_responseTestSettings->reverse();
+        m_resolutionTestSettings->reverse();
+    }
+
+    InitCharts(valveInfo->strokeMovement != 0);;
+
+    m_programThread->start();
+
+    m_reportSaver->SetRegistry(registry);
+}
+
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     // Init
     ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
@@ -376,6 +417,20 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
         QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
 }
 
+void MainWindow::on_pushButton_init_clicked()
+{
+    QVector<bool> states = {
+        ui->pushButton_DO0->isChecked(),
+        ui->pushButton_DO1->isChecked(),
+        ui->pushButton_DO2->isChecked(),
+        ui->pushButton_DO3->isChecked()
+    };
+
+    emit InitDOSelected(states);
+    emit PatternChanged(m_patternType);
+    emit Initialize();
+}
+
 void MainWindow::appendLog(const QString& text) {
     const QString stamp = QDateTime::currentDateTime()
     .toString("[hh:mm:ss.zzz] ");
@@ -489,48 +544,6 @@ void MainWindow::onCountdownTimeout()
     if (remainingMs == 0) {
         m_durationTimer->stop();
     }
-}
-
-void MainWindow::initializeFromRegistry(Registry *registry)
-{
-    ObjectInfo *objectInfo = registry->GetObjectInfo();
-    ValveInfo *valveInfo = registry->GetValveInfo();
-    OtherParameters *otherParameters = registry->GetOtherParameters();
-
-    ui->lineEdit_date->setText(otherParameters->date);
-
-    ui->lineEdit_object->setText(objectInfo->object);
-    ui->lineEdit_manufacture->setText(objectInfo->manufactory);
-    ui->lineEdit_department->setText(objectInfo->department);
-    ui->lineEdit_FIO->setText(objectInfo->FIO);
-
-    ui->lineEdit_positionNumber->setText(valveInfo->positionNumber);
-    ui->lineEdit_manufacturer->setText(valveInfo->manufacturer);
-    ui->lineEdit_valveModel->setText(valveInfo->valveModel);
-    ui->lineEdit_serialNumber->setText(valveInfo->serialNumber);
-    ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
-    ui->lineEdit_driveModel->setText(valveInfo->driveModel);
-    ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
-    ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
-    ui->lineEdit_safePosition->setText(otherParameters->safePosition);
-    ui->lineEdit_dynamicErrorRecomend->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
-    ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo->materialStuffingBoxSeal);
-
-    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
-
-    if (valveInfo->safePosition != 0) {
-        m_stepTestSettings->reverse();
-        m_responseTestSettings->reverse();
-        m_resolutionTestSettings->reverse();
-    }
-
-    InitCharts(valveInfo->strokeMovement != 0);;
-
-    // m_program->SetRegistry(registry);
-    m_programThread->start();
-
-    m_reportSaver->SetRegistry(registry);
 }
 
 void MainWindow::SetText(TextObjects object, const QString &text)
@@ -1096,9 +1109,6 @@ void MainWindow::SetCheckboxDIChecked(quint8 status)
 
 void MainWindow::InitCharts(bool rotate)
 {
-    // ValveInfo *valveInfo = m_registry->GetValveInfo();
-    // bool rotate = (valveInfo->strokeMovement != 0);
-
     m_charts[Charts::Task] = ui->Chart_task;
     m_charts[Charts::Task]->setName("Task");
     m_charts[Charts::Task]->useTimeaxis(false);
@@ -1347,20 +1357,6 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
         *image = img.scaled(1000, 430, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(img));
     }
-}
-
-void MainWindow::on_pushButton_init_clicked()
-{
-        QVector<bool> states = {
-            ui->pushButton_DO0->isChecked(),
-            ui->pushButton_DO1->isChecked(),
-            ui->pushButton_DO2->isChecked(),
-            ui->pushButton_DO3->isChecked()
-        };
-
-        emit InitDOSelected(states);
-        emit PatternChanged(m_patternType);
-        emit Initialize();
 }
 
 void MainWindow::on_pushButton_imageChartTask_clicked()
