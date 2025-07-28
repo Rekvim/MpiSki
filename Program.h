@@ -56,9 +56,11 @@ class Program : public QObject
 {
     Q_OBJECT
 public:
-    explicit Program(QObject *parent = nullptr);
-    void SetRegistry(Registry *registry);
+    explicit Program(Registry& registry, QObject* parent = nullptr);
     bool isInitialized() const;
+
+    Registry& registry() noexcept { return m_registry; }
+    const TelemetryStore& telemetry() const noexcept { return m_telemetryStore; }
 
 signals:
 
@@ -70,6 +72,7 @@ signals:
     void SetTextColor(const TextObjects object, const QColor color);
     void SetTask(qreal task);
     void SetSensorNumber(quint8 num);
+    void SetDOControlsEnabled(bool enable);
     void SetButtonInitEnabled(bool enable);
     void SetGroupDOVisible(bool visible);
     void SetVisible(Charts chart, quint16 series, bool visible);
@@ -103,10 +106,10 @@ signals:
     void SetCheckboxDIChecked(quint8 status);
 
 private:
-    Registry *m_registry;
+    Registry& m_registry;
+    TelemetryStore m_telemetryStore;
 
     MPI m_mpi;
-    TelemetryStore m_telemetryStore;
     bool m_cyclicRunning = false;
     QTimer* m_diPollTimer = nullptr;
     quint8 m_lastDI = 0;
@@ -122,11 +125,12 @@ private:
     bool m_waitForButton = false;
     QVector<bool> m_initDOStates;
     QVector<bool> m_savedInitDOStates;
-
+    std::array<bool, 4> m_enabledDO {false, false, false, false};
     bool m_isInitialized = false;
     SelectTests::PatternType m_patternType;
 
-    qreal currentPercent();
+    qreal currentPercent() const;
+    qreal calculatingK();
 
     // init
     void connectAndInitDevice();

@@ -6,8 +6,9 @@
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
 
-Program::Program(QObject *parent)
-    : QObject{parent}
+Program::Program(Registry& registry, QObject* parent)
+    : QObject(parent)
+    , m_registry(registry)
 {
     m_timerSensors = new QTimer(this);
     m_timerSensors->setInterval(200);
@@ -29,12 +30,7 @@ Program::Program(QObject *parent)
     emit errorOccured("Не удалось установить связь с устройством");
 }
 
-void Program::SetRegistry(Registry *registry)
-{
-    m_registry = registry;
-}
-
-void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool waitForStop, bool waitForStart)
+void Program::SetDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart)
 {
     m_stopSetDac = false;
 
@@ -65,11 +61,11 @@ void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool waitForStop, bool waitF
 
     if (m_stopSetDac) { emit ReleaseBlock(); return; }
 
-    if (sleep_ms > 20) {
+    if (sleepMs > 20) {
         QTimer timer;
         connect(&timer, &QTimer::timeout,
                 m_dacEventloop, &QEventLoop::quit);
-        timer.start(sleep_ms);
+        timer.start(sleepMs);
 
         m_dacEventloop->exec();
         timer.stop();
@@ -106,11 +102,16 @@ void Program::SetTimeStart()
     m_startTime = QDateTime::currentMSecsSinceEpoch();
 }
 
-qreal Program::currentPercent() // add
+qreal Program::calculatingK() {
+    ValveInfo *valveInfo = m_registry.GetValveInfo();
+    return 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+}
+
+qreal Program::currentPercent() const
 {
     qreal percent = ((m_mpi.GetDAC()->GetValue() - 4.0) / 16.0) * 100.0;
     percent = qBound<qreal>(0.0, percent, 100.0);
-    if (m_registry->GetValveInfo()->safePosition != 0)
+    if (m_registry.GetValveInfo()->safePosition != 0)
         percent = 100.0 - percent;
     return percent;
 }
@@ -142,13 +143,7 @@ void Program::updateSensors()
     emit SetText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
 
     QVector<Point> points;
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qBound<qreal>(0.0, percent, 100.0);
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
+    qreal percent = currentPercent();
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_initTime;
 
@@ -193,13 +188,13 @@ void Program::initialization()
 
     detectAndReportSensors();
 
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ValveInfo *valveInfo = m_registry.GetValveInfo();
     bool normalClosed = (valveInfo->safePosition == 0);
 
     // Измерение начального и конечного положения соленоида
-    if (m_patternType == SelectTests::Pattern_B_SACVT ||
-        m_patternType == SelectTests::Pattern_C_SACVT ||
-        m_patternType == SelectTests::Pattern_C_SOVT) {
+    if (m_patternType == SelectTests::Pattern_C_SOVT ||
+        m_patternType == SelectTests::Pattern_B_SACVT||
+        m_patternType == SelectTests::Pattern_C_SACVT) {
 
         if ((m_mpi.Version() & 0x40) != 0) {
             emit SetButtonsDOChecked(m_mpi.GetDOStatus());
@@ -207,19 +202,23 @@ void Program::initialization()
         }
 
         measureEndPositionShutoff(normalClosed);
-
         measureStartPositionShutoff(normalClosed);
     }
 
     // Измерение начального и конечного положения позиционера
     if (m_patternType == SelectTests::Pattern_B_CVT ||
-        m_patternType == SelectTests::Pattern_C_CVT ||
-        m_patternType == SelectTests::Pattern_B_SACVT||
-        m_patternType == SelectTests::Pattern_C_SACVT) {
+        m_patternType == SelectTests::Pattern_C_CVT) {
 
         measureStartPosition(normalClosed);
         measureEndPosition(normalClosed);
     }
+
+    // Запись хода клапана (позиционера)
+    // if (m_patternType == SelectTests::Pattern_B_SACVT||
+    //     m_patternType == SelectTests::Pattern_C_SACVT) {
+
+    //     recordStrokeRange(normalClosed);
+    // }
 
     calculateAndApplyCoefficients();
 
@@ -231,6 +230,7 @@ void Program::initialization()
 
         recordStrokeRange(normalClosed);
     }
+
     finalizeInitialization();
 }
 
@@ -382,7 +382,7 @@ void Program::measureEndPositionShutoff(bool normalClosed)
 
 void Program::calculateAndApplyCoefficients()
 {
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ValveInfo *valveInfo = m_registry.GetValveInfo();
     qreal coeff = 1.0;
 
     if (valveInfo->strokeMovement != 0) {
@@ -516,9 +516,7 @@ void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
 
 void Program::results_mainTest(MainTest::TestResults results)
 {
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-
-    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+    qreal k = calculatingK();
 
     auto &s = m_telemetryStore.mainTestRecord;
 
@@ -546,11 +544,7 @@ void Program::updateCharts_mainTest()
 {
     QVector<Point> points;
 
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qBound<qreal>(0.0, percent, 100.0);
-
-    if (m_registry->GetValveInfo()->safePosition != 0)
-        percent = 100.0 - percent;
+    qreal percent = currentPercent();
 
     qreal task = m_mpi[0]->GetValueFromPercent(percent);
     qreal X = m_mpi.GetDAC()->GetValue();
@@ -572,9 +566,7 @@ void Program::addFriction(const QVector<QPointF> &points)
 {
     QVector<Point> chartPoints;
 
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-
-    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+    qreal k = calculatingK();
 
     for (QPointF point : points) {
         chartPoints.push_back({0, point.x(), point.y() * k});
@@ -599,13 +591,19 @@ void Program::runningStrokeTest()
     emit SetButtonInitEnabled(false);
     emit ClearPoints(Charts::Stroke);
 
-    if (m_patternType == SelectTests::Pattern_C_SOVT
-        || m_patternType == SelectTests::Pattern_C_SACVT
-        || m_patternType == SelectTests::Pattern_B_SACVT)
-    {
+    emit SetDOControlsEnabled(false);
+
+    for (int i = 0; i < 4; ++i) {
+        m_enabledDO[i] = (i < m_savedInitDOStates.size())
+        ? m_savedInitDOStates[i]
+        : false;
     }
+    SetMultipleDO(m_savedInitDOStates);
 
     StrokeTest *strokeTest = new StrokeTest;
+
+    strokeTest->SetPatternType(m_patternType);
+
     QThread *threadTest = new QThread(this);
     strokeTest->moveToThread(threadTest);
 
@@ -627,14 +625,19 @@ void Program::runningStrokeTest()
     connect(this, &Program::ReleaseBlock,
             strokeTest, &MainTest::ReleaseBlock);
 
-    connect(strokeTest, &StrokeTest::EndTest,
-            this, &Program::endTest);
+    connect(strokeTest, &StrokeTest::EndTest, this, [&]{
+        emit SetDOControlsEnabled(true);
+        endTest();
+    });
 
     connect(strokeTest, &StrokeTest::UpdateGraph,
             this, &Program::updateCharts_strokeTest);
 
     connect(strokeTest, &StrokeTest::SetDAC,
             this, &Program::SetDAC);
+
+    connect(strokeTest, &StrokeTest::SetMultipleDO,
+            this, &Program::SetMultipleDO);
 
     connect(strokeTest, &StrokeTest::SetStartTime,
             this, &Program::SetTimeStart);
@@ -661,13 +664,7 @@ void Program::updateCharts_strokeTest()
 {
     QVector<Point> points;
 
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qBound<qreal>(0.0, percent, 100.0);
-
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    if (valveInfo->safePosition != 0) {
-        percent = 100 - percent;
-    }
+    qreal percent = currentPercent();
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
@@ -677,54 +674,38 @@ void Program::updateCharts_strokeTest()
     emit AddPoints(Charts::Stroke, points);
 }
 
-void Program::updateCharts_CyclicTest()
-{
-    if (!m_cyclicRunning) return;
+// void Program::SetMultipleDO(const QVector<bool>& states)
+// {
+//     // quint8 mask = 0;
+//     for (int d = 0; d < states.size(); ++d) {
+//         button_DO(d, states[d]); // меняет DO через SetDiscreteOutput
+//         // if (states[d]) mask |= (1 << d);
+//     }
+//     // emit SetButtonsDOChecked(mask);
+// }
 
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qBound<qreal>(0.0, percent, 100.0);
-    if (m_registry->GetValveInfo()->safePosition != 0)
-        percent = 100.0 - percent;
-
-    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
-
-    QVector<Point> points;
-    points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
-    emit AddPoints(Charts::Cyclic, points);
-
-    quint8 di = m_mpi.GetDIStatus();
-    if (di != m_lastDI) {
-        QVector<Point> diPts;
-        bool lastClosed = (m_lastDI & 0x01);
-        bool lastOpen = (m_lastDI & 0x02);
-        bool nowClosed = (di & 0x01);
-        bool nowOpen = (di & 0x02);
-
-        if (nowClosed && !lastClosed) {
-            ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
-            diPts.push_back({2, qreal(time), 0.0});
-        } if (!nowClosed && lastClosed) {
-            diPts.push_back({2, qreal(time), 0.0});
-        } if (nowOpen && !lastOpen) {
-            ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
-            diPts.push_back({3, qreal(time), 100.0});
-        } if (!nowOpen && lastOpen) {
-            diPts.push_back({3, qreal(time), 100.0});
-        }
-
-        if (!diPts.isEmpty()) emit AddPoints(Charts::Cyclic, diPts);
-        m_lastDI = di;
-    }
-}
+// void Program::SetMultipleDO(const QVector<bool>& states)
+// {
+//     quint8 mask = 0;
+//     for (int d = 0; d < states.size(); ++d) {
+//         m_mpi.SetDiscreteOutput(d, states[d]);
+//         if (states[d]) mask |= (1 << d);
+//     }
+//     emit SetButtonsDOChecked(mask);
+// }
 
 void Program::SetMultipleDO(const QVector<bool>& states)
 {
     quint8 mask = 0;
-    for (int d = 0; d < states.size(); ++d) {
-        m_mpi.SetDiscreteOutput(d, states[d]);
-        if (states[d]) mask |= (1 << d);
+
+    for (int i = 0; i < states.size() && i < int(m_enabledDO.size()); ++i) {
+        if (!m_enabledDO[i]) continue;
+
+        m_mpi.SetDiscreteOutput(i, states[i]);
+        if (states[i])
+            mask |= (1 << i);
     }
+
     emit SetButtonsDOChecked(mask);
 }
 
@@ -754,21 +735,20 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
     if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
         ok &= !p.regSeqValues.isEmpty()
         &&  p.regulatory_delaySec > 0
-        &&  p.regulatory_holdTimeSec >= 0
-        &&  p.regulatory_numCycles > 0;
+            &&  p.regulatory_holdTimeSec >= 0
+            &&  p.regulatory_numCycles > 0;
     }
     if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
         ok &= !p.offSeqValues.isEmpty()
         &&  p.shutoff_delaySec > 0
-        &&  p.shutoff_holdTimeSec >= 0
-        &&  p.shutoff_numCycles > 0;
+            &&  p.shutoff_holdTimeSec >= 0
+            &&  p.shutoff_numCycles > 0;
     }
     if (!ok) { emit stopTheTest(); return; }
 
     const QVector<quint16> &valuesReg = p.regSeqValues;
 
     int recordCount = valuesReg.size();
-
     m_telemetryStore.cyclicTestRecord.ranges.clear();
     m_telemetryStore.cyclicTestRecord.ranges.resize(recordCount);
 
@@ -787,8 +767,10 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
     m_lastDI = m_mpi.GetDIStatus();
     m_cyclicStartTs= QDateTime::currentMSecsSinceEpoch();
 
+    m_enabledDO = p.shutoff_DO;
+
     // процент -> ток
-    ValveInfo *vi = m_registry->GetValveInfo();
+    ValveInfo *vi = m_registry.GetValveInfo();
     bool normalOpen = (vi->safePosition != 0);
 
     QVector<quint16> rawReg = makeRawValues(p.regSeqValues, normalOpen);
@@ -799,6 +781,7 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
     params.rawOffValues = std::move(rawOff);
 
     emit SetButtonInitEnabled(false);
+    emit SetDOControlsEnabled(false);
 
     auto *cyclicTests = new CyclicTests;
     cyclicTests->SetParameters(params);
@@ -821,8 +804,10 @@ void Program::runningCyclicTest(const CyclicTestSettings::TestParameters &p)
     connect(threadTest, &QThread::finished,
             cyclicTests, &QObject::deleteLater);
 
-    connect(cyclicTests, &CyclicTests::EndTest,
-            this, &Program::endTest);
+    connect(cyclicTests, &CyclicTests::EndTest, this, [this] {
+        emit SetDOControlsEnabled(true);
+        endTest();
+    });
 
     connect(cyclicTests, &CyclicTests::UpdateGraph,
             this, &Program::updateCharts_CyclicTest);
@@ -891,6 +876,44 @@ void Program::results_cyclicTests(const CyclicTests::TestResults& r)
     emit TelemetryUpdated(m_telemetryStore);
 }
 
+void Program::updateCharts_CyclicTest()
+{
+    if (!m_cyclicRunning) return;
+
+    qreal percent = currentPercent();
+
+    quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
+
+    QVector<Point> points;
+    points.push_back({0, qreal(time), percent});
+    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+    emit AddPoints(Charts::Cyclic, points);
+
+    quint8 di = m_mpi.GetDIStatus();
+    if (di != m_lastDI) {
+        QVector<Point> diPts;
+        bool lastClosed = (m_lastDI & 0x01);
+        bool lastOpen = (m_lastDI & 0x02);
+        bool nowClosed = (di & 0x01);
+        bool nowOpen = (di & 0x02);
+
+        if (nowClosed && !lastClosed) {
+            ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
+            diPts.push_back({2, qreal(time), 0.0});
+        } if (!nowClosed && lastClosed) {
+            diPts.push_back({2, qreal(time), 0.0});
+        } if (nowOpen && !lastOpen) {
+            ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
+            diPts.push_back({3, qreal(time), 100.0});
+        } if (!nowOpen && lastOpen) {
+            diPts.push_back({3, qreal(time), 100.0});
+        }
+
+        if (!diPts.isEmpty()) emit AddPoints(Charts::Cyclic, diPts);
+        m_lastDI = di;
+    }
+}
+
 void Program::runningOptionalTest(quint8 testNum)
 {
     OptionTest::Task task;
@@ -911,7 +934,7 @@ void Program::runningOptionalTest(quint8 testNum)
 
         task.delay = parameters.delay;
 
-        ValveInfo *valveInfo = m_registry->GetValveInfo();
+        ValveInfo *valveInfo = m_registry.GetValveInfo();
 
         bool normalOpen = (valveInfo->safePosition != 0);
 
@@ -956,7 +979,7 @@ void Program::runningOptionalTest(quint8 testNum)
 
         task.delay = parameters.delay;
 
-        ValveInfo *valveInfo = m_registry->GetValveInfo();
+        ValveInfo *valveInfo = m_registry.GetValveInfo();
 
         bool normalOpen = (valveInfo->safePosition != 0);
 
@@ -999,7 +1022,7 @@ void Program::runningOptionalTest(quint8 testNum)
         }
 
         task.delay = parameters.delay;
-        ValveInfo *valveInfo = m_registry->GetValveInfo();
+        ValveInfo *valveInfo = m_registry.GetValveInfo();
 
         qreal startValue = 4.0;
         qreal endValue = 20.0;
@@ -1111,10 +1134,7 @@ void Program::updateCharts_optionTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = ((m_mpi.GetDAC()->GetValue() - 4) / 16) * 100;
-    percent = qBound<qreal>(0.0, percent, 100.0);
-    if (m_registry->GetValveInfo()->safePosition != 0)
-        percent = 100.0 - percent;
+    qreal percent = currentPercent();
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 

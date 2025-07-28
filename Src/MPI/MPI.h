@@ -16,32 +16,37 @@ class MPI : public QObject
 public:
     explicit MPI(QObject *parent = nullptr);
     ~MPI();
+
+    bool Initialize();
     bool Connect();
     quint8 Version();
+
     quint8 GetDOStatus();
     quint8 GetDIStatus();
 
-    bool Initialize();
     void SetDAC_Raw(quint16 value);
     void SetDAC_Real(qreal value);
-    quint16 GetDac_Min();
-    quint16 GetDac_Max();
+
+    Sensor *GetDAC() const;
+    quint16 GetDac_Min() const;
+    quint16 GetDac_Max() const;
+
     quint8 SensorCount() const;
     const QString &PortName() const;
-    Sensor *operator[](quint8 n);
-    Sensor *GetDAC();
+    Sensor *operator[](quint8 n) const;
     void SetDiscreteOutput(quint8 DO_num, bool state);
 
 private:
+    bool m_isConnected = false;
+
     UartReader *m_uartReader;
     QThread *m_uartThread;
-    bool m_isConnected = false;
     QString m_portName;
     QVector<Sensor *> m_sensors;
     Sensor *m_dac = new Sensor;
 
-    quint16 DAC_MIN = 65536 * 3 / 24;
-    quint16 DAC_MAX = 65536 * 21 / 24;
+    quint16 m_DAC_MIN = 65536 * 3 / 24;
+    quint16 m_DAC_MAX = 65536 * 21 / 24;
 
     void Sleep(quint16 msecs);
 

@@ -10,9 +10,11 @@
 
 #include <QPlainTextEdit>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(Registry& registry, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , m_program(new Program(registry, this))
+    , m_programThread(new QThread(this))
 {
     ui->setupUi(this);
 
@@ -62,8 +64,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->lineEdit_pressureSensor_3;
     m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
 
-    m_program = new Program;
-    m_programThread = new QThread(this);
+    // m_program = new Program;
+    // m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
     auto *layout = new QVBoxLayout;
@@ -237,6 +239,9 @@ MainWindow::MainWindow(QWidget *parent)
                 int remaining = completed;
                 ui->label_cyclicTest_completedCyclesValue->setText(QString::number(remaining));
             });
+
+    connect(m_program, &Program::SetDOControlsEnabled,
+            this, &MainWindow::SetDOControlsEnabled);
 }
 
 MainWindow::~MainWindow()
@@ -247,8 +252,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
-
-    m_telemetryStore = TS;
     // Init
     ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
     ui->label_deviceStatusValue->setStyleSheet(
@@ -487,13 +490,11 @@ void MainWindow::onCountdownTimeout()
     }
 }
 
-void MainWindow::SetRegistry(Registry *registry)
+void MainWindow::initializeFromRegistry(Registry *registry)
 {
-    m_registry = registry;
-
-    ObjectInfo *objectInfo = m_registry->GetObjectInfo();
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    OtherParameters *otherParameters = m_registry->GetOtherParameters();
+    ObjectInfo *objectInfo = registry->GetObjectInfo();
+    ValveInfo *valveInfo = registry->GetValveInfo();
+    OtherParameters *otherParameters = registry->GetOtherParameters();
 
     ui->lineEdit_date->setText(otherParameters->date);
 
@@ -523,9 +524,9 @@ void MainWindow::SetRegistry(Registry *registry)
         m_resolutionTestSettings->reverse();
     }
 
-    InitCharts();
+    InitCharts(valveInfo->strokeMovement != 0);;
 
-    m_program->SetRegistry(registry);
+    // m_program->SetRegistry(registry);
     m_programThread->start();
 
     m_reportSaver->SetRegistry(registry);
@@ -575,19 +576,6 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     }
     ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
     ui->tableWidget_stepResults->resizeColumnsToContents();
-
-    m_telemetryStore.stepResults.clear();
-
-    for (const auto &r : results) {
-        StepTestRecord rec;
-
-        rec.from = r.from;
-        rec.to = r.from;
-        rec.T_value = r.T_value;
-        rec.overshoot = r.overshoot;
-
-        m_telemetryStore.stepResults.push_back(rec);
-    }
 }
 
 void MainWindow::DisplayDependingPattern() {
@@ -1054,24 +1042,36 @@ void MainWindow::on_pushButton_cyclicTest_save_clicked()
     SaveChart(Charts::Cyclic);
 }
 
+void MainWindow::SetDOControlsEnabled(bool enabled)
+{
+    ui->pushButton_DO0->setEnabled(enabled);
+    ui->pushButton_DO1->setEnabled(enabled);
+    ui->pushButton_DO2->setEnabled(enabled);
+    ui->pushButton_DO3->setEnabled(enabled);
+    ui->groupBox_DO->setEnabled(enabled);
+}
+
 void MainWindow::SetButtonsDOChecked(quint8 status)
 {
+    auto update = [](QPushButton* btn, bool state) {
+        if (btn->isChecked() != state)
+            btn->setChecked(state);
+    };
+
     ui->pushButton_DO0->blockSignals(true);
     ui->pushButton_DO1->blockSignals(true);
     ui->pushButton_DO2->blockSignals(true);
     ui->pushButton_DO3->blockSignals(true);
 
-    ui->pushButton_DO0->setChecked((status & (1 << 0)) != 0);
-    ui->pushButton_DO1->setChecked((status & (1 << 1)) != 0);
-    ui->pushButton_DO2->setChecked((status & (1 << 2)) != 0);
-    ui->pushButton_DO3->setChecked((status & (1 << 3)) != 0);
+    update(ui->pushButton_DO0, status & (1 << 0));
+    update(ui->pushButton_DO1, status & (1 << 1));
+    update(ui->pushButton_DO2, status & (1 << 2));
+    update(ui->pushButton_DO3, status & (1 << 3));
 
     ui->pushButton_DO0->blockSignals(false);
     ui->pushButton_DO1->blockSignals(false);
     ui->pushButton_DO2->blockSignals(false);
     ui->pushButton_DO3->blockSignals(false);
-
-    ui->groupBox_DO->setEnabled(true);
 }
 
 void MainWindow::SetCheckboxDIChecked(quint8 status)
@@ -1080,10 +1080,10 @@ void MainWindow::SetCheckboxDIChecked(quint8 status)
     ui->checkBox_switch_0_3->setChecked((status & (1 << 1)) != 0);
 }
 
-void MainWindow::InitCharts()
+void MainWindow::InitCharts(bool rotate)
 {
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    bool rotate = (valveInfo->strokeMovement != 0);
+    // ValveInfo *valveInfo = m_registry->GetValveInfo();
+    // bool rotate = (valveInfo->strokeMovement != 0);
 
     m_charts[Charts::Task] = ui->Chart_task;
     m_charts[Charts::Task]->setName("Task");
@@ -1345,8 +1345,8 @@ void MainWindow::on_pushButton_init_clicked()
         };
 
         emit InitDOSelected(states);
-        emit Initialize();
         emit PatternChanged(m_patternType);
+        emit Initialize();
 }
 
 void MainWindow::on_pushButton_imageChartTask_clicked()
@@ -1378,14 +1378,24 @@ void MainWindow::on_pushButton_report_generate_clicked()
     }
 
     ReportSaver::Report report;
-    reportBuilder->buildReport(report,
-                               m_telemetryStore,
-                               *m_registry->GetObjectInfo(),
-                               *m_registry->GetValveInfo(),
-                               *m_registry->GetOtherParameters(),
-                               m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
 
-    qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
+    auto objectInfo = m_program->registry().GetObjectInfo();
+    auto valveInfo = m_program->registry().GetValveInfo();
+    auto otherParameters = m_program->registry().GetOtherParameters();
+
+    reportBuilder->buildReport(
+        report,
+        m_program->telemetry(),
+        *objectInfo,
+        *valveInfo,
+        *otherParameters,
+        m_imageChartTask,
+        m_imageChartPressure,
+        m_imageChartFriction,
+        m_imageChartStep
+    );
+
+    // qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 
     bool saved = m_reportSaver->SaveReport(report, reportBuilder->templatePath());
     ui->pushButton_report_open->setEnabled(saved);

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
     Registry registry;
 
-    MainWindow mainWindow;
+    MainWindow mainWindow(registry);
 
     ObjectWindow objectWindow;
     objectWindow.LoadFromReg(&registry);
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
     mainWindow.SetPatternType(selectedPattern);
     mainWindow.SetBlockCTS(cts);
-    mainWindow.SetRegistry(&registry);
+    mainWindow.initializeFromRegistry(&registry);
     mainWindow.show();
     mainWindow.showMaximized();
     return a.exec();

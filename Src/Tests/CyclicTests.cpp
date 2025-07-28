@@ -61,7 +61,9 @@ void CyclicTests::Process()
     r.sequence = seqToString(seq);
     r.cycles = cycles;
     r.totalTimeSec = totalSec;
-    r.ranges = calculateRanges(pts, seq);
+    if (!shutoffOnly) {
+        r.ranges = m_regRanges;
+    }
     r.doOnCounts = m_doOnCounts;
     r.doOffCounts = m_doOffCounts;
 
@@ -96,6 +98,12 @@ double CyclicTests::processRegulatory()
     }
 
     SetDACBlocked(0, 0, true);
+
+    {
+        QVector<QVector<QPointF>> pts;
+        fetchPoints(pts);
+        m_regRanges = calculateRanges(pts, m_params.regSeqValues);
+    }
 
     return timer.elapsed() / 1000.0;
 }

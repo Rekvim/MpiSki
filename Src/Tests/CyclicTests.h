@@ -60,6 +60,7 @@ private:
     void fetchPoints(QVector<QVector<QPointF>>& pts);
 
 private:
+    QVector<RangeRec> m_regRanges;
     Parameters   m_params;
     QVector<int> m_doOnCounts;
     QVector<int> m_doOffCounts;

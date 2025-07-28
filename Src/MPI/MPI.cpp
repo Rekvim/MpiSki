@@ -126,12 +126,13 @@ bool MPI::Initialize()
 
     m_dac->SetCoefficients(24.0 / 0xFFFF, mpiSettings.GetDAC().bias);
 
-    DAC_MIN = 65536 * (mpiSettings.GetDAC().min - mpiSettings.GetDAC().bias) / 24;
-    DAC_MAX = 65536 * (mpiSettings.GetDAC().max - mpiSettings.GetDAC().bias) / 24;
+    m_DAC_MIN = 65536 * (mpiSettings.GetDAC().min - mpiSettings.GetDAC().bias) / 24;
+    m_DAC_MAX = 65536 * (mpiSettings.GetDAC().max - mpiSettings.GetDAC().bias) / 24;
 
-    for (const auto &sensor : m_sensors) {
-        delete sensor;
+    for (int i = 0; i < m_sensors.size(); ++i) {
+        delete m_sensors[i];
     }
+
     m_sensors.clear();
 
     emit SetChannels(0x3F);
@@ -144,7 +145,9 @@ bool MPI::Initialize()
 
     quint8 sensorNum = 0;
     quint8 channelMask = 0;
-    for (const auto &a : adc) {
+
+    for (int i = 0; i < adc.size(); ++i) {
+        quint16 a = adc[i];
         if ((a & 0xFFF) > 0x050) {
             quint8 adcNum = a >> 12;
 
@@ -178,10 +181,10 @@ bool MPI::Initialize()
 
 void MPI::SetDAC_Raw(quint16 value)
 {
-    if (value < DAC_MIN)
-        value = DAC_MIN;
-    if (value > DAC_MAX)
-        value = DAC_MAX;
+    if (value < m_DAC_MIN)
+        value = m_DAC_MIN;
+    if (value > m_DAC_MAX)
+        value = m_DAC_MAX;
     m_dac->SetValue(value);
     emit SetDAC(m_dac->GetRawValue());
 }
@@ -195,14 +198,19 @@ void MPI::SetDAC_Real(qreal value)
     }
 }
 
-quint16 MPI::GetDac_Min()
+Sensor *MPI::GetDAC() const
 {
-    return DAC_MIN;
+    return m_dac;
 }
 
-quint16 MPI::GetDac_Max()
+quint16 MPI::GetDac_Min() const
 {
-    return DAC_MAX;
+    return m_DAC_MIN;
+}
+
+quint16 MPI::GetDac_Max() const
+{
+    return m_DAC_MAX;
 }
 
 quint8 MPI::SensorCount() const
@@ -215,16 +223,11 @@ const QString &MPI::PortName() const
     return m_portName;
 }
 
-Sensor *MPI::operator[](quint8 n)
+Sensor *MPI::operator[](quint8 n) const
 {
     if (n >= m_sensors.size())
         return nullptr;
     return m_sensors.at(n);
-}
-
-Sensor *MPI::GetDAC()
-{
-    return m_dac;
 }
 
 void MPI::SetDiscreteOutput(quint8 DO_num, bool state)

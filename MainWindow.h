@@ -29,11 +29,11 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(Registry& registry, QWidget* parent = nullptr);
     ~MainWindow();
-    void SetRegistry(Registry *registry);
     void SetPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
     void SetBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
+    void initializeFromRegistry(Registry *registry);
 
 private slots:
 
@@ -71,6 +71,7 @@ private slots:
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
+    void SetDOControlsEnabled(bool enabled);
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
 
@@ -106,10 +107,11 @@ private slots:
     void on_pushButton_signal_20mA_clicked();
 
 private:
-    Ui::MainWindow *ui;
-    TelemetryStore m_telemetryStore;
+    QPlainTextEdit* logOutput; // Debug
 
-    QPlainTextEdit* logOutput;
+    Ui::MainWindow *ui;
+
+    Program *m_program;
 
     QTimer m_cyclicCountdownTimer;
     QElapsedTimer m_cyclicElapsedTimer;
@@ -117,10 +119,8 @@ private:
     bool m_userCanceled = false;
     bool m_testing;
 
-    Registry *m_registry = nullptr;
-
     ReportSaver *m_reportSaver = nullptr;
-    Program *m_program;
+
     QThread *m_programThread;
 
     QTimer* m_durationTimer;
@@ -149,7 +149,7 @@ private:
     void DisplayDependingPattern();
 
     void onCyclicCountdown();
-    void InitCharts();
+    void InitCharts(bool rotate);
     void SaveChart(Charts chart);
     void GetImage(QLabel *label, QImage *image);
 
