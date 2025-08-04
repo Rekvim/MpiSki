@@ -56,6 +56,9 @@ public slots:
     void UartDisconnected();
     void UartError(QSerialPort::SerialPortError err);
 signals:
+
+    void errorOccured(const QString &message);
+
     void ConnectToUart();
     void GetVersion(quint8 &version);
     void SetDAC(quint16 value);

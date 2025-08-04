@@ -36,30 +36,62 @@ UartReader::UartReader(QObject *parent)
 
 QByteArray UartReader::SendMessage(const UartMessage &message)
 {
+    // Логируем старт отправки команды
+    emit errorOccured(
+        QString("%1 SendMessage: command=0x%2")
+            .arg(m_portName)
+            .arg(static_cast<quint8>(message.GetCommand()), 2, 16, QChar('0'))
+        );
+
     for (quint8 attempt = 0; attempt < m_maxAttempts; ++attempt) {
         QByteArray readData;
         emit Write_Read(message.ToByteArray(), readData);
 
-        // ### DEBUG: print both the raw request and the raw response ###
-        qDebug() << m_portName
-                 << "TX:" << message.ToByteArray().toHex()
-                 << "RX:" << readData.toHex();
+        if (readData.isEmpty()) {
+            // Пустой ответ
+            emit errorOccured(
+                QString("%1 Empty response on attempt %2 for command 0x%3")
+                    .arg(m_portName)
+                    .arg(attempt + 1)
+                    .arg(static_cast<quint8>(message.GetCommand()), 2, 16, QChar('0'))
+                );
+        } else {
+            UartMessage response(readData);
+            quint8 sentCmd = static_cast<quint8>(message.GetCommand());
+            quint8 recvCmd = static_cast<quint8>(response.GetCommand());
 
-        UartMessage response(readData);
-        // accept either an "OK" ack or the echoed command (e.g. GetADC, GetDI, etc.)
-        if (response.CheckCrc()
-            && (response.GetCommand() == Command::OK
-                || response.GetCommand() == message.GetCommand()))
-        {
-            return response.GetData();
-        }
-        else {
-            qDebug() << m_portName
-                     << "Bad CRC or wrong cmd:"
-                     << "expected" << int(message.GetCommand())
-                     << "got"      << int(response.GetCommand());
+            if (response.CheckCrc()
+                && (response.GetCommand() == Command::OK
+                    || response.GetCommand() == message.GetCommand()))
+            {
+                // Успешная приемка
+                emit errorOccured(
+                    QString("%1 Received valid response for command 0x%2 on attempt %3")
+                        .arg(m_portName)
+                        .arg(sentCmd, 2, 16, QChar('0'))
+                        .arg(attempt + 1)
+                    );
+                return response.GetData();
+            } else {
+                // CRC не прошёл или неверный код
+                emit errorOccured(
+                    QString("%1 Bad CRC or wrong cmd on attempt %2: expected 0x%3 got 0x%4")
+                        .arg(m_portName)
+                        .arg(attempt + 1)
+                        .arg(sentCmd, 2, 16, QChar('0'))
+                        .arg(recvCmd, 2, 16, QChar('0'))
+                    );
+            }
         }
     }
+
+    // Ни одна попытка не удалась
+    emit errorOccured(
+        QString("%1 SendMessage failed after %2 attempts for command 0x%3")
+            .arg(m_portName)
+            .arg(m_maxAttempts)
+            .arg(static_cast<quint8>(message.GetCommand()), 2, 16, QChar('0'))
+        );
     return QByteArray();
 }
 

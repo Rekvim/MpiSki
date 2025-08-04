@@ -167,7 +167,14 @@ signals:
 
     void runMainTest();
     void runStrokeTest();
+
     void runCyclicTest(const CyclicTestSettings::TestParameters &p);
+
+    void runCyclicRegulatoryTests(const CyclicTestSettings::TestParameters &p);
+    void runCyclicShutoffTests(const CyclicTestSettings::TestParameters &p);
+    void runCyclicCombinedTests(const CyclicTestSettings::TestParameters &p);
+
+
     void runOptionalTest(quint8 testNum);
 
     void stopTheTest();

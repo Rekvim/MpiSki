@@ -30,11 +30,11 @@ struct StepTestRecord {
 };
 
 struct RangeDeviationRecord {
-    int rangePercent = 0;
-    double  maxForwardValue = 0.0;
-    quint32 maxForwardCycle = 0;
+    quint16 rangePercent = 0;
+    double maxForwardValue = 0.0;
+    quint16 maxForwardCycle = 0;
     double maxReverseValue = 0.0;
-    quint32 maxReverseCycle = 0;
+    quint16 maxReverseCycle = 0;
 };
 
 struct CyclicTestRecord {
@@ -45,8 +45,8 @@ struct CyclicTestRecord {
     int switch3to0Count = 0;
     int switch0to3Count = 0;
 
-    QVector<int> doOnCounts;
-    QVector<int> doOffCounts;
+    QVector<quint16> doOnCounts;
+    QVector<quint16> doOffCounts;
 
     int pos_0to3_hits = 0;
     int pos_0to3_errors = 0;
