@@ -10,6 +10,7 @@ Program::Program(Registry& registry, QObject* parent)
     : QObject(parent)
     , m_registry(registry)
 {
+    // тут
     m_timerSensors = new QTimer(this);
     m_timerSensors->setInterval(200);
 
