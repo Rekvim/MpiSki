@@ -247,7 +247,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите время задержки (регулирующий).");
             return;
         }
-        m_parameters.regulatory_delaySec =
+        m_parameters.regulatory_delay =
             ui->listWidget_delayTimeRegulatory->currentItem()->text().toInt();
 
         // удержание
@@ -259,7 +259,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                     "Время удержания (регулирующий) > 00:00.");
                 return;
             }
-            m_parameters.regulatory_holdTimeSec = secs;
+            m_parameters.regulatory_holdTime = secs;
         }
 
         // число циклов
@@ -279,8 +279,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
     else {
         // сбросить ненужные
         m_parameters.regSeqValues.clear();
-        m_parameters.regulatory_delaySec = 0;
-        m_parameters.regulatory_holdTimeSec = 0;
+        m_parameters.regulatory_delay = 0;
+        m_parameters.regulatory_holdTime = 0;
         m_parameters.regulatory_numCycles = 0;
         m_parameters.regulatory_enable_20mA = false;
     }
@@ -307,7 +307,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите время задержки (отсечной).");
             return;
         }
-        m_parameters.shutoff_delaySec =
+        m_parameters.shutoff_delay =
             ui->listWidget_delayTimeShutOff->currentItem()->text().toInt();
 
         // удержание
@@ -319,7 +319,7 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                      "Время удержания (отсечной) > 00:00.");
                 return;
             }
-            m_parameters.shutoff_holdTimeSec = secs;
+            m_parameters.shutoff_holdTime = secs;
         }
 
         // число циклов
@@ -344,8 +344,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
     }
     else {
         m_parameters.offSeqValues.clear();
-        m_parameters.shutoff_delaySec = 0;
-        m_parameters.shutoff_holdTimeSec = 0;
+        m_parameters.shutoff_delay = 0;
+        m_parameters.shutoff_holdTime = 0;
         m_parameters.shutoff_numCycles = 0;
     }
 

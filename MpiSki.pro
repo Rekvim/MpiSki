@@ -29,6 +29,8 @@ SOURCES += \
     Src/Telemetry/TelemetryStore.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTests.cpp \
+    Src/Tests/CyclicTestsRegulatory.cpp \
+    Src/Tests/CyclicTestsShutoff.cpp \
     Src/Tests/MainTest.cpp \
     Src/Tests/OptionTest.cpp \
     Src/Tests/StepTest.cpp \
@@ -74,6 +76,8 @@ HEADERS += \
     Src/Telemetry/TelemetryStore.h \
     Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTests.h \
+    Src/Tests/CyclicTestsRegulatory.h \
+    Src/Tests/CyclicTestsShutoff.h \
     Src/Tests/MainTest.h \
     Src/Tests/OptionTest.h \
     Src/Tests/StepTest.h \
