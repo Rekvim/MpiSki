@@ -1090,15 +1090,15 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
 
     switch (p.testType) {
     case TP::Regulatory: {
-        emit runCyclicRegulatoryTests(p);
+        emit runCyclicRegulatoryTests();
         break;
     }
     case TP::Shutoff: {
-        emit runCyclicShutoffTests(p);
+        emit runCyclicShutoffTests();
         break;
     }
     case TP::Combined: {
-        emit runCyclicCombinedTests(p);
+        emit runCyclicCombinedTests();
         break;
     }
     default:

@@ -170,9 +170,9 @@ signals:
 
     void runCyclicTest(const CyclicTestSettings::TestParameters &p);
 
-    void runCyclicRegulatoryTests(const CyclicTestSettings::TestParameters &p);
-    void runCyclicShutoffTests(const CyclicTestSettings::TestParameters &p);
-    void runCyclicCombinedTests(const CyclicTestSettings::TestParameters &p);
+    void runCyclicRegulatoryTests();
+    void runCyclicShutoffTests();
+    void runCyclicCombinedTests();
 
 
     void runOptionalTest(quint8 testNum);

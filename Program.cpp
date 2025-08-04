@@ -786,8 +786,11 @@ void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
     emit getPoints_cyclicTest(points, Charts::Cyclic);
 }
 
-void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p)
+void Program::runningCyclicRegulatory()
 {
+    CyclicTestSettings::TestParameters p;
+    emit getParameters_cyclicTest(p);
+
     QVector<quint16> rawReg = makeRawValues(p.regSeqValues,
                                             m_registry->GetValveInfo()->safePosition != 0);
 
@@ -861,8 +864,11 @@ void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestRes
     emit TelemetryUpdated(m_telemetryStore);
 }
 
-void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
+void Program::runningCyclicShutoff()
 {
+    CyclicTestSettings::TestParameters p;
+    emit getParameters_cyclicTest(p);
+
     QVector<quint16> rawOff = makeRawValues(p.offSeqValues,
                                             m_registry->GetValveInfo()->safePosition != 0);
 
@@ -938,12 +944,13 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
 }
 
 
-void Program::runningCyclicCombined(const CyclicTestSettings::TestParameters &p)
+void Program::runningCyclicCombined()
 {
-    runningCyclicRegulatory(p);
 
-    connect(this, &Program::testFinished, this, [this, p]() {
-        runningCyclicShutoff(p);
+    runningCyclicRegulatory();
+
+    connect(this, &Program::testFinished, this, [this]() {
+        runningCyclicShutoff();
     }, Qt::SingleShotConnection);
 }
 

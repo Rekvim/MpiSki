@@ -198,10 +198,12 @@ public slots:
     void runningMainTest();
     void runningStrokeTest();
     void runningOptionalTest(quint8 testNum);
-    void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicCombined(const CyclicTestSettings::TestParameters &p);
+
+    void runningCyclicRegulatory();
+    void runningCyclicShutoff();
+    void runningCyclicCombined();
     void endTest();
+
     void terminateTest();
 
 
