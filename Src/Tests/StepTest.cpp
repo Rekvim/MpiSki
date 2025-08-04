@@ -18,7 +18,7 @@ QVector<StepTest::TestResult> StepTest::CalculateResult(const QVector<QVector<QP
     qreal from = 0;
     qreal prevTask = task.first().y();
     qreal timeStart;
-    quint32 t86Time = 0;
+    quint64 t86Time = 0;
     qreal threshold;
     qreal overshoot = 0;
     bool t86Have = false;

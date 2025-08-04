@@ -10,8 +10,6 @@ MPI::MPI(QObject *parent)
     m_uartReader->moveToThread(m_uartThread);
     m_uartThread->start();
 
-
-
     connect(this, &MPI::ConnectToUart,
             m_uartReader, &UartReader::ConnectToUart,
             Qt::BlockingQueuedConnection);
@@ -73,10 +71,6 @@ MPI::MPI(QObject *parent)
 
     connect(m_uartReader, &UartReader::UartError,
             this, &MPI::UartError,
-            Qt::DirectConnection);
-
-    connect(m_uartReader, &UartReader::errorOccured,
-            this, &MPI::errorOccured,
             Qt::DirectConnection);
 }
 

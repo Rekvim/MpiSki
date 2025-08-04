@@ -4,41 +4,27 @@
 #include <QStringList>
 
 CyclicTests::CyclicTests(QObject* parent)
-    : MainTest(parent, /*isCyclic=*/false),
-    m_patternType(SelectTests::Pattern_None)
+    : MainTest(parent, /*isCyclic=*/false)
 {}
-
-void CyclicTests::SetPatternType(SelectTests::PatternType pt)
-{
-    m_patternType = pt;
-}
 
 void CyclicTests::SetParameters(const Parameters& params)
 {
     m_params = params;
 }
 
+QString CyclicTests::seqToString(const QVector<quint16>& seq)
+{
+    QStringList parts;
+    parts.reserve(seq.size());
+    for (quint16 v : seq) parts << QString::number(v);
+    return parts.join('-');
+}
+
 void CyclicTests::Process()
 {
-    emit ClearGraph();
-
-    SetDACBlocked(0, 10000, true);
-
-    if (m_terminate) {
-        emit EndTest();
-        return;
-    }
-
     emit SetStartTime();
-
-    m_graphTimer->start(100);
-
-    Sleep(5000);
-
-    if (m_terminate) {
-        emit EndTest();
-        return;
-    }
+    emit ClearGraph();
+    m_graphTimer->start(50);
 
     double totalSec = 0.0;
 
@@ -54,8 +40,6 @@ void CyclicTests::Process()
         if (!m_terminate) totalSec += processShutoff();
         break;
     }
-
-    SetDACBlocked(0, 0, true);
 
     m_graphTimer->stop();
 
@@ -74,7 +58,7 @@ void CyclicTests::Process()
                            : m_params.regulatory_numCycles;
 
     TestResults r;
-    // r.sequence = seqToString(seq);
+    r.sequence = seqToString(seq);
     r.cycles = cycles;
     r.totalTimeSec = totalSec;
     if (!shutoffOnly) {
@@ -91,21 +75,23 @@ void CyclicTests::Process()
 
 double CyclicTests::processRegulatory()
 {
-    const quint16 cycles = m_params.regulatory_numCycles;
-    const quint64 delayMs = m_params.regulatory_delay * 1000;
-    const quint64 holdMs = m_params.regulatory_holdTime * 1000;
+    const quint32 cycles  = m_params.regulatory_numCycles;
+    const quint32 delayMs = m_params.regulatory_delaySec * 1000;
+    const quint32 holdMs  = m_params.regulatory_holdTimeSec * 1000;
     const auto& raw = m_params.rawRegValues;
 
     if (raw.isEmpty() || !delayMs || !cycles)
         return 0.0;
 
+    SetDACBlocked(0, 0, true);
+
     QElapsedTimer timer; timer.start();
 
     for (quint32 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
         for (int i = 0; i < raw.size() && !m_terminate; ++i) {
-            SetDACBlocked(raw.at(i), delayMs);
+            SetDACBlocked(raw.at(i), holdMs);
             if (m_terminate) return timer.elapsed() / 1000.0;
-            Sleep(holdMs);
+            Sleep(delayMs);
             if (m_terminate) return timer.elapsed() / 1000.0;
         }
         if (!m_terminate) emit CycleCompleted(cycle + 1);
@@ -125,8 +111,8 @@ double CyclicTests::processRegulatory()
 double CyclicTests::processShutoff()
 {
     const quint32 cycles = m_params.shutoff_numCycles;
-    const quint32 delayMs = m_params.shutoff_delay * 1000;
-    const quint32 holdMs = m_params.shutoff_holdTime * 1000;
+    const quint32 delayMs = m_params.shutoff_delaySec * 1000;
+    const quint32 holdMs = m_params.shutoff_holdTimeSec * 1000;
     const auto& raw = m_params.rawOffValues;
 
     if (raw.isEmpty() || !delayMs || !cycles)
@@ -180,79 +166,63 @@ CyclicTests::calculateRanges(const QVector<QVector<QPointF>>& pts,
 {
     QVector<RangeRec> ranges;
 
-    bool useStandard =
-        (m_patternType == SelectTests::Pattern_C_SOVT  ||
-         m_patternType == SelectTests::Pattern_B_SACVT ||
-         m_patternType == SelectTests::Pattern_C_SACVT);
+    if (pts.size() < 4) return ranges;
 
-    const int needed = useStandard ? 4 : 2;
-    if (pts.size() < needed) return ranges;
-
-    int baseIndex = useStandard ? 2 : pts.size() - 2;
-    const auto& line = pts[baseIndex];
-    const auto& task = pts[baseIndex + 1];
-
+    const QVector<QPointF>& line = pts.at(2);
+    const QVector<QPointF>& task = pts.at(3);
     if (line.isEmpty() || task.isEmpty()) return ranges;
 
-    qreal prevLevel = task.first().y();
-    bool firstSegment = true;
+    qreal prevTask = task.first().y();
+    bool first = true;
     bool forward = true;
 
-    int cycleCount = 0;
+    qreal maxF = -1e9, maxR = -1e9;
+    int maxFCycle = -1,  maxRCycle = -1;
 
-    RangeRec rec;
-    rec.rangePercent    = static_cast<quint16>(qRound(prevLevel));
-    rec.maxForwardValue = std::numeric_limits<qreal>::lowest();
-    rec.maxForwardCycle = -1;
-    rec.maxReverseValue = std::numeric_limits<qreal>::max();
-    rec.maxReverseCycle = -1;
-
-    const int total = qMin(line.size(), task.size());
-    for (int i = 0; i < total; ++i) {
-        qreal currLevel = task[i].y();
-        qreal meas      = line[i].y();
-
-        if (!qFuzzyCompare(currLevel, prevLevel)) {
-            if (!firstSegment) {
+    for (int i = 0; i < line.size() && i < task.size(); ++i) {
+        qreal currTask = task.at(i).y();
+        if (!qFuzzyCompare(currTask, prevTask)) {
+            if (!first) {
+                RangeRec rec;
+                rec.rangePercent = static_cast<quint16>(qRound(prevTask));
+                rec.maxForwardValue = (maxF < 0) ? 0.0 : maxF;
+                rec.maxForwardCycle = maxFCycle;
+                rec.maxReverseValue = (maxR < 0) ? 0.0 : maxR;
+                rec.maxReverseCycle = maxRCycle;
                 ranges.push_back(rec);
             }
-            firstSegment = false;
-
-            forward = currLevel > prevLevel;
-
-            if (qRound(currLevel) == sequence[0]) {
-                ++cycleCount;
-            }
-
-            prevLevel = currLevel;
-            rec.rangePercent     = static_cast<quint16>(qRound(currLevel));
-            rec.maxForwardValue  = std::numeric_limits<qreal>::lowest();
-            rec.maxForwardCycle  = -1;
-            rec.maxReverseValue  = std::numeric_limits<qreal>::max();
-            rec.maxReverseCycle  = -1;
-
+            first = false;
+            forward = (currTask > prevTask);
+            prevTask = currTask;
+            maxF = maxR = -1e9;
+            maxFCycle = maxRCycle = -1;
             continue;
         }
 
-        if (firstSegment) {
-            continue;
-        }
+        if (first) continue;
 
+        qreal measured = line.at(i).y();
         if (forward) {
-            if (meas > rec.maxForwardValue) {
-                rec.maxForwardValue = meas;
-                rec.maxForwardCycle = cycleCount;
-            }
+            if (measured > maxF) { maxF = measured; maxFCycle = -1; }
         } else {
-            if (meas < rec.maxReverseValue) {
-                rec.maxReverseValue = meas;
-                rec.maxReverseCycle = cycleCount;
-            }
+            if (measured > maxR) { maxR = measured; maxRCycle = -1; }
         }
     }
 
-    if (!firstSegment) {
+    if (!first) {
+        RangeRec rec;
+        rec.rangePercent = static_cast<quint16>(qRound(prevTask));
+        rec.maxForwardValue = (maxF < 0) ? 0.0 : maxF;
+        rec.maxForwardCycle = maxFCycle;
+        rec.maxReverseValue = (maxR < 0) ? 0.0 : maxR;
+        rec.maxReverseCycle = maxRCycle;
         ranges.push_back(rec);
+    }
+
+    if (ranges.size() != sequence.size()) {
+        ranges.resize(sequence.size());
+        for (int i = 0; i < ranges.size(); ++i)
+            ranges[i].rangePercent = sequence[i];
     }
 
     return ranges;

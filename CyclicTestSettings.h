@@ -25,21 +25,18 @@ public:
 
     struct TestParameters {
         enum Type { Regulatory, Shutoff, Combined } testType;
-
         QVector<quint16> regSeqValues;
         QVector<quint16> rawRegValues;
-        quint16 regulatory_numCycles = 0;
-
-        quint64 regulatory_delay = 0;
-        quint64 regulatory_holdTime= 0;
+        int regulatory_delaySec = 0;
+        int regulatory_holdTimeSec= 0;
+        int regulatory_numCycles = 0;
         bool regulatory_enable_20mA = false;
 
         QVector<quint16> offSeqValues;
         QVector<quint16> rawOffValues;
-        quint16 shutoff_numCycles = 0;
-
-        quint64 shutoff_delay = 0;
-        quint64 shutoff_holdTime= 0;
+        int shutoff_delaySec = 0;
+        int shutoff_holdTimeSec= 0;
+        int shutoff_numCycles = 0;
         std::array<bool,4> shutoff_DO {{false,false,false,false}};
         bool shutoff_DI[2] {false,false};
     };

@@ -46,8 +46,6 @@ signals:
     void UartDisconnected();
     void UartError(QSerialPort::SerialPortError err);
 
-    void errorOccured(const QString &message);
-
 private:
     Uart *m_uart;
     QString m_portName;

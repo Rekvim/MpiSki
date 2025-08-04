@@ -19,9 +19,6 @@
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/MainTest.h"
 #include "./Src/Tests/CyclicTests.h"
-#include "./Src/Tests/CyclicTestsRegulatory.h"
-#include "./Src/Tests/CyclicTestsShutoff.h"
-
 #include "SelectTests.h"
 
 enum class TextObjects {
@@ -108,8 +105,6 @@ signals:
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
 
-    void testFinished();
-
 private:
     Registry& m_registry;
     TelemetryStore m_telemetryStore;
@@ -151,8 +146,6 @@ private:
     void recordStrokeRange(bool normalClosed);
     void finalizeInitialization();
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
-    QString seqToString(const QVector<quint16>& seq);
-
 private slots:
     void updateSensors();
 
@@ -170,13 +163,7 @@ private slots:
     void results_mainTest(MainTest::TestResults results);
     void results_strokeTest(const quint64 forwardTime, const quint64 backwardTime);
     void results_stepTest(QVector<StepTest::TestResult> results, quint32 T_value);
-
     void results_cyclicTests(const CyclicTests::TestResults& r);
-    void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results);
-    void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results);
-
-    void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
-                                     const CyclicTestsShutoff::TestResults& shutoffResults);
 
     void SetTimeStart();
 
@@ -198,12 +185,9 @@ public slots:
     void runningMainTest();
     void runningStrokeTest();
     void runningOptionalTest(quint8 testNum);
+    void runningCyclicTest(const CyclicTestSettings::TestParameters &p);
 
-    void runningCyclicRegulatory();
-    void runningCyclicShutoff();
-    void runningCyclicCombined();
     void endTest();
-
     void terminateTest();
 
 

@@ -68,25 +68,23 @@ MainWindow::MainWindow(Registry& registry, QWidget* parent)
     // m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
-    // соговое окно
+    auto *layout = new QVBoxLayout;
+
+    layout->setContentsMargins(0,0,0,0);
+    ui->centralwidget->setLayout(layout);
+
     logOutput = new QPlainTextEdit(this);
     logOutput->setReadOnly(true);
+    logOutput->setMinimumHeight(180);
+    logOutput->setMinimumWidth(150);
     logOutput->setStyleSheet("font-size: 8pt;");
 
-    auto *dock = new QDockWidget(tr("Лог"), this);
-    dock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
-    dock->setWidget(logOutput);
+    appendLog("Логовое окно инициализировано");
 
-    dock->setMinimumWidth(200);
-    dock->resize(300, dock->height());
-
-    addDockWidget(Qt::RightDockWidgetArea, dock);
+    layout->addWidget(logOutput);
 
     connect(m_program, &Program::errorOccured,
-            this, &MainWindow::appendLog,
-            Qt::QueuedConnection);
-
-    appendLog("Логовое окно инициализировано");
+            this, &MainWindow::appendLog);
 
     connect(this, &MainWindow::Initialize,
             m_program, &Program::initialization);
@@ -114,18 +112,8 @@ MainWindow::MainWindow(Registry& registry, QWidget* parent)
                 });
     }
 
-    // Pfgecrb
-    // connect(this, &MainWindow::runCyclicTest,
-    //         m_program, &Program::runningCyclicTest);
-
-    connect(this, &MainWindow::runCyclicRegulatoryTests,
-            m_program, &Program::runningCyclicRegulatory);
-
-    connect(this, &MainWindow::runCyclicShutoffTests,
-            m_program, &Program::runningCyclicShutoff);
-
-    connect(this, &MainWindow::runCyclicCombinedTests,
-            m_program, &Program::runningCyclicCombined);
+    connect(this, &MainWindow::runCyclicTest,
+            m_program, &Program::runningCyclicTest);
 
     connect(this, &MainWindow::runMainTest,
             m_program, &Program::runningMainTest);
@@ -375,21 +363,21 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     ui->label_dynamicErrorMax->setText(
         QString("%1 bar")
             .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
-        );
+    );
 
     ui->label_valveStroke_range->setText(
         QString("%1")
             .arg(TS.valveStrokeRecord.range)
-        );
+    );
 
     ui->label_lowLimitValue->setText(
         QString("%1")
             .arg(TS.mainTestRecord.lowLimitPressure)
-        );
+    );
     ui->label_highLimitValue->setText(
         QString("%1")
             .arg(TS.mainTestRecord.highLimitPressure)
-        );
+    );
 
     ui->lineEdit_rangePressure->setText(
         QString("%1–%2")
@@ -597,7 +585,7 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
         ui->tableWidget_stepResults->setItem(i, 1, new QTableWidgetItem(overshoot));
 
         QString rowName = QString("%1-%2").arg(results.at(i).from)
-                              .arg(results.at(i).to);
+                                          .arg(results.at(i).to);
         rowNames << rowName;
     }
     ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
@@ -797,20 +785,13 @@ void MainWindow::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Ch
 {
     points.clear();
 
-    if (m_patternType == SelectTests::Pattern_C_SOVT ||
-        m_patternType == SelectTests::Pattern_B_SACVT ||
-        m_patternType == SelectTests::Pattern_C_SACVT) {
-
-        QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
-        QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
-
-        points.push_back({opened.first.begin(), opened.first.end()});
-        points.push_back({closed.first.begin(), closed.first.end()});
-    }
-
+    QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
+    QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
     QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Cyclic]->getPoints(1);
     QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Cyclic]->getPoints(0);
 
+    points.push_back({opened.first.begin(), opened.first.end()});
+    points.push_back({closed.first.begin(), closed.first.end()});
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
@@ -855,8 +836,6 @@ void MainWindow::receivedParameters_stepTest(StepTestSettings::TestParameters &p
 
     if (m_stepTestSettings->exec() == QDialog::Accepted) {
         parameters = m_stepTestSettings->getParameters();
-    } else {
-        parameters = {};
     }
 }
 
@@ -866,8 +845,6 @@ void MainWindow::receivedParameters_resolutionTest(OtherTestSettings::TestParame
 
     if (m_resolutionTestSettings->exec() == QDialog::Accepted) {
         parameters = m_resolutionTestSettings->getParameters();
-    } else {
-        parameters = {};
     }
 }
 
@@ -877,8 +854,6 @@ void MainWindow::receivedParameters_responseTest(OtherTestSettings::TestParamete
 
     if (m_responseTestSettings->exec() == QDialog::Accepted) {
         parameters = m_responseTestSettings->getParameters();
-    } else {
-        parameters = {};
     }
 }
 
@@ -886,7 +861,8 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
 {
     if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
         parameters = m_cyclicTestSettings->getParameters();
-    } else {
+    }
+    else {
         parameters = {};
     }
 }
@@ -1051,24 +1027,24 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
     case TP::Regulatory: {
         qint64 n = p.regSeqValues.size();
         totalMs = n * p.regulatory_numCycles *
-                  ((qint64)p.regulatory_delay * 1000 +
-                   (qint64)p.regulatory_holdTime * 1000 );
+                  ((qint64)p.regulatory_delaySec * 1000 +
+                   (qint64)p.regulatory_holdTimeSec * 1000 );
         break;
     }
     case TP::Shutoff: {
         int n = p.offSeqValues.size();
         totalMs = static_cast<qint64>(n) * p.shutoff_numCycles *
-                  ((qint64)p.shutoff_delay * 1000 +
-                   (qint64)p.shutoff_holdTime * 1000 );
+                  ((qint64)p.shutoff_delaySec * 1000 +
+                   (qint64)p.shutoff_holdTimeSec * 1000 );
         break;
     }
     case TP::Combined: {
         qint64 regMs = p.regSeqValues.size() * p.regulatory_numCycles *
-                       ( (qint64)p.regulatory_delay * 1000 +
-                        (qint64)p.regulatory_holdTime * 1000 );
+                       ( (qint64)p.regulatory_delaySec * 1000 +
+                        (qint64)p.regulatory_holdTimeSec * 1000 );
         qint64 offMs = p.offSeqValues.size() * p.shutoff_numCycles *
-                       ( (qint64)p.shutoff_delay * 1000 +
-                        (qint64)p.shutoff_holdTime * 1000 );
+                       ( (qint64)p.shutoff_delaySec * 1000 +
+                        (qint64)p.shutoff_holdTimeSec * 1000 );
         totalMs = regMs + offMs;
         break;
     }
@@ -1086,25 +1062,7 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
 
     startTest();
 
-    // emit runCyclicTest(p);
-
-    switch (p.testType) {
-    case TP::Regulatory: {
-        emit runCyclicRegulatoryTests();
-        break;
-    }
-    case TP::Shutoff: {
-        emit runCyclicShutoffTests();
-        break;
-    }
-    case TP::Combined: {
-        emit runCyclicCombinedTests();
-        break;
-    }
-    default:
-        break;
-    }
-
+    emit runCyclicTest(p);
 }
 void MainWindow::on_pushButton_cyclicTest_save_clicked()
 {
@@ -1234,11 +1192,14 @@ void MainWindow::InitCharts(bool rotate)
     m_charts[Charts::Cyclic]->addSeries(0, "Датчик линейных перемещений", QColor::fromRgb(255, 0, 0));
     // m_charts[Charts::Cyclic]->setMaxRange(80000);
 
-    if (m_patternType == SelectTests::Pattern_C_SOVT ||
-        m_patternType == SelectTests::Pattern_B_SACVT ||
-        m_patternType == SelectTests::Pattern_C_SACVT) {
+    if (m_patternType == SelectTests::Pattern_C_SOVT
+        || m_patternType == SelectTests::Pattern_B_SACVT
+        || m_patternType == SelectTests::Pattern_C_SACVT) {
         m_charts[Charts::Cyclic]->addSeries(0, "Кв закрыто →", QColor::fromRgb(200,200,0));
         m_charts[Charts::Cyclic]->addSeries(0, "Кв открыто →", QColor::fromRgb(0,200,0));
+
+        m_charts[Charts::Cyclic]->setPointsVisible(2, true);
+        m_charts[Charts::Cyclic]->setPointsVisible(3, true);
 
         QChart *chart = m_charts[Charts::Cyclic]->chart();
         const auto all = chart->series();
@@ -1250,9 +1211,9 @@ void MainWindow::InitCharts(bool rotate)
                 QPen pen = xy->pen();
                 pen.setStyle(Qt::NoPen);
                 xy->setPen(pen);
-#if QT_VERSION >= QT_VERSION_CHECK(6,2,0)
-                xy->setMarkerSize(6.0);
-#endif
+                #if QT_VERSION >= QT_VERSION_CHECK(6,2,0)
+                    xy->setMarkerSize(6.0);
+                #endif
             }
         }
     }
@@ -1396,20 +1357,6 @@ void MainWindow::GetImage(QLabel *label, QImage *image)
         *image = img.scaled(1000, 430, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         label->setPixmap(QPixmap::fromImage(img));
     }
-}
-
-void MainWindow::on_pushButton_init_clicked()
-{
-    QVector<bool> states = {
-        ui->pushButton_DO0->isChecked(),
-        ui->pushButton_DO1->isChecked(),
-        ui->pushButton_DO2->isChecked(),
-        ui->pushButton_DO3->isChecked()
-    };
-
-    emit InitDOSelected(states);
-    emit Initialize();
-    emit PatternChanged(m_patternType);
 }
 
 void MainWindow::on_pushButton_imageChartTask_clicked()
