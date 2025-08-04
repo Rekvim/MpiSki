@@ -47,8 +47,6 @@ void CyclicTestSettings::onTestSelectionChanged()
     }
 }
 
-
-
 CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::CyclicTestSettings)
@@ -56,33 +54,8 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     ui->setupUi(this);
 
     // Регулирующий
-    connect(ui->pushButton_addRangeRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onAddValueClicked);
-
-    connect(ui->pushButton_editRangeRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onEditValueClicked);
-
-    connect(ui->pushButton_removeRangeRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onRemoveValueClicked);
-
-    connect(ui->pushButton_addDelayRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onAddDelayClicked);
-
-    connect(ui->pushButton_editDelayRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onEditDelayClicked);
-
-    connect(ui->pushButton_removeDelayRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onRemoveDelayClicked);
 
     // Отсечной
-    connect(ui->pushButton_addDelayShutOff, &QPushButton::clicked,
-            this, &CyclicTestSettings::onAddDelayShutOffClicked);
-
-    connect(ui->pushButton_editDelayShutOff, &QPushButton::clicked,
-            this, &CyclicTestSettings::onEditDelayShutOffClicked);
-
-    connect(ui->pushButton_removeDelayShutOff, &QPushButton::clicked,
-            this, &CyclicTestSettings::onRemoveDelayShutOffClicked);
 
     // Общие
     connect(ui->pushButton_cancel, &QPushButton::clicked,
@@ -127,8 +100,7 @@ static bool parseSequence(const QString& src,
 }
 
 // --- Регулирующий
-
-void CyclicTestSettings::onAddValueClicked()
+void CyclicTestSettings::on_pushButton_addRangeRegulatory_clicked()
 {
     bool ok;
     QString text = QInputDialog::getText(this, "Добавить последовательность",
@@ -140,7 +112,8 @@ void CyclicTestSettings::onAddValueClicked()
     }
 }
 
-void CyclicTestSettings::onEditValueClicked()
+
+void CyclicTestSettings::on_pushButton_editRangeRegulatory_clicked()
 {
     if (auto *item = ui->listWidget_testRangeRegulatory->currentItem()) {
         bool ok;
@@ -153,12 +126,12 @@ void CyclicTestSettings::onEditValueClicked()
     }
 }
 
-void CyclicTestSettings::onRemoveValueClicked()
+void CyclicTestSettings::on_pushButton_removeRangeRegulatory_clicked()
 {
     delete ui->listWidget_testRangeRegulatory->currentItem();
 }
 
-void CyclicTestSettings::onAddDelayClicked()
+void CyclicTestSettings::on_pushButton_addDelayRegulatory_clicked()
 {
     bool ok;
     int v = QInputDialog::getInt(this, "Добавить задержку",
@@ -169,7 +142,7 @@ void CyclicTestSettings::onAddDelayClicked()
     }
 }
 
-void CyclicTestSettings::onEditDelayClicked()
+void CyclicTestSettings::on_pushButton_editDelayRegulatory_clicked()
 {
     if (auto *item = ui->listWidget_delayTimeRegulatory->currentItem()) {
         bool ok;
@@ -182,14 +155,15 @@ void CyclicTestSettings::onEditDelayClicked()
     }
 }
 
-void CyclicTestSettings::onRemoveDelayClicked()
+
+void CyclicTestSettings::on_pushButton_removeDelayRegulatory_clicked()
 {
     delete ui->listWidget_delayTimeRegulatory->currentItem();
+
 }
 
 // --- Отсечной
-
-void CyclicTestSettings::onAddDelayShutOffClicked()
+void CyclicTestSettings::on_pushButton_addDelayShutOff_clicked()
 {
     bool ok;
     int v = QInputDialog::getInt(this, "Добавить задержку (Отсечной)",
@@ -200,7 +174,8 @@ void CyclicTestSettings::onAddDelayShutOffClicked()
     }
 }
 
-void CyclicTestSettings::onEditDelayShutOffClicked()
+
+void CyclicTestSettings::on_pushButton_editDelayShutOff_clicked()
 {
     if (auto *item = ui->listWidget_delayTimeShutOff->currentItem()) {
         bool ok;
@@ -213,13 +188,13 @@ void CyclicTestSettings::onEditDelayShutOffClicked()
     }
 }
 
-void CyclicTestSettings::onRemoveDelayShutOffClicked()
+
+void CyclicTestSettings::on_pushButton_removeDelayShutOff_clicked()
 {
     delete ui->listWidget_delayTimeShutOff->currentItem();
 }
 
 // --- Общая обработка «Старт»
-
 void CyclicTestSettings::onPushButtonStartClicked()
 {
     using TP = TestParameters;

@@ -17,7 +17,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QGroupBox" name="groupBox_SKI">
        <property name="font">
         <font>
          <family>Segoe UI</family>
@@ -49,7 +49,7 @@ border-radius: 12px;</string>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_15">
            <property name="spacing">
-            <number>6</number>
+            <number>10</number>
            </property>
            <property name="leftMargin">
             <number>9</number>
@@ -132,6 +132,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_16">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -210,6 +213,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_17">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -282,6 +288,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_18">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -354,6 +363,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_19">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -426,6 +438,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_22">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -498,6 +513,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_24">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -582,6 +600,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_20">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -654,6 +675,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_21">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -738,6 +762,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_27">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -816,6 +843,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_23">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -888,6 +918,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_25">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -960,6 +993,9 @@ border-radius: 12px;</string>
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_26">
+           <property name="spacing">
+            <number>10</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -1023,7 +1059,7 @@ border-radius: 6px;</string>
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_2">
+      <widget class="QGroupBox" name="groupBox_selectTests">
        <property name="font">
         <font>
          <family>Segoe UI</family>
@@ -1035,6 +1071,21 @@ border-radius: 6px;</string>
         <string>Выбор программы испытаний</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
         <item>
          <spacer name="verticalSpacer_2">
           <property name="orientation">
@@ -1217,42 +1268,59 @@ border-radius: 6px;</string>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="entry_testing">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>120</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Далее</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>15</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>1066</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="entry_testing">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Далее</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
