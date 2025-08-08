@@ -15,9 +15,20 @@ public:
 
     explicit CyclicTests(QObject* parent = nullptr);
     void SetParameters(const Parameters& params);
+    void SetPatternType(SelectTests::PatternType pt);
+
+    struct Task {
+        QVector<quint16> values;
+        quint32 delayMs;
+        quint32 holdMs;
+        QVector<bool> doMask;
+        int rawSize;
+    };
+
+    void SetTask(const Task& task);
 
     struct RangeRec {
-        quint16 rangePercent = 0;
+        quint8 rangePercent = 0;
         qreal maxForwardValue = 0.0;
         int maxForwardCycle = -1;
         qreal maxReverseValue = 0.0;
@@ -30,8 +41,8 @@ public:
         double  totalTimeSec = 0.0;
 
         QVector<RangeRec> ranges;
-        QVector<int> doOnCounts;
-        QVector<int> doOffCounts;
+        QVector<quint16> doOnCounts;
+        QVector<quint16> doOffCounts;
 
         int switch3to0Count = 0;
         int switch0to3Count = 0;
@@ -44,26 +55,27 @@ signals:
     void SetMultipleDO(const QVector<bool>& states);
     void SetStartTime();
     void CycleCompleted(int completedCycles);
-    void GetPoints(QVector<QVector<QPointF>>& points);
+    // void GetPoints(QVector<QVector<QPointF>>& points);
     void Results(TestResults results);
 
 private:
+    Task m_task;
     double processRegulatory();
     double processShutoff();
+
+    SelectTests::PatternType m_patternType;
 
     QVector<RangeRec> calculateRanges(const QVector<QVector<QPointF>>& pts,
                                       const QVector<quint16>& sequence) const;
     void calcSwitchCounts(const QVector<QVector<QPointF>>& pts,
                           int& s3to0, int& s0to3) const;
 
-    static QString seqToString(const QVector<quint16>& seq);
     void fetchPoints(QVector<QVector<QPointF>>& pts);
 
 private:
-    QVector<RangeRec> m_regRanges;
-    Parameters   m_params;
-    QVector<int> m_doOnCounts;
-    QVector<int> m_doOffCounts;
+    Parameters m_params;
+    QVector<quint16> m_doOnCounts;
+    QVector<quint16> m_doOffCounts;
 };
 
 #endif // CYCLICTESTS_H

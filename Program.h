@@ -8,7 +8,6 @@
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QTimer>
-#include <QPushButton>
 
 #include "./Src/MPI/MPI.h"
 #include "OtherTestSettings.h"
@@ -20,6 +19,9 @@
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/MainTest.h"
 #include "./Src/Tests/CyclicTests.h"
+#include "./Src/Tests/CyclicTestsRegulatory.h"
+#include "./Src/Tests/CyclicTestsShutoff.h"
+
 #include "SelectTests.h"
 
 enum class TextObjects {
@@ -57,11 +59,9 @@ class Program : public QObject
 {
     Q_OBJECT
 public:
-    explicit Program(Registry& registry, QObject* parent = nullptr);
+    explicit Program(QObject *parent = nullptr);
+    void SetRegistry(Registry *registry);
     bool isInitialized() const;
-
-    Registry& registry() noexcept { return m_registry; }
-    const TelemetryStore& telemetry() const noexcept { return m_telemetryStore; }
 
 signals:
 
@@ -73,7 +73,6 @@ signals:
     void SetTextColor(const TextObjects object, const QColor color);
     void SetTask(qreal task);
     void SetSensorNumber(quint8 num);
-    void SetDOControlsEnabled(bool enable);
     void SetButtonInitEnabled(bool enable);
     void SetGroupDOVisible(bool visible);
     void SetVisible(Charts chart, quint16 series, bool visible);
@@ -106,11 +105,13 @@ signals:
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
 
+    void testFinished();
+
 private:
-    Registry& m_registry;
-    TelemetryStore m_telemetryStore;
+    Registry *m_registry;
 
     MPI m_mpi;
+    TelemetryStore m_telemetryStore;
     bool m_cyclicRunning = false;
     QTimer* m_diPollTimer = nullptr;
     quint8 m_lastDI = 0;
@@ -126,16 +127,15 @@ private:
     bool m_waitForButton = false;
     QVector<bool> m_initDOStates;
     QVector<bool> m_savedInitDOStates;
-    std::array<bool, 4> m_enabledDO {false, false, false, false};
+
     bool m_isInitialized = false;
     SelectTests::PatternType m_patternType;
 
-    qreal currentPercent() const;
-    qreal calculatingK();
+    qreal currentPercent();
 
     // init
-    void connectAndInitDevice();
-    void detectAndReportSensors();
+    bool connectAndInitDevice();
+    bool detectAndReportSensors();
     void waitForDacCycle();
     void measureStartPosition(bool normalClosed);
     void measureStartPositionShutoff(bool normalClosed);
@@ -147,6 +147,8 @@ private:
     void recordStrokeRange(bool normalClosed);
     void finalizeInitialization();
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
+    QString seqToString(const QVector<quint16>& seq);
+
 private slots:
     void updateSensors();
 
@@ -159,12 +161,18 @@ private slots:
     void updateCharts_mainTest();
     void updateCharts_strokeTest();
     void updateCharts_optionTest(Charts chart);
-    void updateCharts_CyclicTest();
+    void updateCharts_CyclicTest(Charts chart);
 
     void results_mainTest(MainTest::TestResults results);
     void results_strokeTest(const quint64 forwardTime, const quint64 backwardTime);
     void results_stepTest(QVector<StepTest::TestResult> results, quint32 T_value);
+
     void results_cyclicTests(const CyclicTests::TestResults& r);
+    void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results);
+    void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results);
+
+    void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
+                                     const CyclicTestsShutoff::TestResults& shutoffResults);
 
     void SetTimeStart();
 
@@ -186,7 +194,10 @@ public slots:
     void runningMainTest();
     void runningStrokeTest();
     void runningOptionalTest(quint8 testNum);
-    void runningCyclicTest(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicRegulatory(CyclicTestSettings::TestParameters p);
+    void runningCyclicShutoff(CyclicTestSettings::TestParameters p);
+    void runningCyclicCombined(CyclicTestSettings::TestParameters p);
+    void runningCyclicTest();
 
     void endTest();
     void terminateTest();

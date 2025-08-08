@@ -1,11 +1,94 @@
 #include "CyclicTestsRegulatory.h"
-
-CyclicTestsRegulatory::CyclicTestsRegulatory(QObject* parent)
-    : MainTest(parent, /*isCyclic=*/false),
-    m_patternType(SelectTests::Pattern_None)
+#include <QThread>
+CyclicTestsRegulatory::CyclicTestsRegulatory(QObject* parent, bool endTestAfterProcess)
+    : MainTest(parent),
+    m_endTestAfterProcess(endTestAfterProcess)
 {}
 
-void CyclicTestsRegulatory::SetTask(const Task& task)
+void CyclicTestsRegulatory::SetPatternType(SelectTests::PatternType pt)
+{
+    m_patternType = pt;
+}
+
+void CyclicTestsRegulatory::Process()
+{
+
+    emit errorOccured(QString(">> Process() start; values=%1, delayMs=%2, holdMs=%3")
+                          .arg(m_task.values.size())
+                          .arg(m_task.delayMsecs)
+                          .arg(m_task.holdMsecs));
+
+    if (m_task.values.isEmpty()) {
+        emit errorOccured("values.isEmpty() → EndTest");
+        emit EndTest();
+        return;
+    }
+
+    {
+        QStringList lv;
+        for (quint16 v : m_task.values) lv << QString::number(v);
+        emit errorOccured(QString("Process(): m_task.values (count=%1): [%2]")
+                              .arg(m_task.values.size())
+                              .arg(lv.join(',')));
+    }
+
+    SetDACBlocked(m_task.values.first(),
+                  m_task.delayMsecs,
+                  /*waitForStop=*/true,
+                  /*waitForStart=*/true);
+
+    if (m_terminate) { emit EndTest(); return; }
+
+    // emit ClearGraph();
+    emit SetStartTime();
+    m_graphTimer->start(100);
+
+    quint32 cycle = 0;
+    // quint32 step = 0;
+    const int seqSize = m_task.sequence.size();
+    emit errorOccured("запустили цикл по values");
+
+    for (quint32 step = 0; step < m_task.values.size(); ++step) {
+        const quint16 value = m_task.values.at(step);
+        if (m_terminate) { emit EndTest(); return; }
+
+        SetDACBlocked(value, m_task.delayMsecs, true, true);
+        if (m_terminate) { emit EndTest(); return; }
+        SetDACBlocked(value, m_task.holdMsecs, true, true);
+        // Sleep(m_task.holdMsecs);
+
+        if ((step + 1) % seqSize == 0) {
+            ++cycle;
+            emit CycleCompleted(cycle);
+        }
+    }
+
+    // for (const quint16 &value :  qAsConst(m_task.values)) {
+    //     SetDACBlocked(value, m_task.delayMs);
+    //     if (m_terminate) { emit EndTest(); return; }
+    //     Sleep(m_task.holdMs);
+    //     if (m_terminate) { emit EndTest(); return; }
+    //     ++step;
+    //     if (step % seqSize == 0) {
+    //         ++cycle;
+    //         emit CycleCompleted(cycle);
+    //     }
+    // }
+    emit errorOccured("цикл по values завершён");
+    SetDACBlocked(0, 0, true, false);
+    m_graphTimer->stop();
+
+    QVector<QVector<QPointF>> pts;
+    emit GetPoints(pts);
+
+    TestResults r;
+    r.ranges = calculateRanges(pts, m_task.sequence);
+    emit Results(r);
+
+    emit EndTest();
+}
+
+void CyclicTestsRegulatory::SetTask(Task task)
 {
     m_task = task;
 }
@@ -18,50 +101,6 @@ QString CyclicTestsRegulatory::seqToString(const QVector<quint16>& seq)
     return parts.join('-');
 }
 
-void CyclicTestsRegulatory::Process()
-{
-    if (m_task.values.isEmpty()) {
-        emit EndTest();
-        return;
-    }
-
-    SetDACBlocked(m_task.values.first(), 0, true);
-
-    if (m_terminate) { emit EndTest(); return; }
-
-    emit ClearGraph();
-    emit SetStartTime();
-    m_graphTimer->start(50);
-
-        if (m_terminate) { emit EndTest(); return; }
-
-    Sleep(5000);
-
-    quint32 cycle = 0;
-
-    for (const auto &value : m_task.values) {
-        SetDACBlocked(value, m_task.delayMs);
-        if (m_terminate) { emit EndTest(); return; }
-
-        Sleep(m_task.holdMs);
-        if (m_terminate) { emit EndTest(); return; }
-
-        ++cycle;
-        emit CycleCompleted(cycle);
-    }
-
-    SetDACBlocked(0, 0, true);
-    m_graphTimer->stop();
-
-    QVector<QVector<QPointF>> pts;
-    fetchPoints(pts);
-
-    TestResults r;
-    r.ranges = calculateRanges(pts, m_task.sequence);
-    emit Results(r);
-
-    emit EndTest();
-}
 
 void CyclicTestsRegulatory::fetchPoints(QVector<QVector<QPointF>>& pts)
 {
@@ -71,7 +110,7 @@ void CyclicTestsRegulatory::fetchPoints(QVector<QVector<QPointF>>& pts)
 
 QVector<CyclicTestsRegulatory::RangeRec>
 CyclicTestsRegulatory::calculateRanges(const QVector<QVector<QPointF>>& pts,
-                                       const QVector<quint16>& sequence) const
+                             const QVector<quint16>& sequence) const
 {
     QVector<RangeRec> ranges;
 
@@ -80,23 +119,21 @@ CyclicTestsRegulatory::calculateRanges(const QVector<QVector<QPointF>>& pts,
          m_patternType == SelectTests::Pattern_B_SACVT ||
          m_patternType == SelectTests::Pattern_C_SACVT);
 
+    // для регулировочного теста достаточно двух кривых, а для «стандартных» — четырёх
     const int needed = useStandard ? 4 : 2;
     if (pts.size() < needed) return ranges;
-
-    int baseIndex = useStandard ? 2 : pts.size() - 2;
+    int baseIndex = useStandard ? 2 : 0;
     const auto& line = pts[baseIndex];
     const auto& task = pts[baseIndex + 1];
-
     if (line.isEmpty() || task.isEmpty()) return ranges;
 
     qreal prevLevel = task.first().y();
     bool firstSegment = true;
     bool forward = true;
-
     int cycleCount = 0;
 
     RangeRec rec;
-    rec.rangePercent    = static_cast<quint16>(qRound(prevLevel));
+    rec.rangePercent    = qRound(prevLevel);
     rec.maxForwardValue = std::numeric_limits<qreal>::lowest();
     rec.maxForwardCycle = -1;
     rec.maxReverseValue = std::numeric_limits<qreal>::max();
@@ -108,30 +145,26 @@ CyclicTestsRegulatory::calculateRanges(const QVector<QVector<QPointF>>& pts,
         qreal meas      = line[i].y();
 
         if (!qFuzzyCompare(currLevel, prevLevel)) {
-            if (!firstSegment) {
+            // перед тем как пушить, проверяем, что в этом сегменте были хоть какие-то точки
+            if (!firstSegment &&
+                (rec.maxForwardCycle >= 0 || rec.maxReverseCycle >= 0))
+            {
                 ranges.push_back(rec);
             }
             firstSegment = false;
-
             forward = currLevel > prevLevel;
-
-            if (qRound(currLevel) == sequence[0]) {
-                ++cycleCount;
-            }
+            if (qRound(currLevel) == sequence[0]) ++cycleCount;
 
             prevLevel = currLevel;
-            rec.rangePercent     = static_cast<quint16>(qRound(currLevel));
-            rec.maxForwardValue  = std::numeric_limits<qreal>::lowest();
-            rec.maxForwardCycle  = -1;
-            rec.maxReverseValue  = std::numeric_limits<qreal>::max();
-            rec.maxReverseCycle  = -1;
-
+            rec.rangePercent    = qRound(currLevel);
+            rec.maxForwardValue = std::numeric_limits<qreal>::lowest();
+            rec.maxForwardCycle = -1;
+            rec.maxReverseValue = std::numeric_limits<qreal>::max();
+            rec.maxReverseCycle = -1;
             continue;
         }
 
-        if (firstSegment) {
-            continue;
-        }
+        if (firstSegment) continue;
 
         if (forward) {
             if (meas > rec.maxForwardValue) {
@@ -146,7 +179,10 @@ CyclicTestsRegulatory::calculateRanges(const QVector<QVector<QPointF>>& pts,
         }
     }
 
-    if (!firstSegment) {
+    // «Закрываем» последний сегмент так же с фильтром
+    if (!firstSegment &&
+        (rec.maxForwardCycle >= 0 || rec.maxReverseCycle >= 0))
+    {
         ranges.push_back(rec);
     }
 

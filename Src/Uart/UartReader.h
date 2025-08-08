@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <QSerialPortInfo>
 #include <QDebug>
+#include <QMutex>
 
 #include "Uart.h"
 #include "UartMessage.h"
@@ -46,7 +47,10 @@ signals:
     void UartDisconnected();
     void UartError(QSerialPort::SerialPortError err);
 
+    void errorOccured(const QString &message);
+
 private:
+    static QMutex s_portMutex;
     Uart *m_uart;
     QString m_portName;
     bool m_isConnected = false;

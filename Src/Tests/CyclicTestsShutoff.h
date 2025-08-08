@@ -13,8 +13,8 @@ public:
 
     struct Task {
         QVector<quint16> values;
-        quint64 delayMs;
-        quint64 holdMs;
+        quint64 delayMsecs;
+        quint64 holdMsecs;
         quint16 cycles;
         QVector<bool> doMask;
     };

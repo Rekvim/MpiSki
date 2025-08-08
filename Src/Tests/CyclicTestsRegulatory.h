@@ -12,18 +12,18 @@ class CyclicTestsRegulatory : public MainTest
 {
     Q_OBJECT
 public:
-    explicit CyclicTestsRegulatory(QObject* parent = nullptr);
+    explicit CyclicTestsRegulatory(QObject* parent = nullptr, bool endTestAfterProcess = true);
     void SetPatternType(SelectTests::PatternType pt);
 
     struct Task {
         QVector<quint16> values;
         QVector<quint16> sequence;
         quint16 cycles;
-        quint64 delayMs;
-        quint64 holdMs;
+        quint32 delayMsecs;
+        quint16 holdMsecs;
     };
 
-    void SetTask(const Task& task);
+    void SetTask(Task task);
 
     struct RangeRec {
         quint8 rangePercent = 0;
@@ -43,6 +43,7 @@ public slots:
     void Process() override;
 
 signals:
+    void errorOccured(const QString& text);
     void SetStartTime();
     void CycleCompleted(int completedCycles);
     void Results(TestResults results);
@@ -57,7 +58,7 @@ private:
                                       const QVector<quint16>& sequence) const;
 
     void fetchPoints(QVector<QVector<QPointF>>& pts);
-
+    const bool m_endTestAfterProcess;
 private:
     // Parameters m_params;
     QVector<quint16> m_doOnCounts;

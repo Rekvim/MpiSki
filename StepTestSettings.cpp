@@ -95,13 +95,13 @@ void StepTestSettings::reverse()
 
 StepTestSettings::TestParameters StepTestSettings::getParameters()
 {
-    TestParameters test_parameters;
+    TestParameters testParameters;
 
-    test_parameters.delay = ui->timeEdit->time().msecsSinceStartOfDay();
-    test_parameters.test_value = ui->spinBox_T_value->value();
+    testParameters.delay = ui->timeEdit->time().msecsSinceStartOfDay();
+    testParameters.test_value = ui->spinBox_T_value->value();
     for (int i = 0; i < ui->listWidget_value->count(); i++) {
-        test_parameters.points.append(ui->listWidget_value->item(i)->text().toDouble());
+        testParameters.points.append(ui->listWidget_value->item(i)->text().toDouble());
     }
 
-    return test_parameters;
+    return testParameters;
 }

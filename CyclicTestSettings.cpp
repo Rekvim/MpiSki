@@ -54,8 +54,33 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
     ui->setupUi(this);
 
     // Регулирующий
+    connect(ui->pushButton_addRangeRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onAddValueClicked);
+
+    connect(ui->pushButton_editRangeRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onEditValueClicked);
+
+    connect(ui->pushButton_removeRangeRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onRemoveValueClicked);
+
+    connect(ui->pushButton_addDelayRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onAddDelayClicked);
+
+    connect(ui->pushButton_editDelayRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onEditDelayClicked);
+
+    connect(ui->pushButton_removeDelayRegulatory, &QPushButton::clicked,
+            this, &CyclicTestSettings::onRemoveDelayClicked);
 
     // Отсечной
+    connect(ui->pushButton_addDelayShutOff, &QPushButton::clicked,
+            this, &CyclicTestSettings::onAddDelayShutOffClicked);
+
+    connect(ui->pushButton_editDelayShutOff, &QPushButton::clicked,
+            this, &CyclicTestSettings::onEditDelayShutOffClicked);
+
+    connect(ui->pushButton_removeDelayShutOff, &QPushButton::clicked,
+            this, &CyclicTestSettings::onRemoveDelayShutOffClicked);
 
     // Общие
     connect(ui->pushButton_cancel, &QPushButton::clicked,
@@ -66,6 +91,26 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 
     connect(ui->comboBox_testSelection, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CyclicTestSettings::onTestSelectionChanged);
+
+    connect(ui->timeEdit_retentionTimeRegulatory, &QTimeEdit::timeChanged,
+            this, [&](QTime time) {
+                if (time > m_maxHold) {
+                    ui->timeEdit_retentionTimeRegulatory->setTime(m_maxHold);
+                }
+                if (time < m_minHold) {
+                    ui->timeEdit_retentionTimeRegulatory->setTime(m_minHold);
+                }
+        });
+
+    connect(ui->timeEdit_retentionTimeShutOff, &QTimeEdit::timeChanged,
+            this, [&](QTime time) {
+                if (time > m_maxHold) {
+                    ui->timeEdit_retentionTimeShutOff->setTime(m_maxHold);
+                }
+                if (time < m_minHold) {
+                    ui->timeEdit_retentionTimeShutOff->setTime(m_minHold);
+                }
+            });
 
     onTestSelectionChanged();
 }
@@ -100,7 +145,8 @@ static bool parseSequence(const QString& src,
 }
 
 // --- Регулирующий
-void CyclicTestSettings::on_pushButton_addRangeRegulatory_clicked()
+
+void CyclicTestSettings::onAddValueClicked()
 {
     bool ok;
     QString text = QInputDialog::getText(this, "Добавить последовательность",
@@ -112,8 +158,7 @@ void CyclicTestSettings::on_pushButton_addRangeRegulatory_clicked()
     }
 }
 
-
-void CyclicTestSettings::on_pushButton_editRangeRegulatory_clicked()
+void CyclicTestSettings::onEditValueClicked()
 {
     if (auto *item = ui->listWidget_testRangeRegulatory->currentItem()) {
         bool ok;
@@ -126,12 +171,12 @@ void CyclicTestSettings::on_pushButton_editRangeRegulatory_clicked()
     }
 }
 
-void CyclicTestSettings::on_pushButton_removeRangeRegulatory_clicked()
+void CyclicTestSettings::onRemoveValueClicked()
 {
     delete ui->listWidget_testRangeRegulatory->currentItem();
 }
 
-void CyclicTestSettings::on_pushButton_addDelayRegulatory_clicked()
+void CyclicTestSettings::onAddDelayClicked()
 {
     bool ok;
     int v = QInputDialog::getInt(this, "Добавить задержку",
@@ -142,7 +187,7 @@ void CyclicTestSettings::on_pushButton_addDelayRegulatory_clicked()
     }
 }
 
-void CyclicTestSettings::on_pushButton_editDelayRegulatory_clicked()
+void CyclicTestSettings::onEditDelayClicked()
 {
     if (auto *item = ui->listWidget_delayTimeRegulatory->currentItem()) {
         bool ok;
@@ -155,15 +200,14 @@ void CyclicTestSettings::on_pushButton_editDelayRegulatory_clicked()
     }
 }
 
-
-void CyclicTestSettings::on_pushButton_removeDelayRegulatory_clicked()
+void CyclicTestSettings::onRemoveDelayClicked()
 {
     delete ui->listWidget_delayTimeRegulatory->currentItem();
-
 }
 
 // --- Отсечной
-void CyclicTestSettings::on_pushButton_addDelayShutOff_clicked()
+
+void CyclicTestSettings::onAddDelayShutOffClicked()
 {
     bool ok;
     int v = QInputDialog::getInt(this, "Добавить задержку (Отсечной)",
@@ -174,8 +218,7 @@ void CyclicTestSettings::on_pushButton_addDelayShutOff_clicked()
     }
 }
 
-
-void CyclicTestSettings::on_pushButton_editDelayShutOff_clicked()
+void CyclicTestSettings::onEditDelayShutOffClicked()
 {
     if (auto *item = ui->listWidget_delayTimeShutOff->currentItem()) {
         bool ok;
@@ -188,13 +231,13 @@ void CyclicTestSettings::on_pushButton_editDelayShutOff_clicked()
     }
 }
 
-
-void CyclicTestSettings::on_pushButton_removeDelayShutOff_clicked()
+void CyclicTestSettings::onRemoveDelayShutOffClicked()
 {
     delete ui->listWidget_delayTimeShutOff->currentItem();
 }
 
 // --- Общая обработка «Старт»
+
 void CyclicTestSettings::onPushButtonStartClicked()
 {
     using TP = TestParameters;
@@ -222,20 +265,12 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите время задержки (регулирующий).");
             return;
         }
-        m_parameters.regulatory_delaySec =
-            ui->listWidget_delayTimeRegulatory->currentItem()->text().toInt();
+        m_parameters.regulatory_delayMsecs =
+            ui->listWidget_delayTimeRegulatory->currentItem()->text().toInt() * 1000;
 
         // удержание
-        {
-            QTime hold = ui->timeEdit_retentionTimeRegulatory->time();
-            int secs = hold.hour()*3600 + hold.minute()*60 + hold.second();
-            if (secs <= 0) {
-                QMessageBox::warning(this, "Ошибка",
-                                    "Время удержания (регулирующий) > 00:00.");
-                return;
-            }
-            m_parameters.regulatory_holdTimeSec = secs;
-        }
+
+        m_parameters.regulatory_holdTimeMsecs = ui->timeEdit_retentionTimeRegulatory->time().msecsSinceStartOfDay();
 
         // число циклов
         {
@@ -249,13 +284,11 @@ void CyclicTestSettings::onPushButtonStartClicked()
             m_parameters.regulatory_numCycles = txt.toInt();
         }
         m_parameters.regulatory_enable_20mA = ui->checkBox_20mA_enable->isChecked();
-
     }
     else {
-        // сбросить ненужные
         m_parameters.regSeqValues.clear();
-        m_parameters.regulatory_delaySec = 0;
-        m_parameters.regulatory_holdTimeSec = 0;
+        m_parameters.regulatory_delayMsecs = 0;
+        m_parameters.regulatory_holdTimeMsecs = 0;
         m_parameters.regulatory_numCycles = 0;
         m_parameters.regulatory_enable_20mA = false;
     }
@@ -282,20 +315,12 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите время задержки (отсечной).");
             return;
         }
-        m_parameters.shutoff_delaySec =
-            ui->listWidget_delayTimeShutOff->currentItem()->text().toInt();
+        m_parameters.shutoff_delayMsecs =
+            ui->listWidget_delayTimeShutOff->currentItem()->text().toInt() * 1000;
 
         // удержание
-        {
-            QTime hold = ui->timeEdit_retentionTimeShutOff->time();
-            int secs = hold.hour()*3600 + hold.minute()*60 + hold.second();
-            if (secs <= 0) {
-                QMessageBox::warning(this, "Ошибка",
-                                     "Время удержания (отсечной) > 00:00.");
-                return;
-            }
-            m_parameters.shutoff_holdTimeSec = secs;
-        }
+
+        m_parameters.shutoff_holdTimeMsecs = ui->timeEdit_retentionTimeShutOff->time().msecsSinceStartOfDay();
 
         // число циклов
         {
@@ -319,8 +344,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
     }
     else {
         m_parameters.offSeqValues.clear();
-        m_parameters.shutoff_delaySec = 0;
-        m_parameters.shutoff_holdTimeSec = 0;
+        m_parameters.shutoff_delayMsecs = 0;
+        m_parameters.shutoff_holdTimeMsecs = 0;
         m_parameters.shutoff_numCycles = 0;
     }
 

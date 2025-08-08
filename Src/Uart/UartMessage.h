@@ -29,7 +29,7 @@ public:
     UartMessage(const Command command, const QByteArray &data);
     UartMessage(const Command command, quint16 data);
     UartMessage(const Command command, quint8 data);
-    UartMessage(const QByteArray data);
+    UartMessage(const QByteArray& data);
 
     QByteArray ToByteArray() const;
     bool CheckCrc() const;

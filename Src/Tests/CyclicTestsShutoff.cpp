@@ -44,10 +44,10 @@ void CyclicTestsShutoff::Process()
             emit SetMultipleDO(currentStates);
         }
 
-        SetDACBlocked(m_task.values.at(i), m_task.delayMs);
+        SetDACBlocked(m_task.values.at(i), m_task.delayMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
-        Sleep(m_task.holdMs);
+        Sleep(m_task.holdMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
         if (perCycle > 0 && (i + 1) % perCycle == 0) {

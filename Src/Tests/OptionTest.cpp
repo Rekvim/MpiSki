@@ -14,10 +14,7 @@ void OptionTest::Process()
 
     SetDACBlocked(m_task.value.first(), 10000, true);
 
-    if (m_terminate) {
-        emit EndTest();
-        return;
-    }
+    if (m_terminate) { emit EndTest(); return; }
 
     emit SetStartTime();
 
