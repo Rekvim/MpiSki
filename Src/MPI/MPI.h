@@ -8,7 +8,7 @@
 #include <QThread>
 
 #include "Sensor.h"
-#include "./src/Uart/UartReader.h"
+#include "./Src/Uart/UartReader.h"
 
 class MPI : public QObject
 {

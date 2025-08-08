@@ -8,6 +8,7 @@
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QTimer>
+#include <QPushButton>
 
 #include "./Src/MPI/MPI.h"
 #include "OtherTestSettings.h"

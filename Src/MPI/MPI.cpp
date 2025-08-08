@@ -1,4 +1,4 @@
-#include "Mpi.h"
+#include "MPI.h"
 #include "MpiSettings.h"
 
 MPI::MPI(QObject *parent)
