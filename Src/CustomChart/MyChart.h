@@ -4,7 +4,7 @@
 #pragma once
 #include <QObject>
 #include <QtCharts>
-#include "MySeries.h"
+#include "./Src/CustomChart/MySeries.h"
 
 class MyChart : public QChartView
 {

@@ -1,4 +1,4 @@
-#include "MyChart.h"
+#include "./Src/CustomChart/MyChart.h"
 
 MyChart::MyChart(QWidget *parent)
     : QChartView(parent)

@@ -2,7 +2,6 @@
 #include "ui_CyclicTestSettings.h"
 #include "./Src/ValidatorFactory/RegexPatterns.h"
 
-
 void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
 {
     ui->comboBox_testSelection->clear();

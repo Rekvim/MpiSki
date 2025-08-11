@@ -14,6 +14,8 @@ QXLSX_HEADERPATH=./header/
 QXLSX_SOURCEPATH=./source/
 include(./QXlsx.pri)
 
+INCLUDEPATH += $$PWD/Src/CustomChart
+
 SOURCES += \
     CyclicTestSettings.cpp \
     Src/CustomChart/MyChart.cpp \
@@ -101,7 +103,6 @@ FORMS += \
     StepTestSettings.ui \
     ValveWindow.ui
 
-INCLUDEPATH += ./Src/CustomChart
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

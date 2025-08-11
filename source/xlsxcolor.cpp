@@ -116,14 +116,13 @@ XlsxColor::operator QVariant() const
     return QVariant(cref, this);
 }
 
-
 QColor XlsxColor::fromARGBString(const QString &c)
 {
     QColor color;
     if (c.startsWith(u'#')) {
-        color.fromString(c);
+        color.setNamedColor(c);
     } else {
-        color.fromString(QLatin1Char('#') + c);
+        color.setNamedColor(QLatin1Char('#') + c);
     }
     return color;
 }

@@ -10,15 +10,16 @@
 #include <QDateTime>
 #include <QDebug>
 
+#pragma once
 #include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
 #include "Registry.h"
 #include "SelectTests.h"
 #include "./Src/Telemetry/TelemetryStore.h"
 
-QT_BEGIN_NAMESPACE
+// QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+// QT_END_NAMESPACE
 
 struct CTSRule {
     std::function<bool(const SelectTests::BlockCTS&)> condition;

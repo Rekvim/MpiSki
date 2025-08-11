@@ -1,4 +1,4 @@
-#include "Mpi.h"
+#include "MPI.h"
 #include "MpiSettings.h"
 
 MPI::MPI(QObject *parent)
@@ -9,8 +9,6 @@ MPI::MPI(QObject *parent)
 
     m_uartReader->moveToThread(m_uartThread);
     m_uartThread->start();
-
-
 
     connect(this, &MPI::ConnectToUart,
             m_uartReader, &UartReader::ConnectToUart,

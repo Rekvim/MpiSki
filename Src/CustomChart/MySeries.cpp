@@ -1,4 +1,4 @@
-#include "MySeries.h"
+#include "./Src/CustomChart/MySeries.h"
 
 MySeries::MySeries(QObject *parent, quint8 axN)
     : QLineSeries{parent}

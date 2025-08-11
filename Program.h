@@ -1,4 +1,4 @@
-    #ifndef PROGRAM_H
+#ifndef PROGRAM_H
 #define PROGRAM_H
 
 #pragma once

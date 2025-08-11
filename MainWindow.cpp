@@ -1,5 +1,7 @@
 #include "MainWindow.h"
+#include "./Src/CustomChart/MyChart.h"
 #include "ui_MainWindow.h"
+
 
 #include "Src/ReportBuilders/ReportBuilder_B_CVT.h"
 #include "Src/ReportBuilders/ReportBuilder_B_SACVT.h"
