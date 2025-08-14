@@ -87,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     appendLog("Логовое окно инициализировано");
 
-    connect(this, &MainWindow::Initialize,
+    connect(this, &MainWindow::initialize,
             m_program, &Program::initialization);
 
     connect(this, &MainWindow::InitDOSelected,
@@ -113,7 +113,6 @@ MainWindow::MainWindow(QWidget *parent)
                 });
     }
 
-    //
     connect(this, &MainWindow::runCyclicTest,
             m_program, &Program::runningCyclicTest);
 
@@ -995,7 +994,6 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
         startTest();
     }
 }
-
 void MainWindow::on_pushButton_mainTest_save_clicked()
 {
     if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_task) {
@@ -1033,17 +1031,17 @@ void MainWindow::on_pushButton_optionalTests_start_clicked()
             emit stopTheTest();
         }
     } else {
-        emit runOptionalTest(ui->tabWidget_tests->currentIndex());
+        emit runOptionalTest(ui->tabWidget_optionalTests->currentIndex());
         startTest();
     }
 }
 void MainWindow::on_pushButton_optionalTests_save_clicked()
 {
-    if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_response) {
+    if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_response) {
         SaveChart(Charts::Response);
-    } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_resolution) {
+    } else if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_resolution) {
         SaveChart(Charts::Resolution);
-    } else if (ui->tabWidget_tests->currentWidget() == ui->tab_optionalTests_step) {
+    } else if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_step) {
         SaveChart(Charts::Step);
     }
 }
@@ -1360,7 +1358,7 @@ void MainWindow::on_pushButton_init_clicked()
     };
 
     emit InitDOSelected(states);
-    emit Initialize();
+    emit initialize();
     emit PatternChanged(m_patternType);
 }
 

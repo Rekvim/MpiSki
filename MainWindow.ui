@@ -37,7 +37,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -2173,9 +2173,9 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_27">
         <item>
-         <widget class="QTabWidget" name="tabWidget_tests">
+         <widget class="QTabWidget" name="tabWidget_optionalTests">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -3965,7 +3965,7 @@
   <tabstop>Chart_stroke</tabstop>
   <tabstop>pushButton_strokeTest_save</tabstop>
   <tabstop>pushButton_strokeTest_start</tabstop>
-  <tabstop>tabWidget_tests</tabstop>
+  <tabstop>tabWidget_optionalTests</tabstop>
   <tabstop>pushButton_optionalTests_save</tabstop>
   <tabstop>pushButton_optionalTests_start</tabstop>
   <tabstop>tab_widget</tabstop>

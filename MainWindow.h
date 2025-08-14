@@ -35,9 +35,23 @@ public:
     void SetRegistry(Registry *registry);
     void SetPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
     void SetBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
+signals:
+    void initialize();
+    void PatternChanged(SelectTests::PatternType pattern);
+
+    void InitDOSelected(const QVector<bool> &states);
+    void SetDAC(qreal value);
+
+    void runMainTest();
+    void runStrokeTest();
+    void runCyclicTest();
+    void runOptionalTest(quint8 testNum);
+
+    void stopTheTest();
+
+    void SetDO(quint8 DO_num, bool state);
 
 private slots:
-
     void appendLog(const QString& text);
 
     void onTelemetryUpdated(const TelemetryStore &TS);
@@ -158,28 +172,5 @@ private:
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
-signals:
-    void Initialize();
-    void PatternChanged(SelectTests::PatternType pattern);
-
-
-    void InitDOSelected(const QVector<bool> &states);
-    void SetDAC(qreal value);
-
-    void runMainTest();
-    void runStrokeTest();
-
-    void runCyclicTest();
-
-    // void runCyclicRegulatoryTests();
-    // void runCyclicShutoffTests();
-    // void runCyclicCombinedTests();
-
-
-    void runOptionalTest(quint8 testNum);
-
-    void stopTheTest();
-
-    void SetDO(quint8 DO_num, bool state);
 };
 #endif // MAINWINDOW_H

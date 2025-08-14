@@ -568,7 +568,7 @@ void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
     emit getPoints_mainTest(points, Charts::Task);
 }
 
-void Program::results_mainTest(MainTest::TestResults results)
+void Program::results_mainTest(const MainTest::TestResults &results)
 {
     ValveInfo *valveInfo = m_registry->GetValveInfo();
 
@@ -1061,124 +1061,6 @@ void Program::runningCyclicTest()
     case p.TestParameters::Shutoff: runningCyclicShutoff(p); break;
     case p.TestParameters::Combined: runningCyclicCombined(p); break;
     }
-
-    // using TP = CyclicTestSettings::TestParameters;
-    // m_cyclicRunning = true;
-
-    // bool ok = true;
-    // if (p.testType == TP::Regulatory || p.testType == TP::Combined) {
-    //     ok &= !p.regSeqValues.isEmpty()
-    //     &&  p.regulatory_delay > 0
-    //     &&  p.regulatory_holdTime >= 0
-    //     &&  p.regulatory_numCycles > 0;
-    // }
-    // if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
-    //     ok &= !p.offSeqValues.isEmpty()
-    //     &&  p.shutoff_delay > 0
-    //     &&  p.shutoff_holdTime >= 0
-    //     &&  p.shutoff_numCycles > 0;
-    // }
-    // if (!ok) { emit stopTheTest(); return; }
-
-    // const QVector<quint16> &valuesReg = p.regSeqValues;
-
-    // int recordCount = valuesReg.size();
-
-    // m_telemetryStore.cyclicTestRecord.ranges.clear();
-    // m_telemetryStore.cyclicTestRecord.ranges.resize(recordCount);
-
-    // for (int i = 0; i < recordCount; ++i) {
-    //     auto &rec = m_telemetryStore.cyclicTestRecord.ranges[i];
-    //     rec.rangePercent = valuesReg[i];
-    //     rec.maxForwardValue = 0;
-    //     rec.maxForwardCycle = 0;
-    //     rec.maxReverseValue = 0;
-    //     rec.maxReverseCycle = 0;
-    // }
-
-    // m_telemetryStore.cyclicTestRecord.switch3to0Count = 0;
-    // m_telemetryStore.cyclicTestRecord.switch0to3Count = 0;
-
-    // m_lastDI = m_mpi.GetDIStatus();
-    // m_cyclicStartTs= QDateTime::currentMSecsSinceEpoch();
-
-    // // процент -> ток
-    // ValveInfo *vi = m_registry->GetValveInfo();
-    // bool normalOpen = (vi->safePosition != 0);
-
-    // QVector<quint16> rawReg = makeRawValues(p.regSeqValues, normalOpen);
-    // QVector<quint16> rawOff = makeRawValues(p.offSeqValues, normalOpen);
-
-    // TP params = p;
-    // params.rawRegValues = std::move(rawReg);
-    // params.rawOffValues = std::move(rawOff);
-
-    // emit SetButtonInitEnabled(false);
-
-    // auto *cyclicTests = new CyclicTests;
-    // cyclicTests->SetPatternType(m_patternType);
-    // cyclicTests->SetParameters(params);
-
-    // QThread *threadTest = new QThread(this);
-    // cyclicTests->moveToThread(threadTest);
-
-    // connect(threadTest, &QThread::started,
-    //         cyclicTests, &CyclicTests::Process);
-
-    // connect(cyclicTests, &CyclicTests::EndTest,
-    //         threadTest, &QThread::quit);
-
-    // connect(this, &Program::stopTheTest,
-    //         cyclicTests, &CyclicTests::StoppingTheTest);
-
-    // connect(threadTest, &QThread::finished,
-    //         threadTest, &QObject::deleteLater);
-
-    // connect(threadTest, &QThread::finished,
-    //         cyclicTests, &QObject::deleteLater);
-
-    // connect(cyclicTests, &CyclicTests::EndTest,
-    //         this, &Program::endTest);
-
-    // connect(cyclicTests, &CyclicTests::UpdateGraph,
-    //         this, &Program::updateCharts_CyclicTest);
-
-    // connect(cyclicTests, &CyclicTests::SetDAC,
-    //         this, &Program::SetDAC);
-
-    // connect(cyclicTests, &CyclicTests::GetPoints,
-    //         this, &Program::receivedPoints_cyclicTest,
-    //         Qt::BlockingQueuedConnection);
-
-    // // if (p.testType == TP::Regulatory
-    // //     || p.testType == TP::Combined) {
-
-    // // }
-
-    // if (p.testType == TP::Shutoff || p.testType == TP::Combined) {
-
-    //     connect(cyclicTests, &CyclicTests::SetMultipleDO,
-    //             this, &Program::SetMultipleDO);
-    // }
-
-    // connect(this, &Program::ReleaseBlock,
-    //         cyclicTests, &CyclicTests::ReleaseBlock);
-
-    // connect(cyclicTests, &CyclicTests::SetStartTime,
-    //         this, &Program::SetTimeStart);
-
-    // connect(cyclicTests, &CyclicTests::Results,
-    //         this, &Program::results_cyclicTests);
-
-    // connect(cyclicTests, &CyclicTests::CycleCompleted,
-    //         this, &Program::CyclicCycleCompleted);
-
-    // connect(cyclicTests, &CyclicTests::ClearGraph,
-    //         this, [&] { emit ClearPoints(Charts::Cyclic); });
-
-    // m_testing = true;
-    // emit EnableSetTask(false);
-    // threadTest->start();
 }
 
 void Program::results_cyclicTests(const CyclicTests::TestResults& r)
@@ -1415,7 +1297,7 @@ void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
     emit getPoints_optionTest(points, Charts::Step);
 }
 
-void Program::results_stepTest(QVector<StepTest::TestResult> results, quint32 T_value)
+void Program::results_stepTest(const QVector<StepTest::TestResult> &results, quint32 T_value)
 {
     m_telemetryStore.stepResults.clear();
     for (auto &r : results) {
