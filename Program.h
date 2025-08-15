@@ -107,6 +107,8 @@ signals:
 
     void testFinished();
 
+    void TotalTestTimeMs(quint64 totalMs);
+
 private:
     Registry *m_registry;
 

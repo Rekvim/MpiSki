@@ -30,16 +30,16 @@ public:
         QVector<quint16> rawRegValues;
         quint16 regulatory_numCycles = 0;
 
-        quint32 regulatory_delayMsecs = 0;
-        quint16 regulatory_holdTimeMsecs = 0;
+        quint32 regulatory_delayMs = 0;
+        quint16 regulatory_holdMs = 0;
         bool regulatory_enable_20mA = false;
 
         QVector<quint16> offSeqValues;
         QVector<quint16> rawOffValues;
         quint16 shutoff_numCycles = 0;
 
-        quint32 shutoff_delayMsecs = 0;
-        quint16 shutoff_holdTimeMsecs = 0;
+        quint32 shutoff_delayMs = 0;
+        quint16 shutoff_holdMs = 0;
         std::array<bool,4> shutoff_DO {{false,false,false,false}};
         bool shutoff_DI[2] {false,false};
     };

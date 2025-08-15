@@ -264,12 +264,12 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите время задержки (регулирующий).");
             return;
         }
-        m_parameters.regulatory_delayMsecs =
+        m_parameters.regulatory_delayMs =
             ui->listWidget_delayTimeRegulatory->currentItem()->text().toInt() * 1000;
 
         // удержание
 
-        m_parameters.regulatory_holdTimeMsecs = ui->timeEdit_retentionTimeRegulatory->time().msecsSinceStartOfDay();
+        m_parameters.regulatory_holdMs = ui->timeEdit_retentionTimeRegulatory->time().msecsSinceStartOfDay();
 
         // число циклов
         {
@@ -286,8 +286,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
     }
     else {
         m_parameters.regSeqValues.clear();
-        m_parameters.regulatory_delayMsecs = 0;
-        m_parameters.regulatory_holdTimeMsecs = 0;
+        m_parameters.regulatory_delayMs = 0;
+        m_parameters.regulatory_holdMs = 0;
         m_parameters.regulatory_numCycles = 0;
         m_parameters.regulatory_enable_20mA = false;
     }
@@ -314,12 +314,12 @@ void CyclicTestSettings::onPushButtonStartClicked()
                                  "Выберите время задержки (отсечной).");
             return;
         }
-        m_parameters.shutoff_delayMsecs =
+        m_parameters.shutoff_delayMs =
             ui->listWidget_delayTimeShutOff->currentItem()->text().toInt() * 1000;
 
         // удержание
 
-        m_parameters.shutoff_holdTimeMsecs = ui->timeEdit_retentionTimeShutOff->time().msecsSinceStartOfDay();
+        m_parameters.shutoff_holdMs = ui->timeEdit_retentionTimeShutOff->time().msecsSinceStartOfDay();
 
         // число циклов
         {
@@ -343,8 +343,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
     }
     else {
         m_parameters.offSeqValues.clear();
-        m_parameters.shutoff_delayMsecs = 0;
-        m_parameters.shutoff_holdTimeMsecs = 0;
+        m_parameters.shutoff_delayMs = 0;
+        m_parameters.shutoff_holdMs = 0;
         m_parameters.shutoff_numCycles = 0;
     }
 
