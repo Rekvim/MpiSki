@@ -21,17 +21,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget->setCurrentIndex(0);
 
-    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget->setTabEnabled(1, true);
-    ui->tabWidget->setTabEnabled(2, true);
-    ui->tabWidget->setTabEnabled(3, true);
-    ui->tabWidget->setTabEnabled(4, true);
-
     // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget->setTabEnabled(1, false);
-    // ui->tabWidget->setTabEnabled(2, false);
-    // ui->tabWidget->setTabEnabled(3, false);
-    // ui->tabWidget->setTabEnabled(4, false);
+    // ui->tabWidget->setTabEnabled(1, true);
+    // ui->tabWidget->setTabEnabled(2, true);
+    // ui->tabWidget->setTabEnabled(3, true);
+    // ui->tabWidget->setTabEnabled(4, true);
+
+    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    ui->tabWidget->setTabEnabled(1, false);
+    ui->tabWidget->setTabEnabled(2, false);
+    ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
 
     //m_cyclicCountdownTimer.setInterval(100);
     // connect(&m_cyclicCountdownTimer, &QTimer::timeout,
@@ -251,19 +251,33 @@ MainWindow::~MainWindow()
     m_programThread->wait();
 }
 
-void MainWindow::onCyclicCountdown()
+void MainWindow::onCountdownTimeout()
 {
-    qint64 elapsed = m_cyclicElapsedTimer.elapsed();
-    qint64 remaining = m_cyclicTotalMs - elapsed;
-    if (remaining < 0) remaining = 0;
+    quint64 elapsedMs = m_elapsedTimer.elapsed();
+    qint64 remainingMs = static_cast<qint64>(m_totalTestMs) - static_cast<qint64>(elapsedMs);
+    if (remainingMs < 0) remainingMs = 0;
 
-    QTime t(0, 0);
-    t = t.addMSecs(remaining);
-    ui->label_cyclicTest_totalTimeValue->setText(
-        t.toString("hh:mm:ss.zzz"));
+    auto formatHMS = [](quint64 ms) -> QString {
+        const quint64 hours = ms / 3600000ULL;  ms %= 3600000ULL;
+        const quint64 mins = ms / 60000ULL;  ms %= 60000ULL;
+        const quint64 secs = ms / 1000ULL;
+        const quint64 msec = ms % 1000ULL;
+        return QString("%1:%2:%3.%4")
+            .arg(hours, 2, 10, QChar('0'))
+            .arg(mins, 2, 10, QChar('0'))
+            .arg(secs, 2, 10, QChar('0'))
+            .arg(msec, 3, 10, QChar('0'));
+    };
 
-    if (remaining == 0) {
-        m_cyclicCountdownTimer.stop();
+    ui->statusbar->showMessage(
+        QStringLiteral("Тест в процессе. До завершения теста осталось: %1 (прошло %2 из %3)")
+            .arg(formatHMS(static_cast<quint64>(remainingMs)))
+            .arg(formatHMS(static_cast<quint64>(elapsedMs)))
+            .arg(formatHMS(m_totalTestMs))
+        );
+
+    if (remainingMs == 0) {
+        m_durationTimer->stop();
     }
 }
 
@@ -506,25 +520,6 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     }
 
     return QMainWindow::eventFilter(watched, event);
-}
-
-void MainWindow::onCountdownTimeout()
-{
-    qint64 elapsedMs = m_elapsedTimer.elapsed();
-
-    qint64 remainingMs = m_totalTestMs - elapsedMs;
-    if (remainingMs <= 0) {
-        remainingMs = 0;
-    }
-
-    QTime t(0, 0);
-    t = t.addMSecs(remainingMs);
-
-    ui->lineEdit_testDuration->setText(t.toString("hh:mm:ss.zzz"));
-
-    if (remainingMs == 0) {
-        m_durationTimer->stop();
-    }
 }
 
 void MainWindow::SetRegistry(Registry *registry)
@@ -838,23 +833,6 @@ void MainWindow::receivedParameters_mainTest(MainTestSettings::TestParameters &p
 {
     if (m_mainTestSettings->exec() == QDialog::Accepted) {
         parameters = m_mainTestSettings->getParameters();
-
-        qint64 runMs = m_mainTestSettings->totalTestTimeMillis();
-
-        const qint64 delayMs = 15 * 1000;
-        const qint64 delayMs2 = 10 * 1000;
-
-        m_totalTestMs = delayMs
-                        + runMs
-                        + delayMs2
-                        + runMs;
-
-        m_elapsedTimer.start();
-        m_durationTimer->start();
-        QTime t(0, 0);
-        t = t.addMSecs(m_totalTestMs);
-        ui->lineEdit_testDuration->setText(t.toString("hh:mm:ss.zzz"));
-
         return;
     }
 
@@ -914,63 +892,72 @@ static QString seqToString(const QVector<quint16>& seq)
 void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters)
 {
     if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
-        // using TP = CyclicTestSettings::TestParameters;
+        using TP = CyclicTestSettings::TestParameters;
         parameters = m_cyclicTestSettings->getParameters();
 
-        // switch (parameters.testType) {
-        // case TP::Regulatory:
-        //     ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.regSeqValues));
-        //     ui->label_cyclicTest_specifiedCyclesValue->setText(
-        //         QString::number(parameters.regulatory_numCycles));
-        //     break;
-        // case TP::Shutoff:
-        //     ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.offSeqValues));
-        //     ui->label_cyclicTest_specifiedCyclesValue->setText(
-        //         QString::number(parameters.shutoff_numCycles));
-        //     break;
-        // default:
-        //     ui->label_cyclicTest_sequenceValue->clear();
-        //     ui->label_cyclicTest_specifiedCyclesValue->clear();
-        //     break;
-        // }
+        switch (parameters.testType) {
+        case TP::Regulatory:
+            ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.regSeqValues));
+            ui->label_cyclicTest_specifiedCyclesValue->setText(
+                QString::number(parameters.regulatory_numCycles));
+            break;
+        case TP::Shutoff:
+            ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.offSeqValues));
+            ui->label_cyclicTest_specifiedCyclesValue->setText(
+                QString::number(parameters.shutoff_numCycles));
+            break;
+        default:
+            ui->label_cyclicTest_sequenceValue->clear();
+            ui->label_cyclicTest_specifiedCyclesValue->clear();
+            break;
+        }
 
-        // if (parameters.testType == TP::Regulatory && parameters.regulatory_enable_20mA) {
-        //     emit SetDAC(20.0);
-        // }
+        if (parameters.testType == TP::Regulatory && parameters.regulatory_enable_20mA) {
+            emit SetDAC(20.0);
+        }
 
-        // qint64 totalMs = 0;
-        // switch (parameters.testType) {
-        // case TP::Regulatory: {
-        //     qint64 n = parameters.regSeqValues.size();
-        //     totalMs = n * parameters.regulatory_numCycles *
-        //               ((qint64)parameters.regulatory_delay * 1000 +
-        //                (qint64)parameters.regulatory_holdTime * 1000 );
-        //     break;
-        // }
-        // case TP::Shutoff: {
-        //     int n = parameters.offSeqValues.size();
-        //     totalMs = static_cast<qint64>(n) * parameters.shutoff_numCycles *
-        //               ((qint64)parameters.shutoff_delay * 1000 +
-        //                (qint64)parameters.shutoff_holdTime * 1000 );
-        //     break;
-        // }
-        // case TP::Combined: {
-        //     qint64 regMs = parameters.regSeqValues.size() * parameters.regulatory_numCycles *
-        //                    ( (qint64)parameters.regulatory_delay * 1000 +
-        //                     (qint64)parameters.regulatory_holdTime * 1000 );
-        //     qint64 offMs = parameters.offSeqValues.size() * parameters.shutoff_numCycles *
-        //                    ( (qint64)parameters.shutoff_delay * 1000 +
-        //                     (qint64)parameters.shutoff_holdTime * 1000 );
-        //     totalMs = regMs + offMs;
-        //     break;
-        // }
-        // default:
-        //     break;
-        // }
+        qint64 totalMs = 0;
+        switch (parameters.testType) {
+        case TP::Regulatory: {
+            const auto raw = parameters.regSeqValues;
+            quint64 steps = static_cast<quint64>(raw.size()) * parameters.regulatory_numCycles;
 
-        // QTime t0(0, 0);
-        // t0 = t0.addMSecs(totalMs);
-        // ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
+            totalMs = steps * (parameters.regulatory_delayMs
+                               + parameters.regulatory_holdMs);
+            break;
+        }
+        case TP::Shutoff: {
+            const auto raw = parameters.offSeqValues;
+            quint64 steps = static_cast<quint64>(raw.size()) * parameters.shutoff_numCycles;
+            totalMs = steps * (parameters.shutoff_delayMs
+                                       + parameters.shutoff_holdMs
+                                       + parameters.shutoff_delayMs);
+
+            break;
+        }
+        case TP::Combined: {
+            const auto regRaw = parameters.regSeqValues;
+            quint64 regSteps = static_cast<quint64>(regRaw.size()) * parameters.regulatory_numCycles;
+            quint64 regMs = regSteps * (parameters.regulatory_delayMs
+                                        + parameters.regulatory_holdMs)
+                            + parameters.regulatory_delayMs;
+
+            const auto offRaw = parameters.offSeqValues;
+            quint64 offSteps = static_cast<quint64>(offRaw.size()) * parameters.shutoff_numCycles;
+            quint64 offMs = offSteps * (parameters.shutoff_delayMs
+                                        + parameters.shutoff_holdMs
+                                        + parameters.shutoff_delayMs);
+
+            totalMs = regMs + offMs;
+            break;
+        }
+        default:
+            break;
+        }
+
+        QTime t0(0, 0);
+        t0 = t0.addMSecs(totalMs);
+        ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
 
         // m_cyclicTotalMs = totalMs;
         // m_cyclicElapsedTimer.restart();
@@ -1004,12 +991,12 @@ void MainWindow::endTest()
 {
     m_testing = false;
 
-    m_durationTimer->stop();
-    // m_cyclicCountdownTimer.stop();
-
     ui->statusbar->showMessage("Тест завершён");
 
-    ui->lineEdit_testDuration->clear();
+    if (m_durationTimer) {
+        m_durationTimer->stop();
+    }
+
     if (m_userCanceled) {
         ui->label_cyclicTest_totalTimeValue->clear();
         ui->label_cyclicTest_specifiedCyclesValue->clear();

@@ -35,7 +35,7 @@ void CyclicTestsRegulatory::Process()
     SetDACBlocked(m_task.values.first(),
                   m_task.delayMsecs,
                   /*waitForStop=*/true,
-                  /*waitForStart=*/true);
+                  /*waitForStart=*/false);
 
     if (m_terminate) { emit EndTest(); return; }
 
@@ -48,13 +48,13 @@ void CyclicTestsRegulatory::Process()
     const int seqSize = m_task.sequence.size();
     emit errorOccured("запустили цикл по values");
 
-    for (quint32 step = 0; step < m_task.values.size(); ++step) {
+    for (quint32 step = 0; step < m_task.values.size() && !m_terminate; ++step) {
         const quint16 value = m_task.values.at(step);
         if (m_terminate) { emit EndTest(); return; }
 
-        SetDACBlocked(value, m_task.delayMsecs, true, true);
+        SetDACBlocked(value, m_task.delayMsecs);
         if (m_terminate) { emit EndTest(); return; }
-        SetDACBlocked(value, m_task.holdMsecs, true, true);
+        SetDACBlocked(value, m_task.holdMsecs);
         // Sleep(m_task.holdMsecs);
 
         if ((step + 1) % seqSize == 0) {

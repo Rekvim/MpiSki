@@ -14,15 +14,15 @@ void CyclicTestsShutoff::SetTask(const Task& task)
 void CyclicTestsShutoff::Process()
 {
     emit ClearGraph();
-    SetDACBlocked(0, 10000, true);
+
+    SetDACBlocked(m_task.values.first(),
+                  m_task.delayMsecs,
+                  /*waitForStop=*/true,
+                  /*waitForStart=*/true);
     if (m_terminate) { emit EndTest(); return; }
 
     emit SetStartTime();
     m_graphTimer->start(100);
-
-    Sleep(5000);
-
-    if (m_terminate) { emit EndTest(); return; }
 
     // инициализируем счётчики DO
     int DO_COUNT = m_task.doMask.size();
@@ -32,9 +32,10 @@ void CyclicTestsShutoff::Process()
 
     int perCycle = (m_task.cycles > 0 ? m_task.values.size() / m_task.cycles : m_task.values.size());
 
-    for (int i = 0; i < m_task.values.size() && !m_terminate; ++i) {
+    for (quint32 step = 0; step < m_task.values.size() && !m_terminate; ++step) {
+        const quint16 value = m_task.values.at(step);
 
-        if (perCycle > 0 && (i % perCycle) != 0) {
+        if (perCycle > 0 && (step % perCycle) != 0) {
             for (int d = 0; d < DO_COUNT; ++d) {
                 if (!m_task.doMask[d]) continue;
                 currentStates[d] = !currentStates[d];
@@ -44,14 +45,14 @@ void CyclicTestsShutoff::Process()
             emit SetMultipleDO(currentStates);
         }
 
-        SetDACBlocked(m_task.values.at(i), m_task.delayMsecs);
+        SetDACBlocked(value, m_task.delayMsecs, true, true);
         if (m_terminate) { emit EndTest(); return; }
 
-        Sleep(m_task.holdMsecs);
+        SetDACBlocked(value, m_task.holdMsecs, true, true);
         if (m_terminate) { emit EndTest(); return; }
 
-        if (perCycle > 0 && (i + 1) % perCycle == 0) {
-            emit CycleCompleted((i + 1) / perCycle);
+        if (perCycle > 0 && (step + 1) % perCycle == 0) {
+            emit CycleCompleted((step + 1) / perCycle);
         }
     }
 

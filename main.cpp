@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     mainWindow.SetPatternType(selectedPattern);
     mainWindow.SetBlockCTS(cts);
     mainWindow.SetRegistry(&registry);
-    mainWindow.show();
+    // mainWindow.show();
     mainWindow.showMaximized();
     return a.exec();
 }

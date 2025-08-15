@@ -498,7 +498,8 @@ void Program::runningMainTest()
                             + delay
                             + (pn + 1) * response
                             + delay
-                            + (pn + 1) * response;
+                            + (pn + 1) * response
+                            + 10000ULL;
     emit TotalTestTimeMs(totalMs);
 
     parameters.dac_min = qMax(m_mpi.GetDAC()->GetRawFromValue(parameters.signal_min),
@@ -665,7 +666,7 @@ void Program::runningStrokeTest()
     emit SetButtonInitEnabled(false);
     emit ClearPoints(Charts::Stroke);
 
-    emit TotalTestTimeMs(15000ULL);
+    // emit TotalTestTimeMs(15000ULL);
 
     StrokeTest *strokeTest = new StrokeTest;
     QThread *threadTest = new QThread(this);
@@ -1069,34 +1070,47 @@ void Program::runningCyclicTest()
     switch (parameters.testType) {
         case parameters.TestParameters::Regulatory: {
             runningCyclicRegulatory(parameters);
-            quint64 totalMs = parameters.regSeqValues.size()
-                            * parameters.regulatory_numCycles *
-                            (parameters.regulatory_delayMs +
-                            parameters.regulatory_holdMs);
+            const auto raw = makeRawValues(parameters.regSeqValues,
+                                           m_registry->GetValveInfo()->safePosition != 0);
+            quint64 steps = static_cast<quint64>(raw.size()) * parameters.regulatory_numCycles;
+
+            quint64 totalMs = steps * (parameters.regulatory_delayMs
+                                       + parameters.regulatory_holdMs);
+
             emit TotalTestTimeMs(totalMs);
             break;
         }
         case parameters.TestParameters::Shutoff: {
             runningCyclicShutoff(parameters);
 
-            quint64 totalMs = parameters.offSeqValues.size()
-                              * parameters.shutoff_numCycles *
-                              (parameters.shutoff_delayMs +
-                               parameters.shutoff_holdMs);
+            const auto raw = makeRawValues(parameters.offSeqValues,
+                                           m_registry->GetValveInfo()->safePosition != 0);
+            quint64 steps = static_cast<quint64>(raw.size()) * parameters.shutoff_numCycles;
+
+            quint64 totalMs = steps * (parameters.shutoff_delayMs
+                                       + parameters.shutoff_holdMs);
 
             emit TotalTestTimeMs(totalMs);
+
             break;
         }
         case parameters.TestParameters::Combined: {
             runningCyclicCombined(parameters);
-            quint64 regMs = parameters.regSeqValues.size()
-                           * parameters.regulatory_numCycles *
-                           (parameters.regulatory_delayMs +
-                            parameters.regulatory_holdMs);
-            quint64 offMs = parameters.offSeqValues.size()
-                           * parameters.shutoff_numCycles *
-                           (parameters.shutoff_delayMs +
-                            parameters.shutoff_holdMs);
+
+            const auto regRaw = makeRawValues(parameters.regSeqValues,
+                                           m_registry->GetValveInfo()->safePosition != 0);
+            quint64 regSteps = static_cast<quint64>(regRaw.size()) * parameters.regulatory_numCycles;
+            quint64 regMs = regSteps * (parameters.regulatory_delayMs
+                                     + parameters.regulatory_holdMs)
+                                     + parameters.regulatory_delayMs;
+
+            const auto offRaw = makeRawValues(parameters.offSeqValues,
+                                           m_registry->GetValveInfo()->safePosition != 0);
+            quint64 offSteps = static_cast<quint64>(offRaw.size()) * parameters.shutoff_numCycles;
+            quint64 offMs = offSteps * (parameters.shutoff_delayMs
+                                       + parameters.shutoff_holdMs)
+                                       + parameters.shutoff_delayMs;
+
             quint64 totalMs = regMs + offMs;
 
             emit TotalTestTimeMs(totalMs);
@@ -1105,6 +1119,7 @@ void Program::runningCyclicTest()
         default: {
             break;
         }
+        emit TelemetryUpdated(m_telemetryStore);
     }
 }
 
@@ -1157,7 +1172,7 @@ void Program::runningOptionalTest(quint8 testNum)
         const quint64 delay = static_cast<quint64>(parameters.delay);
 
         const quint64 N_values = 1 + 2 * P * (1 + S);
-        const quint64 totalMs = 10000ULL + N_values * delay;
+        const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
         emit TotalTestTimeMs(totalMs);
 
         task.delay = parameters.delay;
@@ -1210,7 +1225,7 @@ void Program::runningOptionalTest(quint8 testNum)
         const quint64 delay = static_cast<quint64>(parameters.delay);
 
         const quint64 N_values = 1 + P * (2 * S);
-        const quint64 totalMs = 10000ULL + N_values * delay;
+        const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
         emit TotalTestTimeMs(totalMs);
 
         task.delay = parameters.delay;

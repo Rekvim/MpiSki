@@ -90,8 +90,8 @@ void CyclicTests::Process()
 double CyclicTests::processRegulatory()
 {
     const quint16 cycles = m_params.regulatory_numCycles;
-    const quint64 delayMs = m_params.regulatory_delayMsecs;
-    const quint64 holdMs = m_params.regulatory_holdTimeMsecs;
+    const quint32 delayMs = m_params.regulatory_delayMs;
+    const quint16 holdMs = m_params.regulatory_holdMs;
     const auto& raw = m_params.rawRegValues;
 
     if (raw.isEmpty() || !delayMs || !cycles)
@@ -99,7 +99,7 @@ double CyclicTests::processRegulatory()
 
     QElapsedTimer timer; timer.start();
 
-    for (quint32 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
+    for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
         for (int i = 0; i < raw.size() && !m_terminate; ++i) {
             SetDACBlocked(raw.at(i), delayMs);
             if (m_terminate) return timer.elapsed() / 1000.0;
@@ -114,9 +114,9 @@ double CyclicTests::processRegulatory()
 
 double CyclicTests::processShutoff()
 {
-    const quint32 cycles = m_params.shutoff_numCycles;
-    const quint32 delayMs = m_params.shutoff_delayMsecs;
-    const quint32 holdMs = m_params.shutoff_holdTimeMsecs;
+    const quint16 cycles = m_params.shutoff_numCycles;
+    const quint32 delayMs = m_params.shutoff_delayMs;
+    const quint16 holdMs = m_params.shutoff_holdMs;
     const auto& raw = m_params.rawOffValues;
 
     if (raw.isEmpty() || !delayMs || !cycles)
@@ -133,7 +133,7 @@ double CyclicTests::processShutoff()
 
     QElapsedTimer timer; timer.start();
 
-    for (quint32 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
+    for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
         for (int i = 0; i < raw.size() && !m_terminate; ++i) {
 
             if (i != 0) {

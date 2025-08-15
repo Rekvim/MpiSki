@@ -164,7 +164,6 @@ private:
 
     void DisplayDependingPattern();
 
-    void onCyclicCountdown();
     void InitCharts();
     void SaveChart(Charts chart);
     void GetImage(QLabel *label, QImage *image);
