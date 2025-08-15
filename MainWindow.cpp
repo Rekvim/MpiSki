@@ -21,12 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget->setCurrentIndex(0);
 
-    m_durationTimer = new QTimer(this);
-    m_durationTimer->setInterval(100);
-
-    connect(m_durationTimer, &QTimer::timeout,
-            this, &MainWindow::onCountdownTimeout);
-
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
     ui->tabWidget->setTabEnabled(1, true);
     ui->tabWidget->setTabEnabled(2, true);
@@ -86,6 +80,15 @@ MainWindow::MainWindow(QWidget *parent)
             Qt::QueuedConnection);
 
     appendLog("Логовое окно инициализировано");
+
+    m_durationTimer = new QTimer(this);
+    m_durationTimer->setInterval(100);
+
+    connect(m_durationTimer, &QTimer::timeout,
+            this, &MainWindow::onCountdownTimeout);
+
+    connect(m_program, &Program::TotalTestTimeMs,
+            this, &MainWindow::onTotalTestTimeMs);
 
     connect(this, &MainWindow::initialize,
             m_program, &Program::initialization);
@@ -248,6 +251,57 @@ MainWindow::~MainWindow()
     m_programThread->wait();
 }
 
+void MainWindow::onCyclicCountdown()
+{
+    qint64 elapsed = m_cyclicElapsedTimer.elapsed();
+    qint64 remaining = m_cyclicTotalMs - elapsed;
+    if (remaining < 0) remaining = 0;
+
+    QTime t(0, 0);
+    t = t.addMSecs(remaining);
+    ui->label_cyclicTest_totalTimeValue->setText(
+        t.toString("hh:mm:ss.zzz"));
+
+    if (remaining == 0) {
+        m_cyclicCountdownTimer.stop();
+    }
+}
+
+void MainWindow::onTotalTestTimeMs(quint64 totalMs)
+{
+    m_totalTestMs = totalMs;
+    m_elapsedTimer.restart();
+
+    if (!m_durationTimer) {
+        m_durationTimer = new QTimer(this);
+        m_durationTimer->setInterval(250);
+        connect(m_durationTimer, &QTimer::timeout,
+                this, &MainWindow::onCountdownTimeout);
+    }
+
+    auto formatHMS = [](quint64 ms) -> QString {
+        const quint64 hours = ms / 3600000ULL;
+        ms %= 3600000ULL;
+        const quint64 minutes = ms / 60000ULL;
+        ms %= 60000ULL;
+        const quint64 seconds = ms / 1000ULL;
+        const quint64 msec = ms % 1000ULL;
+
+        return QString("%1:%2:%3.%4")
+            .arg(hours,   2, 10, QChar('0'))
+            .arg(minutes, 2, 10, QChar('0'))
+            .arg(seconds, 2, 10, QChar('0'))
+            .arg(msec,    3, 10, QChar('0'));
+    };
+
+    ui->statusbar->showMessage(
+        QStringLiteral("Плановая длительность теста: %1").arg(formatHMS(m_totalTestMs))
+        );
+
+    m_durationTimer->start();
+    onCountdownTimeout();
+}
+
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
 
     m_telemetryStore = TS;
@@ -380,22 +434,6 @@ void MainWindow::appendLog(const QString& text) {
     const QString stamp = QDateTime::currentDateTime()
     .toString("[hh:mm:ss.zzz] ");
     logOutput->appendPlainText(stamp + text);
-}
-
-void MainWindow::onCyclicCountdown()
-{
-    // qint64 elapsed = m_cyclicElapsedTimer.elapsed();
-    // qint64 remaining = m_cyclicTotalMs - elapsed;
-    // if (remaining < 0) remaining = 0;
-
-    // QTime t(0, 0);
-    // t = t.addMSecs(remaining);
-    // ui->label_cyclicTest_totalTimeValue->setText(
-    //     t.toString("hh:mm:ss.zzz"));
-
-    // if (remaining == 0) {
-        // m_cyclicCountdownTimer.stop();
-    // }
 }
 
 void MainWindow::on_pushButton_signal_4mA_clicked()

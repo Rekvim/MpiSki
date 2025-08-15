@@ -90,6 +90,7 @@ private slots:
     void SetCheckboxDIChecked(quint8 status);
 
     void onCountdownTimeout();
+    void onTotalTestTimeMs(const quint64 totalMs);
 
     void Question(QString title, QString text, bool &result);
 
