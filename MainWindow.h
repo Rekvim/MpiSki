@@ -126,7 +126,7 @@ private:
     Ui::MainWindow *ui;
     TelemetryStore m_telemetryStore;
 
-    QPlainTextEdit* logOutput;
+    QPlainTextEdit* logOutput = nullptr;
 
     bool m_userCanceled = false;
     bool m_testing;

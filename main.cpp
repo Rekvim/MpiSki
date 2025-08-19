@@ -48,6 +48,6 @@ int main(int argc, char *argv[])
     mainWindow.SetBlockCTS(cts);
     mainWindow.SetRegistry(&registry);
     mainWindow.show();
-    mainWindow.showMaximized();
+    QTimer::singleShot(0, &mainWindow, [&]{ mainWindow.showMaximized(); });
     return a.exec();
 }

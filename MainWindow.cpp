@@ -11,6 +11,10 @@
 
 #include <QPlainTextEdit>
 
+/*
+
+*/
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -66,8 +70,8 @@ MainWindow::MainWindow(QWidget *parent)
     dock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
     dock->setWidget(logOutput);
 
-    dock->setMinimumWidth(200);
-    dock->resize(300, dock->height());
+    dock->setMinimumWidth(300);
+    // dock->resize(300, dock->height());
 
     addDockWidget(Qt::RightDockWidgetArea, dock);
 

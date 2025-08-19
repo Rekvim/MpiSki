@@ -100,7 +100,7 @@ signals:
     void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
 
-    // void Question(QString title, QString text, bool &result);
+    void Question(QString &title, QString &text, bool &result);
     void SetStepResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
