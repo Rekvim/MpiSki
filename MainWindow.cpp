@@ -33,10 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->setTabEnabled(3, false);
     ui->tabWidget->setTabEnabled(4, false);
 
-    //m_cyclicCountdownTimer.setInterval(100);
-    // connect(&m_cyclicCountdownTimer, &QTimer::timeout,
-    //         this, &MainWindow::onCyclicCountdown);
-
     m_mainTestSettings = new MainTestSettings(this);
     m_stepTestSettings = new StepTestSettings(this);
     m_responseTestSettings = new OtherTestSettings(this);
@@ -246,15 +242,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    if (m_program) {
+        m_program->deleteLater();
+    }
+    if (m_programThread) {
+        m_programThread->quit();
+        m_programThread->wait();
+    }
     delete ui;
-    m_programThread->quit();
-    m_programThread->wait();
 }
-
 void MainWindow::onCountdownTimeout()
 {
     quint64 elapsedMs = m_elapsedTimer.elapsed();
-    qint64 remainingMs = static_cast<qint64>(m_totalTestMs) - static_cast<qint64>(elapsedMs);
+    quint64 remainingMs = static_cast<qint64>(m_totalTestMs) - static_cast<qint64>(elapsedMs);
     if (remainingMs < 0) remainingMs = 0;
 
     auto formatHMS = [](quint64 ms) -> QString {
@@ -586,7 +586,7 @@ void MainWindow::SetTask(qreal task)
     }
 }
 
-void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value)
+void MainWindow::SetStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value)
 {
     ui->tableWidget_stepResults->setHorizontalHeaderLabels(
         {QString("T%1").arg(T_value), "Перерегулирование"});
@@ -610,19 +610,6 @@ void MainWindow::SetStepTestResults(QVector<StepTest::TestResult> results, quint
     }
     ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
     ui->tableWidget_stepResults->resizeColumnsToContents();
-
-    m_telemetryStore.stepResults.clear();
-
-    for (const auto &r : results) {
-        StepTestRecord rec;
-
-        rec.from = r.from;
-        rec.to = r.from;
-        rec.T_value = r.T_value;
-        rec.overshoot = r.overshoot;
-
-        m_telemetryStore.stepResults.push_back(rec);
-    }
 }
 
 void MainWindow::DisplayDependingPattern() {
@@ -708,7 +695,7 @@ void MainWindow::SetButtonInitEnabled(bool enable)
     ui->pushButton_init->setEnabled(enable);
 }
 
-void MainWindow::AddPoints(Charts chart, QVector<Point> points)
+void MainWindow::AddPoints(Charts chart, const QVector<Point> &points)
 {
     for (const auto& point : points)
         m_charts[chart]->addPoint(point.series_num, point.X, point.Y);
@@ -739,46 +726,11 @@ void MainWindow::DublSeries()
     m_charts[Charts::Pressure]->dublSeries(0);
 }
 
-// void MainWindow::receivedPoints(QVector<QVector<QPointF>> &points, Charts chart)
-// {
-//     points.clear();
-//     if (chart == Charts::Task) {
-//         QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Task]->getPoints(1);
-
-//         QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_charts[Charts::Pressure]->getPoints(0);
-
-//         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-//         points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
-//         points.push_back({pointsPressure.first.begin(), pointsPressure.first.end()});
-//         points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
-//     }
-//     if (chart == Charts::Step) {
-//         QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Step]->getPoints(1);
-//         QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getPoints(0);
-
-//         points.clear();
-//         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-//         points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
-//     }
-//     if (chart == Charts::Cyclic) {
-//         QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
-//         QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
-//         QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Cyclic]->getPoints(1);
-//         QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Cyclic]->getPoints(0);
-
-//         points.clear();
-//         points.push_back({opened.first.begin(), opened.first.end()});
-//         points.push_back({closed.first.begin(), closed.first.end()});
-//         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-//         points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
-//     }
-// }
-
 void MainWindow::receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
     if (chart == Charts::Task) {
-        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Task]->getPoints(1);
+        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
 
         QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_charts[Charts::Pressure]->getPoints(0);
 
@@ -793,8 +745,8 @@ void MainWindow::receivedPoints_optionTest(QVector<QVector<QPointF>> &points, Ch
     points.clear();
 
     if (chart == Charts::Step) {
-        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Step]->getPoints(1);
-        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Step]->getPoints(0);
+        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
+        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[chart]->getPoints(0);
 
         points.clear();
         points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
@@ -809,15 +761,15 @@ void MainWindow::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Ch
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
 
-        QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[Charts::Cyclic]->getPoints(3);
-        QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[Charts::Cyclic]->getPoints(2);
+        QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[chart]->getPoints(3);
+        QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[chart]->getPoints(2);
 
         points.push_back({opened.first.begin(), opened.first.end()});
         points.push_back({closed.first.begin(), closed.first.end()});
     }
 
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[Charts::Cyclic]->getPoints(1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[Charts::Cyclic]->getPoints(0);
+    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
+    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[chart]->getPoints(0);
 
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
@@ -959,9 +911,6 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
         t0 = t0.addMSecs(totalMs);
         ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
 
-        // m_cyclicTotalMs = totalMs;
-        // m_cyclicElapsedTimer.restart();
-        // m_cyclicCountdownTimer.start();
         return;
     } else {
         parameters = {};
@@ -969,12 +918,12 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
     }
 }
 
-void MainWindow::Question(QString title, QString text, bool &result)
+void MainWindow::Question(const QString &title, const QString &text, bool &result)
 {
     result = (QMessageBox::question(NULL, title, text) == QMessageBox::Yes);
 }
 
-void MainWindow::GetDirectory(QString current_path, QString &result)
+void MainWindow::GetDirectory(const QString &current_path, QString &result)
 {
     result = QFileDialog::getExistingDirectory(this,
                                                "Выберите папку для сохранения изображений",

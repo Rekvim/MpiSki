@@ -43,13 +43,13 @@ private:
 
 
 private slots:
-    void onPositionerTypeChanged(int index);
+    void onPositionerTypeChanged(quint8 index);
     void PositionChanged(const QString &position);
-    void ButtonClick();
     void StrokeChanged(quint16 n);
     void ToolChanged(quint16 n);
     void DiameterChanged(const QString &text);
     void Clear();
+    void on_pushButton_netWindow_clicked();
 };
 
 #endif // VALVE_WINDOW_H

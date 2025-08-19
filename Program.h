@@ -100,8 +100,8 @@ signals:
     void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
 
-    void Question(QString title, QString text, bool &result);
-    void SetStepResults(QVector<StepTest::TestResult> results, quint32 T_value);
+    // void Question(QString title, QString text, bool &result);
+    void SetStepResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
     void SetButtonsDOChecked(quint8 status);
     void SetCheckboxDIChecked(quint8 status);
 
@@ -115,10 +115,9 @@ private:
     MPI m_mpi;
     TelemetryStore m_telemetryStore;
     bool m_cyclicRunning = false;
-    QTimer* m_diPollTimer = nullptr;
+    QTimer *m_diPollTimer = nullptr;
     quint8 m_lastDI = 0;
     quint64 m_cyclicStartTs = 0;
-    QTimer m_cyclicGraphTimer;
     QTimer *m_timerSensors;
     QTimer *m_timerDI;
     quint64 m_startTime;
@@ -196,9 +195,9 @@ public slots:
     void runningMainTest();
     void runningStrokeTest();
     void runningOptionalTest(quint8 testNum);
-    void runningCyclicRegulatory(CyclicTestSettings::TestParameters p);
-    void runningCyclicShutoff(CyclicTestSettings::TestParameters p);
-    void runningCyclicCombined(CyclicTestSettings::TestParameters p);
+    void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicCombined(const CyclicTestSettings::TestParameters &p);
     void runningCyclicTest();
 
     void endTest();

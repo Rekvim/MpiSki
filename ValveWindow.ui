@@ -1940,7 +1940,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pushButton_netWindow">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -1956,7 +1956,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>pushButton</tabstop>
+  <tabstop>pushButton_netWindow</tabstop>
   <tabstop>pushButton_clear</tabstop>
  </tabstops>
  <resources/>

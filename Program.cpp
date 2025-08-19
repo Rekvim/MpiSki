@@ -802,7 +802,7 @@ void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
     emit getPoints_cyclicTest(points, Charts::Cyclic);
 }
 
-void Program::runningCyclicRegulatory(CyclicTestSettings::TestParameters p)
+void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p)
 {
     // emit errorOccured(QString("[DEBUG] Enter runningCyclicRegulatory: "
     //                           "seq=%1, delay=%2, hold=%3, cycles=%4")
@@ -825,8 +825,9 @@ void Program::runningCyclicRegulatory(CyclicTestSettings::TestParameters p)
 
     {
         QStringList listVals;
-        for (quint16 v : task.values)
-            listVals << QString::number(v);
+        for (const quint16 &values : task.values)
+            listVals << QString::number(values);
+
         emit errorOccured(QString("CyclicTestsRegulatory Task.values (count=%1): [%2]")
                               .arg(task.values.size())
                               .arg(listVals.join(',')));
@@ -925,7 +926,7 @@ void Program::SetMultipleDO(const QVector<bool>& states)
     //emit SetButtonsDOChecked(mask);
 }
 
-void Program::runningCyclicShutoff(CyclicTestSettings::TestParameters p)
+void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
 {
     // emit errorOccured(QString("[DEBUG] Enter runningCyclicShutoff: "
     //                           "seq=%1, delay=%2, hold=%3, cycles=%4")
@@ -1024,7 +1025,7 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
 }
 
 
-void Program::runningCyclicCombined(CyclicTestSettings::TestParameters p)
+void Program::runningCyclicCombined(const CyclicTestSettings::TestParameters &p)
 {
     runningCyclicRegulatory(p);
 
@@ -1305,14 +1306,14 @@ void Program::runningOptionalTest(quint8 testNum)
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
 
-        {
-            QStringList listVals2;
-            for (quint16 v : task.value)
-                listVals2 << QString::number(v);
-            emit errorOccured(QString("StepTest Task.value (count=%1): [%2]")
-                                  .arg(task.value.size())
-                                  .arg(listVals2.join(',')));
-        }
+        // {
+        //     QStringList listVals2;
+        //     for (quint16 v : task.value)
+        //         listVals2 << QString::number(v);
+        //     emit errorOccured(QString("StepTest Task.value (count=%1): [%2]")
+        //                           .arg(task.value.size())
+        //                           .arg(listVals2.join(',')));
+        // }
 
         optionalTest->SetTask(task);
         dynamic_cast<StepTest *>(optionalTest)->Set_T_value(parameters.test_value);

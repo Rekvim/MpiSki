@@ -56,20 +56,18 @@ private slots:
 
     void onTelemetryUpdated(const TelemetryStore &TS);
     void SetSensorsNumber(quint8 num);
-    void AddPoints(Charts chart, QVector<Point> points);
+    void AddPoints(Charts chart, const QVector<Point> &points);
     void ClearPoints(Charts chart);
 
     void promptSaveCharts();
     void SetChartVisible(Charts chart, quint16 series, bool visible);
     void ShowDots(bool visible);
     void DublSeries();
-    void EnableSetTask(bool enable);
 
     void startTest();
     void endTest();
 
-    void GetDirectory(QString current_path, QString &result);
-    // void receivedPoints(QVector<QVector<QPointF>> &points, Charts chart);
+    void GetDirectory(const QString &current_path, QString &result);
 
     void receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
     void receivedPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart);
@@ -81,8 +79,11 @@ private slots:
     void receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters);
     void receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
 
-    void SetText(const TextObjects object, const QString &text);
+    void SetText(TextObjects object, const QString &text);
+
     void SetTask(qreal task);
+    void EnableSetTask(bool enable);
+
     void SetButtonInitEnabled(bool enable);
     void SetRegressionEnable(bool enable);
 
@@ -90,9 +91,9 @@ private slots:
     void SetCheckboxDIChecked(quint8 status);
 
     void onCountdownTimeout();
-    void onTotalTestTimeMs(const quint64 totalMs);
+    void onTotalTestTimeMs(quint64 totalMs);
 
-    void Question(QString title, QString text, bool &result);
+    void Question(const QString &title, const QString &text, bool &result);
 
     void on_pushButton_init_clicked();
 
@@ -127,9 +128,6 @@ private:
 
     QPlainTextEdit* logOutput;
 
-    QTimer m_cyclicCountdownTimer;
-    QElapsedTimer m_cyclicElapsedTimer;
-    qint64 m_cyclicTotalMs = 0;
     bool m_userCanceled = false;
     bool m_testing;
 
@@ -141,7 +139,8 @@ private:
 
     QTimer* m_durationTimer;
     QElapsedTimer m_elapsedTimer;
-    qint64 m_totalTestMs;
+
+    quint64 m_totalTestMs;
 
     ReportSaver::Report m_report;
 
@@ -168,7 +167,7 @@ private:
     void SaveChart(Charts chart);
     void GetImage(QLabel *label, QImage *image);
 
-    void SetStepTestResults(QVector<StepTest::TestResult> results, quint32 T_value);
+    void SetStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
