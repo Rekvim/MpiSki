@@ -127,7 +127,7 @@ void MainTest::SetParameters(MainTestSettings::TestParameters &parameters)
     m_parameters = parameters;
 }
 
-MainTest::Regression MainTest::CalculateRegression(QVector<QPointF> &points, Limits limits)
+MainTest::Regression MainTest::CalculateRegression(const QVector<QPointF> &points, Limits limits)
 {
     const qreal range = 0.10;
 
@@ -198,14 +198,14 @@ MainTest::Limits MainTest::GetLimits(const QVector<QPointF> &points1,
 
 QVector<QPointF> MainTest::GetRegressionPoints(Regression regression, Limits limits)
 {
-    QPointF point_minX(limits.minX, regression.k * limits.minX + regression.b);
-    QPointF point_maxX(limits.maxX, regression.k * limits.maxX + regression.b);
-    QPointF point_minY((limits.minY - regression.b) / regression.k, limits.minY);
-    QPointF point_maxY((limits.maxY - regression.b) / regression.k, limits.maxY);
+    const QPointF point_minX(limits.minX, regression.k * limits.minX + regression.b);
+    const QPointF point_maxX(limits.maxX, regression.k * limits.maxX + regression.b);
+    const QPointF point_minY((limits.minY - regression.b) / regression.k, limits.minY);
+    const QPointF point_maxY((limits.maxY - regression.b) / regression.k, limits.maxY);
 
-    auto PointInLimits = [limits](QPointF point) {
+    auto PointInLimits = [limits](const QPointF &point) {
         return (point.x() >= limits.minX) && (point.x() <= limits.maxX)
-        && (point.y() >= limits.minY) && (point.y() <= limits.maxY);
+            && (point.y() >= limits.minY) && (point.y() <= limits.maxY);
     };
 
     bool minX_InLimits = PointInLimits(point_minX);
@@ -266,8 +266,8 @@ QVector<QPointF> MainTest::GetRegressionPoints(Regression regression, Limits lim
     return result;
 }
 
-QVector<QPointF> MainTest::GetFrictionPoints(QVector<QPointF> &pointsForward,
-                                             QVector<QPointF> &pointsBackward,
+QVector<QPointF> MainTest::GetFrictionPoints(const QVector<QPointF> &pointsForward,
+                                             const QVector<QPointF> &pointsBackward,
                                              Limits limits)
 {
     const quint16 Sections = qMin(pointsForward.size(), pointsBackward.size()) / 3;
@@ -306,8 +306,8 @@ QVector<QPointF> MainTest::GetFrictionPoints(QVector<QPointF> &pointsForward,
     return result;
 }
 
-QPair<qreal, qreal> MainTest::GetMeanMax(QVector<QPointF> &pointsForward,
-                                         QVector<QPointF> &pointsBackward)
+QPair<qreal, qreal> MainTest::GetMeanMax(const QVector<QPointF> &pointsForward,
+                                         const QVector<QPointF> &pointsBackward)
 {
     Limits limits = GetLimits(pointsForward, pointsBackward);
 

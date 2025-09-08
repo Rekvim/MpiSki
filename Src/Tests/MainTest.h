@@ -50,14 +50,18 @@ private:
         qreal maxY;
     };
 
-    Regression CalculateRegression(QVector<QPointF> &points, Limits limits);
+    Regression CalculateRegression(const QVector<QPointF> &points, Limits limits);
+
     Limits GetLimits(const QVector<QPointF> &points1, const QVector<QPointF> &points2);
+
     QVector<QPointF> GetRegressionPoints(Regression regression, Limits limits);
-    QVector<QPointF> GetFrictionPoints(QVector<QPointF> &points1,
-                                       QVector<QPointF> &points2,
+
+    QVector<QPointF> GetFrictionPoints(const QVector<QPointF> &points1,
+                                       const QVector<QPointF> &points2,
                                        Limits limits);
-    QPair<qreal, qreal> GetMeanMax(QVector<QPointF> &points_forward,
-                                   QVector<QPointF> &points_backward);
+
+    QPair<qreal, qreal> GetMeanMax(const QVector<QPointF> &points_forward,
+                                   const QVector<QPointF> &points_backward);
 
     QPair<qreal, qreal> GetRangeLimits(Regression regression1,
                                        Regression regression2,

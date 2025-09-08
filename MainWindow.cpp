@@ -2,7 +2,6 @@
 #include "./Src/CustomChart/MyChart.h"
 #include "ui_MainWindow.h"
 
-
 #include "Src/ReportBuilders/ReportBuilder_B_CVT.h"
 #include "Src/ReportBuilders/ReportBuilder_B_SACVT.h"
 #include "Src/ReportBuilders/ReportBuilder_C_CVT.h"
@@ -11,17 +10,11 @@
 
 #include <QPlainTextEdit>
 
-/*
-
-*/
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    m_testing = false;
 
     ui->tabWidget->setCurrentIndex(0);
 
@@ -246,13 +239,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (m_program) {
-        m_program->deleteLater();
-    }
-    if (m_programThread) {
-        m_programThread->quit();
-        m_programThread->wait();
-    }
+    m_programThread->quit();
+    m_programThread->wait();
+    m_program->deleteLater();
     delete ui;
 }
 void MainWindow::onCountdownTimeout()

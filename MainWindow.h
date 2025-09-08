@@ -9,8 +9,8 @@
 #include <QThread>
 #include <QDateTime>
 #include <QDebug>
+#include <QPlainTextEdit>
 
-#pragma once
 #include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
 #include "Registry.h"
@@ -129,7 +129,7 @@ private:
     QPlainTextEdit* logOutput = nullptr;
 
     bool m_userCanceled = false;
-    bool m_testing;
+    bool m_testing = false;
 
     Registry *m_registry = nullptr;
 
