@@ -52,9 +52,9 @@ void CyclicTestsRegulatory::Process()
         const quint16 value = m_task.values.at(step);
         if (m_terminate) { emit EndTest(); return; }
 
-        SetDACBlocked(value, m_task.delayMsecs);
+        SetDACBlocked(value, m_task.delayMsecs, true, true);
         if (m_terminate) { emit EndTest(); return; }
-        SetDACBlocked(value, m_task.holdMsecs);
+        SetDACBlocked(value, m_task.holdMsecs, true, true);
         // Sleep(m_task.holdMsecs);
 
         if ((step + 1) % seqSize == 0) {
