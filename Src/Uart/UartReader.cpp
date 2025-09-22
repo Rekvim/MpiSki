@@ -33,12 +33,9 @@ UartReader::UartReader(QObject *parent)
     connect(m_adcTimer, &QTimer::timeout,
             this, &UartReader::SendADC);
 }
-QMutex UartReader::s_portMutex;
 
 QByteArray UartReader::SendMessage(const UartMessage &message)
 {
-    QMutexLocker lock(&s_portMutex);
-
     // emit errorOccured(
     //     QString("%1 SendMessage: command=0x%2")
     //         .arg(m_portName)

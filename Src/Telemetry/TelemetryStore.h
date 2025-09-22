@@ -30,11 +30,11 @@ struct StepTestRecord {
 };
 
 struct RangeDeviationRecord {
-    quint16 rangePercent = 0;
+    qint16 rangePercent = 0;
     double maxForwardValue = 0.0;
-    quint16 maxForwardCycle = 0;
+    qint16 maxForwardCycle = 0;
     double maxReverseValue = 0.0;
-    quint16 maxReverseCycle = 0;
+    qint16 maxReverseCycle = 0;
 };
 
 struct CyclicTestRecord {

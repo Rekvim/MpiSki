@@ -26,7 +26,7 @@ public:
     void SetTask(Task task);
 
     struct RangeRec {
-        quint8 rangePercent = 0;
+        qint16 rangePercent = 0;
         qreal maxForwardValue = 0.0;
         int maxForwardCycle = -1;
         qreal maxReverseValue = 0.0;

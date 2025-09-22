@@ -21,7 +21,7 @@ ValveWindow::ValveWindow(QWidget *parent)
     ui->lineEdit_strokValve->setValidator(validatorDigitsDot);
     // ui->lineEdit_dinamicError->setValidator(noSpecialChars);
     ui->lineEdit_driveModel->setValidator(noSpecialChars);
-    ui->lineEdit_driveRange->setValidator(validatorDigitsDot);
+    // ui->lineEdit_driveRange->setValidator(validatorDigitsDot);
     ui->lineEdit_driveDiameter->setValidator(validatorDigitsDot);
     ui->lineEdit_pulleyDiameter->setValidator(validatorDigitsDot);
 

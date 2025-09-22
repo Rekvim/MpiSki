@@ -34,12 +34,13 @@ void CyclicTestsRegulatory::Process()
 
     SetDACBlocked(m_task.values.first(),
                   m_task.delayMsecs,
-                  /*waitForStop=*/true,
-                  /*waitForStart=*/false);
+                  true,
+                  false);
 
     if (m_terminate) { emit EndTest(); return; }
 
-    // emit ClearGraph();
+    Sleep(10000);
+
     emit SetStartTime();
     m_graphTimer->start(100);
 
@@ -52,9 +53,9 @@ void CyclicTestsRegulatory::Process()
         const quint16 value = m_task.values.at(step);
         if (m_terminate) { emit EndTest(); return; }
 
-        SetDACBlocked(value, m_task.delayMsecs, true, true);
+        SetDACBlocked(value, m_task.delayMsecs, true);
         if (m_terminate) { emit EndTest(); return; }
-        SetDACBlocked(value, m_task.holdMsecs, true, true);
+        SetDACBlocked(value, m_task.holdMsecs, true);
         // Sleep(m_task.holdMsecs);
 
         if ((step + 1) % seqSize == 0) {

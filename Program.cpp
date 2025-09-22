@@ -1055,6 +1055,12 @@ void Program::runningCyclicTest()
                                        + parameters.regulatory_holdMs);
 
             emit TotalTestTimeMs(totalMs);
+
+            auto &dst = m_telemetryStore.cyclicTestRecord;
+
+            dst.cycles = parameters.regulatory_numCycles;
+            dst.totalTimeSec = parameters.totalTimeSec;
+
             break;
         }
         case parameters.TestParameters::Shutoff: {
@@ -1068,6 +1074,13 @@ void Program::runningCyclicTest()
                                        + parameters.shutoff_holdMs);
 
             emit TotalTestTimeMs(totalMs);
+
+            auto &dst = m_telemetryStore.cyclicTestRecord;
+
+            dst.sequence = parameters.sequence;
+            dst.cycles = parameters.shutoff_numCycles;
+            dst.totalTimeSec = parameters.totalTimeSec;
+
 
             break;
         }

@@ -25,13 +25,13 @@ MainTestSettings::TestParameters MainTestSettings::getParameters() const
         testParameters.signal_min = 3.0;
         testParameters.signal_max = 21.0;
 
-    } else {
+    } /*else {
         testParameters.continuous = false;
         testParameters.delay = ui->doubleSpinBox_delay->value() * 1000;
         testParameters.pointNumbers = ui->doubleSpinBox_points->value();
         testParameters.signal_min = ui->doubleSpinBox_signal_min->value();
         testParameters.signal_max = ui->doubleSpinBox_signal_max->value();
         testParameters.response = ui->doubleSpinBox_response->value() * 1000;
-    }
+    }*/
     return testParameters;
 }
