@@ -49,24 +49,108 @@ void ReportBuilder_B_SACVT::buildReport(
     report.data.push_back({sheet_1, 29, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
                                                .toString("mm:ss.zzz")});
 
-    // // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
+    // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
         const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
-        constexpr quint16 rowStart = 35, rowStep = 2;
-        for (int i = 0; i < qMin(ranges.size(), 10); ++i) {
+
+        struct Agg {
+            qreal rangePercent;
+            qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
+            int maxFwdCycle = -1;
+            qreal minRevVal = std::numeric_limits<qreal>::max();
+            int minRevCycle = -1;
+        };
+        QMap<qreal, Agg> aggMap;
+
+        // 1) Собираем все rec по ключу rangePercent
+        for (const auto& rec : ranges) {
+            auto it = aggMap.find(rec.rangePercent);
+            if (it == aggMap.end()) {
+                // первый раз для этого percent
+                Agg a;
+                a.rangePercent = rec.rangePercent;
+                // прямой ход
+                if (rec.maxForwardCycle >= 0) {
+                    a.maxFwdVal   = rec.maxForwardValue;
+                    a.maxFwdCycle = rec.maxForwardCycle;
+                }
+                // обратный ход
+                if (rec.maxReverseCycle >= 0) {
+                    a.minRevVal   = rec.maxReverseValue;
+                    a.minRevCycle = rec.maxReverseCycle;
+                }
+                aggMap.insert(rec.rangePercent, a);
+
+            } else {
+                // уже есть — обновляем экстремумы
+                Agg &a = it.value();
+                // прямой ход — берём глобальный максимум
+                if (rec.maxForwardCycle >= 0
+                    && rec.maxForwardValue > a.maxFwdVal) {
+                    a.maxFwdVal   = rec.maxForwardValue;
+                    a.maxFwdCycle = rec.maxForwardCycle;
+                }
+                // обратный ход — берём глобальный минимум
+                if (rec.maxReverseCycle >= 0
+                    && rec.maxReverseValue < a.minRevVal) {
+                    a.minRevVal   = rec.maxReverseValue;
+                    a.minRevCycle = rec.maxReverseCycle;
+                }
+            }
+        }
+
+        // 2) Выводим первые 10 (или сколько есть) диапазонов
+        QVector<qreal> percents;
+        percents.reserve(aggMap.size());
+        for (auto it = aggMap.constBegin(); it != aggMap.constEnd(); ++it) {
+            percents.append(it.key());
+        }
+
+        constexpr quint16 rowStart = 33, rowStep = 2;
+        for (int i = 0; i < percents.size() && i < 10; ++i) {
             quint16 row = rowStart + i * rowStep;
-            report.data.push_back({sheet_1, row,  2,
-                                   QString::number(ranges[i].rangePercent)});
-            report.data.push_back({sheet_1, row,  8,
-                QString("%1 %/ № %2")
-                    .arg(ranges[i].maxForwardValue, 0, 'f', 2)
-                    .arg(ranges[i].maxForwardCycle)
+            const Agg &a = aggMap[percents[i]];
+
+            // Процент
+            report.data.push_back({
+                sheet_1, row, 2,
+                QString::number(a.rangePercent)
             });
-            report.data.push_back({sheet_1, row, 10,
-                QString("%1 %/ №%2")
-                    .arg(ranges[i].maxReverseValue, 0, 'f', 2)
-                    .arg(ranges[i].maxReverseCycle)
-            });
+
+            // Прямой ход (максимум)
+            if (a.maxFwdCycle >= 0) {
+                report.data.push_back({
+                    sheet_1, row, 8,
+                    QString("%1 %")
+                        .arg(a.maxFwdVal,   0, 'f', 2)
+                });
+                report.data.push_back({
+                    sheet_1, row, 9,
+                    QString("№ %1")
+                        .arg(a.maxFwdCycle + 1)
+                });
+            } else {
+                // нет данных
+                report.data.push_back({ sheet_1, row, 8, QString() });
+                report.data.push_back({ sheet_1, row, 9, QString() });
+            }
+
+            // Обратный ход (минимум)
+            if (a.minRevCycle >= 0) {
+                report.data.push_back({
+                    sheet_1, row, 10,
+                    QString("%1 %")
+                        .arg(a.minRevVal,   0, 'f', 2)
+                });
+                report.data.push_back({
+                    sheet_1, row, 12,
+                    QString("№ %1")
+                        .arg(a.minRevCycle + 1)
+                });
+            } else {
+                report.data.push_back({ sheet_1, row, 10, QString() });
+                report.data.push_back({ sheet_1, row, 12, QString() });
+            }
         }
     }
 

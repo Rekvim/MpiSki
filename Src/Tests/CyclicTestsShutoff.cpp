@@ -15,12 +15,6 @@ void CyclicTestsShutoff::Process()
 {
     emit ClearGraph();
 
-    SetDACBlocked(m_task.values.first(),
-                  m_task.delayMsecs,
-                  /*waitForStop=*/true,
-                  /*waitForStart=*/true);
-    if (m_terminate) { emit EndTest(); return; }
-
     emit SetStartTime();
     m_graphTimer->start(100);
 
@@ -45,10 +39,10 @@ void CyclicTestsShutoff::Process()
             emit SetMultipleDO(currentStates);
         }
 
-        SetDACBlocked(value, m_task.delayMsecs, true, true);
+        SetDACBlocked(value, m_task.delayMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
-        SetDACBlocked(value, m_task.holdMsecs, true, true);
+        SetDACBlocked(value, m_task.holdMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
         if (perCycle > 0 && (step + 1) % perCycle == 0) {
@@ -65,7 +59,7 @@ void CyclicTestsShutoff::Process()
     calcSwitchCounts(pts, s3to0, s0to3);
 
     TestResults r;
-    r.doOffCounts = m_doOnCounts;
+    r.doOnCounts = m_doOnCounts;
     r.doOffCounts = m_doOffCounts;
     r.switch3to0Count = s3to0;
     r.switch0to3Count = s0to3;

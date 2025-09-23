@@ -874,9 +874,8 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
         case TP::Shutoff: {
             const auto raw = parameters.offSeqValues;
             quint64 steps = static_cast<quint64>(raw.size()) * parameters.shutoff_numCycles;
-            totalMs = steps * (parameters.shutoff_delayMs
-                                       + parameters.shutoff_holdMs
-                                       + parameters.shutoff_delayMs);
+            totalMs = steps * (parameters.shutoff_holdMs
+                               + parameters.shutoff_delayMs);
 
             break;
         }
@@ -889,8 +888,7 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
 
             const auto offRaw = parameters.offSeqValues;
             quint64 offSteps = static_cast<quint64>(offRaw.size()) * parameters.shutoff_numCycles;
-            quint64 offMs = offSteps * (parameters.shutoff_delayMs
-                                        + parameters.shutoff_holdMs
+            quint64 offMs = offSteps * (parameters.shutoff_holdMs
                                         + parameters.shutoff_delayMs);
 
             totalMs = regMs + offMs;
