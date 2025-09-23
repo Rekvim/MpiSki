@@ -18,17 +18,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget->setCurrentIndex(0);
 
-    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget->setTabEnabled(1, true);
-    // ui->tabWidget->setTabEnabled(2, true);
-    // ui->tabWidget->setTabEnabled(3, true);
-    // ui->tabWidget->setTabEnabled(4, true);
-
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget->setTabEnabled(1, false);
-    ui->tabWidget->setTabEnabled(2, false);
-    ui->tabWidget->setTabEnabled(3, false);
-    ui->tabWidget->setTabEnabled(4, false);
+    ui->tabWidget->setTabEnabled(1, true);
+    ui->tabWidget->setTabEnabled(2, true);
+    ui->tabWidget->setTabEnabled(3, true);
+    ui->tabWidget->setTabEnabled(4, true);
+
+    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    // ui->tabWidget->setTabEnabled(1, false);
+    // ui->tabWidget->setTabEnabled(2, false);
+    // ui->tabWidget->setTabEnabled(3, false);
+    // ui->tabWidget->setTabEnabled(4, false);
 
     m_mainTestSettings = new MainTestSettings(this);
     m_stepTestSettings = new StepTestSettings(this);
@@ -55,24 +55,24 @@ MainWindow::MainWindow(QWidget *parent)
     m_program->moveToThread(m_programThread);
 
     // соговое окно
-    logOutput = new QPlainTextEdit(this);
-    logOutput->setReadOnly(true);
-    logOutput->setStyleSheet("font-size: 8pt;");
+    // logOutput = new QPlainTextEdit(this);
+    // logOutput->setReadOnly(true);
+    // logOutput->setStyleSheet("font-size: 8pt;");
 
-    auto *dock = new QDockWidget(tr("Лог"), this);
-    dock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
-    dock->setWidget(logOutput);
+    // auto *dock = new QDockWidget(tr("Лог"), this);
+    // dock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
+    // dock->setWidget(logOutput);
 
-    dock->setMinimumWidth(300);
-    // dock->resize(300, dock->height());
+    // dock->setMinimumWidth(300);
+    // // dock->resize(300, dock->height());
 
-    addDockWidget(Qt::RightDockWidgetArea, dock);
+    // addDockWidget(Qt::RightDockWidgetArea, dock);
 
-    connect(m_program, &Program::errorOccured,
-            this, &MainWindow::appendLog,
-            Qt::QueuedConnection);
+    // connect(m_program, &Program::errorOccured,
+    //         this, &MainWindow::appendLog,
+    //         Qt::QueuedConnection);
 
-    appendLog("Логовое окно инициализировано");
+    // appendLog("Логовое окно инициализировано");
 
     m_durationTimer = new QTimer(this);
     m_durationTimer->setInterval(100);

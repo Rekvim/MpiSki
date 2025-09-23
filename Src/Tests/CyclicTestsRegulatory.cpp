@@ -45,9 +45,7 @@ void CyclicTestsRegulatory::Process()
     m_graphTimer->start(100);
 
     quint32 cycle = 0;
-    // quint32 step = 0;
     const int seqSize = m_task.sequence.size();
-    emit errorOccured("запустили цикл по values");
 
     for (quint32 step = 0; step < m_task.values.size() && !m_terminate; ++step) {
         const quint16 value = m_task.values.at(step);
@@ -64,18 +62,6 @@ void CyclicTestsRegulatory::Process()
         }
     }
 
-    // for (const quint16 &value :  qAsConst(m_task.values)) {
-    //     SetDACBlocked(value, m_task.delayMs);
-    //     if (m_terminate) { emit EndTest(); return; }
-    //     Sleep(m_task.holdMs);
-    //     if (m_terminate) { emit EndTest(); return; }
-    //     ++step;
-    //     if (step % seqSize == 0) {
-    //         ++cycle;
-    //         emit CycleCompleted(cycle);
-    //     }
-    // }
-    emit errorOccured("цикл по values завершён");
     SetDACBlocked(0, 0, true, false);
     m_graphTimer->stop();
 
@@ -83,6 +69,8 @@ void CyclicTestsRegulatory::Process()
     emit GetPoints(pts);
 
     TestResults r;
+
+    r.strSequence = seqToString(m_task.sequence);
     r.ranges = calculateRanges(pts, m_task.sequence);
     emit Results(r);
 

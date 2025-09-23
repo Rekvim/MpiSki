@@ -25,9 +25,9 @@ Program::Program(QObject *parent)
         emit SetCheckboxDIChecked(DI);
     });
 
-    connect(&m_mpi, &MPI::errorOccured,
-            this, &Program::errorOccured,
-            Qt::QueuedConnection);
+    // connect(&m_mpi, &MPI::errorOccured,
+    //         this, &Program::errorOccured,
+    //         Qt::QueuedConnection);
 }
 
 void Program::SetRegistry(Registry *registry)
@@ -57,21 +57,20 @@ void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool waitForStop, bool waitF
             buf.push_back(m_mpi[0]->GetRawValue());
             if (buf.size() > 50) buf.pop_front();
 
-            // Динамический или статический порог
             constexpr int START_THRESHOLD = 10;
             if (qAbs(buf.first() - buf.last()) > START_THRESHOLD) {
-                emit errorOccured(
-                    QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                    + "Movement started (Δ=" +
-                    QString::number(qAbs(buf.first()-buf.last())) + ")");
+                // emit errorOccured(
+                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
+                //     + "Movement started (Δ=" +
+                //     QString::number(qAbs(buf.first()-buf.last())) + ")");
                 checker.stop();
                 m_dacEventloop->quit();
             }
-            else if (watchdog.elapsed() > 1000) { // 1 с таймаут
-                emit errorOccured(
-                    QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                    + "Start timeout after " +
-                    QString::number(watchdog.elapsed()) + " ms");
+            else if (watchdog.elapsed() > 1000) {
+                // emit errorOccured(
+                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
+                //     + "Start timeout after " +
+                //     QString::number(watchdog.elapsed()) + " ms");
                 checker.stop();
                 m_dacEventloop->quit();
             }
@@ -110,18 +109,18 @@ void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool waitForStop, bool waitF
             if (buf.size() == 50 &&
                 qAbs(buf.first() - buf.last()) < STOP_THRESHOLD)
             {
-                emit errorOccured(
-                    QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                    + "Movement stopped (Δ=" +
-                    QString::number(qAbs(buf.first()-buf.last())) + ")");
+                // emit errorOccured(
+                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
+                //     + "Movement stopped (Δ=" +
+                //     QString::number(qAbs(buf.first()-buf.last())) + ")");
                 checker.stop();
                 m_dacEventloop->quit();
             }
             else if (watchdog.elapsed() > 2000) { // 2 с таймаут
-                emit errorOccured(
-                    QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                    + "Stop timeout after " +
-                    QString::number(watchdog.elapsed()) + " ms");
+                // emit errorOccured(
+                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
+                //     + "Stop timeout after " +
+                //     QString::number(watchdog.elapsed()) + " ms");
                 checker.stop();
                 m_dacEventloop->quit();
             }
@@ -640,7 +639,6 @@ void Program::addRegression(const QVector<QPointF> &points)
     }
     emit AddPoints(Charts::Pressure, chartPoints);
 
-    //emit SetVisible(Charts::Pressure, 1, true);
     emit SetRegressionEnable(true);
 }
 
@@ -648,8 +646,6 @@ void Program::runningStrokeTest()
 {
     emit SetButtonInitEnabled(false);
     emit ClearPoints(Charts::Stroke);
-
-    // emit TotalTestTimeMs(15000ULL);
 
     StrokeTest *strokeTest = new StrokeTest;
     QThread *threadTest = new QThread(this);
@@ -780,11 +776,6 @@ void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
 
 void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p)
 {
-    // emit errorOccured(QString("[DEBUG] Enter runningCyclicRegulatory: "
-    //                           "seq=%1, delay=%2, hold=%3, cycles=%4")
-    //                       .arg(p.regulatory_delay)
-    //                       .arg(p.regulatory_holdTime)
-    //                       .arg(p.regulatory_numCycles));
 
     QVector<quint16> rawReg = makeRawValues(p.regSeqValues,
                                             m_registry->GetValveInfo()->safePosition != 0);
@@ -804,25 +795,21 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
         for (const quint16 &values : task.values)
             listVals << QString::number(values);
 
-        emit errorOccured(QString("CyclicTestsRegulatory Task.values (count=%1): [%2]")
-                              .arg(task.values.size())
-                              .arg(listVals.join(',')));
+        // emit errorOccured(QString("CyclicTestsRegulatory Task.values (count=%1): [%2]")
+        //                       .arg(task.values.size())
+        //                       .arg(listVals.join(',')));
     }
-
-    // emit errorOccured(QString("[DEBUG] task.values.size()=%1").arg(task.values.size()));
 
     auto *cyclicTestsRegulatory = new CyclicTestsRegulatory;
     cyclicTestsRegulatory->SetTask(task);
     cyclicTestsRegulatory->SetPatternType(m_patternType);
 
-    // emit errorOccured("[DEBUG] CyclicTestsRegulatory created, calling moveToThread/start");
-
     QThread *threadTest = new QThread(this);
     cyclicTestsRegulatory->moveToThread(threadTest);
 
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::errorOccured,
-            this, &Program::errorOccured,
-            Qt::QueuedConnection);
+    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::errorOccured,
+    //         this, &Program::errorOccured,
+    //         Qt::QueuedConnection);
 
     connect(threadTest, &QThread::started,
             cyclicTestsRegulatory, &CyclicTestsRegulatory::Process);
@@ -878,6 +865,7 @@ void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestRes
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
 
+    dst.sequence = dst.sequence;
     dst.ranges.resize(results.ranges.size());
     for (int i = 0; i < results.ranges.size(); ++i) {
         const auto &src = results.ranges[i];
@@ -904,13 +892,6 @@ void Program::SetMultipleDO(const QVector<bool>& states)
 
 void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
 {
-    // emit errorOccured(QString("[DEBUG] Enter runningCyclicShutoff: "
-    //                           "seq=%1, delay=%2, hold=%3, cycles=%4")
-    //                       .arg(p.shutoff_delay)
-    //                       .arg(p.shutoff_holdTime)
-    //                       .arg(p.shutoff_numCycles));
-
-
     QVector<quint16> rawOff = makeRawValues(p.offSeqValues,
                                             m_registry->GetValveInfo()->safePosition != 0);
 
@@ -924,8 +905,6 @@ void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
     for (int cycle = 0; cycle < p.shutoff_numCycles; ++cycle) {
         task.values += rawOff;
     }
-
-    // emit errorOccured(QString("[DEBUG] task.values.size()=%1").arg(task.values.size()));
 
     emit SetButtonsDOChecked(false);
 
@@ -992,6 +971,7 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
 
+    dst.sequence = dst.sequence;
     dst.doOnCounts = results.doOnCounts;
     dst.doOffCounts = results.doOffCounts;
     dst.switch3to0Count = results.switch3to0Count / 2;
@@ -1014,9 +994,7 @@ void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResul
                                           const CyclicTestsShutoff::TestResults& shutoffResults)
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
-    // dst.sequence = regulatoryResults.sequence;
-    // dst.cycles = regulatoryResults.cycles;
-    // dst.totalTimeSec = regulatoryResults.totalTimeSec;
+    dst.sequence = dst.sequence;
 
     dst.ranges.resize(regulatoryResults.ranges.size());
     for (int i = 0; i < regulatoryResults.ranges.size(); ++i) {
@@ -1059,7 +1037,7 @@ void Program::runningCyclicTest()
             auto &dst = m_telemetryStore.cyclicTestRecord;
 
             dst.cycles = parameters.regulatory_numCycles;
-            dst.totalTimeSec = parameters.totalTimeSec;
+            dst.totalTimeSec = totalMs;
 
             break;
         }
@@ -1077,10 +1055,8 @@ void Program::runningCyclicTest()
 
             auto &dst = m_telemetryStore.cyclicTestRecord;
 
-            dst.sequence = parameters.sequence;
             dst.cycles = parameters.shutoff_numCycles;
-            dst.totalTimeSec = parameters.totalTimeSec;
-
+            dst.totalTimeSec = totalMs;
 
             break;
         }
@@ -1104,6 +1080,12 @@ void Program::runningCyclicTest()
             quint64 totalMs = regMs + offMs;
 
             emit TotalTestTimeMs(totalMs);
+
+            auto &dst = m_telemetryStore.cyclicTestRecord;
+
+            dst.cycles = parameters.shutoff_numCycles;
+            dst.totalTimeSec = totalMs;
+
             break;
         }
         default: {

@@ -58,7 +58,6 @@ ValveWindow::~ValveWindow()
 void ValveWindow::SetPatternType(SelectTests::PatternType pattern)
 {
     m_patternType = pattern;
-    // qDebug() << "Установлен паттерн (as int):" << static_cast<int>(m_patternType);
     applyPatternVisibility();
 }
 
@@ -66,19 +65,24 @@ void ValveWindow::applyPatternVisibility()
 {
     switch (m_patternType) {
     case SelectTests::Pattern_B_CVT:
-        break;
-    case SelectTests::Pattern_B_SACVT:
+        ui->widget_positionSensorModel->setVisible(false);
         break;
     case SelectTests::Pattern_C_CVT:
+        ui->widget_positionSensorModel->setVisible(false);
         ui->widget_solenoidValveModel->setVisible(false);
         ui->widget_limitSwitchModel->setVisible(false);
         break;
+    case SelectTests::Pattern_B_SACVT:
+        break;
+
     case SelectTests::Pattern_C_SACVT:
         ui->widget_solenoidValveModel->setVisible(false);
         ui->widget_limitSwitchModel->setVisible(false);
         break;
     case SelectTests::Pattern_C_SOVT:
-            ui->widget_positionerModel->setVisible(false);
+        ui->widget_positionerModel->setVisible(false);
+        ui->widget_dinamicError_positionerType->setVisible(false);
+
         break;
     default:
         QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн!");
@@ -138,8 +142,14 @@ void ValveWindow::SaveValveInfo()
     m_valveInfo->PN = ui->lineEdit_PN->text();
 
     m_valveInfo->positionerModel = ui->lineEdit_positionerModel->text();
-    m_valveInfo->positionerType = ui->comboBox_positionerType->currentText();
-    m_valveInfo->dinamicErrorRecomend = ui->comboBox_dinamicError->currentText().toDouble();
+
+    m_valveInfo->positionerType = m_patternType == SelectTests::Pattern_C_SOVT
+        ? ui->comboBox_positionerType->currentText()
+        : "";
+
+    m_valveInfo->dinamicErrorRecomend = m_patternType == SelectTests::Pattern_C_SOVT
+        ? ui->comboBox_dinamicError->currentText().toDouble()
+        : 0.0;
 
     m_valveInfo->solenoidValveModel = ui->lineEdit_solenoidValveModel->text();
     m_valveInfo->limitSwitchModel = ui->lineEdit_limitSwitchModel->text();

@@ -35,6 +35,7 @@ public:
 
     struct TestResults {
         QVector<RangeRec> ranges;
+        QString strSequence;
     };
 
     static QString seqToString(const QVector<quint16>& seq);
@@ -59,8 +60,8 @@ private:
 
     void fetchPoints(QVector<QVector<QPointF>>& pts);
     const bool m_endTestAfterProcess;
+
 private:
-    // Parameters m_params;
     QVector<quint16> m_doOnCounts;
     QVector<quint16> m_doOffCounts;
 };

@@ -73,9 +73,9 @@ MPI::MPI(QObject *parent)
             this, &MPI::UartError,
             Qt::DirectConnection);
 
-    connect(m_uartReader, &UartReader::errorOccured,
-            this, &MPI::errorOccured,
-            Qt::DirectConnection);
+    // connect(m_uartReader, &UartReader::errorOccured,
+    //         this, &MPI::errorOccured,
+    //         Qt::DirectConnection);
 }
 
 MPI::~MPI()
