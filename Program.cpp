@@ -1253,11 +1253,10 @@ void Program::runningOptionalTest(quint8 testNum)
 
         task.delay = parameters.delay;
         ValveInfo *valveInfo = m_registry->GetValveInfo();
+        bool normalOpen = (valveInfo->safePosition != 0);
 
         qreal startValue = 4.0;
         qreal endValue = 20.0;
-
-        bool normalOpen = (valveInfo->safePosition != 0);
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
 
