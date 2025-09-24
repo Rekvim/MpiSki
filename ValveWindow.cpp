@@ -74,10 +74,7 @@ void ValveWindow::applyPatternVisibility()
         break;
     case SelectTests::Pattern_B_SACVT:
         break;
-
     case SelectTests::Pattern_C_SACVT:
-        ui->widget_solenoidValveModel->setVisible(false);
-        ui->widget_limitSwitchModel->setVisible(false);
         break;
     case SelectTests::Pattern_C_SOVT:
         ui->widget_positionerModel->setVisible(false);
