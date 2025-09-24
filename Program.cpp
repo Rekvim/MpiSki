@@ -865,7 +865,7 @@ void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestRes
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
 
-    dst.sequence = dst.sequence;
+    dst.sequence = results.strSequence;
     dst.ranges.resize(results.ranges.size());
     for (int i = 0; i < results.ranges.size(); ++i) {
         const auto &src = results.ranges[i];
@@ -971,7 +971,7 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
 
-    dst.sequence = dst.sequence;
+    dst.sequence = "0-100-0";
     dst.doOnCounts = results.doOnCounts;
     dst.doOffCounts = results.doOffCounts;
     dst.switch3to0Count = results.switch3to0Count / 2;
@@ -1037,7 +1037,7 @@ void Program::runningCyclicTest()
             auto &dst = m_telemetryStore.cyclicTestRecord;
 
             dst.cycles = parameters.regulatory_numCycles;
-            dst.totalTimeSec = totalMs;
+            dst.totalTimeSec = totalMs / 1000;
 
             break;
         }
@@ -1056,7 +1056,7 @@ void Program::runningCyclicTest()
             auto &dst = m_telemetryStore.cyclicTestRecord;
 
             dst.cycles = parameters.shutoff_numCycles;
-            dst.totalTimeSec = totalMs;
+            dst.totalTimeSec = totalMs / 1000;
 
             break;
         }
@@ -1077,7 +1077,7 @@ void Program::runningCyclicTest()
                                        + parameters.shutoff_holdMs)
                                        + parameters.shutoff_delayMs;
 
-            quint64 totalMs = regMs + offMs;
+            quint64 totalMs = (regMs + offMs) / 1000;
 
             emit TotalTestTimeMs(totalMs);
 

@@ -43,10 +43,7 @@ void ReportBuilder_C_SOVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 22, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs).toString("mm:ss.zzz")});
     report.data.push_back({"Отчет ЦТ", 24, 8, QString::number(telemetryStore.cyclicTestRecord.cycles) });
     report.data.push_back({"Отчет ЦТ", 26, 8, telemetryStore.cyclicTestRecord.sequence });
-    report.data.push_back({
-        "Отчет ЦТ", 28, 8,
-        QString::asprintf("%.2f s", telemetryStore.cyclicTestRecord.totalTimeSec)
-    });
+    report.data.push_back({"Отчет ЦТ", 29, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz")});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     report.data.push_back({

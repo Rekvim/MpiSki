@@ -121,25 +121,35 @@ void ReportBuilder_C_CVT::buildReport(
             if (a.maxFwdCycle >= 0) {
                 report.data.push_back({
                     sheet_1, row, 8,
-                    QString("%1 %/ № %2")
+                    QString("%1 %")
                         .arg(a.maxFwdVal,   0, 'f', 2)
-                        .arg(a.maxFwdCycle)
+                });
+                report.data.push_back({
+                    sheet_1, row, 9,
+                    QString("№ %1")
+                        .arg(a.maxFwdCycle + 1)
                 });
             } else {
                 // нет данных
                 report.data.push_back({ sheet_1, row, 8, QString() });
+                report.data.push_back({ sheet_1, row, 9, QString() });
             }
 
             // Обратный ход (минимум)
             if (a.minRevCycle >= 0) {
                 report.data.push_back({
                     sheet_1, row, 10,
-                    QString("%1 %/ № %2")
+                    QString("%1 %")
                         .arg(a.minRevVal,   0, 'f', 2)
-                        .arg(a.minRevCycle)
+                });
+                report.data.push_back({
+                    sheet_1, row, 12,
+                    QString("№ %1")
+                        .arg(a.minRevCycle + 1)
                 });
             } else {
                 report.data.push_back({ sheet_1, row, 10, QString() });
+                report.data.push_back({ sheet_1, row, 12, QString() });
             }
         }
     }
