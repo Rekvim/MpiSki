@@ -35,7 +35,7 @@ void Program::SetRegistry(Registry *registry)
     m_registry = registry;
 }
 
-void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool waitForStop, bool waitForStart)
+void Program::SetDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart)
 {
     m_stopSetDac = false;
 
@@ -45,90 +45,67 @@ void Program::SetDAC(quint16 dac, quint32 sleep_ms, bool waitForStop, bool waitF
     }
 
     m_mpi.SetDAC_Raw(dac);
+
     if (waitForStart) {
-        QElapsedTimer watchdog;
-        watchdog.start();
-        QTimer checker;
-        checker.setInterval(50);
+        QTimer timer;
+        timer.setInterval(50);
 
-        // Буфер последних 50 значений
-        QList<quint16> buf;
-        connect(&checker, &QTimer::timeout, this, [&]() {
-            buf.push_back(m_mpi[0]->GetRawValue());
-            if (buf.size() > 50) buf.pop_front();
+        QList<quint16> lineSensor;
 
-            constexpr int START_THRESHOLD = 10;
-            if (qAbs(buf.first() - buf.last()) > START_THRESHOLD) {
-                // emit errorOccured(
-                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                //     + "Movement started (Δ=" +
-                //     QString::number(qAbs(buf.first()-buf.last())) + ")");
-                checker.stop();
+        connect(&timer, &QTimer::timeout, this, [&]() {
+            lineSensor.push_back(m_mpi[0]->GetRawValue());
+            if (qAbs(lineSensor.first() - lineSensor.last()) > 10) {
+                timer.stop();
                 m_dacEventloop->quit();
             }
-            else if (watchdog.elapsed() > 1000) {
-                // emit errorOccured(
-                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                //     + "Start timeout after " +
-                //     QString::number(watchdog.elapsed()) + " ms");
-                checker.stop();
-                m_dacEventloop->quit();
+            if (lineSensor.size() > 50) {
+                lineSensor.pop_front();
             }
         });
 
-        checker.start();
-        m_dacEventloop->exec();
-        checker.stop();
-    }
-
-    if (m_stopSetDac) { emit ReleaseBlock(); return; }
-
-    if (sleep_ms > 20) {
-        QTimer timer;
-        connect(&timer, &QTimer::timeout,
-                m_dacEventloop, &QEventLoop::quit);
-        timer.start(sleep_ms);
-
+        timer.start();
         m_dacEventloop->exec();
         timer.stop();
     }
 
-    if (m_stopSetDac) { emit ReleaseBlock(); return; }
+    if (m_stopSetDac) {
+        emit ReleaseBlock();
+        return;
+    }
+
+    if (sleepMs > 20) {
+        QTimer timer;
+        connect(&timer, &QTimer::timeout, m_dacEventloop, &QEventLoop::quit);
+        timer.start(sleepMs);
+        m_dacEventloop->exec();
+        timer.stop();
+    }
+
+    if (m_stopSetDac) {
+        emit ReleaseBlock();
+        return;
+    }
 
     if (waitForStop) {
-        QElapsedTimer watchdog;
-        watchdog.start();
-        QTimer checker(this);
-        checker.setInterval(50);
-        QList<quint16> buf;
-        connect(&checker, &QTimer::timeout, this, [&]() {
-            buf.push_back(m_mpi[0]->GetRawValue());
-            if (buf.size() > 50) buf.pop_front();
+        QTimer timer;
+        timer.setInterval(50);
 
-            constexpr int STOP_THRESHOLD = 10;
-            if (buf.size() == 50 &&
-                qAbs(buf.first() - buf.last()) < STOP_THRESHOLD)
-            {
-                // emit errorOccured(
-                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                //     + "Movement stopped (Δ=" +
-                //     QString::number(qAbs(buf.first()-buf.last())) + ")");
-                checker.stop();
-                m_dacEventloop->quit();
-            }
-            else if (watchdog.elapsed() > 2000) { // 2 с таймаут
-                // emit errorOccured(
-                //     QDateTime::currentDateTime().toString("[HH:mm:ss.zzz] ")
-                //     + "Stop timeout after " +
-                //     QString::number(watchdog.elapsed()) + " ms");
-                checker.stop();
-                m_dacEventloop->quit();
+        QList<quint16> lineSensor;
+
+        connect(&timer, &QTimer::timeout, this, [&]() {
+            lineSensor.push_back(m_mpi[0]->GetRawValue());
+            if (lineSensor.size() == 50) {
+                if (qAbs(lineSensor.first() - lineSensor.last()) < 10) {
+                    timer.stop();
+                    m_dacEventloop->quit();
+                }
+                lineSensor.pop_front();
             }
         });
 
-        checker.start();
+        timer.start();
         m_dacEventloop->exec();
-        checker.stop();
+        timer.stop();
     }
 
     emit ReleaseBlock();
@@ -690,11 +667,13 @@ void Program::runningStrokeTest()
 }
 
 
-void Program::results_strokeTest(const quint64 forwardTime, const  quint64 backwardTime)
+void Program::results_strokeTest(const quint64 forwardTime, const quint64 backwardTime)
 {
+    QString forwardText = QTime(0, 0).addMSecs(forwardTime).toString("mm:ss.zzz");
+    QString backwardText = QTime(0, 0).addMSecs(backwardTime).toString("mm:ss.zzz");
 
-    m_telemetryStore.strokeTestRecord.timeForwardMs = forwardTime;
-    m_telemetryStore.strokeTestRecord.timeBackwardMs = backwardTime;
+    m_telemetryStore.strokeTestRecord.timeForwardMs = forwardText;
+    m_telemetryStore.strokeTestRecord.timeBackwardMs = backwardText;
 
     emit TelemetryUpdated(m_telemetryStore);
 }

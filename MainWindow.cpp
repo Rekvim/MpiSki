@@ -412,14 +412,12 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
         );
 
     // StrokeTest
-    QTime tF(0, 0);
-    tF = tF.addMSecs(TS.strokeTestRecord.timeForwardMs);
-    ui->label_strokeTest_forwardTime->setText(tF.toString("mm:ss.zzz"));
-    ui->lineEdit_strokeTest_forwardTime->setText(tF.toString("mm:ss.zzz"));
-    QTime tB(0, 0);
-    tB = tB.addMSecs(TS.strokeTestRecord.timeBackwardMs);
-    ui->label_strokeTest_backwardTime->setText(tB.toString("mm:ss.zzz"));
-    ui->lineEdit_strokeTest_backwardTime->setText(tB.toString("mm:ss.zzz"));
+
+    ui->label_strokeTest_forwardTime->setText(TS.strokeTestRecord.timeForwardMs);
+    ui->lineEdit_strokeTest_forwardTime->setText(TS.strokeTestRecord.timeForwardMs);
+
+    ui->label_strokeTest_backwardTime->setText(TS.strokeTestRecord.timeBackwardMs);
+    ui->lineEdit_strokeTest_backwardTime->setText(TS.strokeTestRecord.timeBackwardMs);
 
     // CyclicTestResults
     // ui->label_cyclicTest_sequenceValue->setText(TS.cyclicTestRecord.sequence);
@@ -978,7 +976,6 @@ void MainWindow::on_pushButton_strokeTest_start_clicked()
             emit stopTheTest();
         }
     } else {
-
         emit runStrokeTest();
         startTest();
     }
@@ -1076,7 +1073,7 @@ void MainWindow::InitCharts()
         m_charts[Charts::Task]->addAxis("%.2f deg");
     }
     m_charts[Charts::Task]->addSeries(1, "Задание", QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Task]->addSeries(1,"Датчик линейных перемещений",QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Task]->addSeries(1, "Датчик линейных перемещений",QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Task]->addSeries(0, "Датчик давления 1", QColor::fromRgb(0, 0, 255));
     m_charts[Charts::Task]->addSeries(0, "Датчик давления 2", QColor::fromRgb(0, 200, 0));
     m_charts[Charts::Task]->addSeries(0, "Датчик давления 3", QColor::fromRgb(150, 0, 200));
@@ -1261,7 +1258,6 @@ void MainWindow::SaveChart(Charts chart)
     m_reportSaver->SaveImage(m_charts[chart]);
 
     QPixmap pix = m_charts[chart]->grab();
-
     QImage img = pix.toImage();
 
     switch (chart) {

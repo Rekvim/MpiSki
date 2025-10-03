@@ -1,4 +1,4 @@
-#include "./Src/CustomChart/MyChart.h"
+#include "MyChart.h"
 
 MyChart::MyChart(QWidget *parent)
     : QChartView(parent)
@@ -60,14 +60,6 @@ MyChart::MyChart(QWidget *parent)
 }
 
 MyChart::~MyChart() {}
-
-void MyChart::setPointsVisible(quint8 seriesN, bool visible)
-{
-    if (seriesN < m_mySeries.count()) {
-        m_mySeries[seriesN]->setPointsVisible(visible);
-        m_mySeriesDubl[seriesN]->setPointsVisible(visible);
-    }
-}
 
 void MyChart::drawMarkers(QPoint pos)
 {
@@ -411,11 +403,6 @@ void MyChart::clear()
     m_xaxisValue->setRange(0, m_minR);
     m_xaxisTime->setRange(QDateTime::fromMSecsSinceEpoch(0),
                           QDateTime::fromMSecsSinceEpoch(m_minRTime));
-
-    m_min_X = 0;
-    m_max_X = 0;
-    m_axisX_min = 0;
-    m_axisX_max = 0;
 }
 
 void MyChart::visible(quint8 seriesN, bool visible)

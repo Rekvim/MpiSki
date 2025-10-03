@@ -2,12 +2,9 @@
 #define STROKETEST_H
 
 #pragma once
-#include <QEventLoop>
-#include <QObject>
 #include <QPointF>
 #include <QTimer>
 #include <QDateTime>
-
 #include "Test.h"
 
 class StrokeTest : public Test

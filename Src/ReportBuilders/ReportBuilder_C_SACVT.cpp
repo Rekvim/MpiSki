@@ -35,7 +35,7 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({sheet_1, 10, 13, valveInfo.solenoidValveModel});
     report.data.push_back({sheet_1, 11, 13, QString("%1 / %2")
                                                 .arg(valveInfo.limitSwitchModel)
-                                                .arg(valveInfo.materialStuffingBoxSeal)});
+                                                .arg(valveInfo.positionSensorModel)});
     report.data.push_back({sheet_1, 12, 13, QString("%1 бар")
                                                 .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
     report.data.push_back({sheet_1, 13, 13, otherParams.safePosition});
@@ -44,8 +44,8 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({sheet_1, 16, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({sheet_1, 21, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs).toString("mm:ss.zzz")});
-    report.data.push_back({sheet_1, 23, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs).toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 21, 8, telemetryStore.strokeTestRecord.timeForwardMs});
+    report.data.push_back({sheet_1, 23, 8, telemetryStore.strokeTestRecord.timeBackwardMs});
     report.data.push_back({sheet_1, 25, 8, telemetryStore.cyclicTestRecord.sequence});
     report.data.push_back({sheet_1, 27, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
     report.data.push_back({sheet_1, 29, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz")});
@@ -187,10 +187,8 @@ void ReportBuilder_C_SACVT::buildReport(
     report.data.push_back({sheet_1, 80, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({sheet_1, 85, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
-                                               .toString("mm:ss.zzz")});
-    report.data.push_back({sheet_1, 87, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
-                                               .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 85, 8, telemetryStore.strokeTestRecord.timeForwardMs});
+    report.data.push_back({sheet_1, 87, 8, telemetryStore.strokeTestRecord.timeBackwardMs});
     report.data.push_back({sheet_1, 89, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
     report.data.push_back({sheet_1, 91, 8, telemetryStore.cyclicTestRecord.sequence});
     report.data.push_back({sheet_1, 93, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
@@ -357,16 +355,10 @@ void ReportBuilder_C_SACVT::buildReport(
         QString("%1")
             .arg(telemetryStore.mainTestRecord.frictionForce, 0, 'f', 3)
     });
-    report.data.push_back({ sheet_3, 48, 5,
-        QTime(0,0)
-            .addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
-            .toString("mm:ss.zzz")
+    report.data.push_back({ sheet_3, 48, 5,telemetryStore.strokeTestRecord.timeForwardMs
     });
     report.data.push_back({
-        sheet_3, 48, 8,
-        QTime(0,0)
-            .addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
-            .toString("mm:ss.zzz")
+        sheet_3, 48, 8,telemetryStore.strokeTestRecord.timeBackwardMs
     });
 
     // Страница: Отчет ЦТ; Блок: Дата

@@ -44,7 +44,7 @@ void ReportSaver::SaveImage(MyChart *chart)
     if (out.open(QIODevice::WriteOnly)) {
         QDataStream stream(&out);
         stream.setVersion(QDataStream::Qt_6_2);
-        chart->loadFromStream(stream);
+        chart->saveToStream(stream);
         out.flush();
         out.close();
     }
@@ -72,7 +72,17 @@ bool ReportSaver::SaveReport(const Report &report, const QString &templatePath)
 
     for (const auto& img : report.images) {
         if (!img.image.isNull() && xlsx.selectSheet(img.sheet)) {
-            xlsx.insertImage(img.row, img.col, img.image);
+            int targetWidth = 0;
+            int targetHeight = 0;
+
+            targetWidth = 1000;
+            targetHeight = 1200;
+
+            QImage scaledImage = img.image.scaled(targetWidth, targetHeight,
+                                                  Qt::KeepAspectRatio,
+                                                  Qt::SmoothTransformation);
+
+            xlsx.insertImage(img.row, img.col, scaledImage);
         }
     }
 

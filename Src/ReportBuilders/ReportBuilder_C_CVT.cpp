@@ -40,10 +40,8 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({sheet_1, 14, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    report.data.push_back({sheet_1, 19, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
-                                                     .toString("mm:ss.zzz")});
-    report.data.push_back({sheet_1, 21, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
-                                                     .toString("mm:ss.zzz")});
+    report.data.push_back({sheet_1, 19, 8, telemetryStore.strokeTestRecord.timeForwardMs});
+    report.data.push_back({sheet_1, 21, 8, telemetryStore.strokeTestRecord.timeBackwardMs});
     report.data.push_back({sheet_1, 23, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
     report.data.push_back({sheet_1, 25, 8, telemetryStore.cyclicTestRecord.sequence});
     report.data.push_back({sheet_1, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
@@ -259,16 +257,10 @@ void ReportBuilder_C_CVT::buildReport(
            .arg(telemetryStore.mainTestRecord.frictionForce, 0, 'f', 3)
     });
     report.data.push_back({
-        sheet_3, 46, 5,
-        QTime(0,0)
-        .addMSecs(telemetryStore.strokeTestRecord.timeForwardMs)
-        .toString("mm:ss.zzz")
+        sheet_3, 46, 5, telemetryStore.strokeTestRecord.timeForwardMs
     });
     report.data.push_back({
-        sheet_3, 46, 8,
-        QTime(0,0)
-        .addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs)
-        .toString("mm:ss.zzz")
+        sheet_3, 46, 8, telemetryStore.strokeTestRecord.timeBackwardMs
     });
 
     // Дата и Исполнитель

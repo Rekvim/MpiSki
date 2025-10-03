@@ -169,7 +169,7 @@ private slots:
     void updateCharts_CyclicTest(Charts chart);
 
     void results_mainTest(const MainTest::TestResults &results);
-    void results_strokeTest(const quint64 forwardTime, const quint64 backwardTime);
+    void results_strokeTest(const quint64 forwardTime, const  quint64 backwardTime);
     void results_stepTest(const QVector<StepTest::TestResult> &results, const quint32 T_value);
 
     void results_cyclicTests(const CyclicTests::TestResults& r);

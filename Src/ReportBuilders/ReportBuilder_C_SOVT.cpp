@@ -39,8 +39,8 @@ void ReportBuilder_C_SOVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 15, 13, valveInfo.materialStuffingBoxSeal});
 
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
-    report.data.push_back({"Отчет ЦТ", 20, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeForwardMs).toString("mm:ss.zzz")});
-    report.data.push_back({"Отчет ЦТ", 22, 8, QTime(0,0).addMSecs(telemetryStore.strokeTestRecord.timeBackwardMs).toString("mm:ss.zzz")});
+    report.data.push_back({"Отчет ЦТ", 20, 8, telemetryStore.strokeTestRecord.timeForwardMs});
+    report.data.push_back({"Отчет ЦТ", 22, 8, telemetryStore.strokeTestRecord.timeBackwardMs});
     report.data.push_back({"Отчет ЦТ", 24, 8, QString::number(telemetryStore.cyclicTestRecord.cycles) });
     report.data.push_back({"Отчет ЦТ", 26, 8, telemetryStore.cyclicTestRecord.sequence });
     report.data.push_back({"Отчет ЦТ", 29, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz")});

@@ -55,8 +55,8 @@ struct CyclicTestRecord {
 };
 
 struct StrokeTestRecord {
-    quint64 timeForwardMs = 0;
-    quint64 timeBackwardMs = 0;
+    QString timeForwardMs = "";
+    QString timeBackwardMs = "";
 };
 
 struct MainTestRecord {
