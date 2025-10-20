@@ -79,6 +79,13 @@ private slots:
     void receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters);
     void receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
 
+    void updateFrictionForceLimitStatus();
+    void updateRangeLimitStatus();
+    void updateDynamicErrorLimitStatus();
+
+    void bindSliderAndLineEdit(QSlider* slider, QLineEdit* lineEdit, std::function<void()> updateIndicatorFn);
+
+
     void SetText(TextObjects object, const QString &text);
 
     void SetTask(qreal task);

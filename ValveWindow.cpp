@@ -28,8 +28,6 @@ ValveWindow::ValveWindow(QWidget *parent)
     connect(ui->lineEdit_pulleyDiameter, &QLineEdit::textChanged,
             this, &ValveWindow::DiameterChanged);
 
-    ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
-
     connect(ui->comboBox_strokeMovement, &QComboBox::currentIndexChanged,
             this, &ValveWindow::StrokeChanged);
 
@@ -42,12 +40,13 @@ ValveWindow::ValveWindow(QWidget *parent)
     connect(ui->pushButton_clear, &QPushButton::clicked,
             this, &ValveWindow::Clear);
 
-    DiameterChanged(ui->lineEdit_driveDiameter->text());
-
     connect(ui->comboBox_positionerType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &ValveWindow::onPositionerTypeChanged);
 
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
+
+    ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
+    DiameterChanged(m_diameter[0]);
 }
 
 ValveWindow::~ValveWindow()

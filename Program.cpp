@@ -276,7 +276,7 @@ bool Program::detectAndReportSensors()
     int cnt = m_mpi.SensorCount();
 
     if (cnt == 0) {
-        ts.init.connectedSensorsText  = "Датчики не обнаружены";
+        ts.init.connectedSensorsText = "Датчики не обнаружены";
         ts.init.connectedSensorsColor = Qt::red;
     }
     else if (cnt == 1) {
@@ -284,7 +284,7 @@ bool Program::detectAndReportSensors()
         ts.init.connectedSensorsColor = Qt::darkYellow;
     }
     else {
-        ts.init.connectedSensorsText  = QString("Обнаружено %1 датчика").arg(cnt);
+        ts.init.connectedSensorsText = QString("Обнаружено %1 датчика").arg(cnt);
         ts.init.connectedSensorsColor = Qt::darkGreen;
     }
 
