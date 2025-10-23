@@ -32,42 +32,67 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void SetRegistry(Registry *registry);
-    void SetPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
-    void SetBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
+    void setRegistry(Registry *registry);
+    void setPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
+    void setBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
 signals:
     void initialize();
     void PatternChanged(SelectTests::PatternType pattern);
 
     void InitDOSelected(const QVector<bool> &states);
-    void SetDAC(qreal value);
+    void setDac(qreal value);
 
     void runMainTest();
     void runStrokeTest();
     void runCyclicTest();
     void runOptionalTest(quint8 testNum);
 
-    void stopTheTest();
+    void stopTest();
 
-    void SetDO(quint8 DO_num, bool state);
+    void setDO(quint8 DO_num, bool state);
 
 private slots:
     void appendLog(const QString& text);
 
     void onTelemetryUpdated(const TelemetryStore &TS);
-    void SetSensorsNumber(quint8 num);
-    void AddPoints(Charts chart, const QVector<Point> &points);
-    void ClearPoints(Charts chart);
+    void addPoints(Charts chart, const QVector<Point> &points);
+    void clearPoints(Charts chart);
 
     void promptSaveCharts();
-    void SetChartVisible(Charts chart, quint16 series, bool visible);
-    void ShowDots(bool visible);
-    void DublSeries();
+    void showDots(bool visible);
+    void dublSeries();
+
+    void getDirectory(const QString &current_path, QString &result);
+
+    void updateFrictionForceLimitStatus();
+    void updateRangeLimitStatus();
+    void updateDynamicErrorLimitStatus();
+
+    void bindSliderAndLineEdit(QSlider* slider, QLineEdit* lineEdit, std::function<void()> updateIndicatorFn);
+
+    void setText(TextObjects object, const QString &text);
+    void setTask(qreal task);
+
+    void setStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
+
+    void setChartVisible(Charts chart, quint16 series, bool visible);
+    void setSensorsNumber(quint8 num);
+
+    void setButtonInitEnabled(bool enable);
+    void setRegressionEnable(bool enable);
+
+    void setButtonsDOChecked(quint8 status);
+    void setCheckboxDIChecked(quint8 status);
+
+    void enableSetTask(bool enable);
+
+    void onCountdownTimeout();
+    void onTotalTestTimeMs(quint64 totalMs);
+
+    void question(const QString &title, const QString &text, bool &result);
 
     void startTest();
     void endTest();
-
-    void GetDirectory(const QString &current_path, QString &result);
 
     void receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
     void receivedPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart);
@@ -78,29 +103,6 @@ private slots:
     void receivedParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
     void receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters);
     void receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
-
-    void updateFrictionForceLimitStatus();
-    void updateRangeLimitStatus();
-    void updateDynamicErrorLimitStatus();
-
-    void bindSliderAndLineEdit(QSlider* slider, QLineEdit* lineEdit, std::function<void()> updateIndicatorFn);
-
-
-    void SetText(TextObjects object, const QString &text);
-
-    void SetTask(qreal task);
-    void EnableSetTask(bool enable);
-
-    void SetButtonInitEnabled(bool enable);
-    void SetRegressionEnable(bool enable);
-
-    void SetButtonsDOChecked(quint8 status);
-    void SetCheckboxDIChecked(quint8 status);
-
-    void onCountdownTimeout();
-    void onTotalTestTimeMs(quint64 totalMs);
-
-    void Question(const QString &title, const QString &text, bool &result);
 
     void on_pushButton_init_clicked();
 
@@ -168,13 +170,11 @@ private:
     QImage m_imageChartFriction;
     QImage m_imageChartStep;
 
-    void DisplayDependingPattern();
+    void displayDependingPattern();
 
-    void InitCharts();
-    void SaveChart(Charts chart);
-    void GetImage(QLabel *label, QImage *image);
-
-    void SetStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
+    void initCharts();
+    void saveChart(Charts chart);
+    void getImage(QLabel *label, QImage *image);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;

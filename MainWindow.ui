@@ -33,12 +33,12 @@
       </property>
       <property name="font">
        <font>
-        <family>Roboto</family>
+        <family>Segoe UI</family>
         <pointsize>12</pointsize>
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -55,7 +55,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Roboto</family>
+            <family>Segoe UI</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -80,7 +80,7 @@
                    <widget class="QLabel" name="label_signalStrength_21mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -98,7 +98,7 @@
                    <widget class="QLabel" name="label_signalStrength_20mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -116,7 +116,7 @@
                    <widget class="QLabel" name="label_signalStrength_19mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -134,7 +134,7 @@
                    <widget class="QLabel" name="label_signalStrength_18mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -152,7 +152,7 @@
                    <widget class="QLabel" name="label_signalStrength_17mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -170,7 +170,7 @@
                    <widget class="QLabel" name="label_signalStrength_16mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -188,7 +188,7 @@
                    <widget class="QLabel" name="label_signalStrength_15mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -206,7 +206,7 @@
                    <widget class="QLabel" name="label_signalStrength_14mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -224,7 +224,7 @@
                    <widget class="QLabel" name="label_signalStrength_13mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -242,7 +242,7 @@
                    <widget class="QLabel" name="label_signalStrength_12mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -260,7 +260,7 @@
                    <widget class="QLabel" name="label_signalStrength_11mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -278,7 +278,7 @@
                    <widget class="QLabel" name="label_signalStrength_10mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -296,7 +296,7 @@
                    <widget class="QLabel" name="label_signalStrength_9mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -314,7 +314,7 @@
                    <widget class="QLabel" name="label_signalStrength_8mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -332,7 +332,7 @@
                    <widget class="QLabel" name="label_signalStrength_7mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -350,7 +350,7 @@
                    <widget class="QLabel" name="label_signalStrength_6mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -368,7 +368,7 @@
                    <widget class="QLabel" name="label_signalStrength_5mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -386,7 +386,7 @@
                    <widget class="QLabel" name="label_signalStrength_4mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -404,7 +404,7 @@
                    <widget class="QLabel" name="label_signalStrength_3mA">
                     <property name="font">
                      <font>
-                      <family>Roboto</family>
+                      <family>Segoe UI</family>
                       <pointsize>12</pointsize>
                       <bold>false</bold>
                       <stylestrategy>PreferDefault</stylestrategy>
@@ -676,6 +676,12 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="title">
               <string>СКИ</string>
              </property>
@@ -687,12 +693,6 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Roboto</family>
-                  <pointsize>12</pointsize>
-                 </font>
                 </property>
                 <property name="text">
                  <string>Выход 1</string>
@@ -716,12 +716,6 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Roboto</family>
-                  <pointsize>12</pointsize>
-                 </font>
-                </property>
                 <property name="text">
                  <string>Выход 2</string>
                 </property>
@@ -743,12 +737,6 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Roboto</family>
-                  <pointsize>12</pointsize>
-                 </font>
                 </property>
                 <property name="text">
                  <string>Выход 3</string>
@@ -772,12 +760,6 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Roboto</family>
-                  <pointsize>12</pointsize>
-                 </font>
-                </property>
                 <property name="text">
                  <string>Выход 4</string>
                 </property>
@@ -800,12 +782,6 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="font">
-                 <font>
-                  <family>Roboto</family>
-                  <pointsize>12</pointsize>
-                 </font>
-                </property>
                 <property name="layoutDirection">
                  <enum>Qt::LayoutDirection::RightToLeft</enum>
                 </property>
@@ -824,12 +800,6 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Roboto</family>
-                  <pointsize>12</pointsize>
-                 </font>
                 </property>
                 <property name="layoutDirection">
                  <enum>Qt::LayoutDirection::RightToLeft</enum>
@@ -852,6 +822,12 @@
             <widget class="QGroupBox" name="groupBox_SettingCurrentSignal">
              <property name="enabled">
               <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>12</pointsize>
+              </font>
              </property>
              <property name="title">
               <string>Задание токового сигнала</string>
@@ -969,7 +945,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Roboto</family>
+            <family>Segoe UI</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -983,7 +959,7 @@
               <widget class="QLabel" name="label_deviceStatus">
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1021,7 +997,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1047,7 +1023,7 @@
               <widget class="QLabel" name="label_deviceInit">
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1085,7 +1061,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1108,7 +1084,7 @@
               <widget class="QLabel" name="label_connectedSensors">
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1146,7 +1122,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1169,7 +1145,7 @@
               <widget class="QLabel" name="label_startingPosition">
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1207,7 +1183,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1230,7 +1206,7 @@
               <widget class="QLabel" name="label_finalPosition">
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1268,7 +1244,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1300,7 +1276,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1325,7 +1301,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1357,7 +1333,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Roboto</family>
+                 <family>Segoe UI</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1506,6 +1482,7 @@
                   <widget class="QFrame" name="frame_chartTask">
                    <property name="font">
                     <font>
+                     <family>Segoe UI</family>
                      <pointsize>11</pointsize>
                     </font>
                    </property>
@@ -2522,7 +2499,7 @@ Border-radius: 10px;
                       </sizepolicy>
                      </property>
                      <property name="text">
-                      <string>Линейная характеристика</string>
+                      <string>Линейность характеристики</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2916,7 +2893,7 @@ Border-radius: 10px;
                       </sizepolicy>
                      </property>
                      <property name="text">
-                      <string>Динамичская ошибка</string>
+                      <string>Динамическая ошибка</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -3142,7 +3119,7 @@ Border-radius: 10px;
                   <item>
                    <widget class="QLabel" name="label_3">
                     <property name="text">
-                     <string>Выход за приделы</string>
+                     <string>Выход за пределы</string>
                     </property>
                    </widget>
                   </item>

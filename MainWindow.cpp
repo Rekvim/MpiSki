@@ -87,14 +87,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_durationTimer, &QTimer::timeout,
             this, &MainWindow::onCountdownTimeout);
 
-    connect(m_program, &Program::TotalTestTimeMs,
+    connect(m_program, &Program::totalTestTimeMs,
             this, &MainWindow::onTotalTestTimeMs);
 
     connect(this, &MainWindow::initialize,
             m_program, &Program::initialization);
 
     connect(this, &MainWindow::InitDOSelected,
-            m_program, &Program::SetInitDOStates);
+            m_program, &Program::setInitDOStates);
 
     connect(ui->pushButton_set, &QPushButton::clicked,
             m_program, &Program::button_set_position);
@@ -102,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
             m_program, &Program::checkbox_autoInit);
 
-    connect(this, &MainWindow::SetDO,
+    connect(this, &MainWindow::setDO,
             m_program, &Program::button_DO);
 
     for (int i = 0; i < 4; ++i) {
@@ -112,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(btn, &QPushButton::clicked,
                 this, [this, i](bool checked)
                 {
-                    emit SetDO(i, checked);
+                    emit setDO(i, checked);
                 });
     }
 
@@ -122,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::runMainTest,
             m_program, &Program::runningMainTest);
 
-    connect(m_program, &Program::MainTestFinished,
+    connect(m_program, &Program::mainTestFinished,
             this, &MainWindow::promptSaveCharts);
 
     connect(this, &MainWindow::runStrokeTest,
@@ -131,30 +131,30 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::runOptionalTest,
             m_program, &Program::runningOptionalTest);
 
-    connect(this, &MainWindow::stopTheTest,
+    connect(this, &MainWindow::stopTest,
             m_program, &Program::terminateTest);
 
     connect(m_program, &Program::stopTheTest,
             this, &MainWindow::endTest);
 
-    connect(m_program, &Program::SetText,
-            this, &MainWindow::SetText);
+    connect(m_program, &Program::setText,
+            this, &MainWindow::setText);
 
-    connect(m_program, &Program::SetButtonsDOChecked,
-            this, &MainWindow::SetButtonsDOChecked);
+    connect(m_program, &Program::setButtonsDOChecked,
+            this, &MainWindow::setButtonsDOChecked);
 
-    connect(m_program, &Program::SetCheckboxDIChecked,
-            this, &MainWindow::SetCheckboxDIChecked);
+    connect(m_program, &Program::setCheckboxDIChecked,
+            this, &MainWindow::setCheckboxDIChecked);
 
-    connect(this, &MainWindow::SetDAC,
-            m_program, &Program::SetDAC_real);
+    connect(this, &MainWindow::setDac,
+            m_program, &Program::setDAC_real);
 
     connect(ui->doubleSpinBox_task,
             qOverload<double>(&QDoubleSpinBox::valueChanged),
             this,[&](double value) {
                 if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
                     if (ui->verticalSlider_task->isEnabled())
-                        emit SetDAC(value);
+                        emit setDac(value);
                     ui->verticalSlider_task->setValue(qRound(value * 1000));
                 }
             });
@@ -163,7 +163,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, [&](int value) {
                 if (qRound(ui->doubleSpinBox_task->value() * 1000) != value) {
                     if (ui->doubleSpinBox_task->isEnabled())
-                        emit SetDAC(value / 1000.0);
+                        emit setDac(value / 1000.0);
                     ui->doubleSpinBox_task->setValue(value / 1000.0);
                 }
             });
@@ -171,20 +171,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::PatternChanged,
             m_program, &Program::setPattern);
 
-    connect(m_program, &Program::SetTask,
-            this, &MainWindow::SetTask);
+    connect(m_program, &Program::setTask,
+            this, &MainWindow::setTask);
 
-    connect(m_program, &Program::SetSensorNumber,
-            this, &MainWindow::SetSensorsNumber);
+    connect(m_program, &Program::setSensorNumber,
+            this, &MainWindow::setSensorsNumber);
 
-    connect(m_program, &Program::SetButtonInitEnabled,
-            this, &MainWindow::SetButtonInitEnabled);
+    connect(m_program, &Program::setButtonInitEnabled,
+            this, &MainWindow::setButtonInitEnabled);
 
-    connect(m_program, &Program::EnableSetTask,
-            this, &MainWindow::EnableSetTask);
+    connect(m_program, &Program::enableSetTask,
+            this, &MainWindow::enableSetTask);
 
-    connect(m_program, &Program::SetStepResults,
-            this, &MainWindow::SetStepTestResults);
+    connect(m_program, &Program::setStepResults,
+            this, &MainWindow::setStepTestResults);
 
     connect(m_program, &Program::getParameters_mainTest,
             this, &MainWindow::receivedParameters_mainTest,
@@ -206,16 +206,16 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::receivedParameters_cyclicTest,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::Question,
-            this, &MainWindow::Question,
+    connect(m_program, &Program::question,
+            this, &MainWindow::question,
             Qt::BlockingQueuedConnection);
 
     connect(m_reportSaver, &ReportSaver::Question,
-            this, &MainWindow::Question,
+            this, &MainWindow::question,
             Qt::DirectConnection);
 
     connect(m_reportSaver, &ReportSaver::GetDirectory,
-            this, &MainWindow::GetDirectory,
+            this, &MainWindow::getDirectory,
             Qt::DirectConnection);
 
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
@@ -282,11 +282,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->label_arrowUp->installEventFilter(this);
     ui->label_arrowDown->installEventFilter(this);
 
-    connect(m_program, &Program::TelemetryUpdated,
+    connect(m_program, &Program::telemetryUpdated,
             this, &MainWindow::onTelemetryUpdated,
             Qt::QueuedConnection);
 
-    connect(m_program, &Program::CyclicCycleCompleted,
+    connect(m_program, &Program::cyclicCycleCompleted,
             this, [this](int completed){
                 int remaining = completed;
                 ui->label_cyclicTest_completedCyclesValue->setText(QString::number(remaining));
@@ -602,7 +602,7 @@ void MainWindow::on_pushButton_signal_20mA_clicked()
 {
     ui->doubleSpinBox_task->setValue(20.0);
 }
-void MainWindow::EnableSetTask(bool enable)
+void MainWindow::enableSetTask(bool enable)
 {
     ui->verticalSlider_task->setEnabled(enable);
     ui->doubleSpinBox_task->setEnabled(enable);
@@ -654,7 +654,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QMainWindow::eventFilter(watched, event);
 }
 
-void MainWindow::SetRegistry(Registry *registry)
+void MainWindow::setRegistry(Registry *registry)
 {
     m_registry = registry;
 
@@ -690,22 +690,22 @@ void MainWindow::SetRegistry(Registry *registry)
         m_resolutionTestSettings->reverse();
     }
 
-    InitCharts();
+    initCharts();
 
-    m_program->SetRegistry(registry);
+    m_program->setRegistry(registry);
     m_programThread->start();
 
     m_reportSaver->SetRegistry(registry);
 }
 
-void MainWindow::SetText(TextObjects object, const QString &text)
+void MainWindow::setText(TextObjects object, const QString &text)
 {
     if (m_lineEdits.contains(object)) {
         m_lineEdits[object]->setText(text);
     }
 }
 
-void MainWindow::SetTask(qreal task)
+void MainWindow::setTask(qreal task)
 {
     quint16 i_task = qRound(task * 1000);
 
@@ -718,7 +718,7 @@ void MainWindow::SetTask(qreal task)
     }
 }
 
-void MainWindow::SetStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value)
+void MainWindow::setStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value)
 {
     ui->tableWidget_stepResults->setHorizontalHeaderLabels(
         {QString("T%1").arg(T_value), "Перерегулирование"});
@@ -744,7 +744,7 @@ void MainWindow::SetStepTestResults(const QVector<StepTest::TestResult> &results
     ui->tableWidget_stepResults->resizeColumnsToContents();
 }
 
-void MainWindow::DisplayDependingPattern() {
+void MainWindow::displayDependingPattern() {
     switch (m_patternType) {
     case SelectTests::Pattern_B_CVT:
         ui->groupBox_DO->setVisible(false);
@@ -787,7 +787,7 @@ void MainWindow::DisplayDependingPattern() {
     }
 }
 
-void MainWindow::SetSensorsNumber(quint8 num)
+void MainWindow::setSensorsNumber(quint8 num)
 {
     bool noSensors = (num == 0);
 
@@ -806,7 +806,7 @@ void MainWindow::SetSensorsNumber(quint8 num)
     ui->doubleSpinBox_task->setEnabled(!noSensors);
     ui->verticalSlider_task->setEnabled(!noSensors);
 
-    DisplayDependingPattern();
+    displayDependingPattern();
 
     if (num > 0) {
         ui->checkBox_showCurve_task->setVisible(num > 1);
@@ -822,34 +822,34 @@ void MainWindow::SetSensorsNumber(quint8 num)
         ui->checkBox_showCurve_pressure_3->setCheckState(num > 3 ? Qt::Checked : Qt::Unchecked);
     }
 }
-void MainWindow::SetButtonInitEnabled(bool enable)
+void MainWindow::setButtonInitEnabled(bool enable)
 {
     ui->pushButton_init->setEnabled(enable);
 }
 
-void MainWindow::AddPoints(Charts chart, const QVector<Point> &points)
+void MainWindow::addPoints(Charts chart, const QVector<Point> &points)
 {
     for (const auto& point : points)
         m_charts[chart]->addPoint(point.series_num, point.X, point.Y);
 }
 
-void MainWindow::ClearPoints(Charts chart)
+void MainWindow::clearPoints(Charts chart)
 {
     m_charts[chart]->clear();
 }
 
-void MainWindow::SetChartVisible(Charts chart, quint16 series, bool visible)
+void MainWindow::setChartVisible(Charts chart, quint16 series, bool visible)
 {
     m_charts[chart]->visible(series, visible);
 }
 
-void MainWindow::ShowDots(bool visible)
+void MainWindow::showDots(bool visible)
 {
     m_charts[Charts::Task]->showdots(visible);
     m_charts[Charts::Pressure]->showdots(visible);
 }
 
-void MainWindow::DublSeries()
+void MainWindow::dublSeries()
 {
     m_charts[Charts::Task]->dublSeries(1);
     m_charts[Charts::Task]->dublSeries(2);
@@ -907,7 +907,7 @@ void MainWindow::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Ch
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
 
-void MainWindow::SetRegressionEnable(bool enable)
+void MainWindow::setRegressionEnable(bool enable)
 {
     ui->checkBox_regression->setEnabled(enable);
     ui->checkBox_regression->setCheckState(enable ? Qt::Checked : Qt::Unchecked);
@@ -997,7 +997,7 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
         }
 
         if (parameters.testType == TP::Regulatory && parameters.regulatory_enable_20mA) {
-            emit SetDAC(20.0);
+            emit setDac(20.0);
         }
 
         qint64 totalMs = 0;
@@ -1048,12 +1048,12 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
     }
 }
 
-void MainWindow::Question(const QString &title, const QString &text, bool &result)
+void MainWindow::question(const QString &title, const QString &text, bool &result)
 {
     result = (QMessageBox::question(NULL, title, text) == QMessageBox::Yes);
 }
 
-void MainWindow::GetDirectory(const QString &current_path, QString &result)
+void MainWindow::getDirectory(const QString &current_path, QString &result)
 {
     result = QFileDialog::getExistingDirectory(this,
                                                "Выберите папку для сохранения изображений",
@@ -1090,7 +1090,7 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
             m_userCanceled = true;
-            emit stopTheTest();
+            emit stopTest();
         }
     } else {
         m_userCanceled = false;
@@ -1101,11 +1101,36 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
 void MainWindow::on_pushButton_mainTest_save_clicked()
 {
     if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_task) {
-        SaveChart(Charts::Task);
+        saveChart(Charts::Task);
     } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_pressure) {
-        SaveChart(Charts::Pressure);
+        saveChart(Charts::Pressure);
     } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_friction) {
-        SaveChart(Charts::Friction);
+        saveChart(Charts::Friction);
+    }
+}
+
+void MainWindow::promptSaveCharts()
+{
+    if (m_userCanceled)
+        return;
+
+    auto answer = QMessageBox::question(
+        this,
+        tr("Сохранение результатов"),
+        tr("Тест MainTest завершён.\nСохранитаь графики Task, Pressure и Friction?"),
+        QMessageBox::Yes | QMessageBox::No,
+        QMessageBox::Yes
+        );
+
+    if (answer == QMessageBox::Yes) {
+        saveChart(Charts::Task);
+        saveChart(Charts::Pressure);
+        saveChart(Charts::Friction);
+        QMessageBox::information(
+            this,
+            tr("Готово"),
+            tr("Графики сохранены в текущую папку отчётов.")
+            );
     }
 }
 
@@ -1114,7 +1139,7 @@ void MainWindow::on_pushButton_strokeTest_start_clicked()
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
-            emit stopTheTest();
+            emit stopTest();
         }
     } else {
         emit runStrokeTest();
@@ -1123,7 +1148,7 @@ void MainWindow::on_pushButton_strokeTest_start_clicked()
 }
 void MainWindow::on_pushButton_strokeTest_save_clicked()
 {
-    SaveChart(Charts::Stroke);
+    saveChart(Charts::Stroke);
 }
 
 void MainWindow::on_pushButton_optionalTests_start_clicked()
@@ -1131,7 +1156,7 @@ void MainWindow::on_pushButton_optionalTests_start_clicked()
     if (m_testing) {
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
-            emit stopTheTest();
+            emit stopTest();
         }
     } else {
         emit runOptionalTest(ui->tabWidget_optionalTests->currentIndex());
@@ -1141,11 +1166,11 @@ void MainWindow::on_pushButton_optionalTests_start_clicked()
 void MainWindow::on_pushButton_optionalTests_save_clicked()
 {
     if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_response) {
-        SaveChart(Charts::Response);
+        saveChart(Charts::Response);
     } else if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_resolution) {
-        SaveChart(Charts::Resolution);
+        saveChart(Charts::Resolution);
     } else if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_step) {
-        SaveChart(Charts::Step);
+        saveChart(Charts::Step);
     }
 }
 
@@ -1155,7 +1180,7 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
         if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
             == QMessageBox::Yes) {
             m_userCanceled = true;
-            emit stopTheTest();
+            emit stopTest();
         }
         return;
     }
@@ -1170,10 +1195,10 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
 
 void MainWindow::on_pushButton_cyclicTest_save_clicked()
 {
-    SaveChart(Charts::Cyclic);
+    saveChart(Charts::Cyclic);
 }
 
-void MainWindow::SetButtonsDOChecked(quint8 status)
+void MainWindow::setButtonsDOChecked(quint8 status)
 {
     ui->pushButton_DO0->blockSignals(true);
     ui->pushButton_DO1->blockSignals(true);
@@ -1193,13 +1218,13 @@ void MainWindow::SetButtonsDOChecked(quint8 status)
     ui->groupBox_DO->setEnabled(true);
 }
 
-void MainWindow::SetCheckboxDIChecked(quint8 status)
+void MainWindow::setCheckboxDIChecked(quint8 status)
 {
     ui->checkBox_switch_3_0->setChecked((status & (1 << 0)) != 0);
     ui->checkBox_switch_0_3->setChecked((status & (1 << 1)) != 0);
 }
 
-void MainWindow::InitCharts()
+void MainWindow::initCharts()
 {
     ValveInfo *valveInfo = m_registry->GetValveInfo();
     bool rotate = (valveInfo->strokeMovement != 0);
@@ -1310,23 +1335,23 @@ void MainWindow::InitCharts()
         }
     }
 
-    connect(m_program, &Program::AddPoints, this,
-            &MainWindow::AddPoints);
+    connect(m_program, &Program::addPoints, this,
+            &MainWindow::addPoints);
 
-    connect(m_program, &Program::ClearPoints,
-            this, &MainWindow::ClearPoints);
+    connect(m_program, &Program::clearPoints,
+            this, &MainWindow::clearPoints);
 
-    connect(m_program, &Program::DublSeries,
-            this, &MainWindow::DublSeries);
+    connect(m_program, &Program::dublSeries,
+            this, &MainWindow::dublSeries);
 
-    connect(m_program, &Program::SetVisible,
-            this, &MainWindow::SetChartVisible);
+    connect(m_program, &Program::setVisible,
+            this, &MainWindow::setChartVisible);
 
-    connect(m_program, &Program::SetRegressionEnable,
-            this, &MainWindow::SetRegressionEnable);
+    connect(m_program, &Program::setRegressionEnable,
+            this, &MainWindow::setRegressionEnable);
 
-    connect(m_program, &Program::ShowDots,
-            this, &MainWindow::ShowDots);
+    connect(m_program, &Program::showDots,
+            this, &MainWindow::showDots);
 
     connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged, this, [&](int k) {
         m_charts[Charts::Task]->visible(0, k != 0);
@@ -1369,32 +1394,7 @@ void MainWindow::InitCharts()
             Qt::BlockingQueuedConnection);
 }
 
-void MainWindow::promptSaveCharts()
-{
-    if (m_userCanceled)
-        return;
-
-    auto answer = QMessageBox::question(
-        this,
-        tr("Сохранение результатов"),
-        tr("Тест MainTest завершён.\nСохранитаь графики Task, Pressure и Friction?"),
-        QMessageBox::Yes | QMessageBox::No,
-        QMessageBox::Yes
-        );
-
-    if (answer == QMessageBox::Yes) {
-        SaveChart(Charts::Task);
-        SaveChart(Charts::Pressure);
-        SaveChart(Charts::Friction);
-        QMessageBox::information(
-            this,
-            tr("Готово"),
-            tr("Графики сохранены в текущую папку отчётов.")
-            );
-    }
-}
-
-void MainWindow::SaveChart(Charts chart)
+void MainWindow::saveChart(Charts chart)
 {
     m_reportSaver->SaveImage(m_charts[chart]);
 
@@ -1436,7 +1436,7 @@ void MainWindow::SaveChart(Charts chart)
     ui->label_imageChartFriction->setScaledContents(true);
 }
 
-void MainWindow::GetImage(QLabel *label, QImage *image)
+void MainWindow::getImage(QLabel *label, QImage *image)
 {
     QString imgPath = QFileDialog::getOpenFileName(this,
                                                    "Выберите файл",
@@ -1466,15 +1466,15 @@ void MainWindow::on_pushButton_init_clicked()
 
 void MainWindow::on_pushButton_imageChartTask_clicked()
 {
-    GetImage(ui->label_imageChartTask, &m_imageChartTask);
+    getImage(ui->label_imageChartTask, &m_imageChartTask);
 }
 void MainWindow::on_pushButton_imageChartPressure_clicked()
 {
-    GetImage(ui->label_imageChartPressure, &m_imageChartPressure);
+    getImage(ui->label_imageChartPressure, &m_imageChartPressure);
 }
 void MainWindow::on_pushButton_imageChartFriction_clicked()
 {
-    GetImage(ui->label_imageChartFriction, &m_imageChartFriction);
+    getImage(ui->label_imageChartFriction, &m_imageChartFriction);
 }
 
 void MainWindow::on_pushButton_report_generate_clicked()

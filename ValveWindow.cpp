@@ -26,19 +26,16 @@ ValveWindow::ValveWindow(QWidget *parent)
     ui->lineEdit_pulleyDiameter->setValidator(validatorDigitsDot);
 
     connect(ui->lineEdit_pulleyDiameter, &QLineEdit::textChanged,
-            this, &ValveWindow::DiameterChanged);
+            this, &ValveWindow::diameterChanged);
 
     connect(ui->comboBox_strokeMovement, &QComboBox::currentIndexChanged,
-            this, &ValveWindow::StrokeChanged);
+            this, &ValveWindow::strokeChanged);
 
     connect(ui->comboBox_toolNumber, &QComboBox::currentIndexChanged,
-            this, &ValveWindow::ToolChanged);
+            this, &ValveWindow::toolChanged);
 
     connect(ui->lineEdit_driveDiameter, &QLineEdit::textChanged,
-            this, &ValveWindow::DiameterChanged);
-
-    connect(ui->pushButton_clear, &QPushButton::clicked,
-            this, &ValveWindow::Clear);
+            this, &ValveWindow::diameterChanged);
 
     connect(ui->comboBox_positionerType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &ValveWindow::onPositionerTypeChanged);
@@ -46,7 +43,7 @@ ValveWindow::ValveWindow(QWidget *parent)
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
 
     ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
-    DiameterChanged(m_diameter[0]);
+    diameterChanged(m_diameter[0]);
 }
 
 ValveWindow::~ValveWindow()
@@ -54,7 +51,7 @@ ValveWindow::~ValveWindow()
     delete ui;
 }
 
-void ValveWindow::SetPatternType(SelectTests::PatternType pattern)
+void ValveWindow::setPatternType(SelectTests::PatternType pattern)
 {
     m_patternType = pattern;
     applyPatternVisibility();
@@ -102,7 +99,7 @@ void ValveWindow::onPositionerTypeChanged(quint8 index)
     }
 }
 
-void ValveWindow::SetRegistry(Registry *registry)
+void ValveWindow::setRegistry(Registry *registry)
 {
     m_registry = registry;
     m_valveInfo = m_registry->GetValveInfo();
@@ -116,16 +113,16 @@ void ValveWindow::SetRegistry(Registry *registry)
         ui->comboBox_positionNumber->setCurrentIndex(ui->comboBox_positionNumber->count() - 1);
     } else {
         ui->comboBox_positionNumber->setCurrentIndex(ui->comboBox_positionNumber->findText(lastPosition));
-        PositionChanged(lastPosition);
+        positionChanged(lastPosition);
     }
 
     connect(ui->comboBox_positionNumber,
         &QComboBox::currentTextChanged,
         this,
-        &ValveWindow::PositionChanged);
+        &ValveWindow::positionChanged);
 }
 
-void ValveWindow::SaveValveInfo()
+void ValveWindow::saveValveInfo()
 {
     if (ui->comboBox_positionNumber->currentText() == m_manualInput)
         m_valveInfo = m_registry->GetValveInfo(ui->lineEdit_positionNumber->text());
@@ -165,7 +162,7 @@ void ValveWindow::SaveValveInfo()
     m_registry->SaveValveInfo();
 }
 
-void ValveWindow::PositionChanged(const QString &position)
+void ValveWindow::positionChanged(const QString &position)
 {
     if (position == "Ручной ввод") {
         ui->lineEdit_positionNumber->setEnabled(true);
@@ -203,7 +200,7 @@ void ValveWindow::PositionChanged(const QString &position)
     ui->comboBox_toolNumber->setCurrentIndex(m_valveInfo->toolNumber);
 }
 
-void ValveWindow::StrokeChanged(quint16 n)
+void ValveWindow::strokeChanged(quint16 n)
 {
     ui->comboBox_toolNumber->setEnabled(n == 1);
     ui->lineEdit_pulleyDiameter->setEnabled(
@@ -211,7 +208,7 @@ void ValveWindow::StrokeChanged(quint16 n)
         && (ui->comboBox_toolNumber->currentIndex() == ui->comboBox_toolNumber->count() - 1));
 }
 
-void ValveWindow::ToolChanged(quint16 n)
+void ValveWindow::toolChanged(quint16 n)
 {
     if (ui->comboBox_toolNumber->currentText() == m_manualInput) {
         ui->lineEdit_pulleyDiameter->setEnabled(true);
@@ -221,33 +218,10 @@ void ValveWindow::ToolChanged(quint16 n)
     }
 }
 
-void ValveWindow::DiameterChanged(const QString &text)
+void ValveWindow::diameterChanged(const QString &text)
 {
     double value = text.toDouble();
     ui->label_valueSquare->setText(QString().asprintf("%.2f", M_PI * value * value / 4));
-}
-
-void ValveWindow::Clear()
-{
-    ui->lineEdit_manufacturer->setText("");
-    ui->lineEdit_valveModel->setText("");
-    ui->lineEdit_serialNumber->setText("");
-    ui->lineEdit_DN->setText("");
-    ui->lineEdit_PN->setText("");
-    ui->lineEdit_strokValve->setText("");
-    ui->lineEdit_positionNumber->setText("");
-    ui->lineEdit_valveModel->setText("");
-    ui->lineEdit_driveRange->setText("");
-    ui->lineEdit_driveDiameter->setText("");
-
-    ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
-
-    ui->comboBox_materialStuffingBoxSeal->setCurrentIndex(0);
-    ui->comboBox_dinamicError->setCurrentIndex(0);
-    ui->comboBox_safePosition->setCurrentIndex(0);
-    ui->comboBox_driveType->setCurrentIndex(0);
-    ui->comboBox_strokeMovement->setCurrentIndex(0);
-    ui->comboBox_toolNumber->setCurrentIndex(0);
 }
 
 void ValveWindow::on_pushButton_netWindow_clicked()
@@ -276,8 +250,32 @@ void ValveWindow::on_pushButton_netWindow_clicked()
     OtherParameters *otherParameters = m_registry->GetOtherParameters();
     otherParameters->safePosition = ui->comboBox_safePosition->currentText();
     otherParameters->strokeMovement = ui->comboBox_strokeMovement->currentText();
-    SaveValveInfo();
+    saveValveInfo();
 
     accept();
+}
+
+
+void ValveWindow::on_pushButton_clear_clicked()
+{
+    ui->lineEdit_manufacturer->setText("");
+    ui->lineEdit_valveModel->setText("");
+    ui->lineEdit_serialNumber->setText("");
+    ui->lineEdit_DN->setText("");
+    ui->lineEdit_PN->setText("");
+    ui->lineEdit_strokValve->setText("");
+    ui->lineEdit_positionNumber->setText("");
+    ui->lineEdit_valveModel->setText("");
+    ui->lineEdit_driveRange->setText("");
+    ui->lineEdit_driveDiameter->setText("");
+
+    ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
+
+    ui->comboBox_materialStuffingBoxSeal->setCurrentIndex(0);
+    ui->comboBox_dinamicError->setCurrentIndex(0);
+    ui->comboBox_safePosition->setCurrentIndex(0);
+    ui->comboBox_driveType->setCurrentIndex(0);
+    ui->comboBox_strokeMovement->setCurrentIndex(0);
+    ui->comboBox_toolNumber->setCurrentIndex(0);
 }
 

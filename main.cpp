@@ -36,17 +36,17 @@ int main(int argc, char *argv[])
     auto selectedPattern = selectTests.currentPattern();
 
     ValveWindow valveWindow;
-    valveWindow.SetRegistry(&registry);
-    valveWindow.SetPatternType(selectedPattern);
+    valveWindow.setRegistry(&registry);
+    valveWindow.setPatternType(selectedPattern);
 
     if (valveWindow.exec() == QDialog::Rejected)
         return 0;
 
     auto cts = selectTests.getCTS();
 
-    mainWindow.SetPatternType(selectedPattern);
-    mainWindow.SetBlockCTS(cts);
-    mainWindow.SetRegistry(&registry);
+    mainWindow.setPatternType(selectedPattern);
+    mainWindow.setBlockCTS(cts);
+    mainWindow.setRegistry(&registry);
     mainWindow.show();
     QTimer::singleShot(0, &mainWindow, [&]{ mainWindow.showMaximized(); });
     return a.exec();

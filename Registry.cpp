@@ -10,12 +10,12 @@ Registry::Registry(QObject *parent)
     m_objectInfo.FIO = m_settings.value("FIO", "").toString();
 }
 
-ObjectInfo *Registry::GetObjectInfo()
+ObjectInfo *Registry::getObjectInfo()
 {
     return &m_objectInfo;
 }
 
-void Registry::SaveObjectInfo()
+void Registry::saveObjectInfo()
 {
     m_settings.setValue("object", m_objectInfo.object);
     m_settings.setValue("manufactory", m_objectInfo.manufactory);
@@ -23,7 +23,7 @@ void Registry::SaveObjectInfo()
     m_settings.setValue("FIO", m_objectInfo.FIO);
 }
 
-ValveInfo *Registry::GetValveInfo(const QString &position)
+ValveInfo *Registry::getValveInfo(const QString &position)
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
@@ -60,12 +60,12 @@ ValveInfo *Registry::GetValveInfo(const QString &position)
 
     return &m_valveInfo;
 }
-ValveInfo *Registry::GetValveInfo()
+ValveInfo *Registry::getValveInfo()
 {
     return &m_valveInfo;
 }
 
-void Registry::SaveValveInfo()
+void Registry::saveValveInfo()
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
@@ -102,17 +102,17 @@ void Registry::SaveValveInfo()
     m_settings.endGroup();
 }
 
-OtherParameters *Registry::GetOtherParameters()
+OtherParameters *Registry::getOtherParameters()
 {
     return &m_otherParameters;
 }
 
-bool Registry::CheckObject(const QString &object)
+bool Registry::checkObject(const QString &object)
 {
     return m_settings.childGroups().contains(object);
 }
 
-bool Registry::CheckManufactory(const QString &manufactory)
+bool Registry::checkManufactory(const QString &manufactory)
 {
     m_settings.beginGroup(m_objectInfo.object);
 
@@ -123,7 +123,7 @@ bool Registry::CheckManufactory(const QString &manufactory)
     return result;
 }
 
-bool Registry::CheckDepartment(const QString &department)
+bool Registry::checkDepartment(const QString &department)
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
@@ -136,7 +136,7 @@ bool Registry::CheckDepartment(const QString &department)
     return result;
 }
 
-bool Registry::CheckPosition(const QString &position)
+bool Registry::checkPosition(const QString &position)
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
@@ -151,7 +151,7 @@ bool Registry::CheckPosition(const QString &position)
     return result;
 }
 
-QStringList Registry::GetPositions()
+QStringList Registry::getPositions()
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
@@ -166,7 +166,7 @@ QStringList Registry::GetPositions()
     return result;
 }
 
-QString Registry::GetLastPosition()
+QString Registry::getLastPosition()
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);

@@ -24,8 +24,8 @@ class ValveWindow : public QDialog
 public:
     explicit ValveWindow(QWidget *parent = nullptr);
     ~ValveWindow();
-    void SetRegistry(Registry *registry);
-    void SetPatternType(SelectTests::PatternType pattern);
+    void setRegistry(Registry *registry);
+    void setPatternType(SelectTests::PatternType pattern);
 
 private:
     Ui::ValveWindow *ui;
@@ -38,18 +38,18 @@ private:
 
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
 
-    void SaveValveInfo();
+    void saveValveInfo();
     void applyPatternVisibility();
 
 
 private slots:
     void onPositionerTypeChanged(quint8 index);
-    void PositionChanged(const QString &position);
-    void StrokeChanged(quint16 n);
-    void ToolChanged(quint16 n);
-    void DiameterChanged(const QString &text);
-    void Clear();
+    void positionChanged(const QString &position);
+    void strokeChanged(quint16 n);
+    void toolChanged(quint16 n);
+    void diameterChanged(const QString &text);
     void on_pushButton_netWindow_clicked();
+    void on_pushButton_clear_clicked();
 };
 
 #endif // VALVE_WINDOW_H

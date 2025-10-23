@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1073</width>
-    <height>938</height>
+    <height>872</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,7 +35,7 @@
      </property>
      <property name="font">
       <font>
-       <family>Roboto</family>
+       <family>Segoe UI</family>
        <pointsize>12</pointsize>
       </font>
      </property>
@@ -89,7 +89,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -108,7 +108,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -135,7 +135,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -184,7 +184,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -264,7 +264,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -289,7 +289,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -344,7 +344,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -369,7 +369,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -424,7 +424,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -449,7 +449,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -504,7 +504,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -529,7 +529,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -584,7 +584,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -609,7 +609,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -664,7 +664,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -683,7 +683,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -714,7 +714,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -779,7 +779,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -804,7 +804,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -859,7 +859,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -884,7 +884,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -939,7 +939,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -964,7 +964,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1019,7 +1019,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1044,7 +1044,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1109,7 +1109,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1134,7 +1134,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1189,7 +1189,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1214,7 +1214,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1269,7 +1269,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1294,7 +1294,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1359,7 +1359,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1384,7 +1384,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1449,7 +1449,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1474,7 +1474,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1546,6 +1546,12 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
           </widget>
          </item>
         </layout>
@@ -1597,7 +1603,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1622,7 +1628,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1680,7 +1686,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1708,7 +1714,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1788,7 +1794,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1804,6 +1810,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+            </font>
            </property>
           </widget>
          </item>
@@ -1856,7 +1868,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1875,7 +1887,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Roboto</family>
+             <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
            </property>
@@ -1916,7 +1928,7 @@
       <widget class="QPushButton" name="pushButton_clear">
        <property name="font">
         <font>
-         <family>Roboto</family>
+         <family>Segoe UI</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -1929,7 +1941,7 @@
       <widget class="QPushButton" name="pushButton_netWindow">
        <property name="font">
         <font>
-         <family>Roboto</family>
+         <family>Segoe UI</family>
          <pointsize>12</pointsize>
         </font>
        </property>

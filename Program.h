@@ -60,76 +60,59 @@ class Program : public QObject
     Q_OBJECT
 public:
     explicit Program(QObject *parent = nullptr);
-    void SetRegistry(Registry *registry);
+    void setRegistry(Registry *registry);
     bool isInitialized() const;
 
 signals:
 
     void errorOccured(const QString&);
 
-    void TelemetryUpdated(const TelemetryStore &store);
-    void CyclicCycleCompleted(int completedCycles);
-    void SetText(const TextObjects object, const QString &text);
-    void SetTextColor(const TextObjects object, const QColor color);
-    void SetTask(qreal task);
-    void SetSensorNumber(quint8 num);
-    void SetButtonInitEnabled(bool enable);
-    void SetGroupDOVisible(bool visible);
-    void SetVisible(Charts chart, quint16 series, bool visible);
-    void SetRegressionEnable(bool enable);
+    void telemetryUpdated(const TelemetryStore &store);
+    void cyclicCycleCompleted(int completedCycles);
 
+    void setText(const TextObjects object, const QString &text);
+    void setTextColor(const TextObjects object, const QColor color);
+    void setTask(qreal task);
+    void setSensorNumber(quint8 num);
+    void setButtonInitEnabled(bool enable);
+    void setGroupDOVisible(bool visible);
+    void setVisible(Charts chart, quint16 series, bool visible);
+    void setRegressionEnable(bool enable);
+
+    void setStepResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
+    void setButtonsDOChecked(quint8 status);
+    void setCheckboxDIChecked(quint8 status);
     void getPoints(QVector<QVector<QPointF>> &points, Charts chart);
 
     void getPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
 
-    void AddPoints(Charts chart, QVector<Point> points);
-    void ClearPoints(Charts chart);
+    void addPoints(Charts chart, QVector<Point> points);
+    void clearPoints(Charts chart);
 
     void stopTheTest();
-    void ShowDots(bool visible);
-    void EnableSetTask(bool enable);
-    void DublSeries();
-    void ReleaseBlock();
+    void showDots(bool visible);
+    void enableSetTask(bool enable);
+    void dublSeries();
+    void releaseBlock();
 
-    void MainTestFinished();
+    void mainTestFinished();
     void getParameters_mainTest(MainTestSettings::TestParameters &parameters);
     void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
     void getParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
 
-    void Question(QString &title, QString &text, bool &result);
-    void SetStepResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
-    void SetButtonsDOChecked(quint8 status);
-    void SetCheckboxDIChecked(quint8 status);
+    void question(QString &title, QString &text, bool &result);
 
     void testFinished();
 
-    void TotalTestTimeMs(quint64 totalMs);
+    void totalTestTimeMs(quint64 totalMs);
 
 private:
-    Registry *m_registry;
 
-    MPI m_mpi;
-    TelemetryStore m_telemetryStore;
-    bool m_cyclicRunning = false;
-    QTimer *m_diPollTimer = nullptr;
-    quint8 m_lastDI = 0;
-    quint64 m_cyclicStartTs = 0;
-    QTimer *m_timerSensors;
-    QTimer *m_timerDI;
-    quint64 m_startTime;
-    quint64 m_initTime;
-    bool m_testing = false;
-    QEventLoop *m_dacEventloop;
-    bool m_stopSetDac;
-    bool m_waitForButton = false;
-    QVector<bool> m_initDOStates;
-    QVector<bool> m_savedInitDOStates;
 
-    bool m_isInitialized = false;
     SelectTests::PatternType m_patternType;
 
     inline qreal calcPercent(qreal value, bool invert = false) {
@@ -154,14 +137,37 @@ private:
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
     QString seqToString(const QVector<quint16>& seq);
 
+    Registry *m_registry;
+
+    MPI m_mpi;
+    TelemetryStore m_telemetryStore;
+    QTimer *m_diPollTimer = nullptr;
+    quint8 m_lastDI = 0;
+    QTimer *m_timerSensors;
+    QTimer *m_timerDI;
+
+    quint64 m_cyclicStartTs = 0;
+    quint64 m_startTime;
+    quint64 m_initTime;
+    QEventLoop *m_dacEventloop;
+
+    bool m_isInitialized = false;
+    bool m_cyclicRunning = false;
+    bool m_testing = false;
+    bool m_stopSetDac;
+    bool m_waitForButton = false;
+    QVector<bool> m_initDOStates;
+    QVector<bool> m_savedInitDOStates;
+
 private slots:
     void updateSensors();
 
-    void SetDAC(quint16 dac,
+    void setDAC(quint16 dac,
                 quint32 sleep_ms = 0,
                 bool waitForStop = false,
                 bool waitForStart = false);
-    void SetMultipleDO(const QVector<bool>& states);
+    void setMultipleDO(const QVector<bool>& states);
+    void setTimeStart();
 
     void updateCharts_mainTest();
     void updateCharts_strokeTest();
@@ -179,12 +185,11 @@ private slots:
     void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
                                      const CyclicTestsShutoff::TestResults& shutoffResults);
 
-    void SetTimeStart();
 
 public slots:
     void initialization();
 
-    void SetInitDOStates(const QVector<bool> &states);
+    void setInitDOStates(const QVector<bool> &states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
 
     void addRegression(const QVector<QPointF> &points);
@@ -194,7 +199,7 @@ public slots:
     void receivedPoints_stepTest(QVector<QVector<QPointF>> &points);
     void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points);
 
-    void SetDAC_real(qreal value);
+    void setDAC_real(qreal value);
 
     void runningMainTest();
     void runningStrokeTest();
@@ -206,7 +211,6 @@ public slots:
 
     void endTest();
     void terminateTest();
-
 
     void button_set_position();
     void button_DO(quint8 DO_num, bool state);
