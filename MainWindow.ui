@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1980</width>
-    <height>1080</height>
+    <height>1099</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -33,11 +33,12 @@
       </property>
       <property name="font">
        <font>
+        <family>Roboto</family>
         <pointsize>12</pointsize>
        </font>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -46,306 +47,406 @@
        <layout class="QHBoxLayout" name="horizontalLayout_37">
         <item>
          <widget class="QGroupBox" name="groupBox_signalStrength_task">
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Roboto</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
           <property name="title">
            <string>Задание</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_signalStrength_task">
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_signalStrength">
+              <layout class="QHBoxLayout" name="horizontalLayout_21">
                <item>
-                <widget class="QLabel" name="label_signalStrength_21mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
+                <widget class="QWidget" name="widget_3" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>115</width>
+                   <height>0</height>
+                  </size>
                  </property>
-                 <property name="text">
-                  <string>21 мА</string>
-                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_18">
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_21mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>21 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_20mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>100% – 20 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_19mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>19 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_18mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>18 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_17mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>17 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_16mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>16 мА – 75%</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_15mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>15 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_14mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>14 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_13mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>13 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_12mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>12 мА – 50%</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_11mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>11 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_10mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>10 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_9mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>9 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_8mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>8 мА – 25%</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_7mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>7 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_6mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>6 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_5mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>5 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_4mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>4 мА – 0%</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_signalStrength_3mA">
+                    <property name="font">
+                     <font>
+                      <family>Roboto</family>
+                      <pointsize>12</pointsize>
+                      <bold>false</bold>
+                      <stylestrategy>PreferDefault</stylestrategy>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>3 мА</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_signalStrength_20mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
+                <widget class="QSlider" name="verticalSlider_task">
+                 <property name="minimum">
+                  <number>3000</number>
                  </property>
-                 <property name="text">
-                  <string>20 мА - 100%</string>
+                 <property name="maximum">
+                  <number>21000</number>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_19mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
+                 <property name="singleStep">
+                  <number>10</number>
                  </property>
-                 <property name="text">
-                  <string>19 мА</string>
+                 <property name="pageStep">
+                  <number>100</number>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_18mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
-                 <property name="text">
-                  <string>18 мА</string>
+                 <property name="tickPosition">
+                  <enum>QSlider::TickPosition::TicksAbove</enum>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_17mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>17 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_16mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>16 мА - 75%</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_15mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>15 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_14mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>14 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_13mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>13 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_12mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>12 мА - 50%</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_11mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>11 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_10mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>10 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_9mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>9 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_8mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>8 мА - 25%</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_7mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>7 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_6mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>6 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_5mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>5 мА</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_4mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>4 мА - 0%</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_signalStrength_3mA">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <bold>false</bold>
-                   <stylestrategy>PreferDefault</stylestrategy>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>3 мА</string>
+                 <property name="tickInterval">
+                  <number>1000</number>
                  </property>
                 </widget>
                </item>
               </layout>
-             </item>
-             <item>
-              <widget class="QSlider" name="verticalSlider_task">
-               <property name="minimum">
-                <number>3000</number>
-               </property>
-               <property name="maximum">
-                <number>21000</number>
-               </property>
-               <property name="singleStep">
-                <number>10</number>
-               </property>
-               <property name="pageStep">
-                <number>100</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="tickPosition">
-                <enum>QSlider::TickPosition::TicksAbove</enum>
-               </property>
-               <property name="tickInterval">
-                <number>1000</number>
-               </property>
-              </widget>
              </item>
             </layout>
            </item>
@@ -359,6 +460,7 @@
              </property>
              <property name="font">
               <font>
+               <family>Roboto</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -393,6 +495,12 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>Roboto</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
           <property name="title">
            <string>Датчики</string>
           </property>
@@ -401,6 +509,7 @@
             <widget class="QGroupBox" name="groupBox_linearMotionSensor">
              <property name="font">
               <font>
+               <family>Roboto</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -441,6 +550,7 @@
             <widget class="QGroupBox" name="groupBox_pressureSensor_1">
              <property name="font">
               <font>
+               <family>Roboto</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -468,6 +578,7 @@
             <widget class="QGroupBox" name="groupBox_pressureSensor_2">
              <property name="font">
               <font>
+               <family>Roboto</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -495,6 +606,7 @@
             <widget class="QGroupBox" name="groupBox_pressureSensor_3">
              <property name="font">
               <font>
+               <family>Roboto</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -522,6 +634,7 @@
             <widget class="QGroupBox" name="groupBox_feedback_4_20mA">
              <property name="font">
               <font>
+               <family>Roboto</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -577,6 +690,7 @@
                 </property>
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -604,6 +718,7 @@
                 </property>
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -631,6 +746,7 @@
                 </property>
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -658,6 +774,7 @@
                 </property>
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -685,6 +802,7 @@
                 </property>
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -709,6 +827,7 @@
                 </property>
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -848,6 +967,12 @@
             <height>0</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>Roboto</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
           <property name="title">
            <string>Инициализация</string>
           </property>
@@ -858,6 +983,7 @@
               <widget class="QLabel" name="label_deviceStatus">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -895,6 +1021,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -920,6 +1047,7 @@
               <widget class="QLabel" name="label_deviceInit">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -957,6 +1085,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -979,6 +1108,7 @@
               <widget class="QLabel" name="label_connectedSensors">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1016,6 +1146,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1038,6 +1169,7 @@
               <widget class="QLabel" name="label_startingPosition">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1075,6 +1207,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1097,6 +1230,7 @@
               <widget class="QLabel" name="label_finalPosition">
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1134,6 +1268,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>11</pointsize>
                 </font>
                </property>
@@ -1165,6 +1300,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1189,6 +1325,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1220,6 +1357,7 @@
                </property>
                <property name="font">
                 <font>
+                 <family>Roboto</family>
                  <pointsize>12</pointsize>
                 </font>
                </property>
@@ -1354,7 +1492,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -1629,6 +1767,7 @@
                <widget class="QGroupBox" name="groupBox_valveFriction">
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -1806,6 +1945,7 @@
                <widget class="QGroupBox" name="groupBox_dynamicError">
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -1943,6 +2083,7 @@
                <widget class="QGroupBox" name="groupBox_valveParameters">
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -2231,6 +2372,7 @@
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2265,6 +2407,7 @@
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2293,6 +2436,7 @@
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2419,6 +2563,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2453,6 +2598,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2484,6 +2630,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2613,6 +2760,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2647,6 +2795,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2681,6 +2830,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2807,6 +2957,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2841,6 +2992,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2872,6 +3024,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
+                         <family>Roboto</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -3095,7 +3248,7 @@ Border-radius: 10px;
         <item>
          <widget class="QTabWidget" name="tabWidget_optionalTests">
           <property name="currentIndex">
-           <number>1</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -3307,7 +3460,7 @@ Border-radius: 10px;
            <number>20</number>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_23">
+           <layout class="QVBoxLayout" name="verticalLayout_sequence">
             <property name="spacing">
              <number>10</number>
             </property>
@@ -3315,6 +3468,7 @@ Border-radius: 10px;
              <widget class="QLabel" name="label_cyclicTest_sequence">
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -3333,6 +3487,7 @@ Border-radius: 10px;
               </property>
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                 <bold>false</bold>
                </font>
@@ -3351,7 +3506,7 @@ Border-radius: 10px;
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_20">
+           <layout class="QVBoxLayout" name="verticalLayout_totalTime">
             <property name="spacing">
              <number>10</number>
             </property>
@@ -3359,6 +3514,7 @@ Border-radius: 10px;
              <widget class="QLabel" name="label_cyclicTest_totalTime">
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -3377,6 +3533,7 @@ Border-radius: 10px;
               </property>
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                 <bold>false</bold>
                </font>
@@ -3395,7 +3552,7 @@ Border-radius: 10px;
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_18">
+           <layout class="QVBoxLayout" name="verticalLayout_specifiedCycles">
             <property name="spacing">
              <number>10</number>
             </property>
@@ -3403,6 +3560,7 @@ Border-radius: 10px;
              <widget class="QLabel" name="label_cyclicTest_specifiedCycles">
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -3421,6 +3579,7 @@ Border-radius: 10px;
               </property>
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                 <bold>false</bold>
                </font>
@@ -3439,7 +3598,7 @@ Border-radius: 10px;
            </layout>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_19">
+           <layout class="QVBoxLayout" name="verticalLayout_completedCycles">
             <property name="spacing">
              <number>10</number>
             </property>
@@ -3447,6 +3606,7 @@ Border-radius: 10px;
              <widget class="QLabel" name="label_cyclicTest_completedCycles">
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -3465,6 +3625,7 @@ Border-radius: 10px;
               </property>
               <property name="font">
                <font>
+                <family>Roboto</family>
                 <pointsize>12</pointsize>
                 <bold>false</bold>
                </font>
@@ -3525,7 +3686,7 @@ Border-radius: 10px;
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -3544,6 +3705,7 @@ Border-radius: 10px;
                 </property>
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4515,7 +4677,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_frictionPercent">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4528,7 +4691,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_validValue">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4541,7 +4705,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_strokeTest_backwardTime">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="text">
@@ -4553,7 +4718,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_rangePressure">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4567,7 +4733,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_rangeReal_rangeRecomend">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4633,7 +4800,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_strokeReal_strokeRecomend">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4668,7 +4836,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_dinamicIpReal_dinamicIpRecomend">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4682,7 +4851,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_measurementParameter">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4695,7 +4865,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_dinamicReal_dinamicRecomend">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4709,7 +4880,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_friction">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4729,7 +4901,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_recommendedValue">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4742,7 +4915,8 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_strokeTest_forwardTime">
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <family>Roboto</family>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="text">
@@ -4768,6 +4942,7 @@ Border-radius: 10px;
                <spacer name="horizontalSpacer_19">
                 <property name="font">
                  <font>
+                  <family>Roboto</family>
                   <pointsize>10</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4821,7 +4996,8 @@ Border-radius: 10px;
            <widget class="QPushButton" name="pushButton_report_generate">
             <property name="font">
              <font>
-              <pointsize>11</pointsize>
+              <family>Roboto</family>
+              <pointsize>12</pointsize>
               <stylestrategy>PreferDefault</stylestrategy>
              </font>
             </property>
@@ -4864,8 +5040,6 @@ Border-radius: 10px;
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>verticalSlider_task</tabstop>
-  <tabstop>doubleSpinBox_task</tabstop>
   <tabstop>lineEdit_linearSensor</tabstop>
   <tabstop>lineEdit_linearSensorPercent</tabstop>
   <tabstop>lineEdit_pressureSensor_1</tabstop>
