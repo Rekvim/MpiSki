@@ -26,7 +26,7 @@ ObjectWindow::ObjectWindow(QWidget *parent)
 void ObjectWindow::LoadFromReg(Registry *registry)
 {
     m_registry = registry;
-    m_objectInfo = registry->GetObjectInfo();
+    m_objectInfo = registry->getObjectInfo();
     ui->lineEdit_object->setText(m_objectInfo->object);
     ui->lineEdit_manufactory->setText(m_objectInfo->manufactory);
     ui->lineEdit_department->setText(m_objectInfo->department);

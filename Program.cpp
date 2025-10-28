@@ -144,7 +144,7 @@ void Program::updateSensors()
 
     QVector<Point> points;
     qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
-                                m_registry->GetValveInfo()->safePosition != 0);
+                                m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_initTime;
 
@@ -204,7 +204,7 @@ void Program::initialization()
         return;
     }
 
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ValveInfo *valveInfo = m_registry->getValveInfo();
     bool normalClosed = (valveInfo->safePosition == 0);
 
     // Измерение начального и конечного положения соленоида
@@ -398,7 +398,7 @@ void Program::measureEndPositionShutoff(bool normalClosed)
 
 void Program::calculateAndApplyCoefficients()
 {
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ValveInfo *valveInfo = m_registry->getValveInfo();
     qreal coeff = 1.0;
 
     if (valveInfo->strokeMovement != 0) {
@@ -545,7 +545,7 @@ void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
 
 void Program::results_mainTest(const MainTest::TestResults &results)
 {
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ValveInfo *valveInfo = m_registry->getValveInfo();
 
     qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
 
@@ -576,7 +576,7 @@ void Program::updateCharts_mainTest()
     QVector<Point> points;
 
     qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
-                                m_registry->GetValveInfo()->safePosition != 0);
+                                m_registry->getValveInfo()->safePosition != 0);
 
     qreal task = m_mpi[0]->GetValueFromPercent(percent);
     qreal X = m_mpi.GetDAC()->GetValue();
@@ -598,7 +598,7 @@ void Program::addFriction(const QVector<QPointF> &points)
 {
     QVector<Point> chartPoints;
 
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ValveInfo *valveInfo = m_registry->getValveInfo();
 
     qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
 
@@ -683,7 +683,7 @@ void Program::updateCharts_strokeTest()
     QVector<Point> points;
 
     qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
-                                m_registry->GetValveInfo()->safePosition != 0);
+                                m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
@@ -698,7 +698,7 @@ void Program::updateCharts_CyclicTest(Charts chart)
     QVector<Point> points;
 
     qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
-                                m_registry->GetValveInfo()->safePosition != 0);
+                                m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
@@ -757,7 +757,7 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
 {
 
     QVector<quint16> rawReg = makeRawValues(p.regSeqValues,
-                                            m_registry->GetValveInfo()->safePosition != 0);
+                                            m_registry->getValveInfo()->safePosition != 0);
 
     CyclicTestsRegulatory::Task task;
     task.delayMsecs = p.regulatory_delayMs;
@@ -872,7 +872,7 @@ void Program::setMultipleDO(const QVector<bool>& states)
 void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
 {
     QVector<quint16> rawOff = makeRawValues(p.offSeqValues,
-                                            m_registry->GetValveInfo()->safePosition != 0);
+                                            m_registry->getValveInfo()->safePosition != 0);
 
     CyclicTestsShutoff::Task task;
     task.delayMsecs = p.shutoff_delayMs;
@@ -1005,7 +1005,7 @@ void Program::runningCyclicTest()
         case parameters.TestParameters::Regulatory: {
             runningCyclicRegulatory(parameters);
             const auto raw = makeRawValues(parameters.regSeqValues,
-                                           m_registry->GetValveInfo()->safePosition != 0);
+                                           m_registry->getValveInfo()->safePosition != 0);
             quint64 steps = static_cast<quint64>(raw.size()) * parameters.regulatory_numCycles;
 
             quint64 totalMs = steps * (parameters.regulatory_delayMs
@@ -1024,7 +1024,7 @@ void Program::runningCyclicTest()
             runningCyclicShutoff(parameters);
 
             const auto raw = makeRawValues(parameters.offSeqValues,
-                                           m_registry->GetValveInfo()->safePosition != 0);
+                                           m_registry->getValveInfo()->safePosition != 0);
             quint64 steps = static_cast<quint64>(raw.size()) * parameters.shutoff_numCycles;
 
             quint64 totalMs = steps * (parameters.shutoff_delayMs
@@ -1043,14 +1043,14 @@ void Program::runningCyclicTest()
             runningCyclicCombined(parameters);
 
             const auto regRaw = makeRawValues(parameters.regSeqValues,
-                                           m_registry->GetValveInfo()->safePosition != 0);
+                                           m_registry->getValveInfo()->safePosition != 0);
             quint64 regSteps = static_cast<quint64>(regRaw.size()) * parameters.regulatory_numCycles;
             quint64 regMs = regSteps * (parameters.regulatory_delayMs
                                      + parameters.regulatory_holdMs)
                                      + parameters.regulatory_delayMs;
 
             const auto offRaw = makeRawValues(parameters.offSeqValues,
-                                           m_registry->GetValveInfo()->safePosition != 0);
+                                           m_registry->getValveInfo()->safePosition != 0);
             quint64 offSteps = static_cast<quint64>(offRaw.size()) * parameters.shutoff_numCycles;
             quint64 offMs = offSteps * (parameters.shutoff_delayMs
                                        + parameters.shutoff_holdMs)
@@ -1128,7 +1128,7 @@ void Program::runningOptionalTest(quint8 testNum)
 
         task.delay = parameters.delay;
 
-        ValveInfo *valveInfo = m_registry->GetValveInfo();
+        ValveInfo *valveInfo = m_registry->getValveInfo();
 
         bool normalOpen = (valveInfo->safePosition != 0);
 
@@ -1181,7 +1181,7 @@ void Program::runningOptionalTest(quint8 testNum)
 
         task.delay = parameters.delay;
 
-        ValveInfo *valveInfo = m_registry->GetValveInfo();
+        ValveInfo *valveInfo = m_registry->getValveInfo();
 
         bool normalOpen = (valveInfo->safePosition != 0);
 
@@ -1231,7 +1231,7 @@ void Program::runningOptionalTest(quint8 testNum)
         emit totalTestTimeMs(totalMs);
 
         task.delay = parameters.delay;
-        ValveInfo *valveInfo = m_registry->GetValveInfo();
+        ValveInfo *valveInfo = m_registry->getValveInfo();
         bool normalOpen = (valveInfo->safePosition != 0);
 
         qreal startValue = 4.0;
@@ -1352,7 +1352,7 @@ void Program::updateCharts_optionTest(Charts chart)
     QVector<Point> points;
 
     qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
-                                m_registry->GetValveInfo()->safePosition != 0);
+                                m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
