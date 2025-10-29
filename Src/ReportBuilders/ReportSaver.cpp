@@ -100,8 +100,8 @@ bool ReportSaver::SaveReport(const Report &report, const QString &templatePath)
 
 void ReportSaver::CreateDir()
 {
-    ObjectInfo *objectInfo = m_registry->GetObjectInfo();
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ObjectInfo *objectInfo = m_registry->getObjectInfo();
+    ValveInfo *valveInfo = m_registry->getValveInfo();
 
     QString path = objectInfo->object + "/" + objectInfo->manufactory + "/"
                    + objectInfo->department + "/" + valveInfo->positionNumber;

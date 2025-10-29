@@ -658,9 +658,9 @@ void MainWindow::setRegistry(Registry *registry)
 {
     m_registry = registry;
 
-    ObjectInfo *objectInfo = m_registry->GetObjectInfo();
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
-    OtherParameters *otherParameters = m_registry->GetOtherParameters();
+    ObjectInfo *objectInfo = m_registry->getObjectInfo();
+    ValveInfo *valveInfo = m_registry->getValveInfo();
+    OtherParameters *otherParameters = m_registry->getOtherParameters();
 
     ui->lineEdit_date->setText(otherParameters->date);
 
@@ -1226,7 +1226,7 @@ void MainWindow::setCheckboxDIChecked(quint8 status)
 
 void MainWindow::initCharts()
 {
-    ValveInfo *valveInfo = m_registry->GetValveInfo();
+    ValveInfo *valveInfo = m_registry->getValveInfo();
     bool rotate = (valveInfo->strokeMovement != 0);
 
     m_charts[Charts::Task] = ui->Chart_task;
@@ -1495,9 +1495,9 @@ void MainWindow::on_pushButton_report_generate_clicked()
     ReportSaver::Report report;
     reportBuilder->buildReport(report,
                                m_telemetryStore,
-                               *m_registry->GetObjectInfo(),
-                               *m_registry->GetValveInfo(),
-                               *m_registry->GetOtherParameters(),
+                               *m_registry->getObjectInfo(),
+                               *m_registry->getValveInfo(),
+                               *m_registry->getOtherParameters(),
                                m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
 
     qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();

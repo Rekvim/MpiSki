@@ -102,13 +102,13 @@ void ValveWindow::onPositionerTypeChanged(quint8 index)
 void ValveWindow::setRegistry(Registry *registry)
 {
     m_registry = registry;
-    m_valveInfo = m_registry->GetValveInfo();
+    m_valveInfo = m_registry->getValveInfo();
 
     ui->comboBox_positionNumber->clear();
-    ui->comboBox_positionNumber->addItems(m_registry->GetPositions());
+    ui->comboBox_positionNumber->addItems(m_registry->getPositions());
     ui->comboBox_positionNumber->addItem(m_manualInput);
 
-    QString lastPosition = m_registry->GetLastPosition();
+    QString lastPosition = m_registry->getLastPosition();
     if (lastPosition == "") {
         ui->comboBox_positionNumber->setCurrentIndex(ui->comboBox_positionNumber->count() - 1);
     } else {
@@ -125,7 +125,7 @@ void ValveWindow::setRegistry(Registry *registry)
 void ValveWindow::saveValveInfo()
 {
     if (ui->comboBox_positionNumber->currentText() == m_manualInput)
-        m_valveInfo = m_registry->GetValveInfo(ui->lineEdit_positionNumber->text());
+        m_valveInfo = m_registry->getValveInfo(ui->lineEdit_positionNumber->text());
 
     m_valveInfo->manufacturer = ui->lineEdit_manufacturer->text();
     m_valveInfo->valveModel = ui->lineEdit_valveModel->text();
@@ -159,7 +159,7 @@ void ValveWindow::saveValveInfo()
     m_valveInfo->diameterPulley = ui->lineEdit_pulleyDiameter->text().toDouble();
     m_valveInfo->materialStuffingBoxSeal = ui->comboBox_materialStuffingBoxSeal->currentText();
 
-    m_registry->SaveValveInfo();
+    m_registry->saveValveInfo();
 }
 
 void ValveWindow::positionChanged(const QString &position)
@@ -169,7 +169,7 @@ void ValveWindow::positionChanged(const QString &position)
         return;
     }
 
-    m_valveInfo = m_registry->GetValveInfo(position);
+    m_valveInfo = m_registry->getValveInfo(position);
 
     ui->lineEdit_positionNumber->setText(position);
     ui->lineEdit_positionNumber->setEnabled(false);
@@ -247,7 +247,7 @@ void ValveWindow::on_pushButton_netWindow_clicked()
         }
     }
 
-    OtherParameters *otherParameters = m_registry->GetOtherParameters();
+    OtherParameters *otherParameters = m_registry->getOtherParameters();
     otherParameters->safePosition = ui->comboBox_safePosition->currentText();
     otherParameters->strokeMovement = ui->comboBox_strokeMovement->currentText();
     saveValveInfo();

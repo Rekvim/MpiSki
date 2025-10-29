@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -497,7 +497,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Roboto</family>
+            <family>Segoe UI</family>
             <pointsize>12</pointsize>
            </font>
           </property>
@@ -509,7 +509,7 @@
             <widget class="QGroupBox" name="groupBox_linearMotionSensor">
              <property name="font">
               <font>
-               <family>Roboto</family>
+               <family>Segoe UI</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -550,7 +550,7 @@
             <widget class="QGroupBox" name="groupBox_pressureSensor_1">
              <property name="font">
               <font>
-               <family>Roboto</family>
+               <family>Segoe UI</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -578,7 +578,7 @@
             <widget class="QGroupBox" name="groupBox_pressureSensor_2">
              <property name="font">
               <font>
-               <family>Roboto</family>
+               <family>Segoe UI</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -606,7 +606,7 @@
             <widget class="QGroupBox" name="groupBox_pressureSensor_3">
              <property name="font">
               <font>
-               <family>Roboto</family>
+               <family>Segoe UI</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -634,7 +634,7 @@
             <widget class="QGroupBox" name="groupBox_feedback_4_20mA">
              <property name="font">
               <font>
-               <family>Roboto</family>
+               <family>Segoe UI</family>
                <pointsize>12</pointsize>
               </font>
              </property>
@@ -1468,7 +1468,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>2</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -1744,7 +1744,7 @@
                <widget class="QGroupBox" name="groupBox_valveFriction">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -1922,7 +1922,7 @@
                <widget class="QGroupBox" name="groupBox_dynamicError">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -2060,7 +2060,7 @@
                <widget class="QGroupBox" name="groupBox_valveParameters">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -2349,7 +2349,7 @@
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2384,7 +2384,7 @@
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2413,7 +2413,7 @@
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2540,7 +2540,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2575,7 +2575,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2607,7 +2607,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2737,7 +2737,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2772,7 +2772,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2807,7 +2807,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2934,7 +2934,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -2969,7 +2969,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -3001,7 +3001,7 @@ Border-radius: 10px;
                        </property>
                        <property name="font">
                         <font>
-                         <family>Roboto</family>
+                         <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
                        </property>
@@ -3445,7 +3445,7 @@ Border-radius: 10px;
              <widget class="QLabel" name="label_cyclicTest_sequence">
               <property name="font">
                <font>
-                <family>Roboto</family>
+                <family>Segoe UI</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -3464,7 +3464,7 @@ Border-radius: 10px;
               </property>
               <property name="font">
                <font>
-                <family>Roboto</family>
+                <family>Segoe UI</family>
                 <pointsize>12</pointsize>
                 <bold>false</bold>
                </font>
@@ -3491,7 +3491,7 @@ Border-radius: 10px;
              <widget class="QLabel" name="label_cyclicTest_totalTime">
               <property name="font">
                <font>
-                <family>Roboto</family>
+                <family>Segoe UI</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -3510,7 +3510,7 @@ Border-radius: 10px;
               </property>
               <property name="font">
                <font>
-                <family>Roboto</family>
+                <family>Segoe UI</family>
                 <pointsize>12</pointsize>
                 <bold>false</bold>
                </font>
@@ -3537,7 +3537,7 @@ Border-radius: 10px;
              <widget class="QLabel" name="label_cyclicTest_specifiedCycles">
               <property name="font">
                <font>
-                <family>Roboto</family>
+                <family>Segoe UI</family>
                 <pointsize>12</pointsize>
                </font>
               </property>
@@ -3556,7 +3556,7 @@ Border-radius: 10px;
               </property>
               <property name="font">
                <font>
-                <family>Roboto</family>
+                <family>Segoe UI</family>
                 <pointsize>12</pointsize>
                 <bold>false</bold>
                </font>
@@ -3682,7 +3682,7 @@ Border-radius: 10px;
                 </property>
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -3931,6 +3931,13 @@ Border-radius: 10px;
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Segoe UI</family>
+                  <pointsize>12</pointsize>
+                  <stylestrategy>PreferDefault</stylestrategy>
+                 </font>
                 </property>
                 <property name="title">
                  <string>Спецификация на клапан</string>
@@ -4654,7 +4661,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_frictionPercent">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4668,7 +4675,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_validValue">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4682,7 +4689,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_strokeTest_backwardTime">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
@@ -4695,7 +4702,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_rangePressure">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4710,7 +4717,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_rangeReal_rangeRecomend">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4777,7 +4784,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_strokeReal_strokeRecomend">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4813,7 +4820,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_dinamicIpReal_dinamicIpRecomend">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4828,7 +4835,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_measurementParameter">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4842,7 +4849,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_dinamicReal_dinamicRecomend">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4857,7 +4864,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_friction">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4878,7 +4885,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_recommendedValue">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
@@ -4892,7 +4899,7 @@ Border-radius: 10px;
                <widget class="QLabel" name="label_result_strokeTest_forwardTime">
                 <property name="font">
                  <font>
-                  <family>Roboto</family>
+                  <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                  </font>
                 </property>
