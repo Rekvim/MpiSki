@@ -4,143 +4,106 @@ UartReader::UartReader(QObject *parent)
     : QObject(parent)
 {
     m_uart = new Uart(this);
-    m_adcTimer = new QTimer(this);
+    m_adcPollTimer = new QTimer(this);
 
-    connect(m_uart, &Uart::Connected,
-            this, &UartReader::Connected,
+    connect(m_uart, &Uart::portOpened,
+            this, &UartReader::onPortOpened,
             Qt::DirectConnection);
 
-    connect(m_uart, &Uart::Disconnected,
-            this, &UartReader::Disconnected,
+    connect(m_uart, &Uart::portClosed,
+            this, &UartReader::onPortClosed,
             Qt::DirectConnection);
 
-    connect(m_uart, &Uart::Error,
-            this, &UartReader::Error,
+    connect(m_uart, &Uart::errorOccurred,
+            this, &UartReader::onPortError,
             Qt::DirectConnection);
 
-    connect(this, &UartReader::Connect,
-            m_uart, &Uart::Connect,
+    connect(this, &UartReader::openPort,
+            m_uart, &Uart::open,
             Qt::DirectConnection);
 
-    connect(this, &UartReader::Disconnect,
-            m_uart, &Uart::Disconnect,
+    connect(this, &UartReader::closePort,
+            m_uart, &Uart::close,
             Qt::DirectConnection);
 
-    connect(this, &UartReader::Write_Read,
-            m_uart, &Uart::Write_Read,
+    connect(this, &UartReader::writeAndRead,
+            m_uart, &Uart::writeAndRead,
             Qt::DirectConnection);
 
-    connect(m_adcTimer, &QTimer::timeout,
-            this, &UartReader::SendADC);
+    connect(m_adcPollTimer, &QTimer::timeout,
+            this, &UartReader::onAdcPollTimer);
 }
 
 QByteArray UartReader::SendMessage(const UartMessage &message)
 {
-    // emit errorOccured(
-    //     QString("%1 SendMessage: command=0x%2")
-    //         .arg(m_portName)
-    //         .arg(static_cast<quint8>(message.GetCommand()), 2, 16, QChar('0'))
-    //     );
-
     for (quint8 attempt = 0; attempt < m_maxAttempts; ++attempt) {
         QByteArray readData;
-        emit Write_Read(message.ToByteArray(), readData);
+        emit writeAndRead(message.ToByteArray(), readData);
 
         if (readData.isEmpty()) {
-            // emit errorOccured(
-            //     QString("%1 Empty response on attempt %2 for command 0x%3")
-            //         .arg(m_portName)
-            //         .arg(attempt + 1)
-            //         .arg(static_cast<quint8>(message.GetCommand()), 2, 16, QChar('0'))
-            //     );
         } else {
             UartMessage response(readData);
-            //quint8 sentCmd = static_cast<quint8>(message.GetCommand());
-            // quint8 recvCmd = static_cast<quint8>(response.GetCommand());
 
             if (response.CheckCrc()
                 && (response.GetCommand() == Command::OK
                     || response.GetCommand() == message.GetCommand()))
             {
-                // emit errorOccured(
-                //     QString("%1 Received valid response for command 0x%2 on attempt %3")
-                //         .arg(m_portName)
-                //         .arg(sentCmd, 2, 16, QChar('0'))
-                //         .arg(attempt + 1)
-                //     );
                 return response.GetData();
-            } else {
-                // CRC не прошёл или неверный код
-                // emit errorOccured(
-                //     QString("%1 Bad CRC or wrong cmd on attempt %2: expected 0x%3 got 0x%4")
-                //         .arg(m_portName)
-                //         .arg(attempt + 1)
-                //         .arg(sentCmd, 2, 16, QChar('0'))
-                //         .arg(recvCmd, 2, 16, QChar('0'))
-                //     );
             }
         }
     }
-
-    // Ни одна попытка не удалась
-    // emit errorOccured(
-    //     QString("%1 SendMessage failed after %2 attempts for command 0x%3")
-    //         .arg(m_portName)
-    //         .arg(m_maxAttempts)
-    //         .arg(static_cast<quint8>(message.GetCommand()), 2, 16, QChar('0'))
-    //     );
     return QByteArray();
 }
 
-void UartReader::ConnectToUart()
+void UartReader::autoConnect()
 {
     for (const QSerialPortInfo &port : QSerialPortInfo::availablePorts()) {
-        emit Connect(port.portName());
+        emit openPort(port.portName());
         QByteArray version = SendMessage(UartMessage(Command::GetVersion));
         if (!version.isEmpty()) {
             m_version = version.at(0);
             return;
         }
-        emit Disconnect();
+        emit closePort();
     }
 }
-void UartReader::GetVersion(quint8 &version)
+void UartReader::readVersion(quint8 &version)
 {
     if (!m_isConnected) return;
     version = m_version;
 }
 
-void UartReader::SetDAC(quint16 value)
+void UartReader::setDacValue(quint16 value)
 {
     if (!m_isConnected) return;
     SendMessage(UartMessage(Command::DAC, value));
 }
 
-void UartReader::SetChannels(quint8 channels)
+void UartReader::setAdcChannels(quint8 channels)
 {
     if (!m_isConnected) return;
     SendMessage(UartMessage(Command::SetChADC, channels));
 }
 
-void UartReader::SetTimer(quint16 timer)
+void UartReader::setAdcTimerInterval(quint16 timer)
 {
     if (!m_isConnected) return;
     SendMessage(UartMessage(Command::TimerArr, timer));
 }
 
-void UartReader::TurnADC_On()
+void UartReader::enableAdc()
 {
     if (!m_isConnected) return;
     SendMessage(UartMessage(Command::ADC_OnOff, static_cast<quint8>(1)));
 }
 
-void UartReader::TurnADC_Off()
+void UartReader::disableAdc()
 {
     if (!m_isConnected) return;
     SendMessage(UartMessage(Command::ADC_OnOff, static_cast<quint8>(0)));
 }
 
-void UartReader::GetADC(QVector<quint16> &adc)
+void UartReader::readAdcValues(QVector<quint16> &adc)
 {
     if (!m_isConnected) return;
     QByteArray raw = SendMessage(UartMessage(Command::ADC));
@@ -152,60 +115,60 @@ void UartReader::GetADC(QVector<quint16> &adc)
     }
 }
 
-void UartReader::ADC_Timer(bool enable, quint16 interval)
+void UartReader::setAdcPolling(bool enable, quint16 interval)
 {
     if (m_isConnected && enable)
-        m_adcTimer->start(interval);
+        m_adcPollTimer->start(interval);
     else
-        m_adcTimer->stop();
+        m_adcPollTimer->stop();
 }
 
-void UartReader::SetDO(quint8 DO_num, bool state)
+void UartReader::setDigitalOutput(quint8 outputNumber, bool state)
 {
-    if (!m_isConnected || DO_num > 7) return;
-    quint8 value = (state ? 0x08 : 0) | DO_num;
+    if (!m_isConnected || outputNumber > 7) return;
+    quint8 value = (state ? 0x08 : 0) | outputNumber;
     SendMessage(UartMessage(Command::SetDO, value));
 }
 
-void UartReader::GetDO(quint8 &DO)
+void UartReader::readDigitalOutputs(quint8 &digitalOutputs)
 {
     if (!m_isConnected) return;
     QByteArray raw = SendMessage(UartMessage(Command::GetDO));
     if (!raw.isEmpty())
-        DO = static_cast<quint8>(raw.at(0));
+        digitalOutputs = static_cast<quint8>(raw.at(0));
 }
 
-void UartReader::GetDI(quint8 &DI)
+void UartReader::readDigitalInputs(quint8 &digitalInputs)
 {
     if (!m_isConnected) return;
     QByteArray raw = SendMessage(UartMessage(Command::GetDI));
     if (!raw.isEmpty())
-        DI = static_cast<quint8>(raw.at(0));
+        digitalInputs = static_cast<quint8>(raw.at(0));
 }
 
-void UartReader::Connected(const QString &portName)
+void UartReader::onPortOpened(const QString &portName)
 {
     m_portName = portName;
     m_isConnected = true;
-    emit UartConnected(portName);
+    emit portOpened(portName);
 }
 
-void UartReader::Disconnected()
+void UartReader::onPortClosed()
 {
     m_isConnected = false;
-    m_adcTimer->stop();
-    emit UartDisconnected();
+    m_adcPollTimer->stop();
+    emit portClosed();
 }
 
-void UartReader::Error(QSerialPort::SerialPortError err)
+void UartReader::onPortError(QSerialPort::SerialPortError error)
 {
-    if (err != QSerialPort::NoError && err != QSerialPort::TimeoutError)
-        emit UartError(err);
+    if (error != QSerialPort::NoError && error != QSerialPort::TimeoutError)
+        emit portError(error);
 }
 
-void UartReader::SendADC()
+void UartReader::onAdcPollTimer()
 {
     QVector<quint16> data;
-    GetADC(data);
-    emit ADC(data);
+    readAdcValues(data);
+    emit adcDataReady(data);
 }

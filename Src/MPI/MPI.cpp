@@ -11,65 +11,65 @@ MPI::MPI(QObject *parent)
     m_uartThread->start();
 
     connect(this, &MPI::ConnectToUart,
-            m_uartReader, &UartReader::ConnectToUart,
+            m_uartReader, &UartReader::autoConnect,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::GetVersion,
-            m_uartReader, &UartReader::GetVersion,
+            m_uartReader, &UartReader::readVersion,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::SetDAC,
-            m_uartReader, &UartReader::SetDAC,
+            m_uartReader, &UartReader::setDacValue,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::SetChannels,
-            m_uartReader, &UartReader::SetChannels,
+            m_uartReader, &UartReader::setAdcChannels,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::SetTimer,
-            m_uartReader, &UartReader::SetTimer,
+            m_uartReader, &UartReader::setAdcTimerInterval,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::TurnADC_On,
-            m_uartReader, &UartReader::TurnADC_On,
+            m_uartReader, &UartReader::enableAdc,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::TurnADC_Off,
-            m_uartReader, &UartReader::TurnADC_Off,
+            m_uartReader, &UartReader::disableAdc,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::GetADC,
-            m_uartReader, &UartReader::GetADC,
+            m_uartReader, &UartReader::readAdcValues,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::ADC_Timer,
-            m_uartReader, &UartReader::ADC_Timer,
+            m_uartReader, &UartReader::setAdcPolling,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::SetDO,
-            m_uartReader, &UartReader::SetDO,
+            m_uartReader, &UartReader::setDigitalOutput,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::GetDO,
-            m_uartReader, &UartReader::GetDO,
+            m_uartReader, &UartReader::readDigitalOutputs,
             Qt::BlockingQueuedConnection);
 
     connect(this, &MPI::GetDI,
-            m_uartReader, &UartReader::GetDI,
+            m_uartReader, &UartReader::readDigitalInputs,
             Qt::BlockingQueuedConnection);
 
-    connect(m_uartReader, &UartReader::ADC,
+    connect(m_uartReader, &UartReader::adcDataReady,
             this, &MPI::ADC);
 
-    connect(m_uartReader, &UartReader::UartConnected,
+    connect(m_uartReader, &UartReader::portOpened,
             this, &MPI::UartConnected,
             Qt::DirectConnection);
 
-    connect(m_uartReader, &UartReader::UartDisconnected,
+    connect(m_uartReader, &UartReader::portClosed,
             this, &MPI::UartDisconnected,
             Qt::DirectConnection);
 
-    connect(m_uartReader, &UartReader::UartError,
+    connect(m_uartReader, &UartReader::portError,
             this, &MPI::UartError,
             Qt::DirectConnection);
 

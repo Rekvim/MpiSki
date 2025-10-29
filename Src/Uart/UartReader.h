@@ -17,35 +17,41 @@ private:
     QByteArray SendMessage(const UartMessage &message);
 
 public slots:
-    void ConnectToUart();
-    void GetVersion(quint8 &version);
-    void SetDAC(quint16 value);
-    void SetChannels(quint8 channels);
-    void SetTimer(quint16 timer);
-    void TurnADC_On();
-    void TurnADC_Off();
-    void GetADC(QVector<quint16> &adc);
-    void ADC_Timer(bool enable, quint16 interval = 50);
-    void SetDO(quint8 DO_num, bool state);
-    void GetDO(quint8 &DO);
-    void GetDI(quint8 &DI);
+    void autoConnect();
+    void readVersion(quint8 &version);
+
+    void setDacValue(quint16 value);
+    void setAdcChannels(quint8 channels);
+    void setAdcTimerInterval(quint16 timer);
+
+    void enableAdc();
+    void disableAdc();
+
+    void readAdcValues(QVector<quint16> &adc);
+
+    void setAdcPolling(bool enable, quint16 interval = 50);
+
+    void setDigitalOutput(quint8 outputNumber, bool state);
+    void readDigitalOutputs(quint8 &DO);
+    void readDigitalInputs(quint8 &DI);
+
+
 
 private slots:
-    void Connected(const QString &portName);
-    void Disconnected();
-    void Error(QSerialPort::SerialPortError err);
-    void SendADC();
+    void onPortOpened(const QString &portName);
+    void onPortClosed();
+    void onPortError(QSerialPort::SerialPortError err);
+    void onAdcPollTimer();
 
 signals:
-    void Connect(const QString &portName);
-    void Disconnect();
-    void Write_Read(const QByteArray &data_to_write, QByteArray &read_data);
+    void openPort(const QString &portName);
+    void closePort();
+    void writeAndRead(const QByteArray &data_to_write, QByteArray &read_data);
 
-    void ADC(QVector<quint16> adc);
-    void UartConnected(const QString &portName);
-    void UartDisconnected();
-    void UartError(QSerialPort::SerialPortError err);
-
+    void adcDataReady(QVector<quint16> adc);
+    void portOpened(const QString &portName);
+    void portClosed();
+    void portError(QSerialPort::SerialPortError error);
     void errorOccured(const QString &message);
 
 private:
@@ -54,5 +60,5 @@ private:
     bool m_isConnected = false;
     const quint8 m_maxAttempts = 5;
     quint8 m_version;
-    QTimer *m_adcTimer;
+    QTimer *m_adcPollTimer;
 };

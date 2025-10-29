@@ -10,15 +10,15 @@ ReportSaver::ReportSaver(QObject *parent)
     m_created = false;
 }
 
-void ReportSaver::SetRegistry(Registry *registry)
+void ReportSaver::setRegistry(Registry *registry)
 {
     m_registry = registry;
 }
 
-void ReportSaver::SaveImage(MyChart *chart)
+void ReportSaver::saveImage(MyChart *chart)
 {
     if (!m_created)
-        CreateDir();
+        createDir();
 
     static QMap<QString, quint16> chartNum;
 
@@ -50,15 +50,15 @@ void ReportSaver::SaveImage(MyChart *chart)
     }
 }
 
-QDir ReportSaver::Directory()
+QDir ReportSaver::directory()
 {
     return m_dir.path();
 }
 
-bool ReportSaver::SaveReport(const Report &report, const QString &templatePath)
+bool ReportSaver::saveReport(const Report &report, const QString &templatePath)
 {
     if (!m_created)
-        CreateDir();
+        createDir();
 
     Document xlsx(templatePath);
 
@@ -98,7 +98,7 @@ bool ReportSaver::SaveReport(const Report &report, const QString &templatePath)
     return QFile::exists(m_dir.filePath("report.xlsx"));
 }
 
-void ReportSaver::CreateDir()
+void ReportSaver::createDir()
 {
     ObjectInfo *objectInfo = m_registry->getObjectInfo();
     ValveInfo *valveInfo = m_registry->getValveInfo();

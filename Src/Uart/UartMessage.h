@@ -7,18 +7,21 @@
 static constexpr char startbyte = 0xAA;
 
 enum class Command : quint8 {
-    DAC         = 0xC2,
-    ADC         = 0xE1,
-    SetChADC    = 0x98,
-    ADC_OnOff   = 0x48,
-    GetVersion  = 0x00,
-    TimerArr    = 0x73,
-    SetDO       = 0x41,
-    GetDO       = 0x42,
-    GetDI       = 0x43,
-    OK          = 0x25,
-    WrongCRC    = 0x66,
-    UnknownCode = 0x13
+    DAC = 0xC2, // Установить напряжение ЦАП
+    ADC = 0xE1, // Запросить значение АЦП
+
+    SetChADC = 0x98, // Выбрать канал АЦП
+    ADC_OnOff = 0x48, // Включить/выключить АЦП
+    GetVersion = 0x00, // Запросить версию ПО
+    TimerArr = 0x73, // Настроить таймер
+
+    SetDO = 0x41, // Установить цифровой выход
+    GetDO = 0x42, // Прочитать цифровые выходы
+    GetDI = 0x43, // Прочитать цифровые входы
+
+    OK = 0x25, // Успешное выполнение команды
+    WrongCRC = 0x66, // Ошибка контрольной суммы
+    UnknownCode = 0x13  // Неизвестная команда
 };
 
 class UartMessage

@@ -17,13 +17,13 @@ private:
     QSerialPort *m_serialPort;
 
 public slots:
-    void Connect(const QString &portName);
-    void Disconnect();
-    void Write_Read(const QByteArray &dataToWrite, QByteArray &readData);
+    void open(const QString &portName);
+    void close();
+    void writeAndRead(const QByteArray &dataToWrite, QByteArray &readData);
 signals:
-    void Connected(QString portName);
-    void Disconnected();
-    void Error(QSerialPort::SerialPortError err);
+    void portOpened(QString portName);
+    void portClosed();
+    void errorOccurred(QSerialPort::SerialPortError error);
 };
 
 #endif // UART_H

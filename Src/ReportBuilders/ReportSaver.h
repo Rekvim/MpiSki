@@ -44,12 +44,12 @@ public:
     };
 
     explicit ReportSaver(QObject *parent = nullptr);
-    void SetRegistry(Registry *registry);
-    void SaveImage(MyChart *chart);
-    QDir Directory();
-    bool SaveReport(const Report &report, const QString &templatePath);
+    void setRegistry(Registry *registry);
+    void saveImage(MyChart *chart);
+    QDir directory();
+    void createDir();
+    bool saveReport(const Report &report, const QString &templatePath);
 private:
-    void CreateDir();
     QDir m_dir;
     bool m_created;
     Registry *m_registry;

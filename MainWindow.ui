@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1468,7 +1468,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>3</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">

@@ -11,36 +11,36 @@ Uart::Uart(QObject *parent)
     m_serialPort->setReadBufferSize(1);
 
     connect(m_serialPort, &QSerialPort::errorOccurred,
-            this, [this](QSerialPort::SerialPortError err) { emit Error(err); });
+            this, [this](QSerialPort::SerialPortError error) { emit errorOccurred(error); });
 }
 
 Uart::~Uart()
 {
-    Disconnect();
+    portClosed();
 }
 
-void Uart::Connect(const QString &portName)
+void Uart::open(const QString &portName)
 {
     if (m_serialPort->isOpen() && m_serialPort->portName() == portName)
         return;
 
-    Disconnect();
+    portClosed();
 
     m_serialPort->setPortName(portName);
     if (m_serialPort->open(QSerialPort::ReadWrite)) {
-        emit Connected(portName);
+        emit portOpened(portName);
     }
 }
 
-void Uart::Disconnect()
+void Uart::close()
 {
     if (m_serialPort->isOpen()) {
         m_serialPort->close();
-        emit Disconnected();
+        emit portClosed();
     }
 }
 
-void Uart::Write_Read(const QByteArray &dataToWrite, QByteArray &readData)
+void Uart::writeAndRead(const QByteArray &dataToWrite, QByteArray &readData)
 {
     readData.clear();
 

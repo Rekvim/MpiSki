@@ -695,7 +695,7 @@ void MainWindow::setRegistry(Registry *registry)
     m_program->setRegistry(registry);
     m_programThread->start();
 
-    m_reportSaver->SetRegistry(registry);
+    m_reportSaver->setRegistry(registry);
 }
 
 void MainWindow::setText(TextObjects object, const QString &text)
@@ -1396,7 +1396,7 @@ void MainWindow::initCharts()
 
 void MainWindow::saveChart(Charts chart)
 {
-    m_reportSaver->SaveImage(m_charts[chart]);
+    m_reportSaver->saveImage(m_charts[chart]);
 
     QPixmap pix = m_charts[chart]->grab();
     QImage img = pix.toImage();
@@ -1440,7 +1440,7 @@ void MainWindow::getImage(QLabel *label, QImage *image)
 {
     QString imgPath = QFileDialog::getOpenFileName(this,
                                                    "Выберите файл",
-                                                   m_reportSaver->Directory().absolutePath(),
+                                                   m_reportSaver->directory().absolutePath(),
                                                    "Изображения (*.jpg *.png *.bmp)");
 
     if (!imgPath.isEmpty()) {
@@ -1502,11 +1502,11 @@ void MainWindow::on_pushButton_report_generate_clicked()
 
     qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 
-    bool saved = m_reportSaver->SaveReport(report, reportBuilder->templatePath());
+    bool saved = m_reportSaver->saveReport(report, reportBuilder->templatePath());
     ui->pushButton_report_open->setEnabled(saved);
 }
 void MainWindow::on_pushButton_report_open_clicked()
 {
     QDesktopServices::openUrl(
-        QUrl::fromLocalFile(m_reportSaver->Directory().filePath("report.xlsx")));
+        QUrl::fromLocalFile(m_reportSaver->directory().filePath("report.xlsx")));
 }
