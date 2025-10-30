@@ -799,6 +799,31 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
     connect(this, &Program::stopTheTest,
             cyclicTestsRegulatory, &CyclicTestsRegulatory::StoppingTheTest);
 
+    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::StepMeasured,
+            this, [this](qint16 rangePercent, qreal /*percentValue*/, int cycle) {
+                // снимаем актуальный процент прямо с сенсора
+                qreal currentPercent = m_mpi[0]->GetPersent();
+
+                auto &ranges = m_telemetryStore.cyclicTestRecord.ranges;
+                auto it = std::find_if(ranges.begin(), ranges.end(),
+                                       [rangePercent, cycle](const RangeDeviationRecord &r) {
+                                           return r.rangePercent == rangePercent &&
+                                                  r.maxForwardCycle == cycle;
+                                       });
+
+                if (it == ranges.end()) {
+                    RangeDeviationRecord rec;
+                    rec.rangePercent = rangePercent;
+                    rec.maxForwardValue = currentPercent;
+                    rec.maxForwardCycle = cycle;
+                    m_telemetryStore.cyclicTestRecord.ranges.push_back(rec);
+                } else {
+                    it->maxForwardValue = std::max(it->maxForwardValue, currentPercent);
+                }
+
+                emit telemetryUpdated(m_telemetryStore);
+            });
+
     connect(threadTest, &QThread::finished,
             threadTest, &QObject::deleteLater);
 

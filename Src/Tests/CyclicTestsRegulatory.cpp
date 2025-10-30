@@ -42,12 +42,18 @@ void CyclicTestsRegulatory::Process()
 
     for (quint32 step = 0; step < m_task.values.size() && !m_terminate; ++step) {
         const quint16 value = m_task.values.at(step);
+        const qint16 rangePercent = m_task.sequence.at(step % seqSize);
+
         if (m_terminate) { emit EndTest(); return; }
+
 
         SetDACBlocked(value, m_task.delayMsecs);
         if (m_terminate) { emit EndTest(); return; }
+
         SetDACBlocked(value, m_task.holdMsecs);
-        // Sleep(m_task.holdMsecs);
+        if (m_terminate) { emit EndTest(); return; }
+
+        emit StepMeasured(rangePercent, 0.0, cycle);
 
         if ((step + 1) % seqSize == 0) {
             ++cycle;
@@ -64,7 +70,7 @@ void CyclicTestsRegulatory::Process()
     TestResults r;
 
     r.strSequence = seqToString(m_task.sequence);
-    r.ranges = calculateRanges(pts, m_task.sequence);
+    // r.ranges = calculateRanges(pts, m_task.sequence);
     emit Results(r);
 
     emit EndTest();

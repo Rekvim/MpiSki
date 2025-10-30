@@ -49,6 +49,8 @@ signals:
     void CycleCompleted(int completedCycles);
     void Results(TestResults results);
 
+    void StepMeasured(qint16 rangePercent, qreal percentValue, int cycle);
+
 private:
     Task m_task;
     double processRegulatory();

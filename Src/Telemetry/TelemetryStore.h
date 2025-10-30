@@ -10,7 +10,7 @@
 #include <QMetaType>
 
 struct InitState {
-    QString  deviceStatusText = "";
+    QString deviceStatusText = "";
     QColor deviceStatusColor  = "";
     QString initStatusText = "";
     QColor initStatusColor  = "";
