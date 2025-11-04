@@ -67,11 +67,11 @@ private:
     Ui::CyclicTestSettings *ui;
     TestParameters m_parameters;
 
-    const QTime m_maxDeley = QTime(0, 4, 0, 0);
-    const QTime m_minDeley = QTime(0, 0, 5, 0);
+    inline static const QTime kMaxDelay = QTime(0, 4, 0, 0);
+    inline static const QTime kMinDelay = QTime(0, 0, 5, 0);
 
-    const QTime m_maxHold = QTime(0, 1, 5, 0);
-    const QTime m_minHold = QTime(0, 0, 0, 0);
+    inline static const QTime kMaxHold = QTime(0, 1, 5, 0);
+    inline static const QTime kMinHold = QTime(0, 0, 0, 0);
 
     SelectTests::PatternType m_pattern = SelectTests::Pattern_None;
 };

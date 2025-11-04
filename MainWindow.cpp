@@ -273,7 +273,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     ui->tableWidget_stepResults->setColumnCount(2);
-    ui->tableWidget_stepResults->setHorizontalHeaderLabels({"T86", "Перерегулирование"});
+    ui->tableWidget_stepResults->setHorizontalHeaderLabels({QLatin1String("T86"), tr("Перерегулирование")});
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
     ui->label_arrowUp->setCursor(Qt::PointingHandCursor);
@@ -398,11 +398,11 @@ static void setIndicatorColor(QWidget* widget, const QString& color, const QStri
 
 static void updateIndicator(double value, double sliderValue, QWidget* widget) {
     if (value > sliderValue) {
-        setIndicatorColor(widget, "#B80F0F", "#510000");     // Превышение
+        setIndicatorColor(widget, QLatin1String("#B80F0F"), QLatin1String("#510000"));     // Превышение
     } else if (value < sliderValue) {
-        setIndicatorColor(widget, "#4E8448", "#16362B");     // Норма
+        setIndicatorColor(widget, QLatin1String("#4E8448"), QLatin1String("#16362B"));     // Норма
     } else {
-        setIndicatorColor(widget, "#E1E1E1", "#ADADAD");     // Ровно порог
+        setIndicatorColor(widget, QLatin1String("#E1E1E1"), QLatin1String("#ADADAD"));     // Ровно порог
     }
 }
 
@@ -1063,14 +1063,14 @@ void MainWindow::getDirectory(const QString &current_path, QString &result)
 void MainWindow::startTest()
 {
     m_testing = true;
-    ui->statusbar->showMessage("Тест в процессе");
+    ui->statusbar->showMessage(QStringLiteral("Тест в процессе"));
 }
 
 void MainWindow::endTest()
 {
     m_testing = false;
 
-    ui->statusbar->showMessage("Тест завершён");
+    ui->statusbar->showMessage(QStringLiteral("Тест завершён"));
 
     if (m_durationTimer) {
         m_durationTimer->stop();
@@ -1087,8 +1087,8 @@ void MainWindow::endTest()
 void MainWindow::on_pushButton_mainTest_start_clicked()
 {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
-            == QMessageBox::Yes) {
+        if (QMessageBox::question(this, QStringLiteral("Внимание!"), QStringLiteral("Вы действительно хотите завершить тест?"))
+        == QMessageBox::Yes) {
             m_userCanceled = true;
             emit stopTest();
         }
@@ -1116,8 +1116,8 @@ void MainWindow::promptSaveCharts()
 
     auto answer = QMessageBox::question(
         this,
-        tr("Сохранение результатов"),
-        tr("Тест MainTest завершён.\nСохранитаь графики Task, Pressure и Friction?"),
+        QStringLiteral("Сохранение результатов"),
+        QStringLiteral("Тест MainTest завершён.\nСохранитаь графики Task, Pressure и Friction?"),
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::Yes
         );
@@ -1128,8 +1128,8 @@ void MainWindow::promptSaveCharts()
         saveChart(Charts::Friction);
         QMessageBox::information(
             this,
-            tr("Готово"),
-            tr("Графики сохранены в текущую папку отчётов.")
+            QStringLiteral("Готово"),
+            QStringLiteral("Графики сохранены в текущую папку отчётов.")
             );
     }
 }
@@ -1137,7 +1137,7 @@ void MainWindow::promptSaveCharts()
 void MainWindow::on_pushButton_strokeTest_start_clicked()
 {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
+        if (QMessageBox::question(this, QStringLiteral("Внимание!"), QStringLiteral("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             emit stopTest();
         }
@@ -1154,7 +1154,7 @@ void MainWindow::on_pushButton_strokeTest_save_clicked()
 void MainWindow::on_pushButton_optionalTests_start_clicked()
 {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
+        if (QMessageBox::question(this, QStringLiteral("Внимание!"), QStringLiteral("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             emit stopTest();
         }
@@ -1177,7 +1177,7 @@ void MainWindow::on_pushButton_optionalTests_save_clicked()
 void MainWindow::on_pushButton_cyclicTest_start_clicked()
 {
     if (m_testing) {
-        if (QMessageBox::question(this, "Внимание!", "Вы действительно хотите завершить тест?")
+        if (QMessageBox::question(this, QStringLiteral("Внимание!"), QStringLiteral("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             m_userCanceled = true;
             emit stopTest();
@@ -1439,9 +1439,9 @@ void MainWindow::saveChart(Charts chart)
 void MainWindow::getImage(QLabel *label, QImage *image)
 {
     QString imgPath = QFileDialog::getOpenFileName(this,
-                                                   "Выберите файл",
+                                                   QStringLiteral("Выберите файл"),
                                                    m_reportSaver->directory().absolutePath(),
-                                                   "Изображения (*.jpg *.png *.bmp)");
+                                                   QStringLiteral("Изображения (*.jpg *.png *.bmp)"));
 
     if (!imgPath.isEmpty()) {
         QImage img(imgPath);
@@ -1488,7 +1488,7 @@ void MainWindow::on_pushButton_report_generate_clicked()
     case SelectTests::Pattern_C_SACVT: reportBuilder = std::make_unique<ReportBuilder_C_SACVT>(); break;
     case SelectTests::Pattern_C_SOVT: reportBuilder = std::make_unique<ReportBuilder_C_SOVT>(); break;
     default:
-        QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн отчёта!");
+        QMessageBox::warning(this, QStringLiteral("Ошибка"), QStringLiteral("Не выбран корректный паттерн отчёта!"));
         return;
     }
 

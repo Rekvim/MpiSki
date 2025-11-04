@@ -93,21 +93,21 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 
     connect(ui->timeEdit_retentionTimeRegulatory, &QTimeEdit::timeChanged,
             this, [&](QTime time) {
-                if (time > m_maxHold) {
-                    ui->timeEdit_retentionTimeRegulatory->setTime(m_maxHold);
+                if (time > kMaxHold) {
+                    ui->timeEdit_retentionTimeRegulatory->setTime(kMaxHold);
                 }
-                if (time < m_minHold) {
-                    ui->timeEdit_retentionTimeRegulatory->setTime(m_minHold);
+                if (time < kMinHold) {
+                    ui->timeEdit_retentionTimeRegulatory->setTime(kMinHold);
                 }
         });
 
     connect(ui->timeEdit_retentionTimeShutOff, &QTimeEdit::timeChanged,
             this, [&](QTime time) {
-                if (time > m_maxHold) {
-                    ui->timeEdit_retentionTimeShutOff->setTime(m_maxHold);
+                if (time > kMaxHold) {
+                    ui->timeEdit_retentionTimeShutOff->setTime(kMaxHold);
                 }
-                if (time < m_minHold) {
-                    ui->timeEdit_retentionTimeShutOff->setTime(m_minHold);
+                if (time < kMinHold) {
+                    ui->timeEdit_retentionTimeShutOff->setTime(kMinHold);
                 }
             });
 
@@ -134,9 +134,9 @@ static bool parseSequence(const QString& src,
     for (const QString& part : s.split('-', Qt::SkipEmptyParts)) {
         bool ok = false;
         uint v = part.toUInt(&ok);
-        if (!ok) { error = "Не удалось преобразовать число."; return false; }
+        if (!ok) { error = QStringLiteral("Не удалось преобразовать число."); return false; }
         if (v > std::numeric_limits<quint16>::max()) {
-            error = QString("Значение «%1» > 65535.").arg(part); return false;
+            error = QString(QStringLiteral("Значение «%1» > 65535.")).arg(part); return false;
         }
         dst.push_back(static_cast<quint16>(v));
     }
@@ -148,8 +148,8 @@ static bool parseSequence(const QString& src,
 void CyclicTestSettings::onAddValueClicked()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, "Добавить последовательность",
-                                         "Введите значения (через «-»):",
+    QString text = QInputDialog::getText(this, QStringLiteral("Добавить последовательность"),
+                                         QStringLiteral("Введите значения (через «-»):"),
                                          QLineEdit::Normal, "", &ok);
     if (ok && !text.trimmed().isEmpty()) {
         ui->listWidget_testRangeRegulatory->addItem(text.trimmed());
@@ -161,8 +161,8 @@ void CyclicTestSettings::onEditValueClicked()
 {
     if (auto *item = ui->listWidget_testRangeRegulatory->currentItem()) {
         bool ok;
-        QString txt = QInputDialog::getText(this, "Изменить последовательность",
-                                            "Новое значение:", QLineEdit::Normal,
+        QString txt = QInputDialog::getText(this, QStringLiteral("Изменить последовательность"),
+                                            QStringLiteral("Новое значение:"), QLineEdit::Normal,
                                             item->text(), &ok);
         if (ok && !txt.trimmed().isEmpty()) {
             item->setText(txt.trimmed());
@@ -178,8 +178,8 @@ void CyclicTestSettings::onRemoveValueClicked()
 void CyclicTestSettings::onAddDelayClicked()
 {
     bool ok;
-    int v = QInputDialog::getInt(this, "Добавить задержку",
-                                 "Введите значение в секундах:", 10, 1, 3600, 1, &ok);
+    int v = QInputDialog::getInt(this, QStringLiteral("Добавить задержку"),
+                                 QStringLiteral("Введите значение в секундах:"), 10, 1, 3600, 1, &ok);
     if (ok) {
         ui->listWidget_delayTimeRegulatory->addItem(QString::number(v));
         ui->listWidget_delayTimeRegulatory->setCurrentRow(ui->listWidget_delayTimeRegulatory->count() - 1);
@@ -190,8 +190,8 @@ void CyclicTestSettings::onEditDelayClicked()
 {
     if (auto *item = ui->listWidget_delayTimeRegulatory->currentItem()) {
         bool ok;
-        int v = QInputDialog::getInt(this, "Изменить задержку",
-                                     "Новое значение (сек):",
+        int v = QInputDialog::getInt(this, QStringLiteral("Изменить задержку"),
+                                     QStringLiteral("Новое значение (сек):"),
                                      item->text().toInt(), 1, 3600, 1, &ok);
         if (ok) {
             item->setText(QString::number(v));
@@ -209,8 +209,8 @@ void CyclicTestSettings::onRemoveDelayClicked()
 void CyclicTestSettings::onAddDelayShutOffClicked()
 {
     bool ok;
-    int v = QInputDialog::getInt(this, "Добавить задержку (Отсечной)",
-                                 "Введите значение в секундах:", 10, 1, 3600, 1, &ok);
+    int v = QInputDialog::getInt(this, QStringLiteral("Добавить задержку (Отсечной)"),
+                                 QStringLiteral("Введите значение в секундах:"), 10, 1, 3600, 1, &ok);
     if (ok) {
         ui->listWidget_delayTimeShutOff->addItem(QString::number(v));
         ui->listWidget_delayTimeShutOff->setCurrentRow(ui->listWidget_delayTimeShutOff->count() - 1);
@@ -221,8 +221,8 @@ void CyclicTestSettings::onEditDelayShutOffClicked()
 {
     if (auto *item = ui->listWidget_delayTimeShutOff->currentItem()) {
         bool ok;
-        int v = QInputDialog::getInt(this, "Изменить задержку (Отсечной)",
-                                     "Новое значение (сек):",
+        int v = QInputDialog::getInt(this, QStringLiteral("Изменить задержку (Отсечной)"),
+                                     QStringLiteral("Новое значение (сек):"),
                                      item->text().toInt(), 1, 3600, 1, &ok);
         if (ok) {
             item->setText(QString::number(v));
@@ -246,22 +246,22 @@ void CyclicTestSettings::onPushButtonStartClicked()
     if (m_parameters.testType == TP::Regulatory || m_parameters.testType == TP::Combined) {
         // последовательность
         if (!ui->listWidget_testRangeRegulatory->currentItem()) {
-            QMessageBox::warning(this, "Ошибка",
-                                 "Выберите хотя бы одну последовательность (регулирующий).");
+            QMessageBox::warning(this, QStringLiteral("Ошибка"),
+                                 QStringLiteral("Выберите хотя бы одну последовательность (регулирующий)."));
             return;
         }
         QString seqReg = ui->listWidget_testRangeRegulatory->currentItem()->text().trimmed();
         QString err;
         if (!parseSequence(seqReg, m_parameters.regSeqValues, err)) {
-            QMessageBox::warning(this, "Ошибка", "Регулирующая последовательность: " + err);
+            QMessageBox::warning(this, QStringLiteral("Ошибка"), QStringLiteral("Регулирующая последовательность: ") + err);
             return;
         }
         // m_parameters.regSeqValues = sReg;
 
         // задержка
         if (!ui->listWidget_delayTimeRegulatory->currentItem()) {
-            QMessageBox::warning(this, "Ошибка",
-                                 "Выберите время задержки (регулирующий).");
+            QMessageBox::warning(this, QStringLiteral("Ошибка"),
+                                 QStringLiteral("Выберите время задержки (регулирующий)."));
             return;
         }
         m_parameters.regulatory_delayMs =
@@ -276,8 +276,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
             QString txt = ui->lineEdit_numberCyclesRegulatory->text().trimmed();
             auto m3 = RegexPatterns::digits().match(txt);
             if (!m3.hasMatch() || txt.isEmpty() || txt.toInt() <= 0) {
-                QMessageBox::warning(this, "Ошибка",
-                                     "Число циклов (регулирующий): введите положительное целое.");
+                QMessageBox::warning(this, QStringLiteral("Ошибка"),
+                                     QStringLiteral("Число циклов (регулирующий): введите положительное целое."));
                 return;
             }
             m_parameters.regulatory_numCycles = txt.toInt();
@@ -296,22 +296,22 @@ void CyclicTestSettings::onPushButtonStartClicked()
     if (m_parameters.testType == TP::Shutoff || m_parameters.testType == TP::Combined) {
         // последовательность
         if (!ui->listWidget_testRangeShutOff->currentItem()) {
-            QMessageBox::warning(this, "Ошибка",
-                                 "Выберите хотя бы одну последовательность (отсечной).");
+            QMessageBox::warning(this, QStringLiteral("Ошибка"),
+                                 QStringLiteral("Выберите хотя бы одну последовательность (отсечной)."));
             return;
         }
         QString seqOff = ui->listWidget_testRangeShutOff->currentItem()->text().trimmed();
         QString err;
         if (!parseSequence(seqOff, m_parameters.offSeqValues, err)) {
-            QMessageBox::warning(this, "Ошибка", "Отсечной: " + err);
+            QMessageBox::warning(this, QStringLiteral("Ошибка"), QStringLiteral("Отсечной: ") + err);
             return;
         }
         // m_parameters.shutoff_sequence = sOff;
 
         // задержка
         if (!ui->listWidget_delayTimeShutOff->currentItem()) {
-            QMessageBox::warning(this, "Ошибка",
-                                 "Выберите время задержки (отсечной).");
+            QMessageBox::warning(this, QStringLiteral("Ошибка"),
+                                 QStringLiteral("Выберите время задержки (отсечной)."));
             return;
         }
         m_parameters.shutoff_delayMs =
@@ -326,8 +326,8 @@ void CyclicTestSettings::onPushButtonStartClicked()
             QString txt = ui->lineEdit_numberCyclesShutOff->text().trimmed();
             auto m6 = RegexPatterns::digits().match(txt);
             if (!m6.hasMatch() || txt.isEmpty() || txt.toInt() <= 0) {
-                QMessageBox::warning(this, "Ошибка",
-                                     "Число циклов (отсечной): введите положительное целое.");
+                QMessageBox::warning(this, QStringLiteral("Ошибка"),
+                                     QStringLiteral("Число циклов (отсечной): введите положительное целое."));
                 return;
             }
             m_parameters.shutoff_numCycles = txt.toInt();

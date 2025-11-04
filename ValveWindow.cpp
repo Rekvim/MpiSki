@@ -19,7 +19,6 @@ ValveWindow::ValveWindow(QWidget *parent)
     ui->lineEdit_DN->setValidator(validatorDigits);
     ui->lineEdit_PN->setValidator(validatorDigits);
     ui->lineEdit_strokValve->setValidator(validatorDigitsDot);
-    // ui->lineEdit_dinamicError->setValidator(noSpecialChars);
     ui->lineEdit_driveModel->setValidator(noSpecialChars);
     // ui->lineEdit_driveRange->setValidator(validatorDigitsDot);
     ui->lineEdit_driveDiameter->setValidator(validatorDigitsDot);
@@ -78,7 +77,7 @@ void ValveWindow::applyPatternVisibility()
 
         break;
     default:
-        QMessageBox::warning(this, "Ошибка", "Не выбран корректный паттерн!");
+        QMessageBox::warning(this, QStringLiteral("Ошибка"), QStringLiteral("Не выбран корректный паттерн!"));
         return;
     }
 }
@@ -106,7 +105,7 @@ void ValveWindow::setRegistry(Registry *registry)
 
     ui->comboBox_positionNumber->clear();
     ui->comboBox_positionNumber->addItems(m_registry->getPositions());
-    ui->comboBox_positionNumber->addItem(m_manualInput);
+    ui->comboBox_positionNumber->addItem(kManualInput);
 
     QString lastPosition = m_registry->getLastPosition();
     if (lastPosition == "") {
@@ -124,7 +123,7 @@ void ValveWindow::setRegistry(Registry *registry)
 
 void ValveWindow::saveValveInfo()
 {
-    if (ui->comboBox_positionNumber->currentText() == m_manualInput)
+    if (ui->comboBox_positionNumber->currentText() == kManualInput)
         m_valveInfo = m_registry->getValveInfo(ui->lineEdit_positionNumber->text());
 
     m_valveInfo->manufacturer = ui->lineEdit_manufacturer->text();
@@ -140,9 +139,7 @@ void ValveWindow::saveValveInfo()
         ? ui->comboBox_positionerType->currentText()
         : "";
 
-    m_valveInfo->dinamicErrorRecomend = m_patternType == SelectTests::Pattern_C_SOVT
-        ? ui->comboBox_dinamicError->currentText().toDouble()
-        : 0.0;
+    m_valveInfo->dinamicErrorRecomend = ui->comboBox_dinamicError->currentText().toDouble();
 
     m_valveInfo->solenoidValveModel = ui->lineEdit_solenoidValveModel->text();
     m_valveInfo->limitSwitchModel = ui->lineEdit_limitSwitchModel->text();
@@ -164,7 +161,7 @@ void ValveWindow::saveValveInfo()
 
 void ValveWindow::positionChanged(const QString &position)
 {
-    if (position == "Ручной ввод") {
+    if (position == kManualInput) {
         ui->lineEdit_positionNumber->setEnabled(true);
         return;
     }
@@ -210,7 +207,7 @@ void ValveWindow::strokeChanged(quint16 n)
 
 void ValveWindow::toolChanged(quint16 n)
 {
-    if (ui->comboBox_toolNumber->currentText() == m_manualInput) {
+    if (ui->comboBox_toolNumber->currentText() == kManualInput) {
         ui->lineEdit_pulleyDiameter->setEnabled(true);
     } else {
         ui->lineEdit_pulleyDiameter->setEnabled(false);
@@ -227,7 +224,9 @@ void ValveWindow::diameterChanged(const QString &text)
 void ValveWindow::on_pushButton_netWindow_clicked()
 {
     if (ui->lineEdit_positionNumber->text().isEmpty()) {
-        QMessageBox::warning(this, "Ошибка", "Введите номер позиции");
+        QMessageBox::warning(this, 
+            QStringLiteral("Ошибка"), 
+            QStringLiteral("Введите номер позиции"));
         return;
     }
 
@@ -239,8 +238,8 @@ void ValveWindow::on_pushButton_netWindow_clicked()
 
         QMessageBox::StandardButton button
             = QMessageBox::question(this,
-                                    "Предупреждение",
-                                    "Введены не все данные, вы действительно хотите продолжить?");
+                                    QStringLiteral("Предупреждение"),
+                                    QStringLiteral("Введены не все данные, вы действительно хотите продолжить?"));
 
         if (button == QMessageBox::StandardButton::No) {
             return;
@@ -255,19 +254,18 @@ void ValveWindow::on_pushButton_netWindow_clicked()
     accept();
 }
 
-
 void ValveWindow::on_pushButton_clear_clicked()
 {
-    ui->lineEdit_manufacturer->setText("");
-    ui->lineEdit_valveModel->setText("");
-    ui->lineEdit_serialNumber->setText("");
-    ui->lineEdit_DN->setText("");
-    ui->lineEdit_PN->setText("");
-    ui->lineEdit_strokValve->setText("");
-    ui->lineEdit_positionNumber->setText("");
-    ui->lineEdit_valveModel->setText("");
-    ui->lineEdit_driveRange->setText("");
-    ui->lineEdit_driveDiameter->setText("");
+    ui->lineEdit_manufacturer->clear();
+    ui->lineEdit_valveModel->clear();
+    ui->lineEdit_serialNumber->clear();
+    ui->lineEdit_DN->clear();
+    ui->lineEdit_PN->clear();
+    ui->lineEdit_strokValve->clear();
+    ui->lineEdit_positionNumber->clear();
+    ui->lineEdit_valveModel->clear();
+    ui->lineEdit_driveRange->clear();
+    ui->lineEdit_driveDiameter->clear();
 
     ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
 

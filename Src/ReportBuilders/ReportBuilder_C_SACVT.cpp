@@ -108,7 +108,7 @@ void ReportBuilder_C_SACVT::buildReport(
             percents.append(it.key());
         }
 
-        constexpr quint16 rowStart = 33, rowStep = 2;
+        constexpr quint16 rowStart = 35, rowStep = 2;
         for (int i = 0; i < percents.size() && i < 10; ++i) {
             quint16 row = rowStart + i * rowStep;
             const Agg &a = aggMap[percents[i]];
@@ -156,8 +156,6 @@ void ReportBuilder_C_SACVT::buildReport(
         }
     }
 
-    // Страница: Отчет ЦТ; Блок: Исполнитель
-    report.data.push_back({sheet_2, 58, 4, objectInfo.FIO});
     // Страница: Отчет ЦТ; Блок: Дата
     report.data.push_back({sheet_1, 62, 12, otherParams.date});
 
@@ -288,7 +286,7 @@ void ReportBuilder_C_SACVT::buildReport(
         ++row;
     }
 
-    report.data.push_back({sheet_2, 44, 12, otherParams.date});
+    report.data.push_back({sheet_2, 78, 12, otherParams.date});
 
     // Страница: Отчет; Блок: Данные по объекту
     report.data.push_back({sheet_3, 4, 4, objectInfo.object});
@@ -372,7 +370,7 @@ void ReportBuilder_C_SACVT::buildReport(
     report.images.push_back({sheet_3, 132, 1, imageChartFriction}); // график трения
 
     // Страница: Отчет; Блок: Дата
-    report.data.push_back({sheet_3, 156, 12, otherParams.date});
+    report.data.push_back({sheet_3, 155, 12, otherParams.date});
 
     report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});

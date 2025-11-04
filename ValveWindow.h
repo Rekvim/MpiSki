@@ -32,8 +32,8 @@ private:
     Registry *m_registry;
     ValveInfo *m_valveInfo;
 
-    const QString m_manualInput = "Ручной ввод";
-    QList<QString> m_diameter = {"50.0", "86.0", "108.0", "125.0"};
+    inline static const QString kManualInput = QStringLiteral("Ручной ввод");
+    QList<QString> m_diameter = {QStringLiteral("50.0"), QStringLiteral("86.0"), QStringLiteral("108.0"), QStringLiteral("125.0")};
     QJsonObject m_valveDataObj;
 
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;

@@ -39,8 +39,8 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
             this, [=]() {
         bool ok;
         double d = QInputDialog::getDouble(this,
-                                           "Ввод числа",
-                                           "Значение:",
+                                           QStringLiteral("Ввод числа"),
+                                           QStringLiteral("Значение:"),
                                            ui->listWidget_value->currentItem()->text().toDouble(),
                                            0.0,
                                            100.0,
@@ -79,8 +79,8 @@ OtherTestSettings::OtherTestSettings(QWidget *parent) :
             this, [=]() {
         bool ok;
         double d = QInputDialog::getDouble(this,
-            "Ввод числа",
-            "Значение:",
+            QStringLiteral("Ввод числа"),
+            QStringLiteral("Значение:"),
             ui->listWidget_step->currentItem()->text().toDouble(),
             0.0,
             100.0,

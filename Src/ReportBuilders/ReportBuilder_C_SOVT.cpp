@@ -31,7 +31,7 @@ void ReportBuilder_C_SOVT::buildReport(
     report.data.push_back({"Отчет ЦТ", 9, 13, valveInfo.solenoidValveModel});
     report.data.push_back({"Отчет ЦТ", 10, 13, QString("%1 / %2")
                                                    .arg(valveInfo.limitSwitchModel)
-                                                   .arg(valveInfo.materialStuffingBoxSeal)});
+                                                   .arg(valveInfo.positionSensorModel)});
     report.data.push_back({"Отчет ЦТ",11, 13, QString::asprintf("%.2f bar", telemetryStore.supplyRecord.pressure_bar)});
     report.data.push_back({"Отчет ЦТ", 12, 13, otherParams.safePosition});
     report.data.push_back({"Отчет ЦТ", 13, 13, valveInfo.driveModel});

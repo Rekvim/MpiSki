@@ -104,7 +104,7 @@ void ReportBuilder_B_SACVT::buildReport(
             percents.append(it.key());
         }
 
-        constexpr quint16 rowStart = 33, rowStep = 2;
+        constexpr quint16 rowStart = 35, rowStep = 2;
         for (int i = 0; i < percents.size() && i < 10; ++i) {
             quint16 row = rowStart + i * rowStep;
             const Agg &a = aggMap[percents[i]];
@@ -191,6 +191,15 @@ void ReportBuilder_B_SACVT::buildReport(
                                                .toString("mm:ss.zzz")});
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
+    report.data.push_back({
+        "Отчет ЦТ", 101, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
+    report.data.push_back({
+        "Отчет ЦТ", 103, 8,
+        QString::number(telemetryStore.cyclicTestRecord.cycles)
+    });
+
     const auto &ons  = telemetryStore.cyclicTestRecord.doOnCounts;
     const auto &offs = telemetryStore.cyclicTestRecord.doOffCounts;
     for (int i = 0; i < ons.size(); ++i) {

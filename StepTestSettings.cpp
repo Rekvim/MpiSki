@@ -19,7 +19,7 @@ StepTestSettings::StepTestSettings(QWidget *parent) :
 
     connect(ui->pushButton_add_value, &QPushButton::clicked,
             this, [=]() {
-        ui->listWidget_value->addItem("50.0");
+        ui->listWidget_value->addItem(QStringLiteral("50.0"));
         ui->pushButton_delete_value->setEnabled(ui->listWidget_value->currentRow() >= 0);
     });
 
@@ -38,8 +38,8 @@ StepTestSettings::StepTestSettings(QWidget *parent) :
             this, [=]() {
         bool ok;
         double d = QInputDialog::getDouble(this,
-                                           "Ввод числа",
-                                           "Значение:",
+                                           QStringLiteral("Ввод числа"),
+                                           QStringLiteral("Значение:"),
                                            ui->listWidget_value->currentItem()->text().toDouble(),
                                            0.0,
                                            100.0,
@@ -82,15 +82,15 @@ StepTestSettings::~StepTestSettings()
 void StepTestSettings::reverse()
 {
     ui->listWidget_value->clear();
-    ui->listWidget_value->addItem("90.0");
-    ui->listWidget_value->addItem("80.0");
-    ui->listWidget_value->addItem("70.0");
-    ui->listWidget_value->addItem("60.0");
-    ui->listWidget_value->addItem("50.0");
-    ui->listWidget_value->addItem("40.0");
-    ui->listWidget_value->addItem("30.0");
-    ui->listWidget_value->addItem("20.0");
-    ui->listWidget_value->addItem("10.0");
+    ui->listWidget_value->addItem(QStringLiteral("90.0"));
+    ui->listWidget_value->addItem(QStringLiteral("80.0"));
+    ui->listWidget_value->addItem(QStringLiteral("70.0"));
+    ui->listWidget_value->addItem(QStringLiteral("60.0"));
+    ui->listWidget_value->addItem(QStringLiteral("50.0"));
+    ui->listWidget_value->addItem(QStringLiteral("40.0"));
+    ui->listWidget_value->addItem(QStringLiteral("30.0"));
+    ui->listWidget_value->addItem(QStringLiteral("20.0"));
+    ui->listWidget_value->addItem(QStringLiteral("10.0"));
 }
 
 StepTestSettings::TestParameters StepTestSettings::getParameters()
