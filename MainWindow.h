@@ -33,7 +33,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void setRegistry(Registry *registry);
-    void setPatternType(SelectTests::PatternType pattern) { m_patternType = pattern; }
+    void setPatternType(SelectTests::PatternType pattern) {
+        m_patternType = pattern;
+        displayDependingPattern();
+    }
     void setBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
 signals:
     void initialize();

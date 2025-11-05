@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -423,6 +423,9 @@
                </item>
                <item>
                 <widget class="QSlider" name="verticalSlider_task">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimum">
                   <number>3000</number>
                  </property>
@@ -452,6 +455,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="doubleSpinBox_task">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="minimumSize">
               <size>
                <width>90</width>

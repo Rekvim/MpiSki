@@ -606,6 +606,7 @@ void MainWindow::enableSetTask(bool enable)
 {
     ui->verticalSlider_task->setEnabled(enable);
     ui->doubleSpinBox_task->setEnabled(enable);
+    ui->groupBox_SettingCurrentSignal->setEnabled(enable);
 }
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
