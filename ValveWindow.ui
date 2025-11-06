@@ -1805,6 +1805,9 @@
          </item>
          <item>
           <widget class="QLineEdit" name="lineEdit_pulleyDiameter">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1816,6 +1819,9 @@
              <family>Segoe UI</family>
              <pointsize>12</pointsize>
             </font>
+           </property>
+           <property name="dragEnabled">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
