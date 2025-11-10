@@ -35,7 +35,7 @@ public:
     void setRegistry(Registry *registry);
     void setPatternType(SelectTests::PatternType pattern) {
         m_patternType = pattern;
-        displayDependingPattern();
+        updateAvailableTabs();
     }
     void setBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
 signals:
@@ -142,6 +142,10 @@ private:
 
     bool m_userCanceled = false;
     bool m_testing = false;
+    bool m_isInitialized = false;
+
+    void lockTabsForPreInit();
+    void updateAvailableTabs();
 
     Registry *m_registry = nullptr;
 

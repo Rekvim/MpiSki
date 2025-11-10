@@ -17,7 +17,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Параметры тестирования</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>

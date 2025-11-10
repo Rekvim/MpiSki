@@ -819,30 +819,31 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
     connect(this, &Program::stopTheTest,
             cyclicTestsRegulatory, &CyclicTestsRegulatory::StoppingTheTest);
 
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::StepMeasured,
-            this, [this](qint16 rangePercent, qreal /*percentValue*/, int cycle) {
-                // снимаем актуальный процент прямо с сенсора
-                qreal currentPercent = m_mpi[0]->GetPersent();
 
-                auto &ranges = m_telemetryStore.cyclicTestRecord.ranges;
-                auto it = std::find_if(ranges.begin(), ranges.end(),
-                                       [rangePercent, cycle](const RangeDeviationRecord &r) {
-                                           return r.rangePercent == rangePercent &&
-                                                  r.maxForwardCycle == cycle;
-                                       });
+    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::StepMeasured,
+    //         this, [this](qint16 rangePercent, qreal /*percentValue*/, int cycle) {
+    //             // снимаем актуальный процент прямо с сенсора
+    //             qreal currentPercent = m_mpi[0]->GetPersent();
 
-                if (it == ranges.end()) {
-                    RangeDeviationRecord rec;
-                    rec.rangePercent = rangePercent;
-                    rec.maxForwardValue = currentPercent;
-                    rec.maxForwardCycle = cycle;
-                    m_telemetryStore.cyclicTestRecord.ranges.push_back(rec);
-                } else {
-                    it->maxForwardValue = std::max(it->maxForwardValue, currentPercent);
-                }
+    //             auto &ranges = m_telemetryStore.cyclicTestRecord.ranges;
+    //             auto it = std::find_if(ranges.begin(), ranges.end(),
+    //                                    [rangePercent, cycle](const RangeDeviationRecord &r) {
+    //                                        return r.rangePercent == rangePercent &&
+    //                                               r.maxForwardCycle == cycle;
+    //                                    });
 
-                emit telemetryUpdated(m_telemetryStore);
-            });
+    //             if (it == ranges.end()) {
+    //                 RangeDeviationRecord rec;
+    //                 rec.rangePercent = rangePercent;
+    //                 rec.maxForwardValue = currentPercent;
+    //                 rec.maxForwardCycle = cycle;
+    //                 m_telemetryStore.cyclicTestRecord.ranges.push_back(rec);
+    //             } else {
+    //                 it->maxForwardValue = std::max(it->maxForwardValue, currentPercent);
+    //             }
+
+    //             emit telemetryUpdated(m_telemetryStore);
+    //         });
 
     connect(threadTest, &QThread::finished,
             threadTest, &QObject::deleteLater);
@@ -1205,6 +1206,7 @@ void Program::runningOptionalTest(quint8 testNum)
 
         break;
     }
+
     case 1: {
         optionalTest = new OptionTest;
         OtherTestSettings::TestParameters parameters;
@@ -1220,14 +1222,14 @@ void Program::runningOptionalTest(quint8 testNum)
         const quint64 S = static_cast<quint64>(parameters.steps.size());
         const quint64 delay = static_cast<quint64>(parameters.delay);
 
-        const quint64 N_values = 1 + P * (2 * S);
+        // Изменяем расчет N_values - добавляем P для возвратов к базовым точкам
+        const quint64 N_values = 1 + P * (2 * S + 1); // +1 для возврата к базовой точке после шагов
         const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
         emit totalTestTimeMs(totalMs);
 
         task.delay = parameters.delay;
 
         ValveInfo *valveInfo = m_registry->getValveInfo();
-
         bool normalOpen = (valveInfo->safePosition != 0);
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));
@@ -1236,12 +1238,21 @@ void Program::runningOptionalTest(quint8 testNum)
             qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
             qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
 
+            // Добавляем начальное значение точки
+            task.value.push_back(dacValue);
+
             for (auto it_s = parameters.steps.begin(); it_s < parameters.steps.end(); ++it_s) {
-                task.value.push_back(dacValue);
+                // Поднимаемся на шаг
                 current = (16 * (normalOpen ? 100 - *it - *it_s : *it + *it_s) / 100 + 4.0);
                 qreal dacValueStep = m_mpi.GetDAC()->GetRawFromValue(current);
                 task.value.push_back(dacValueStep);
+
+                // Возвращаемся к базовой точке
+                task.value.push_back(dacValue);
             }
+
+            // После всех шагов остаемся на базовой точке перед переходом к следующей
+            // (значение уже добавлено в конце внутреннего цикла)
         }
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));

@@ -18,12 +18,12 @@ void ReportBuilder_C_CVT::buildReport(
     QString sheet_2 = "Результат теста шаговой реакции";
     QString sheet_3 = "Отчет";
 
-    // Страница: Отчет ЦТ; Блок: Данные по объекту
+    // Лист: Отчет ЦТ; Страница: 1; Блок: Данные по объекту
     report.data.push_back({sheet_1, 4, 4, objectInfo.object});
     report.data.push_back({sheet_1, 5, 4, objectInfo.manufactory});
     report.data.push_back({sheet_1, 6, 4, objectInfo.department});
 
-    // Страница:Отчет ЦТ; Блок: Краткая спецификация на клапан
+    // Лист: Отчет ЦТ; Страница: 1; Блок: Краткая спецификация на клапан
     report.data.push_back({sheet_1, 4, 13, valveInfo.positionNumber});
     report.data.push_back({sheet_1, 5, 13, valveInfo.serialNumber});
     report.data.push_back({sheet_1, 6, 13, valveInfo.valveModel});
@@ -32,14 +32,14 @@ void ReportBuilder_C_CVT::buildReport(
                                                .arg(valveInfo.DN)
                                                .arg(valveInfo.PN)});
     report.data.push_back({sheet_1, 9, 13, valveInfo.positionerModel});
-    report.data.push_back({sheet_1, 10, 13, QString("%1 бар")
+    report.data.push_back({sheet_1, 10, 13, QString("%1")
                                                 .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
     report.data.push_back({sheet_1, 11, 13, otherParams.safePosition});
     report.data.push_back({sheet_1, 12, 13, valveInfo.driveModel});
     report.data.push_back({sheet_1, 13, 13, otherParams.strokeMovement});
     report.data.push_back({sheet_1, 14, 13, valveInfo.materialStuffingBoxSeal});
 
-    // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
+    // Лист: Отчет ЦТ; Страница: 1; Блок: Результат испытаний позиционера
     report.data.push_back({sheet_1, 19, 8, telemetryStore.strokeTestRecord.timeForwardMs});
     report.data.push_back({sheet_1, 21, 8, telemetryStore.strokeTestRecord.timeBackwardMs});
     report.data.push_back({sheet_1, 23, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
@@ -47,7 +47,7 @@ void ReportBuilder_C_CVT::buildReport(
     report.data.push_back({sheet_1, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
                                                      .toString("mm:ss.zzz")});
 
-    // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
+    // Лист: Отчет ЦТ; Страница: 1; Блок: Циклические испытания позиционера
     {
         const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
 
@@ -119,44 +119,79 @@ void ReportBuilder_C_CVT::buildReport(
             if (a.maxFwdCycle >= 0) {
                 report.data.push_back({
                     sheet_1, row, 8,
-                    QString("%1 %")
+                    QString("%1")
                         .arg(a.maxFwdVal,   0, 'f', 2)
                 });
                 report.data.push_back({
-                    sheet_1, row, 9,
-                    QString("№ %1")
+                    sheet_1, row, 11,
+                    QString("%1")
                         .arg(a.maxFwdCycle + 1)
                 });
             } else {
                 // нет данных
                 report.data.push_back({ sheet_1, row, 8, QString() });
-                report.data.push_back({ sheet_1, row, 9, QString() });
+                report.data.push_back({ sheet_1, row, 11, QString() });
             }
 
             // Обратный ход (минимум)
             if (a.minRevCycle >= 0) {
                 report.data.push_back({
-                    sheet_1, row, 10,
-                    QString("%1 %")
+                    sheet_1, row, 12,
+                    QString("%1")
                         .arg(a.minRevVal,   0, 'f', 2)
                 });
                 report.data.push_back({
-                    sheet_1, row, 12,
-                    QString("№ %1")
+                    sheet_1, row, 15,
+                    QString("%1")
                         .arg(a.minRevCycle + 1)
                 });
             } else {
-                report.data.push_back({ sheet_1, row, 10, QString() });
                 report.data.push_back({ sheet_1, row, 12, QString() });
+                report.data.push_back({ sheet_1, row, 15, QString() });
             }
         }
     }
 
-    // Страница: Отчет ЦТ; Блок: Исполнитель
+    // Лист: Отчет ЦТ; Страница: 1; Блок: Исполнитель
     report.data.push_back({sheet_1, 56, 4, objectInfo.FIO});
     report.data.push_back({sheet_1, 60, 12, otherParams.date});
 
-    // Страница: Результат теста шаговой реакции; Блок: Данные по объекту
+    // Лист: Отчет ЦТ; Страница: 2; Блок: Данные по объекту
+    report.data.push_back({sheet_1, 65, 4, objectInfo.object});
+    report.data.push_back({sheet_1, 66, 4, objectInfo.manufactory});
+    report.data.push_back({sheet_1, 67, 4, objectInfo.department});
+
+    // Лист: Отчет ЦТ; Страница: 2; Блок: Краткая спецификация на клапан
+    report.data.push_back({sheet_1, 65, 13, valveInfo.positionNumber});
+    report.data.push_back({sheet_1, 66, 13, valveInfo.serialNumber});
+    report.data.push_back({sheet_1, 67, 13, valveInfo.valveModel});
+    report.data.push_back({sheet_1, 68, 13, valveInfo.manufacturer});
+    report.data.push_back({sheet_1, 69, 13, QString("%1 / %2")
+                                               .arg(valveInfo.DN)
+                                               .arg(valveInfo.PN)});
+    report.data.push_back({sheet_1, 70, 13, valveInfo.positionerModel});
+    report.data.push_back({sheet_1, 71, 13, QString("%1")
+                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});
+    report.data.push_back({sheet_1, 72, 13, otherParams.safePosition});
+    report.data.push_back({sheet_1, 73, 13, valveInfo.driveModel});
+    report.data.push_back({sheet_1, 74, 13, otherParams.strokeMovement});
+    report.data.push_back({sheet_1, 75, 13, valveInfo.materialStuffingBoxSeal});
+
+    // Лист: Отчет ЦТ; Страница: 2; Блок: Результат испытаний позиционера
+    report.data.push_back({sheet_1, 80, 8, telemetryStore.strokeTestRecord.timeForwardMs});
+    report.data.push_back({sheet_1, 82, 8, telemetryStore.strokeTestRecord.timeBackwardMs});
+    report.data.push_back({sheet_1, 84, 8, QString::number(telemetryStore.cyclicTestRecord.cycles)});
+    report.data.push_back({sheet_1, 86, 8, telemetryStore.cyclicTestRecord.sequence});
+    report.data.push_back({sheet_1, 88, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
+                                               .toString("mm:ss.zzz")});
+
+
+    // Лист: Отчет ЦТ; Страница: 2; Блок: Исполнитель
+    report.data.push_back({sheet_1, 117, 4, objectInfo.FIO});
+    // Лист: Отчет ЦТ; Страница: 2; Блок: Дата
+    report.data.push_back({sheet_1, 121, 12, otherParams.date});
+
+    // Лист: Результат теста шаговой реакции; Страница: 2; Блок: Данные по объекту
     report.data.push_back({sheet_2, 4, 4, objectInfo.object});
     report.data.push_back({sheet_2, 5, 4, objectInfo.manufactory});
     report.data.push_back({sheet_2, 6, 4, objectInfo.department});
@@ -170,7 +205,7 @@ void ReportBuilder_C_CVT::buildReport(
                                                .arg(valveInfo.DN)
                                                .arg(valveInfo.PN)});
     report.data.push_back({sheet_2, 9, 13, valveInfo.positionerModel});
-    report.data.push_back({sheet_2, 10, 13, QString("%1 бар")
+    report.data.push_back({sheet_2, 10, 13, QString("%1")
                                                 .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});    
     report.data.push_back({sheet_2, 11, 13, otherParams.safePosition});
     report.data.push_back({sheet_2, 12, 13, valveInfo.driveModel});
@@ -209,7 +244,7 @@ void ReportBuilder_C_CVT::buildReport(
                                                .arg(valveInfo.DN)
                                                .arg(valveInfo.PN)});
     report.data.push_back({sheet_3, 9, 13, valveInfo.positionerModel});
-    report.data.push_back({sheet_3, 10, 13, QString("%1 бар")
+    report.data.push_back({sheet_3, 10, 13, QString("%1")
                                                 .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2)});    
     report.data.push_back({sheet_3, 11, 13, otherParams.safePosition});
     report.data.push_back({sheet_3, 12, 13, valveInfo.driveModel});
@@ -218,11 +253,11 @@ void ReportBuilder_C_CVT::buildReport(
 
     // Страница: Отчет; Блок: Результат испытаний
     report.data.push_back({sheet_3, 20, 5,
-                            QString("%1 %")
+                            QString("%1")
                                .arg(telemetryStore.mainTestRecord.dynamicErrorReal, 0, 'f', 2)});
 
     report.data.push_back({sheet_3, 20, 8,
-                           QString("%1 %")
+                           QString("%1")
                                 .arg(valveInfo.dinamicErrorRecomend, 0, 'f', 2)});
 
     // report.data.push_back({sheet_3, 22, 5, telemetryStore.dinamicRecord.dinamicIpReal});
@@ -265,11 +300,9 @@ void ReportBuilder_C_CVT::buildReport(
 
     // Дата и Исполнитель
     report.data.push_back({sheet_3, 60, 12, otherParams.date});
-    report.data.push_back({sheet_3, 68,  4, objectInfo.FIO});
+    report.data.push_back({sheet_3, 68, 4, objectInfo.FIO});
 
-    // ------------------------------------------------------------------------
     // Страница: Отчет; Блок: Диагностические графики
-    // ------------------------------------------------------------------------
     report.images.push_back({sheet_3,  78, 1, imageChartTask});
     report.images.push_back({sheet_3, 103, 1, imageChartPressure});
     report.images.push_back({sheet_3, 128, 1, imageChartFriction});

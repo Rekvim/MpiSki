@@ -76,7 +76,7 @@ bool ReportSaver::saveReport(const Report &report, const QString &templatePath)
             int targetHeight = 0;
 
             targetWidth = 870;
-            targetHeight = 1200;
+            targetHeight = 400;
 
             QImage scaledImage = img.image.scaled(targetWidth, targetHeight,
                                                   Qt::KeepAspectRatio,

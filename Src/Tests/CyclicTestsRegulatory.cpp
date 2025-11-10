@@ -70,7 +70,7 @@ void CyclicTestsRegulatory::Process()
     TestResults r;
 
     r.strSequence = seqToString(m_task.sequence);
-    // r.ranges = calculateRanges(pts, m_task.sequence);
+    r.ranges = calculateRanges(pts, m_task.sequence);
     emit Results(r);
 
     emit EndTest();

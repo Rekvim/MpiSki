@@ -25,17 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lineEdit_crossingLimits_range_value->setValidator(validatorDigits);
     ui->lineEdit_crossingLimits_dynamicError_value->setValidator(validatorDigits);
 
-    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget->setTabEnabled(1, true);
-    ui->tabWidget->setTabEnabled(2, true);
-    ui->tabWidget->setTabEnabled(3, true);
-    ui->tabWidget->setTabEnabled(4, true);
-
-    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget->setTabEnabled(1, false);
-    // ui->tabWidget->setTabEnabled(2, false);
-    // ui->tabWidget->setTabEnabled(3, false);
-    // ui->tabWidget->setTabEnabled(4, false);
+    lockTabsForPreInit();
 
     m_mainTestSettings = new MainTestSettings(this);
     m_stepTestSettings = new StepTestSettings(this);
@@ -300,6 +290,27 @@ MainWindow::~MainWindow()
     m_program->deleteLater();
     delete ui;
 }
+
+void MainWindow::lockTabsForPreInit()
+{
+    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    ui->tabWidget->setTabEnabled(1, false);
+    ui->tabWidget->setTabEnabled(2, false);
+    ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
+}
+
+void MainWindow::updateAvailableTabs()
+{
+    // После инициализации отдаем контроль существующей логике
+    displayDependingPattern();
+    if (!m_isInitialized) {
+        // Подстраховка: до инициализации ничего не включаем
+        lockTabsForPreInit();
+        return;
+    }
+}
+
 void MainWindow::onCountdownTimeout()
 {
     quint64 elapsedMs = m_elapsedTimer.elapsed();
@@ -791,6 +802,11 @@ void MainWindow::displayDependingPattern() {
 void MainWindow::setSensorsNumber(quint8 num)
 {
     bool noSensors = (num == 0);
+
+    if (num > 0) {
+        m_isInitialized = true;
+    }
+    updateAvailableTabs();
 
     if (!m_blockCTS.moving) {
         ui->label_startingPositionValue->setVisible(false);

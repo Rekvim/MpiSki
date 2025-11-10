@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Выбор программы испытаний</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
@@ -1261,6 +1261,27 @@ border-radius: 6px;</string>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>button_C_SOVT</tabstop>
+  <tabstop>button_B_SACVT</tabstop>
+  <tabstop>button_C_SACVT</tabstop>
+  <tabstop>button_B_CVT</tabstop>
+  <tabstop>button_C_CVT</tabstop>
+  <tabstop>entry_testing</tabstop>
+  <tabstop>check_box_pressure_1</tabstop>
+  <tabstop>check_box_pressure_2</tabstop>
+  <tabstop>check_box_pressure_3</tabstop>
+  <tabstop>check_box_moving</tabstop>
+  <tabstop>check_box_input_4_20_mA</tabstop>
+  <tabstop>check_box_output_4_20_mA</tabstop>
+  <tabstop>check_box_usb</tabstop>
+  <tabstop>check_box_imit_switch_3_0</tabstop>
+  <tabstop>check_box_imit_switch_0_3</tabstop>
+  <tabstop>check_box_do_1</tabstop>
+  <tabstop>check_box_do_2</tabstop>
+  <tabstop>check_box_do_3</tabstop>
+  <tabstop>check_box_do_4</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
