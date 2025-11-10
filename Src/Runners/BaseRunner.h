@@ -4,17 +4,17 @@
 #include <QThread>
 #include <QMetaObject>
 #include <QObject>
-
-#include "./Src/Tests/Test.h"
 #include "./Src/Runners/ITestRunner.h"
-#include "./Src/MPI/MPI.h"
-#include "./Registry.h"
 
+class Test;
+class QThread;
+class MPI;
+class Registry;
 
 struct RunnerConfig {
-    Test*    worker = nullptr;   // конкретный *Test (MainTest/StepTest/...)
-    quint64  totalMs = 0;
-    int      chartToClear = -1;  // если надо очистить
+    Test* worker = nullptr;
+    quint64 totalMs = 0;
+    int chartToClear = -1;
 };
 
 class BaseRunner : public ITestRunner {
@@ -26,6 +26,7 @@ public:
 public slots:
     void start() final;   // вызывает buildConfig(), заводит поток, вешает общие connect’ы
     void stop() override; // дергает worker->StoppingTheTest()
+    void releaseBlock() final override;
 
 protected:
     virtual RunnerConfig buildConfig() = 0;          // собрать worker + задать totalMs/график
@@ -35,7 +36,7 @@ protected:
 
 private:
     QThread* m_thread = nullptr;
-    Test*    m_worker = nullptr;
+    Test* m_worker = nullptr;
 };
 
 #endif // BASERUNNER_H

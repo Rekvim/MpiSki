@@ -29,8 +29,13 @@ SOURCES += \
     Src/ReportBuilders/ReportBuilder_C_SOVT.cpp \
     Src/ReportBuilders/ReportSaver.cpp \
     Src/Runners/BaseRunner.cpp \
+    Src/Runners/CyclicRegulatoryRunner.cpp \
     Src/Runners/MainTestRunner.cpp \
+    Src/Runners/OptionResolutionRunner.cpp \
+    Src/Runners/OptionResponseRunner.cpp \
     Src/Runners/RunnerFactory.cpp \
+    Src/Runners/StepTestRunner.cpp \
+    Src/Runners/StrokeTestRunner.cpp \
     Src/Telemetry/TelemetryStore.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTests.cpp \
@@ -79,9 +84,14 @@ HEADERS += \
     Src/ReportBuilders/ReportBuilder_C_SOVT.h \
     Src/ReportBuilders/ReportSaver.h \
     Src/Runners/BaseRunner.h \
+    Src/Runners/CyclicRegulatoryRunner.h \
     Src/Runners/ITestRunner.h \
     Src/Runners/MainTestRunner.h \
+    Src/Runners/OptionResolutionRunner.h \
+    Src/Runners/OptionResponseRunner.h \
     Src/Runners/RunnerFactory.h \
+    Src/Runners/StepTestRunner.h \
+    Src/Runners/StrokeTestRunner.h \
     Src/Telemetry/TelemetryStore.h \
     Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTests.h \

@@ -5,8 +5,6 @@
 #include <QObject>
 #include <QPoint>
 
-#include "./Src/Telemetry/TelemetryStore.h"
-
 class TelemetryStore;
 
 class ITestRunner : public QObject {
@@ -18,16 +16,20 @@ public:
 public slots:
     virtual void start() = 0;  // запустить тест
     virtual void stop() = 0;  // попросить тест завершиться
+    virtual void releaseBlock() = 0;   // форвард внутрь воркера
 
 signals:
+    void requestClearChart(int chartIndex);
     void totalTestTimeMs(quint64);
     void endTest();
 
     // Унифицированные события для UI
-    void addPoints(int chart, const QVector<struct Point>&);
+    void addPoints(int chart, const QVector<struct QPoint>&);
     void clearPoints(int chart);
 
     void telemetryUpdated(const TelemetryStore&); // если понадобится
+    void requestSetDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart);
+
 };
 
 

@@ -12,24 +12,10 @@ void CyclicTestsRegulatory::SetPatternType(SelectTests::PatternType pt)
 
 void CyclicTestsRegulatory::Process()
 {
-
-    emit errorOccured(QString(">> Process() start; values=%1, delayMs=%2, holdMs=%3")
-                          .arg(m_task.values.size())
-                          .arg(m_task.delayMsecs)
-                          .arg(m_task.holdMsecs));
-
     if (m_task.values.isEmpty()) {
         emit errorOccured("values.isEmpty() → EndTest");
         emit EndTest();
         return;
-    }
-
-    {
-        QStringList lv;
-        for (quint16 v : m_task.values) lv << QString::number(v);
-        emit errorOccured(QString("Process(): m_task.values (count=%1): [%2]")
-                              .arg(m_task.values.size())
-                              .arg(lv.join(',')));
     }
 
     if (m_terminate) { emit EndTest(); return; }
@@ -107,12 +93,16 @@ CyclicTestsRegulatory::calculateRanges(const QVector<QVector<QPointF>>& pts,
          m_patternType == SelectTests::Pattern_B_SACVT ||
          m_patternType == SelectTests::Pattern_C_SACVT);
 
-    // для регулировочного теста достаточно двух кривых, а для «стандартных» — четырёх
     const int needed = useStandard ? 4 : 2;
     if (pts.size() < needed) return ranges;
     int baseIndex = useStandard ? 2 : 0;
     const auto& line = pts[baseIndex];
     const auto& task = pts[baseIndex + 1];
+
+    const bool hasSecond = sequence.size() > 1;
+    const int seq0 = sequence[0];
+    const int seq1 = hasSecond ? sequence[1] : sequence[0];
+
     if (line.isEmpty() || task.isEmpty()) return ranges;
 
     qreal prevLevel = task.first().y();
@@ -121,7 +111,7 @@ CyclicTestsRegulatory::calculateRanges(const QVector<QVector<QPointF>>& pts,
     int cycleCount = 0;
 
     RangeRec rec;
-    rec.rangePercent    = qRound(prevLevel);
+    rec.rangePercent = qRound(prevLevel);
     rec.maxForwardValue = std::numeric_limits<qreal>::lowest();
     rec.maxForwardCycle = -1;
     rec.maxReverseValue = std::numeric_limits<qreal>::max();
@@ -130,21 +120,24 @@ CyclicTestsRegulatory::calculateRanges(const QVector<QVector<QPointF>>& pts,
     const int total = qMin(line.size(), task.size());
     for (int i = 0; i < total; ++i) {
         qreal currLevel = task[i].y();
-        qreal meas      = line[i].y();
+        qreal meas = line[i].y();
 
         if (!qFuzzyCompare(currLevel, prevLevel)) {
-            // перед тем как пушить, проверяем, что в этом сегменте были хоть какие-то точки
             if (!firstSegment &&
                 (rec.maxForwardCycle >= 0 || rec.maxReverseCycle >= 0))
             {
                 ranges.push_back(rec);
             }
+
+            if (qRound(prevLevel) == seq0 && qRound(currLevel) == seq1) {
+                ++cycleCount;
+            }
+
             firstSegment = false;
             forward = currLevel > prevLevel;
-            if (qRound(currLevel) == sequence[0]) ++cycleCount;
 
             prevLevel = currLevel;
-            rec.rangePercent    = qRound(currLevel);
+            rec.rangePercent = qRound(currLevel);
             rec.maxForwardValue = std::numeric_limits<qreal>::lowest();
             rec.maxForwardCycle = -1;
             rec.maxReverseValue = std::numeric_limits<qreal>::max();

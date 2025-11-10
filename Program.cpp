@@ -5,6 +5,12 @@
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
 #include "./Src/Runners/MainTestRunner.h"
+#include "./Src/Runners/StepTestRunner.h"
+#include "./Src/Runners/StrokeTestRunner.h"
+#include "./Src/Runners/CyclicRegulatoryRunner.h"
+// #include "./Src/Runners/CyclicShutoffRunner.h"
+#include "./Src/Runners/OptionResponseRunner.h"
+#include "./Src/Runners/OptionResolutionRunner.h"
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -166,6 +172,7 @@ void Program::endTest()
 
     m_cyclicRunning = false;
     emit testFinished();
+    disposeActiveRunnerAsync();
 }
 
 void Program::setDAC_real(qreal value)
@@ -442,121 +449,39 @@ bool Program::isInitialized() const {
     return m_isInitialized;
 }
 
-void Program::runningMainTest()
-{
-    MainTestSettings::TestParameters parameters;
-    emit getParameters_mainTest(parameters);
-
-    if (parameters.delay == 0) {
-        emit stopTheTest();
-        return;
-    }
-
-    const quint64 delay = static_cast<quint64>(parameters.delay);
-    const quint64 response = static_cast<quint64>(parameters.response);
-    const quint64 pn = static_cast<quint64>(
-        parameters.pointNumbers * parameters.delay / parameters.response
-        );
-    const quint64 totalMs = 10000ULL
-                            + delay
-                            + (pn + 1) * response
-                            + delay
-                            + (pn + 1) * response
-                            + 10000ULL;
-    emit totalTestTimeMs(totalMs);
-
-    parameters.dac_min = qMax(m_mpi.GetDAC()->GetRawFromValue(parameters.signal_min),
-                              m_mpi.GetDac_Min());
-    parameters.dac_max = qMin(m_mpi.GetDAC()->GetRawFromValue(parameters.signal_max),
-                              m_mpi.GetDac_Max());
-
-    emit setButtonInitEnabled(false);
-
-    MainTest *mainTest = new MainTest;
-    mainTest->SetParameters(parameters);
-
-    QThread *threadTest = new QThread(this);
-    mainTest->moveToThread(threadTest);
-
-    connect(threadTest, &QThread::started,
-            mainTest, &MainTest::Process);
-
-    connect(mainTest, &MainTest::EndTest,
-            threadTest, &QThread::quit);
-
-    connect(this, &Program::stopTheTest,
-            mainTest, &MainTest::StoppingTheTest);
-
-    connect(threadTest, &QThread::finished,
-            threadTest, &QThread::deleteLater);
-
-    connect(threadTest, &QThread::finished,
-            mainTest, &MainTest::deleteLater);
-
-    connect(mainTest, &MainTest::EndTest,
-            this, &Program::endTest);
-
-    connect(mainTest, &MainTest::EndTest,
-            this, &Program::mainTestFinished);
-
-    connect(mainTest, &MainTest::UpdateGraph,
-            this, &Program::updateCharts_mainTest);
-
-    connect(mainTest, &MainTest::SetDAC,
-            this, &Program::setDAC);
-
-    connect(mainTest, &MainTest::DublSeries,
-            this, [&] { emit dublSeries(); });
-
-    connect(mainTest, &MainTest::GetPoints,
-            this, &Program::receivedPoints_mainTest,
-            Qt::BlockingQueuedConnection);
-
-    connect(mainTest, &MainTest::AddRegression,
-            this, &Program::addRegression);
-
-    connect(mainTest, &MainTest::AddFriction,
-            this, &Program::addFriction);
-
-    connect(this, &Program::releaseBlock,
-            mainTest, &MainTest::ReleaseBlock);
-
-    connect(mainTest, &MainTest::Results,
-            this, &Program::results_mainTest);
-
-    connect(mainTest, &MainTest::ShowDots,
-            this, [&](bool visible) { emit showDots(visible); });
-
-    connect(mainTest, &MainTest::ClearGraph, this, [&] {
-        emit clearPoints(Charts::Task);
-        emit clearPoints(Charts::Pressure);
-        emit clearPoints(Charts::Friction);
-        emit setRegressionEnable(false);
-    });
-
-    m_testing = true;
-    emit enableSetTask(false);
-    threadTest->start();
+void Program::disposeActiveRunnerAsync() {
+    if (!m_activeRunner) return;
+    QObject* obj = m_activeRunner.release();
+    QMetaObject::invokeMethod(obj, "deleteLater", Qt::QueuedConnection);
 }
 
-// void Program::runningMainTest()
-// {
-//     auto runner = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
+void Program::forwardGetParameters_mainTest(MainTestSettings::TestParameters* p) {
+    emit getParameters_mainTest(p);   // теперь межпоточно уходит pointer
+}
+void Program::runningMainTest()
+{
+    auto runner = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
 
-//     connect(runner.get(), &ITestRunner::totalTestTimeMs,
-//             this, &Program::totalTestTimeMs);
-//     connect(runner.get(), &ITestRunner::endTest,
-//             this, &Program::endTest);
+    connect(runner.get(), &ITestRunner::requestSetDAC, this, &Program::setDAC);
+    connect(this,   &Program::releaseBlock,      runner.get(), &ITestRunner::releaseBlock);
 
-//     connect(this, &Program::stopTheTest, runner.get(), &ITestRunner::stop);
+    connect(runner.get(), &MainTestRunner::getParameters_mainTest,
+            this,         &Program::forwardGetParameters_mainTest);
 
-//     emit setButtonInitEnabled(false);
-//     m_testing = true;
-//     emit enableSetTask(false);
+    connect(runner.get(), &ITestRunner::totalTestTimeMs,
+            this, &Program::totalTestTimeMs);
+    connect(runner.get(), &ITestRunner::endTest,
+            this, &Program::endTest);
 
-//     m_activeRunner = std::move(runner);
-//     m_activeRunner->start();
-// }
+    connect(this, &Program::stopTheTest, runner.get(), &ITestRunner::stop);
+
+    emit setButtonInitEnabled(false);
+    m_testing = true;
+    emit enableSetTask(false);
+
+    m_activeRunner = std::move(runner);
+    m_activeRunner->start();
+}
 
 void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
 {
@@ -664,7 +589,7 @@ void Program::runningStrokeTest()
             strokeTest, &StrokeTest::deleteLater);
 
     connect(this, &Program::releaseBlock,
-            strokeTest, &MainTest::ReleaseBlock);
+            strokeTest, &StrokeTest::ReleaseBlock);
 
     connect(strokeTest, &StrokeTest::EndTest,
             this, &Program::endTest);
@@ -1005,14 +930,15 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
     emit telemetryUpdated(m_telemetryStore);
 }
 
-
-void Program::runningCyclicCombined(const CyclicTestSettings::TestParameters &p)
-{
-    runningCyclicRegulatory(p);
-
-    connect(this, &Program::testFinished, this, [this, p]() {
-        runningCyclicShutoff(p);
-    }, Qt::SingleShotConnection);
+void Program::runningCyclicCombined(const CyclicTestSettings::TestParameters &p) {
+    // 1) стартуем регуляторный
+    auto reg = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry, this);
+    // connect(this, &Program::testFinished, this, [this]() {
+    //     // 2) по завершению – запускаем Shutoff
+    //     auto shut = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, this);
+    //     startRunner(std::move(shut));
+    // }, Qt::SingleShotConnection);
+    startRunner(std::move(reg));
 }
 
 void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
@@ -1148,227 +1074,34 @@ void Program::results_cyclicTests(const CyclicTests::TestResults& r)
 
 void Program::runningOptionalTest(quint8 testNum)
 {
-    OptionTest::Task task;
-    OptionTest *optionalTest;
-
     switch (testNum) {
-    case 0: {
-        optionalTest = new OptionTest;
-
-        OtherTestSettings::TestParameters parameters;
-        emit getParameters_responseTest(parameters);
-
-        if (parameters.points.empty()) {
-            delete optionalTest;
-            emit stopTheTest();
-            return;
-        }
-
-        const quint64 P = static_cast<quint64>(parameters.points.size());
-        const quint64 S = static_cast<quint64>(parameters.steps.size());
-        const quint64 delay = static_cast<quint64>(parameters.delay);
-
-        const quint64 N_values = 1 + 2 * P * (1 + S);
-        const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
-        emit totalTestTimeMs(totalMs);
-
-        task.delay = parameters.delay;
-
-        ValveInfo *valveInfo = m_registry->getValveInfo();
-
-        bool normalOpen = (valveInfo->safePosition != 0);
-
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));
-
-        for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
-            for (quint8 i = 0; i < 2; i++) {
-                qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
-                qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
-                task.value.push_back(dacValue);
-
-                for (auto it_s = parameters.steps.begin(); it_s < parameters.steps.end(); ++it_s) {
-                    current += (16 * *it_s / 100) * (i == 0 ? 1 : -1) * (normalOpen ? -1 : 1);
-                    dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
-                    task.value.push_back(dacValue);
-                }
-            }
-        }
-
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));
-
-        optionalTest->SetTask(task);
-
-        connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            updateCharts_optionTest(Charts::Response);
-        });
-
-        emit clearPoints(Charts::Response);
-
+    case 0: { // Response
+        auto r = std::make_unique<OptionResponseRunner>(m_mpi, *m_registry, this);
+        connect(r.get(), &OptionResponseRunner::getParameters_responseTest,
+                this,    [&](OtherTestSettings::TestParameters& p){
+                    emit getParameters_responseTest(p);
+                });
+        startRunner(std::move(r));
         break;
     }
-
-    case 1: {
-        optionalTest = new OptionTest;
-        OtherTestSettings::TestParameters parameters;
-        emit getParameters_resolutionTest(parameters);
-
-        if (parameters.points.empty()) {
-            delete optionalTest;
-            emit stopTheTest();
-            return;
-        }
-
-        const quint64 P = static_cast<quint64>(parameters.points.size());
-        const quint64 S = static_cast<quint64>(parameters.steps.size());
-        const quint64 delay = static_cast<quint64>(parameters.delay);
-
-        // Изменяем расчет N_values - добавляем P для возвратов к базовым точкам
-        const quint64 N_values = 1 + P * (2 * S + 1); // +1 для возврата к базовой точке после шагов
-        const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
-        emit totalTestTimeMs(totalMs);
-
-        task.delay = parameters.delay;
-
-        ValveInfo *valveInfo = m_registry->getValveInfo();
-        bool normalOpen = (valveInfo->safePosition != 0);
-
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));
-
-        for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
-            qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
-            qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
-
-            // Добавляем начальное значение точки
-            task.value.push_back(dacValue);
-
-            for (auto it_s = parameters.steps.begin(); it_s < parameters.steps.end(); ++it_s) {
-                // Поднимаемся на шаг
-                current = (16 * (normalOpen ? 100 - *it - *it_s : *it + *it_s) / 100 + 4.0);
-                qreal dacValueStep = m_mpi.GetDAC()->GetRawFromValue(current);
-                task.value.push_back(dacValueStep);
-
-                // Возвращаемся к базовой точке
-                task.value.push_back(dacValue);
-            }
-
-            // После всех шагов остаемся на базовой точке перед переходом к следующей
-            // (значение уже добавлено в конце внутреннего цикла)
-        }
-
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(4.0));
-
-        optionalTest->SetTask(task);
-
-        connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            updateCharts_optionTest(Charts::Resolution);
-        });
-
-        emit clearPoints(Charts::Resolution);
-
+    case 1: { // Resolution
+        auto r = std::make_unique<OptionResolutionRunner>(m_mpi, *m_registry, this);
+        connect(r.get(), &OptionResolutionRunner::getParameters_resolutionTest,
+                this,    [&](OtherTestSettings::TestParameters& p){
+                    emit getParameters_resolutionTest(p);
+                });
+        startRunner(std::move(r));
         break;
     }
-
     case 2: {
-        optionalTest = new StepTest;
-        StepTestSettings::TestParameters parameters;
-        emit getParameters_stepTest(parameters);
-
-        if (parameters.points.empty()) {
-            delete optionalTest;
-            emit stopTheTest();
-            return;
-        }
-
-        const quint64 P = static_cast<quint64>(parameters.points.size());
-        const quint64 delay = static_cast<quint64>(parameters.delay);
-        // N_values = 1 старт + P прямой + 1 конец + P обратный + 1 возврат = 3 + 2*P
-        const quint64 N_values = 3 + 2 * P;
-        const quint64 totalMs = 10000ULL + N_values * delay;
-        emit totalTestTimeMs(totalMs);
-
-        task.delay = parameters.delay;
-        ValveInfo *valveInfo = m_registry->getValveInfo();
-        bool normalOpen = (valveInfo->safePosition != 0);
-
-        qreal startValue = 4.0;
-        qreal endValue = 20.0;
-
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
-
-        for (auto it = parameters.points.begin(); it != parameters.points.end(); ++it) {
-            qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
-            qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
-            task.value.push_back(dacValue);
-        }
-
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(endValue));
-
-        for (auto it = parameters.points.rbegin(); it != parameters.points.rend(); ++it) {
-            qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
-            qreal dacValue = m_mpi.GetDAC()->GetRawFromValue(current);
-            task.value.push_back(dacValue);
-        }
-
-        task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
-
-        optionalTest->SetTask(task);
-        dynamic_cast<StepTest *>(optionalTest)->Set_T_value(parameters.test_value);
-
-        connect(optionalTest, &OptionTest::UpdateGraph, this, [&] {
-            updateCharts_optionTest(Charts::Step);
-        });
-
-        connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::GetPoints,
-                this, &Program::receivedPoints_stepTest,
-                Qt::BlockingQueuedConnection);
-
-        connect(dynamic_cast<StepTest *>(optionalTest), &StepTest::Results,
-                this, &Program::results_stepTest);
-
-        emit clearPoints(Charts::Step);
-
+        auto r = std::make_unique<StepTestRunner>(m_mpi, *m_registry, this);
+        startRunner(std::move(r));
         break;
     }
     default:
         emit stopTheTest();
-        return;
+        break;
     }
-
-    QThread *threadTest = new QThread(this);
-    optionalTest->moveToThread(threadTest);
-
-    emit setButtonInitEnabled(false);
-
-    connect(threadTest, &QThread::started,
-            optionalTest, &OptionTest::Process);
-
-    connect(optionalTest, &OptionTest::EndTest,
-            threadTest, &QThread::quit);
-
-    connect(this, &Program::stopTheTest,
-            optionalTest, &OptionTest::StoppingTheTest);
-
-    connect(threadTest, &QThread::finished,
-            threadTest, &QThread::deleteLater);
-
-    connect(threadTest, &QThread::finished,
-            optionalTest, &OptionTest::deleteLater);
-
-    connect(this, &Program::releaseBlock,
-            optionalTest, &MainTest::ReleaseBlock);
-
-    connect(optionalTest, &OptionTest::EndTest,
-            this, &Program::endTest);
-
-    connect(optionalTest, &OptionTest::SetDAC,
-            this, &Program::setDAC);
-
-    connect(optionalTest, &OptionTest::SetStartTime,
-            this, &Program::setTimeStart);
-
-    m_testing = true;
-    emit enableSetTask(false);
-    threadTest->start();
 }
 
 void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)

@@ -368,6 +368,11 @@ void MainWindow::onTotalTestTimeMs(quint64 totalMs)
             .arg(msec,    3, 10, QChar('0'));
     };
 
+    if (!m_testing) {          // <- добавьте этот блок
+        startTest();           // теперь статус "Тест в процессе" включается,
+        m_testing = true;      // когда раннер действительно собирается стартовать
+    }
+
     ui->statusbar->showMessage(
         QStringLiteral("Плановая длительность теста: %1").arg(formatHMS(m_totalTestMs))
         );
@@ -930,15 +935,14 @@ void MainWindow::setRegressionEnable(bool enable)
     ui->checkBox_regression->setCheckState(enable ? Qt::Checked : Qt::Unchecked);
 }
 
-void MainWindow::receivedParameters_mainTest(MainTestSettings::TestParameters &parameters)
+void MainWindow::receivedParameters_mainTest(MainTestSettings::TestParameters *parameters)
 {
     if (m_mainTestSettings->exec() == QDialog::Accepted) {
-        parameters = m_mainTestSettings->getParameters();
-        return;
+        *parameters = m_mainTestSettings->getParameters();
+    } else {
+        // признак отмены, как и раньше
+        parameters->delay = 0;
     }
-
-    parameters.delay = 0;
-    return;
 }
 
 void MainWindow::receivedParameters_stepTest(StepTestSettings::TestParameters &parameters)
@@ -1112,7 +1116,7 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
     } else {
         m_userCanceled = false;
         emit runMainTest();
-        startTest();
+        // startTest();
     }
 }
 void MainWindow::on_pushButton_mainTest_save_clicked()

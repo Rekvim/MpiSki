@@ -12,7 +12,7 @@ public:
     using BaseRunner::BaseRunner;
 
 signals:
-    void getParameters_mainTest(struct MainTestSettings::TestParameters&);
+    void getParameters_mainTest(MainTestSettings::TestParameters*);
 
 protected:
     RunnerConfig buildConfig() override;

@@ -11,12 +11,12 @@ void OptionTest::Process()
         emit EndTest();
         return;
     }
+    emit SetStartTime();
 
     SetDACBlocked(m_task.value.first(), 10000, true);
 
     if (m_terminate) { emit EndTest(); return; }
 
-    emit SetStartTime();
 
     m_graphTimer->start(50);
 

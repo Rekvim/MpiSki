@@ -3,6 +3,7 @@
 
 #pragma once
 #include <QDialog>
+#include <QMetaType>
 
 namespace Ui {
 class MainTestSettings;
@@ -39,5 +40,7 @@ public:
 private:
     Ui::MainTestSettings *ui;
 };
+
+Q_DECLARE_METATYPE(MainTestSettings::TestParameters)
 
 #endif // MAINTESTSETTINGS_H

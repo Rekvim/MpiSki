@@ -100,7 +100,7 @@ signals:
     void releaseBlock();
 
     void mainTestFinished();
-    void getParameters_mainTest(MainTestSettings::TestParameters &parameters);
+    void getParameters_mainTest(struct MainTestSettings::TestParameters *parameters);
     void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
     void getParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
@@ -113,9 +113,6 @@ signals:
     void totalTestTimeMs(quint64 totalMs);
 
 private:
-    std::unique_ptr<ITestRunner> m_activeRunner;
-
-
     SelectTests::PatternType m_patternType;
 
     inline qreal calcPercent(qreal value, bool invert = false) {
@@ -123,6 +120,29 @@ private:
         percent = qBound<qreal>(0.0, percent, 100.0);
         return invert ? (100.0 - percent) : percent;
     }
+
+    std::unique_ptr<ITestRunner> m_activeRunner;
+    template<typename RunnerT>
+    void startRunner(std::unique_ptr<RunnerT> r) {
+        disposeActiveRunnerAsync();
+        connect(r.get(), &ITestRunner::requestClearChart, this, [this](int chart){
+            emit clearPoints(static_cast<Charts>(chart));
+        });
+        connect(r.get(), &ITestRunner::requestSetDAC, this, &Program::setDAC);
+        connect(this, &Program::releaseBlock, r.get(), &ITestRunner::releaseBlock);
+        connect(r.get(), &ITestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
+        connect(r.get(), &ITestRunner::endTest, this, &Program::endTest);
+        connect(this, &Program::stopTheTest, r.get(), &ITestRunner::stop);
+        connect(r.get(), &ITestRunner::endTest, this, [this]{ disposeActiveRunnerAsync(); });
+        emit setButtonInitEnabled(false);
+        m_testing = true;
+        emit enableSetTask(false);
+
+        m_activeRunner = std::move(r);
+        m_activeRunner->start();
+    }
+
+    void disposeActiveRunnerAsync();
 
     // init
     bool connectAndInitDevice();
@@ -164,17 +184,14 @@ private:
 
 private slots:
     void updateSensors();
+    void setMultipleDO(const QVector<bool>& states);
 
+public slots:
     void setDAC(quint16 dac,
                 quint32 sleep_ms = 0,
                 bool waitForStop = false,
                 bool waitForStart = false);
-    void setMultipleDO(const QVector<bool>& states);
-    void setTimeStart();
 
-
-
-public slots:
     void initialization();
 
     void updateCharts_mainTest();
@@ -204,10 +221,16 @@ public slots:
     void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points);
 
     void setDAC_real(qreal value);
+    void setTimeStart();
 
     void runningMainTest();
     void runningStrokeTest();
     void runningOptionalTest(quint8 testNum);
+
+    void forwardGetParameters_mainTest(MainTestSettings::TestParameters* p);
+    void forwardGetParameters_responseTest(OtherTestSettings::TestParameters& p) { emit getParameters_responseTest(p); }
+    void forwardGetParameters_resolutionTest(OtherTestSettings::TestParameters& p) { emit getParameters_resolutionTest(p); }
+
     void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
     void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);
     void runningCyclicCombined(const CyclicTestSettings::TestParameters &p);

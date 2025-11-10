@@ -1,10 +1,11 @@
 #include "MainTestRunner.h"
 #include "./Src/Tests/MainTest.h"
+#include "./MainTestSettings.h"
 #include "./Program.h"
 
 RunnerConfig MainTestRunner::buildConfig() {
     MainTestSettings::TestParameters p{};
-    emit getParameters_mainTest(p);
+    emit getParameters_mainTest(&p);
     if (p.delay == 0) {
         return {};
     }
@@ -15,7 +16,6 @@ RunnerConfig MainTestRunner::buildConfig() {
     const quint64 totalMs =
         10000ULL + delay + (pn + 1) * response + delay + (pn + 1) * response + 10000ULL;
 
-    // Коррекция границ DAC по твоим правилам
     p.dac_min = qMax(m_mpi.GetDAC()->GetRawFromValue(p.signal_min), m_mpi.GetDac_Min());
     p.dac_max = qMin(m_mpi.GetDAC()->GetRawFromValue(p.signal_max), m_mpi.GetDac_Max());
 
@@ -23,9 +23,9 @@ RunnerConfig MainTestRunner::buildConfig() {
     worker->SetParameters(p);
 
     RunnerConfig cfg;
-    cfg.worker       = worker;
-    cfg.totalMs      = totalMs;
-    cfg.chartToClear = /* например */ 0; // Charts::Task (подставь твой enum)
+    cfg.worker = worker;
+    cfg.totalMs = totalMs;
+    cfg.chartToClear = static_cast<int>(Charts::Task);
     return cfg;
 }
 
@@ -36,6 +36,7 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
 
     connect(&t, &MainTest::EndTest,
             owner, &Program::endTest);
+
     connect(&t, &MainTest::EndTest,
             owner, &Program::mainTestFinished);
 

@@ -1,4 +1,8 @@
 #include "./Src/Runners/BaseRunner.h"
+#include "./Src/Tests/Test.h"
+#include "./Src/Runners/ITestRunner.h"
+#include "./Src/MPI/MPI.h"
+#include "./Registry.h"
 
 BaseRunner::BaseRunner(MPI& mpi, Registry& reg, QObject* parent)
     : ITestRunner(parent), m_mpi(mpi), m_reg(reg) {}
@@ -11,6 +15,8 @@ void BaseRunner::start() {
         emit endTest();
         return;
     }
+    emit requestClearChart(cfg.chartToClear);
+
     m_worker = cfg.worker;
 
     if (cfg.chartToClear >= 0)
@@ -26,6 +32,14 @@ void BaseRunner::start() {
 
     connect(m_worker, &Test::EndTest,
             m_thread, &QThread::quit);
+
+    connect(m_worker, SIGNAL(SetDAC(quint16,quint32,bool,bool)),
+            this, SIGNAL(requestSetDAC(quint16,quint32,bool,bool)),
+            Qt::QueuedConnection);
+
+    connect(this, SIGNAL(releaseBlock()),
+            m_worker, SLOT(ReleaseBlock()),
+            Qt::QueuedConnection);
 
     connect(m_thread, &QThread::finished,
             m_thread, &QObject::deleteLater);
@@ -45,4 +59,9 @@ void BaseRunner::stop() {
     if (m_worker) {
         QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::QueuedConnection);
     }
+}
+
+void BaseRunner::releaseBlock() {
+    if (m_worker)
+        QMetaObject::invokeMethod(m_worker, "ReleaseBlock", Qt::QueuedConnection);
 }
