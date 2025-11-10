@@ -28,6 +28,9 @@ SOURCES += \
     Src/ReportBuilders/ReportBuilder_C_SACVT.cpp \
     Src/ReportBuilders/ReportBuilder_C_SOVT.cpp \
     Src/ReportBuilders/ReportSaver.cpp \
+    Src/Runners/BaseRunner.cpp \
+    Src/Runners/MainTestRunner.cpp \
+    Src/Runners/RunnerFactory.cpp \
     Src/Telemetry/TelemetryStore.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTests.cpp \
@@ -75,6 +78,10 @@ HEADERS += \
     Src/ReportBuilders/ReportBuilder_C_SACVT.h \
     Src/ReportBuilders/ReportBuilder_C_SOVT.h \
     Src/ReportBuilders/ReportSaver.h \
+    Src/Runners/BaseRunner.h \
+    Src/Runners/ITestRunner.h \
+    Src/Runners/MainTestRunner.h \
+    Src/Runners/RunnerFactory.h \
     Src/Telemetry/TelemetryStore.h \
     Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTests.h \

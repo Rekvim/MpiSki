@@ -4,6 +4,7 @@
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
+#include "./Src/Runners/MainTestRunner.h"
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -537,6 +538,25 @@ void Program::runningMainTest()
     emit enableSetTask(false);
     threadTest->start();
 }
+
+// void Program::runningMainTest()
+// {
+//     auto runner = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
+
+//     connect(runner.get(), &ITestRunner::totalTestTimeMs,
+//             this, &Program::totalTestTimeMs);
+//     connect(runner.get(), &ITestRunner::endTest,
+//             this, &Program::endTest);
+
+//     connect(this, &Program::stopTheTest, runner.get(), &ITestRunner::stop);
+
+//     emit setButtonInitEnabled(false);
+//     m_testing = true;
+//     emit enableSetTask(false);
+
+//     m_activeRunner = std::move(runner);
+//     m_activeRunner->start();
+// }
 
 void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
 {
@@ -1280,15 +1300,6 @@ void Program::runningOptionalTest(quint8 testNum)
 
         task.value.push_back(m_mpi.GetDAC()->GetRawFromValue(startValue));
 
-        // {
-        //     QStringList listVals2;
-        //     for (quint16 v : task.value)
-        //         listVals2 << QString::number(v);
-        //     emit errorOccured(QString("StepTest Task.value (count=%1): [%2]")
-        //                           .arg(task.value.size())
-        //                           .arg(listVals2.join(',')));
-        // }
-
         optionalTest->SetTask(task);
         dynamic_cast<StepTest *>(optionalTest)->Set_T_value(parameters.test_value);
 
@@ -1346,7 +1357,6 @@ void Program::runningOptionalTest(quint8 testNum)
 
     m_testing = true;
     emit enableSetTask(false);
-    emit clearPoints(Charts::Cyclic);
     threadTest->start();
 }
 

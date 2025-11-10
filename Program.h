@@ -16,6 +16,8 @@
 
 #include "Registry.h"
 #include "./Src/Telemetry/TelemetryStore.h"
+#include "./Src/Runners/ITestRunner.h"
+
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/MainTest.h"
 #include "./Src/Tests/CyclicTests.h"
@@ -111,6 +113,7 @@ signals:
     void totalTestTimeMs(quint64 totalMs);
 
 private:
+    std::unique_ptr<ITestRunner> m_activeRunner;
 
 
     SelectTests::PatternType m_patternType;
@@ -169,6 +172,11 @@ private slots:
     void setMultipleDO(const QVector<bool>& states);
     void setTimeStart();
 
+
+
+public slots:
+    void initialization();
+
     void updateCharts_mainTest();
     void updateCharts_strokeTest();
     void updateCharts_optionTest(Charts chart);
@@ -184,10 +192,6 @@ private slots:
 
     void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
                                      const CyclicTestsShutoff::TestResults& shutoffResults);
-
-
-public slots:
-    void initialization();
 
     void setInitDOStates(const QVector<bool> &states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
