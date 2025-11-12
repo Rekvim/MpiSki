@@ -15,14 +15,12 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<MainTestSettings::TestParameters>("MainTestSettings::TestParameters");
     qRegisterMetaType<MainTestSettings::TestParameters*>("MainTestSettings::TestParameters*");
-
+    qRegisterMetaType<TelemetryStore>("TelemetryStore");
 
     QTranslator qtTranslator;
 
     if (qtTranslator.load("qt_ru.qm", ":/translations"))
         a.installTranslator(&qtTranslator);
-
-    qRegisterMetaType<TelemetryStore>("TelemetryStore");
 
     Registry registry;
 

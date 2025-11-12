@@ -1147,11 +1147,6 @@ void MainWindow::promptSaveCharts()
         saveChart(Charts::Task);
         saveChart(Charts::Pressure);
         saveChart(Charts::Friction);
-        QMessageBox::information(
-            this,
-            QStringLiteral("Готово"),
-            QStringLiteral("Графики сохранены в текущую папку отчётов.")
-            );
     }
 }
 

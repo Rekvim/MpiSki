@@ -157,6 +157,8 @@ private:
     void calculateAndApplyCoefficients();
     void recordStrokeRange(bool normalClosed);
     void finalizeInitialization();
+
+
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
     QString seqToString(const QVector<quint16>& seq);
 
