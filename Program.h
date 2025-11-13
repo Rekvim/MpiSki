@@ -30,11 +30,9 @@ enum class TextObjects {
 
     LineEdit_linearSensor,
     LineEdit_linearSensorPercent,
-
     LineEdit_pressureSensor_1,
     LineEdit_pressureSensor_2,
     LineEdit_pressureSensor_3,
-
     LineEdit_feedback_4_20mA,
 };
 
@@ -87,7 +85,7 @@ signals:
     void getPoints(QVector<QVector<QPointF>> &points, Charts chart);
 
     void getPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
-    void getPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void getPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
 
     void addPoints(Charts chart, QVector<Point> points);

@@ -77,7 +77,7 @@ void ValveWindow::applyPatternVisibility()
 
         break;
     default:
-        QMessageBox::warning(this, QStringLiteral("Ошибка"), QStringLiteral("Не выбран корректный паттерн!"));
+        QMessageBox::warning(this, tr("Ошибка"), tr("Не выбран корректный паттерн!"));
         return;
     }
 }
@@ -88,11 +88,11 @@ void ValveWindow::onPositionerTypeChanged(quint8 index)
 
     ui->comboBox_dinamicError->clear();
 
-    if (selected == QStringLiteral("Интеллектуальный ЭПП")) {
+    if (selected == tr("Интеллектуальный ЭПП")) {
         ui->comboBox_dinamicError->addItem(QStringLiteral("1.5"));
         ui->comboBox_dinamicError->setCurrentIndex(0);
     }
-    else if (selected == QStringLiteral("ЭПП") || selected == QStringLiteral("ПП")) {
+    else if (selected == tr("ЭПП") || selected == tr("ПП")) {
         ui->comboBox_dinamicError->addItem(QStringLiteral("2.5"));
         ui->comboBox_dinamicError->setCurrentIndex(0);
     }
@@ -225,8 +225,8 @@ void ValveWindow::on_pushButton_netWindow_clicked()
 {
     if (ui->lineEdit_positionNumber->text().isEmpty()) {
         QMessageBox::warning(this, 
-            QStringLiteral("Ошибка"), 
-            QStringLiteral("Введите номер позиции"));
+            tr("Ошибка"),
+            tr("Введите номер позиции"));
         return;
     }
 
@@ -238,8 +238,8 @@ void ValveWindow::on_pushButton_netWindow_clicked()
 
         QMessageBox::StandardButton button
             = QMessageBox::question(this,
-                                    QStringLiteral("Предупреждение"),
-                                    QStringLiteral("Введены не все данные, вы действительно хотите продолжить?"));
+                                    tr("Предупреждение"),
+                                    tr("Введены не все данные, вы действительно хотите продолжить?"));
 
         if (button == QMessageBox::StandardButton::No) {
             return;

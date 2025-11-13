@@ -98,10 +98,10 @@ private slots:
     void endTest();
 
     void receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
-    void receivedPoints_optionTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void receivedPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart);
     void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
 
-    void receivedParameters_mainTest(MainTestSettings::TestParameters *parameters);
+    void receivedParameters_mainTest(MainTestSettings::TestParameters &parameters);
     void receivedParameters_stepTest(StepTestSettings::TestParameters &parameters);
     void receivedParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
     void receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters);

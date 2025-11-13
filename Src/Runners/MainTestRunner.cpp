@@ -5,7 +5,7 @@
 
 RunnerConfig MainTestRunner::buildConfig() {
     MainTestSettings::TestParameters p{};
-    emit getParameters_mainTest(&p);
+    emit getParameters_mainTest(p);
     if (p.delay == 0) {
         return {};
     }

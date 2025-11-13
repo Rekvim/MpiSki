@@ -565,53 +565,10 @@ void Program::addRegression(const QVector<QPointF> &points)
     emit setRegressionEnable(true);
 }
 
-void Program::runningStrokeTest()
-{
-    emit setButtonInitEnabled(false);
-    emit clearPoints(Charts::Stroke);
-
-    StrokeTest *strokeTest = new StrokeTest;
-    QThread *threadTest = new QThread(this);
-    strokeTest->moveToThread(threadTest);
-
-    connect(threadTest, &QThread::started,
-            strokeTest, &StrokeTest::Process);
-
-    connect(strokeTest, &StrokeTest::EndTest,
-            threadTest, &QThread::quit);
-
-    connect(this, &Program::stopTheTest,
-            strokeTest, &StrokeTest::StoppingTheTest);
-
-    connect(threadTest, &QThread::finished,
-            threadTest, &QThread::deleteLater);
-
-    connect(threadTest, &QThread::finished,
-            strokeTest, &StrokeTest::deleteLater);
-
-    connect(this, &Program::releaseBlock,
-            strokeTest, &StrokeTest::ReleaseBlock);
-
-    connect(strokeTest, &StrokeTest::EndTest,
-            this, &Program::endTest);
-
-    connect(strokeTest, &StrokeTest::UpdateGraph,
-            this, &Program::updateCharts_strokeTest);
-
-    connect(strokeTest, &StrokeTest::SetDAC,
-            this, &Program::setDAC);
-
-    connect(strokeTest, &StrokeTest::SetStartTime,
-            this, &Program::setTimeStart);
-
-    connect(strokeTest, &StrokeTest::Results,
-            this, &Program::results_strokeTest);
-
-    m_testing = true;
-    emit enableSetTask(false);
-    threadTest->start();
+void Program::runningStrokeTest() {
+    auto r = std::make_unique<StrokeTestRunner>(m_mpi, *m_registry, this);
+    startRunner(std::move(r));
 }
-
 
 void Program::results_strokeTest(const quint64 forwardTime, const quint64 backwardTime)
 {
@@ -1076,19 +1033,19 @@ void Program::results_cyclicTests(const CyclicTests::TestResults& r)
 void Program::runningOptionalTest(quint8 testNum)
 {
     switch (testNum) {
-    case 0: { // Response
+    case 0: {
         auto r = std::make_unique<OptionResponseRunner>(m_mpi, *m_registry, this);
         connect(r.get(), &OptionResponseRunner::getParameters_responseTest,
-                this,    [&](OtherTestSettings::TestParameters& p){
+                this, [&](OtherTestSettings::TestParameters& p){
                     emit getParameters_responseTest(p);
                 });
         startRunner(std::move(r));
         break;
     }
-    case 1: { // Resolution
+    case 1: {
         auto r = std::make_unique<OptionResolutionRunner>(m_mpi, *m_registry, this);
         connect(r.get(), &OptionResolutionRunner::getParameters_resolutionTest,
-                this,    [&](OtherTestSettings::TestParameters& p){
+                this, [&](OtherTestSettings::TestParameters& p){
                     emit getParameters_resolutionTest(p);
                 });
         startRunner(std::move(r));
@@ -1107,7 +1064,7 @@ void Program::runningOptionalTest(quint8 testNum)
 
 void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
 {
-    emit getPoints_optionTest(points, Charts::Step);
+    emit getPoints_stepTest(points, Charts::Step);
 }
 
 void Program::results_stepTest(const QVector<StepTest::TestResult> &results, quint32 T_value)

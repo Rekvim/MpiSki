@@ -32,7 +32,7 @@ private:
     Registry *m_registry;
     ValveInfo *m_valveInfo;
 
-    inline static const QString kManualInput = QStringLiteral("Ручной ввод");
+    const QString kManualInput = tr("Ручной ввод");
     QList<QString> m_diameter = {QStringLiteral("50.0"), QStringLiteral("86.0"), QStringLiteral("108.0"), QStringLiteral("125.0")};
     QJsonObject m_valveDataObj;
 
