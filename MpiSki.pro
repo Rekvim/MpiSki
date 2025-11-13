@@ -20,8 +20,8 @@ SOURCES += \
     CyclicTestSettings.cpp \
     Src/CustomChart/MyChart.cpp \
     Src/CustomChart/MySeries.cpp \
-    Src/MPI/MPI.cpp \
-    Src/MPI/MpiSettings.cpp \
+    Src/Mpi/Mpi.cpp \
+    Src/Mpi/MpiSettings.cpp \
     Src/ReportBuilders/ReportBuilder_B_CVT.cpp \
     Src/ReportBuilders/ReportBuilder_B_SACVT.cpp \
     Src/ReportBuilders/ReportBuilder_C_CVT.cpp \
@@ -74,8 +74,8 @@ HEADERS += \
     Sensor.h \
     Src/CustomChart/MyChart.h \
     Src/CustomChart/MySeries.h \
-    Src/MPI/MPI.h \
-    Src/MPI/MpiSettings.h \
+    Src/Mpi/Mpi.h \
+    Src/Mpi/MpiSettings.h \
     Src/ReportBuilders/ReportBuilder.h \
     Src/ReportBuilders/ReportBuilder_B_CVT.h \
     Src/ReportBuilders/ReportBuilder_B_SACVT.h \

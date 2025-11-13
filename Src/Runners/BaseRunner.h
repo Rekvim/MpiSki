@@ -8,7 +8,7 @@
 
 class Test;
 class QThread;
-class MPI;
+class Mpi;
 class Registry;
 
 struct RunnerConfig {
@@ -20,7 +20,7 @@ struct RunnerConfig {
 class BaseRunner : public ITestRunner {
     Q_OBJECT
 public:
-    BaseRunner(MPI& mpi, Registry& reg, QObject* parent=nullptr);
+    BaseRunner(Mpi& mpi, Registry& reg, QObject* parent=nullptr);
     ~BaseRunner() override;
 
 public slots:
@@ -32,7 +32,8 @@ protected:
     virtual RunnerConfig buildConfig() = 0;          // собрать worker + задать totalMs/график
     virtual void wireSpecificSignals(Test& t) {}     // доцепить спец. сигналы текущего теста
 
-    MPI& m_mpi; Registry& m_reg;
+    Mpi& m_mpi;
+    Registry& m_reg;
 
 private:
     QThread* m_thread = nullptr;

@@ -8,7 +8,7 @@
 
 
 std::unique_ptr<ITestRunner>
-RunnerFactory::create(RunnerKind kind, MPI& mpi, Registry& reg, QObject* parent)
+RunnerFactory::create(RunnerKind kind, Mpi& mpi, Registry& reg, QObject* parent)
 {
     switch (kind) {
     case RunnerKind::Main: return std::make_unique<MainTestRunner>(mpi, reg, parent);

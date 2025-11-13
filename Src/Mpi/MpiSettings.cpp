@@ -7,7 +7,7 @@ MpiSettings::MpiSettings(QObject *parent)
 
     settings.beginGroup("ADC");
     for (int i = 0; i < 6; i++) {
-        m_ADC.push_back(settings.value("ADC" + QString::number(i), "20.625").toDouble());
+        m_adc.push_back(settings.value("ADC" + QString::number(i), "20.625").toDouble());
     }
     settings.endGroup();
 
@@ -25,31 +25,31 @@ MpiSettings::MpiSettings(QObject *parent)
     settings.endGroup();
 
     settings.beginGroup("DAC");
-    m_DAC.bias = settings.value("Bias", "0.0").toDouble();
-    m_DAC.min = settings.value("Min", "3.0").toDouble();
-    m_DAC.max = settings.value("Max", "21.0").toDouble();
+    m_dac.bias = settings.value("Bias", "0.0").toDouble();
+    m_dac.min = settings.value("Min", "3.0").toDouble();
+    m_dac.max = settings.value("Max", "21.0").toDouble();
 
-    if (m_DAC.min < 3.0) {
-        m_DAC.min = 3.0;
+    if (m_dac.min < 3.0) {
+        m_dac.min = 3.0;
     }
 
-    if (m_DAC.max > 21.0) {
-        m_DAC.max = 21.0;
+    if (m_dac.max > 21.0) {
+        m_dac.max = 21.0;
     }
 
-    if (m_DAC.min >= m_DAC.max) {
-        m_DAC.min = 3.0;
-        m_DAC.max = 21.0;
+    if (m_dac.min >= m_dac.max) {
+        m_dac.min = 3.0;
+        m_dac.max = 21.0;
     }
 
     settings.endGroup();
 }
 
 
-qreal MpiSettings::GetADC(quint8 num) const
+qreal MpiSettings::GetAdc(quint8 num) const
 {
-    assert(num < m_ADC.size());
-    return m_ADC.at(num);
+    assert(num < m_adc.size());
+    return m_adc.at(num);
 }
 
 MpiSettings::MinMax MpiSettings::GetSensor(quint8 num) const
@@ -58,7 +58,7 @@ MpiSettings::MinMax MpiSettings::GetSensor(quint8 num) const
     return m_sensors.at(num);
 }
 
-MpiSettings::DAC MpiSettings::GetDAC() const
+MpiSettings::DAC MpiSettings::GetDac() const
 {
-    return m_DAC;
+    return m_dac;
 }

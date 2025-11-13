@@ -143,14 +143,14 @@ void Program::updateSensors()
         }
     }
     if (m_testing)
-        emit setTask(m_mpi.GetDAC()->GetValue());
+        emit setTask(m_mpi.GetDac()->GetValue());
 
-    Sensor *feedbackSensor = m_mpi.GetDAC();
+    Sensor *feedbackSensor = m_mpi.GetDac();
     QString fbValue = feedbackSensor->GetFormatedValue();
     emit setText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
 
     QVector<Point> points;
-    qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_initTime;
@@ -168,7 +168,7 @@ void Program::endTest()
     emit setButtonInitEnabled(true);
 
     emit stopTheTest();
-    emit setTask(m_mpi.GetDAC()->GetValue());
+    emit setTask(m_mpi.GetDac()->GetValue());
 
     m_cyclicRunning = false;
     emit testFinished();
@@ -432,7 +432,7 @@ void Program::recordStrokeRange(bool normalClosed)
     }
 
     emit telemetryUpdated(s);
-    emit setTask(m_mpi.GetDAC()->GetValue());
+    emit setTask(m_mpi.GetDac()->GetValue());
 }
 
 void Program::finalizeInitialization()
@@ -520,11 +520,11 @@ void Program::updateCharts_mainTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     qreal task = m_mpi[0]->GetValueFromPercent(percent);
-    qreal X = m_mpi.GetDAC()->GetValue();
+    qreal X = m_mpi.GetDac()->GetValue();
     points.push_back({0, X, task});
 
     for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
@@ -627,7 +627,7 @@ void Program::updateCharts_strokeTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
@@ -642,7 +642,7 @@ void Program::updateCharts_CyclicTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
@@ -688,7 +688,7 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
 
     for (quint16 pct : seq) {
         qreal current = 16.0 * (normalOpen ? 100 - pct : pct) / 100.0 + 4.0;
-        raw.push_back(m_mpi.GetDAC()->GetRawFromValue(current));
+        raw.push_back(m_mpi.GetDac()->GetRawFromValue(current));
     }
     return raw;
 }
@@ -1130,7 +1130,7 @@ void Program::updateCharts_optionTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDAC()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;

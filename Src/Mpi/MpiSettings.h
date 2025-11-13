@@ -25,14 +25,14 @@ public:
         qreal bias;
     };
 
-    qreal GetADC(quint8 num) const;
+    qreal GetAdc(quint8 num) const;
     MinMax GetSensor(quint8 num) const;
-    DAC GetDAC() const;
+    DAC GetDac() const;
 
 private:
-    QVector<qreal> m_ADC;
+    QVector<qreal> m_adc;
     QVector<MinMax> m_sensors;
-    DAC m_DAC;
+    DAC m_dac;
 signals:
 
 };

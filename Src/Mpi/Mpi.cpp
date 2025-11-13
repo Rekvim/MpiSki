@@ -1,7 +1,7 @@
-#include "MPI.h"
+#include "Mpi.h"
 #include "MpiSettings.h"
 
-MPI::MPI(QObject *parent)
+Mpi::Mpi(QObject *parent)
     : QObject{parent}
 {
     m_uartReader = new UartReader;
@@ -10,87 +10,87 @@ MPI::MPI(QObject *parent)
     m_uartReader->moveToThread(m_uartThread);
     m_uartThread->start();
 
-    connect(this, &MPI::ConnectToUart,
+    connect(this, &Mpi::ConnectToUart,
             m_uartReader, &UartReader::autoConnect,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::GetVersion,
+    connect(this, &Mpi::GetVersion,
             m_uartReader, &UartReader::readVersion,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::SetDAC,
+    connect(this, &Mpi::SetDAC,
             m_uartReader, &UartReader::setDacValue,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::SetChannels,
+    connect(this, &Mpi::SetChannels,
             m_uartReader, &UartReader::setAdcChannels,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::SetTimer,
+    connect(this, &Mpi::SetTimer,
             m_uartReader, &UartReader::setAdcTimerInterval,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::TurnADC_On,
+    connect(this, &Mpi::TurnADC_On,
             m_uartReader, &UartReader::enableAdc,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::TurnADC_Off,
+    connect(this, &Mpi::TurnADC_Off,
             m_uartReader, &UartReader::disableAdc,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::GetADC,
+    connect(this, &Mpi::GetADC,
             m_uartReader, &UartReader::readAdcValues,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::ADC_Timer,
+    connect(this, &Mpi::ADC_Timer,
             m_uartReader, &UartReader::setAdcPolling,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::SetDO,
+    connect(this, &Mpi::SetDO,
             m_uartReader, &UartReader::setDigitalOutput,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::GetDO,
+    connect(this, &Mpi::GetDO,
             m_uartReader, &UartReader::readDigitalOutputs,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &MPI::GetDI,
+    connect(this, &Mpi::GetDI,
             m_uartReader, &UartReader::readDigitalInputs,
             Qt::BlockingQueuedConnection);
 
     connect(m_uartReader, &UartReader::adcDataReady,
-            this, &MPI::ADC);
+            this, &Mpi::ADC);
 
     connect(m_uartReader, &UartReader::portOpened,
-            this, &MPI::UartConnected,
+            this, &Mpi::UartConnected,
             Qt::DirectConnection);
 
     connect(m_uartReader, &UartReader::portClosed,
-            this, &MPI::UartDisconnected,
+            this, &Mpi::UartDisconnected,
             Qt::DirectConnection);
 
     connect(m_uartReader, &UartReader::portError,
-            this, &MPI::UartError,
+            this, &Mpi::UartError,
             Qt::DirectConnection);
 
     // connect(m_uartReader, &UartReader::errorOccured,
-    //         this, &MPI::errorOccured,
+    //         this, &Mpi::errorOccured,
     //         Qt::DirectConnection);
 }
 
-MPI::~MPI()
+Mpi::~Mpi()
 {
     m_uartThread->quit();
     m_uartThread->wait();
 }
 
-bool MPI::Connect()
+bool Mpi::Connect()
 {
     emit ConnectToUart();
     return m_isConnected;
 }
 
-quint8 MPI::Version()
+quint8 Mpi::Version()
 {
     if (!m_isConnected)
         return 0;
@@ -99,7 +99,7 @@ quint8 MPI::Version()
     return version;
 }
 
-quint8 MPI::GetDOStatus()
+quint8 Mpi::GetDOStatus()
 {
     if (!m_isConnected)
         return 0;
@@ -109,7 +109,7 @@ quint8 MPI::GetDOStatus()
     return DO;
 }
 
-quint8 MPI::GetDIStatus()
+quint8 Mpi::GetDIStatus()
 {
     if (!m_isConnected)
         return 0;
@@ -119,19 +119,19 @@ quint8 MPI::GetDIStatus()
     return DI;
 }
 
-bool MPI::Initialize()
+bool Mpi::Initialize()
 {
     emit ADC_Timer(false);
 
     if (!m_isConnected)
         return false;
 
-    const MpiSettings mpiSettings;
+    const MpiSettings MpiSettings;
 
-    m_dac->SetCoefficients(24.0 / 0xFFFF, mpiSettings.GetDAC().bias);
+    m_dac->SetCoefficients(24.0 / 0xFFFF, MpiSettings.GetDac().bias);
 
-    DAC_MIN = 65536 * (mpiSettings.GetDAC().min - mpiSettings.GetDAC().bias) / 24;
-    DAC_MAX = 65536 * (mpiSettings.GetDAC().max - mpiSettings.GetDAC().bias) / 24;
+    dacMin = 65536 * (MpiSettings.GetDac().min - MpiSettings.GetDac().bias) / 24;
+    dacMax = 65536 * (MpiSettings.GetDac().max - MpiSettings.GetDac().bias) / 24;
 
     for (const auto &sensor : m_sensors) {
         delete sensor;
@@ -155,8 +155,8 @@ bool MPI::Initialize()
             channelMask |= (1 << adcNum);
 
             Sensor *sensor = new Sensor;
-            qreal adcCur = mpiSettings.GetADC(adcNum);
-            auto sensorSettings = mpiSettings.GetSensor(sensorNum);
+            qreal adcCur = MpiSettings.GetAdc(adcNum);
+            auto sensorSettings = MpiSettings.GetSensor(sensorNum);
             qreal k = ((sensorSettings.max - sensorSettings.min) * adcCur) / (16 * 0xFFF);
             qreal b = (5 * sensorSettings.min - sensorSettings.max) / 4;
             sensor->SetCoefficients(k, b);
@@ -180,17 +180,17 @@ bool MPI::Initialize()
     return true;
 }
 
-void MPI::SetDAC_Raw(quint16 value)
+void Mpi::SetDAC_Raw(quint16 value)
 {
-    if (value < DAC_MIN)
-        value = DAC_MIN;
-    if (value > DAC_MAX)
-        value = DAC_MAX;
+    if (value < dacMin)
+        value = dacMin;
+    if (value > dacMax)
+        value = dacMax;
     m_dac->SetValue(value);
     emit SetDAC(m_dac->GetRawValue());
 }
 
-void MPI::SetDAC_Real(qreal value)
+void Mpi::SetDAC_Real(qreal value)
 {
     quint16 dac = m_dac->GetRawFromValue(value);
     if (dac != m_dac->GetRawValue()) {
@@ -199,39 +199,39 @@ void MPI::SetDAC_Real(qreal value)
     }
 }
 
-quint16 MPI::GetDac_Min()
+quint16 Mpi::GetDac_Min()
 {
-    return DAC_MIN;
+    return dacMin;
 }
 
-quint16 MPI::GetDac_Max()
+quint16 Mpi::GetDac_Max()
 {
-    return DAC_MAX;
+    return dacMax;
 }
 
-quint8 MPI::SensorCount() const
+quint8 Mpi::SensorCount() const
 {
     return m_sensors.size();
 }
 
-const QString &MPI::PortName() const
+const QString &Mpi::PortName() const
 {
     return m_portName;
 }
 
-Sensor *MPI::operator[](quint8 n)
+Sensor *Mpi::operator[](quint8 n)
 {
     if (n >= m_sensors.size())
         return nullptr;
     return m_sensors.at(n);
 }
 
-Sensor *MPI::GetDAC()
+Sensor *Mpi::GetDac()
 {
     return m_dac;
 }
 
-void MPI::SetDiscreteOutput(quint8 DO_num, bool state)
+void Mpi::SetDiscreteOutput(quint8 DO_num, bool state)
 {
     if (!m_isConnected)
         return;
@@ -239,14 +239,14 @@ void MPI::SetDiscreteOutput(quint8 DO_num, bool state)
     emit SetDO(DO_num, state);
 }
 
-void MPI::Sleep(quint16 msecs)
+void Mpi::Sleep(quint16 msecs)
 {
     QEventLoop loop;
     QTimer::singleShot(msecs, &loop, &QEventLoop::quit);
     loop.exec();
 }
 
-void MPI::ADC(QVector<quint16> adc)
+void Mpi::ADC(QVector<quint16> adc)
 {
     if (m_sensors.size() < adc.size())
         return;
@@ -256,18 +256,18 @@ void MPI::ADC(QVector<quint16> adc)
     }
 }
 
-void MPI::UartConnected(const QString portName)
+void Mpi::UartConnected(const QString portName)
 {
     m_isConnected = true;
     m_portName = portName;
 }
 
-void MPI::UartDisconnected()
+void Mpi::UartDisconnected()
 {
     m_isConnected = false;
 }
 
-void MPI::UartError(QSerialPort::SerialPortError err)
+void Mpi::UartError(QSerialPort::SerialPortError err)
 {
     qDebug() << err << Qt::endl;
 }

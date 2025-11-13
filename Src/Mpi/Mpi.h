@@ -10,12 +10,12 @@
 #include "Sensor.h"
 #include "./Src/Uart/UartReader.h"
 
-class MPI : public QObject
+class Mpi : public QObject
 {
     Q_OBJECT
 public:
-    explicit MPI(QObject *parent = nullptr);
-    ~MPI();
+    explicit Mpi(QObject *parent = nullptr);
+    ~Mpi();
     bool Connect();
     quint8 Version();
     quint8 GetDOStatus();
@@ -29,7 +29,7 @@ public:
     quint8 SensorCount() const;
     const QString &PortName() const;
     Sensor *operator[](quint8 n);
-    Sensor *GetDAC();
+    Sensor *GetDac();
     void SetDiscreteOutput(quint8 DO_num, bool state);
 
 private:
@@ -40,8 +40,8 @@ private:
     QVector<Sensor *> m_sensors;
     Sensor *m_dac = new Sensor;
 
-    quint16 DAC_MIN = 65536 * 3 / 24;
-    quint16 DAC_MAX = 65536 * 21 / 24;
+    quint16 dacMin = 65536 * 3 / 24;
+    quint16 dacMax = 65536 * 21 / 24;
 
     void Sleep(quint16 msecs);
 

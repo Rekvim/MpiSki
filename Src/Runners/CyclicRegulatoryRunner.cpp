@@ -1,12 +1,12 @@
 #include "CyclicRegulatoryRunner.h"
 #include "./Program.h"
 
-static QVector<quint16> makeRawValues(const QVector<quint16>& seq, MPI& mpi, bool normalOpen)
+static QVector<quint16> makeRawValues(const QVector<quint16>& seq, Mpi& mpi, bool normalOpen)
 {
     QVector<quint16> raw; raw.reserve(seq.size());
     for (quint16 pct : seq) {
         const qreal cur = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.GetDAC()->GetRawFromValue(cur));
+        raw.push_back(mpi.GetDac()->GetRawFromValue(cur));
     }
     return raw;
 }

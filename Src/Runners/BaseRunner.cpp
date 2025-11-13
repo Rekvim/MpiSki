@@ -1,10 +1,10 @@
 #include "./Src/Runners/BaseRunner.h"
 #include "./Src/Tests/Test.h"
 #include "./Src/Runners/ITestRunner.h"
-#include "./Src/MPI/MPI.h"
+#include "./Src/Mpi/Mpi.h"
 #include "./Registry.h"
 
-BaseRunner::BaseRunner(MPI& mpi, Registry& reg, QObject* parent)
+BaseRunner::BaseRunner(Mpi& mpi, Registry& reg, QObject* parent)
     : ITestRunner(parent), m_mpi(mpi), m_reg(reg) {}
 
 BaseRunner::~BaseRunner() {}

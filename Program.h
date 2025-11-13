@@ -9,7 +9,7 @@
 #include <QMessageBox>
 #include <QTimer>
 
-#include "./Src/MPI/MPI.h"
+#include "./Src/Mpi/Mpi.h"
 #include "OtherTestSettings.h"
 #include "StepTestSettings.h"
 #include "CyclicTestSettings.h"
@@ -164,7 +164,7 @@ private:
 
     Registry *m_registry;
 
-    MPI m_mpi;
+    Mpi m_mpi;
     TelemetryStore m_telemetryStore;
     QTimer *m_diPollTimer = nullptr;
     quint8 m_lastDI = 0;
