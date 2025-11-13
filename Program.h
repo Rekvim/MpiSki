@@ -100,7 +100,7 @@ signals:
     void releaseBlock();
 
     void mainTestFinished();
-    void getParameters_mainTest(struct MainTestSettings::TestParameters *parameters);
+    void getParameters_mainTest(struct MainTestSettings::TestParameters& parameters);
     void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
     void getParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
@@ -229,9 +229,9 @@ public slots:
     void runningStrokeTest();
     void runningOptionalTest(quint8 testNum);
 
-    void forwardGetParameters_mainTest(MainTestSettings::TestParameters* p);
-    void forwardGetParameters_responseTest(OtherTestSettings::TestParameters& p) { emit getParameters_responseTest(p); }
-    void forwardGetParameters_resolutionTest(OtherTestSettings::TestParameters& p) { emit getParameters_resolutionTest(p); }
+    void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }
+    void forwardGetParameters_responseTest(OtherTestSettings::TestParameters &p) { emit getParameters_responseTest(p); }
+    void forwardGetParameters_resolutionTest(OtherTestSettings::TestParameters &p) { emit getParameters_resolutionTest(p); }
 
     void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
     void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);

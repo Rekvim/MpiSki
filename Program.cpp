@@ -7,10 +7,10 @@
 #include "./Src/Runners/MainTestRunner.h"
 #include "./Src/Runners/StepTestRunner.h"
 #include "./Src/Runners/StrokeTestRunner.h"
-#include "./Src/Runners/CyclicRegulatoryRunner.h"
-// #include "./Src/Runners/CyclicShutoffRunner.h"
 #include "./Src/Runners/OptionResponseRunner.h"
 #include "./Src/Runners/OptionResolutionRunner.h"
+// #include "./Src/Runners/CyclicShutoffRunner.h"
+#include "./Src/Runners/CyclicRegulatoryRunner.h"
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -455,21 +455,22 @@ void Program::disposeActiveRunnerAsync() {
     QMetaObject::invokeMethod(obj, "deleteLater", Qt::QueuedConnection);
 }
 
-void Program::forwardGetParameters_mainTest(MainTestSettings::TestParameters* p) {
-    emit getParameters_mainTest(p);   // теперь межпоточно уходит pointer
-}
 void Program::runningMainTest()
 {
     auto runner = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
 
-    connect(runner.get(), &ITestRunner::requestSetDAC, this, &Program::setDAC);
-    connect(this,   &Program::releaseBlock,      runner.get(), &ITestRunner::releaseBlock);
+    connect(runner.get(), &ITestRunner::requestSetDAC,
+            this, &Program::setDAC);
+
+    connect(this, &Program::releaseBlock,
+            runner.get(), &ITestRunner::releaseBlock);
 
     connect(runner.get(), &MainTestRunner::getParameters_mainTest,
-            this,         &Program::forwardGetParameters_mainTest);
+            this, &Program::forwardGetParameters_mainTest);
 
     connect(runner.get(), &ITestRunner::totalTestTimeMs,
             this, &Program::totalTestTimeMs);
+
     connect(runner.get(), &ITestRunner::endTest,
             this, &Program::endTest);
 
