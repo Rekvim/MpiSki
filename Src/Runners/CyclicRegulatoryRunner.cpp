@@ -47,21 +47,21 @@ void CyclicRegulatoryRunner::wireSpecificSignals(Test& base) {
     auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
     connect(&t, &CyclicTestsRegulatory::UpdateGraph,
-            owner, [owner]{ owner->updateCharts_CyclicTest(Charts::Cyclic); });
+            owner, [owner]{ owner->updateCharts_CyclicTest(Charts::Cyclic); },
+            Qt::QueuedConnection);
 
     connect(&t, &CyclicTestsRegulatory::GetPoints,
             owner, &Program::receivedPoints_cyclicTest,
             Qt::BlockingQueuedConnection);
 
-    connect(owner, &Program::releaseBlock,
-            &t, &CyclicTestsRegulatory::ReleaseBlock);
-
     connect(&t, &CyclicTestsRegulatory::SetStartTime,
             owner, &Program::setTimeStart);
 
     connect(&t, &CyclicTestsRegulatory::Results,
-            owner, &Program::results_cyclicRegulatoryTests);
+            owner, &Program::results_cyclicRegulatoryTests,
+            Qt::QueuedConnection);
 
     connect(&t, &CyclicTestsRegulatory::CycleCompleted,
-            owner, &Program::cyclicCycleCompleted);
+            owner, &Program::cyclicCycleCompleted,
+            Qt::QueuedConnection);
 }

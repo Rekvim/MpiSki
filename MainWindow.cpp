@@ -20,10 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->setCurrentIndex(0);
 
     QValidator *validatorDigits = ValidatorFactory::create(ValidatorFactory::Type::Digits, this);
-    ui->lineEdit_crossingLimits_frictionForce_value->setValidator(validatorDigits);
-    ui->lineEdit_crossingLimits_linearCharacteristic_value->setValidator(validatorDigits);
-    ui->lineEdit_crossingLimits_range_value->setValidator(validatorDigits);
-    ui->lineEdit_crossingLimits_dynamicError_value->setValidator(validatorDigits);
+    ui->lineEdit_crossingLimits_frictionForce_value_3->setValidator(validatorDigits);
+    ui->lineEdit_crossingLimits_linearCharacteristic_value_2->setValidator(validatorDigits);
+    ui->lineEdit_crossingLimits_range_value_2->setValidator(validatorDigits);
+    ui->lineEdit_crossingLimits_dynamicError_value_2->setValidator(validatorDigits);
 
     lockTabsForPreInit();
 
@@ -216,49 +216,49 @@ MainWindow::MainWindow(QWidget *parent)
 
     // === Friction Force ===
     bindSliderAndLineEdit(
-        ui->horizontalSlider_crossingLimits_frictionForce,
-        ui->lineEdit_crossingLimits_frictionForce_value,
+        ui->horizontalSlider_crossingLimits_frictionForce_3,
+        ui->lineEdit_crossingLimits_frictionForce_value_3,
         [this]() { updateFrictionForceLimitStatus(); }
         );
 
     // === Valve Stroke Range ===
     bindSliderAndLineEdit(
-        ui->horizontalSlider_crossingLimits_range,
-        ui->lineEdit_crossingLimits_range_value,
+        ui->horizontalSlider_crossingLimits_range_2,
+        ui->lineEdit_crossingLimits_range_value_2,
         [this]() { updateRangeLimitStatus(); }
         );
 
     // === Dynamic Error ===
     bindSliderAndLineEdit(
-        ui->horizontalSlider_crossingLimits_dynamicError,
-        ui->lineEdit_crossingLimits_dynamicError_value,
+        ui->horizontalSlider_crossingLimits_dynamicError_2,
+        ui->lineEdit_crossingLimits_dynamicError_value_2,
         [this]() { updateDynamicErrorLimitStatus(); }
         );
 
     // crossingLimits_frictionForce
-    connect(ui->horizontalSlider_crossingLimits_frictionForce, &QSlider::valueChanged,
+    connect(ui->horizontalSlider_crossingLimits_frictionForce_3, &QSlider::valueChanged,
             this, &MainWindow::updateFrictionForceLimitStatus);
 
-    connect(ui->lineEdit_crossingLimits_frictionForce_lowerLimit, &QLineEdit::editingFinished,
+    connect(ui->lineEdit_crossingLimits_frictionForce_lowerLimit_3, &QLineEdit::editingFinished,
             this, &MainWindow::updateFrictionForceLimitStatus);
 
-    connect(ui->lineEdit_crossingLimits_frictionForce_upperLimit, &QLineEdit::editingFinished,
+    connect(ui->lineEdit_crossingLimits_frictionForce_upperLimit_3, &QLineEdit::editingFinished,
             this, &MainWindow::updateFrictionForceLimitStatus);
 
     // crossingLimits_range
-    connect(ui->horizontalSlider_crossingLimits_range, &QSlider::valueChanged,
+    connect(ui->horizontalSlider_crossingLimits_range_2, &QSlider::valueChanged,
             this, &MainWindow::updateRangeLimitStatus);
-    connect(ui->lineEdit_crossingLimits_range_lowerLimit, &QLineEdit::editingFinished,
+    connect(ui->lineEdit_crossingLimits_range_lowerLimit_2, &QLineEdit::editingFinished,
             this, &MainWindow::updateRangeLimitStatus);
-    connect(ui->lineEdit_crossingLimits_range_upperLimit, &QLineEdit::editingFinished,
+    connect(ui->lineEdit_crossingLimits_range_upperLimit_2, &QLineEdit::editingFinished,
             this, &MainWindow::updateRangeLimitStatus);
 
     // label_dynamicErrorMaxPercent
-    connect(ui->horizontalSlider_crossingLimits_dynamicError, &QSlider::valueChanged,
+    connect(ui->horizontalSlider_crossingLimits_dynamicError_2, &QSlider::valueChanged,
             this, &MainWindow::updateDynamicErrorLimitStatus);
-    connect(ui->lineEdit_crossingLimits_dynamicError_lowerLimit, &QLineEdit::editingFinished,
+    connect(ui->lineEdit_crossingLimits_dynamicError_lowerLimit_2, &QLineEdit::editingFinished,
             this, &MainWindow::updateDynamicErrorLimitStatus);
-    connect(ui->lineEdit_crossingLimits_dynamicError_upperLimit, &QLineEdit::editingFinished,
+    connect(ui->lineEdit_crossingLimits_dynamicError_upperLimit_2, &QLineEdit::editingFinished,
             this, &MainWindow::updateDynamicErrorLimitStatus);
 
 
@@ -276,6 +276,9 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::onTelemetryUpdated,
             Qt::QueuedConnection);
 
+    connect(m_program, &Program::testFinished,
+            this,        &MainWindow::endTest);
+
     connect(m_program, &Program::cyclicCycleCompleted,
             this, [this](int completed){
                 int remaining = completed;
@@ -285,8 +288,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    emit stopTest();
+
+    QMetaObject::invokeMethod(m_program, "terminateTest", Qt::BlockingQueuedConnection);
+
     m_programThread->quit();
     m_programThread->wait();
+
     m_program->deleteLater();
     delete ui;
 }
@@ -313,32 +321,30 @@ void MainWindow::updateAvailableTabs()
 
 void MainWindow::onCountdownTimeout()
 {
-    quint64 elapsedMs = m_elapsedTimer.elapsed();
-    quint64 remainingMs = static_cast<qint64>(m_totalTestMs) - static_cast<qint64>(elapsedMs);
-    if (remainingMs < 0) remainingMs = 0;
+    const qint64 elapsed = m_elapsedTimer.elapsed();          // qint64
+    qint64 remaining = static_cast<qint64>(m_totalTestMs) - elapsed;
+    if (remaining < 0) remaining = 0;
 
-    auto formatHMS = [](quint64 ms) -> QString {
-        const quint64 hours = ms / 3600000ULL;  ms %= 3600000ULL;
-        const quint64 mins = ms / 60000ULL;  ms %= 60000ULL;
-        const quint64 secs = ms / 1000ULL;
-        const quint64 msec = ms % 1000ULL;
+    const auto formatHMS = [](quint64 ms) -> QString {
+        quint64 h = ms / 3600000ULL;  ms %= 3600000ULL;
+        quint64 m = ms / 60000ULL;    ms %= 60000ULL;
+        quint64 s = ms / 1000ULL;
+        quint64 x = ms % 1000ULL;
         return QString("%1:%2:%3.%4")
-            .arg(hours, 2, 10, QChar('0'))
-            .arg(mins, 2, 10, QChar('0'))
-            .arg(secs, 2, 10, QChar('0'))
-            .arg(msec, 3, 10, QChar('0'));
+            .arg(h, 2, 10, QChar('0'))
+            .arg(m, 2, 10, QChar('0'))
+            .arg(s, 2, 10, QChar('0'))
+            .arg(x, 3, 10, QChar('0'));
     };
 
     ui->statusbar->showMessage(
         tr("Тест в процессе. До завершения теста осталось: %1 (прошло %2 из %3)")
-            .arg(formatHMS(static_cast<quint64>(remainingMs)))
-            .arg(formatHMS(static_cast<quint64>(elapsedMs)))
+            .arg(formatHMS(static_cast<quint64>(remaining)))
+            .arg(formatHMS(static_cast<quint64>(elapsed)))
             .arg(formatHMS(m_totalTestMs))
         );
 
-    if (remainingMs == 0) {
-        m_durationTimer->stop();
-    }
+    if (remaining == 0) m_durationTimer->stop();
 }
 
 void MainWindow::onTotalTestTimeMs(quint64 totalMs)
@@ -420,12 +426,12 @@ void MainWindow::updateFrictionForceLimitStatus()
     double value = ui->label_frictionForceValue->text().split(" ").first().toDouble(&ok);
     if (!ok) return;
 
-    double lower = ui->lineEdit_crossingLimits_frictionForce_lowerLimit->text().toDouble();
-    double upper = ui->lineEdit_crossingLimits_frictionForce_upperLimit->text().toDouble();
-    ui->horizontalSlider_crossingLimits_frictionForce->setRange(static_cast<int>(lower), static_cast<int>(upper));
+    double lower = ui->lineEdit_crossingLimits_frictionForce_lowerLimit_3->text().toDouble();
+    double upper = ui->lineEdit_crossingLimits_frictionForce_upperLimit_3->text().toDouble();
+    ui->horizontalSlider_crossingLimits_frictionForce_3->setRange(static_cast<int>(lower), static_cast<int>(upper));
 
-    double sliderValue = ui->horizontalSlider_crossingLimits_frictionForce->value();
-    updateIndicator(value, sliderValue, ui->widget_crossingLimits_frictionForce_limitStatusIndicator);
+    double sliderValue = ui->horizontalSlider_crossingLimits_frictionForce_3->value();
+    updateIndicator(value, sliderValue, ui->widget_crossingLimits_frictionForce_limitStatusIndicator_3);
 }
 
 void MainWindow::updateRangeLimitStatus()
@@ -434,12 +440,12 @@ void MainWindow::updateRangeLimitStatus()
     double value = ui->label_valveStroke_range->text().toDouble(&ok);
     if (!ok) return;
 
-    double lower = ui->lineEdit_crossingLimits_range_lowerLimit->text().toDouble();
-    double upper = ui->lineEdit_crossingLimits_range_upperLimit->text().toDouble();
-    ui->horizontalSlider_crossingLimits_range->setRange(static_cast<int>(lower), static_cast<int>(upper));
+    double lower = ui->lineEdit_crossingLimits_range_lowerLimit_2->text().toDouble();
+    double upper = ui->lineEdit_crossingLimits_range_upperLimit_2->text().toDouble();
+    ui->horizontalSlider_crossingLimits_range_2->setRange(static_cast<int>(lower), static_cast<int>(upper));
 
-    double sliderValue = ui->horizontalSlider_crossingLimits_range->value();
-    updateIndicator(value, sliderValue, ui->widget_crossingLimits_range_limitStatusIndicator);
+    double sliderValue = ui->horizontalSlider_crossingLimits_range_2->value();
+    updateIndicator(value, sliderValue, ui->widget_crossingLimits_range_limitStatusIndicator_2);
 }
 
 void MainWindow::updateDynamicErrorLimitStatus()
@@ -448,12 +454,12 @@ void MainWindow::updateDynamicErrorLimitStatus()
     double value = ui->label_dynamicErrorMaxPercent->text().split(" ").first().toDouble(&ok);
     if (!ok) return;
 
-    double lower = ui->lineEdit_crossingLimits_dynamicError_lowerLimit->text().toDouble();
-    double upper = ui->lineEdit_crossingLimits_dynamicError_upperLimit->text().toDouble();
-    ui->horizontalSlider_crossingLimits_dynamicError->setRange(static_cast<int>(lower), static_cast<int>(upper));
+    double lower = ui->lineEdit_crossingLimits_dynamicError_lowerLimit_2->text().toDouble();
+    double upper = ui->lineEdit_crossingLimits_dynamicError_upperLimit_2->text().toDouble();
+    ui->horizontalSlider_crossingLimits_dynamicError_2->setRange(static_cast<int>(lower), static_cast<int>(upper));
 
-    double sliderValue = ui->horizontalSlider_crossingLimits_dynamicError->value();
-    updateIndicator(value, sliderValue, ui->widget_crossingLimits_dynamicError_limitStatusIndicator);
+    double sliderValue = ui->horizontalSlider_crossingLimits_dynamicError_2->value();
+    updateIndicator(value, sliderValue, ui->widget_crossingLimits_dynamicError_limitStatusIndicator_2);
 }
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {

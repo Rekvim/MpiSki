@@ -16,11 +16,14 @@ void StrokeTestRunner::wireSpecificSignals(Test& base) {
     auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
     connect(&t, &StrokeTest::UpdateGraph,
-            owner, &Program::updateCharts_strokeTest);
+            owner, &Program::updateCharts_strokeTest,
+            Qt::QueuedConnection);
 
     connect(&t, &StrokeTest::SetStartTime,
-            owner, &Program::setTimeStart);
+            owner, &Program::setTimeStart,
+            Qt::QueuedConnection);
 
     connect(&t, &StrokeTest::Results,
-            owner, &Program::results_strokeTest);
+            owner, &Program::results_strokeTest,
+            Qt::QueuedConnection);
 }

@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1474,19 +1474,19 @@
        <attribute name="title">
         <string>Основные тесты</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_16">
+       <layout class="QVBoxLayout" name="verticalLayout_20">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_13">
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
               <string>График задания</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_11">
+             <layout class="QVBoxLayout" name="verticalLayout_23">
               <item>
                <widget class="QWidget" name="widget" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_34">
@@ -1672,7 +1672,7 @@
              <attribute name="title">
               <string>График давления от перемещения</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_14">
+             <layout class="QVBoxLayout" name="verticalLayout_57">
               <item>
                <widget class="QFrame" name="frame_chartPressure">
                 <property name="autoFillBackground">
@@ -1751,518 +1751,521 @@
              <attribute name="title">
               <string>Результаты</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_17">
-              <item>
-               <widget class="QGroupBox" name="groupBox_valveFriction">
-                <property name="font">
-                 <font>
-                  <family>Segoe UI</family>
-                  <pointsize>12</pointsize>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                 </font>
-                </property>
-                <property name="title">
-                 <string>Трение клапана</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_22">
-                 <item>
-                  <widget class="QWidget" name="widget_pressureDifferenceValue" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_2">
-                    <property name="spacing">
-                     <number>30</number>
+             <widget class="QGroupBox" name="groupBox_valveFriction">
+              <property name="geometry">
+               <rect>
+                <x>9</x>
+                <y>9</y>
+                <width>339</width>
+                <height>116</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+                <pointsize>12</pointsize>
+                <stylestrategy>PreferDefault</stylestrategy>
+               </font>
+              </property>
+              <property name="title">
+               <string>Трение клапана</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_22">
+               <item>
+                <widget class="QWidget" name="widget_pressureDifferenceValue" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_2">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_pressureDifference">
+                    <property name="minimumSize">
+                     <size>
+                      <width>153</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Разница давлений</string>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_pressureDifferenceValue">
+                    <property name="text">
+                     <string>0.000 bar</string>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_pressureDifferenceValue">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_pressureDifference">
-                      <property name="minimumSize">
-                       <size>
-                        <width>153</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Разница давлений</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_pressureDifferenceValue">
-                      <property name="text">
-                       <string>0.000 bar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_pressureDifferenceValue">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="widget_frictionForce" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_3">
-                    <property name="spacing">
-                     <number>30</number>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_frictionForce" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_3">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_frictionForce">
+                    <property name="minimumSize">
+                     <size>
+                      <width>153</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Сила трения</string>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_frictionForceValue">
+                    <property name="text">
+                     <string>0.000 H</string>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_frictionForce">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_frictionForce">
-                      <property name="minimumSize">
-                       <size>
-                        <width>153</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Сила трения</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_frictionForceValue">
-                      <property name="text">
-                       <string>0.000 H</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_frictionForce">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="widget_frictionPercent" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_4">
-                    <property name="spacing">
-                     <number>30</number>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_frictionPercent" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_frictionPercent">
+                    <property name="minimumSize">
+                     <size>
+                      <width>153</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Коэффициент трения</string>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_frictionPercentValue">
+                    <property name="text">
+                     <string>0.00 %</string>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_frictionPercent">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_frictionPercent">
-                      <property name="minimumSize">
-                       <size>
-                        <width>153</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Коэффициент трения</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_frictionPercentValue">
-                      <property name="text">
-                       <string>0.00 %</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_frictionPercent">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupBox_dynamicError">
-                <property name="font">
-                 <font>
-                  <family>Segoe UI</family>
-                  <pointsize>12</pointsize>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                 </font>
-                </property>
-                <property name="title">
-                 <string>Динамическая ошибка</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_21">
-                 <item>
-                  <widget class="QWidget" name="widget_dynamicErrorMean" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_5">
-                    <property name="spacing">
-                     <number>30</number>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QGroupBox" name="groupBox_dynamicError">
+              <property name="geometry">
+               <rect>
+                <x>9</x>
+                <y>131</y>
+                <width>442</width>
+                <height>89</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+                <pointsize>12</pointsize>
+                <stylestrategy>PreferDefault</stylestrategy>
+               </font>
+              </property>
+              <property name="title">
+               <string>Динамическая ошибка</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_21">
+               <item>
+                <widget class="QWidget" name="widget_dynamicErrorMean" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_dynamicError_averageValue">
+                    <property name="minimumSize">
+                     <size>
+                      <width>178</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Среднее значение</string>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_dynamicErrorMean">
+                    <property name="text">
+                     <string>0.000 mA</string>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_dynamicErrorMeanPercent">
+                    <property name="text">
+                     <string>0.00 %</string>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_dynamicErrorMean">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_dynamicError_averageValue">
-                      <property name="minimumSize">
-                       <size>
-                        <width>178</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Среднее значение</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_dynamicErrorMean">
-                      <property name="text">
-                       <string>0.000 mA</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_dynamicErrorMeanPercent">
-                      <property name="text">
-                       <string>0.00 %</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_dynamicErrorMean">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="widget_dynamicErrorMax" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_6">
-                    <property name="spacing">
-                     <number>30</number>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_dynamicErrorMax" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_6">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_dynamicError_maximumValue">
+                    <property name="minimumSize">
+                     <size>
+                      <width>178</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Максимальное значение</string>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_dynamicErrorMax">
+                    <property name="text">
+                     <string>0.000 mA</string>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_dynamicErrorMaxPercent">
+                    <property name="text">
+                     <string>0.00 %</string>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_dynamicError_maximumValue">
-                      <property name="minimumSize">
-                       <size>
-                        <width>178</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Максимальное значение</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_dynamicErrorMax">
-                      <property name="text">
-                       <string>0.000 mA</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_dynamicErrorMaxPercent">
-                      <property name="text">
-                       <string>0.00 %</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_dynamicErrorMax">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupBox_valveParameters">
-                <property name="font">
-                 <font>
-                  <family>Segoe UI</family>
-                  <pointsize>12</pointsize>
-                  <stylestrategy>PreferDefault</stylestrategy>
-                 </font>
-                </property>
-                <property name="title">
-                 <string>Параметры клапана</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout">
-                 <property name="spacing">
-                  <number>15</number>
-                 </property>
-                 <item>
-                  <widget class="QWidget" name="widget_valveStroke" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_9">
-                    <property name="spacing">
-                     <number>30</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_dynamicErrorMax">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QGroupBox" name="groupBox_valveParameters">
+              <property name="geometry">
+               <rect>
+                <x>9</x>
+                <y>226</y>
+                <width>489</width>
+                <height>134</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+                <pointsize>12</pointsize>
+                <stylestrategy>PreferDefault</stylestrategy>
+               </font>
+              </property>
+              <property name="title">
+               <string>Параметры клапана</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout">
+               <property name="spacing">
+                <number>15</number>
+               </property>
+               <item>
+                <widget class="QWidget" name="widget_valveStroke" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_9">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_valveStroke">
+                    <property name="minimumSize">
+                     <size>
+                      <width>307</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Ход клапана</string>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_valveStroke_range">
+                    <property name="text">
+                     <string>0.00 mm</string>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_valveStroke">
-                      <property name="minimumSize">
-                       <size>
-                        <width>307</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Ход клапана</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_valveStroke_range">
-                      <property name="text">
-                       <string>0.00 mm</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_valveStroke">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="widget_lowLimit" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_10">
-                    <property name="spacing">
-                     <number>30</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_valveStroke">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_lowLimit" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_10">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_lowLimit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>307</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Нижний предел диапазона регулирования</string>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_lowLimitValue">
+                    <property name="text">
+                     <string>0.00 bar</string>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_lowLimit">
-                      <property name="minimumSize">
-                       <size>
-                        <width>307</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Нижний предел диапазона регулирования</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_lowLimitValue">
-                      <property name="text">
-                       <string>0.00 bar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_lowLimit">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="widget_highLimit" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_14">
-                    <property name="spacing">
-                     <number>30</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_lowLimit">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <property name="leftMargin">
-                     <number>0</number>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
                     </property>
-                    <property name="topMargin">
-                     <number>0</number>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_highLimit" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_14">
+                  <property name="spacing">
+                   <number>30</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_highLimit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>307</width>
+                      <height>0</height>
+                     </size>
                     </property>
-                    <property name="rightMargin">
-                     <number>0</number>
+                    <property name="text">
+                     <string>Верхний предел диапазона регулирования</string>
                     </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_highLimitValue">
+                    <property name="text">
+                     <string>0.00 bar</string>
                     </property>
-                    <item>
-                     <widget class="QLabel" name="label_highLimit">
-                      <property name="minimumSize">
-                       <size>
-                        <width>307</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Верхний предел диапазона регулирования</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_highLimitValue">
-                      <property name="text">
-                       <string>0.00 bar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer_highLimit">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>436</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_highLimit">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </widget>
           </item>
@@ -2274,10 +2277,10 @@
               <height>16777215</height>
              </size>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_45">
+            <layout class="QVBoxLayout" name="verticalLayout_17">
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_frictionForce" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_15">
+              <widget class="QWidget" name="widget_crossingLimits_frictionForce_3" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_29">
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -2291,8 +2294,8 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget__crossingLimits_frictionForce_control" native="true">
-                  <layout class="QVBoxLayout" name="verticalLayout_10">
+                 <widget class="QWidget" name="widget__crossingLimits_frictionForce_control_3" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_14">
                    <property name="spacing">
                     <number>6</number>
                    </property>
@@ -2309,7 +2312,7 @@
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_frictionForce">
+                    <widget class="QLabel" name="label_crossingLimits_frictionForce_3">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2317,7 +2320,7 @@
                       </sizepolicy>
                      </property>
                      <property name="text">
-                      <string>Сила трения</string>
+                      <string>Коэффицент трения</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2325,7 +2328,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_frictionForce">
+                    <widget class="QSlider" name="horizontalSlider_crossingLimits_frictionForce_3">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2338,7 +2341,7 @@
                     </widget>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits_2">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits_4">
                      <property name="spacing">
                       <number>6</number>
                      </property>
@@ -2346,7 +2349,7 @@
                       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_lowerLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_lowerLimit_3">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -2374,7 +2377,7 @@
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_frictionForce">
+                      <spacer name="horizontalSpacer_crossingLimits_frictionForce_3">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2387,7 +2390,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_value">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_value_3">
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2403,7 +2406,7 @@
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_2">
+                      <spacer name="horizontalSpacer_8">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2416,7 +2419,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_upperLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_upperLimit_3">
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2430,7 +2433,7 @@
                         </font>
                        </property>
                        <property name="text">
-                        <string>1000</string>
+                        <string>100</string>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2443,7 +2446,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_frictionForce_limitStatusIndicator" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_frictionForce_limitStatusIndicator_3" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -2470,8 +2473,8 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_17">
+              <widget class="QWidget" name="widget_crossingLimits_frictionForce_4" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_30">
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -2485,8 +2488,8 @@ Border-radius: 10px;
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_2" native="true">
-                  <layout class="QVBoxLayout" name="verticalLayout_25">
+                 <widget class="QWidget" name="widget__crossingLimits_frictionForce_control_4" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_19">
                    <property name="spacing">
                     <number>6</number>
                    </property>
@@ -2503,7 +2506,7 @@ Border-radius: 10px;
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_linearCharacteristic">
+                    <widget class="QLabel" name="label_crossingLimits_frictionForce_4">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2511,7 +2514,7 @@ Border-radius: 10px;
                       </sizepolicy>
                      </property>
                      <property name="text">
-                      <string>Линейность характеристики</string>
+                      <string>Сила трения</string>
                      </property>
                      <property name="alignment">
                       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2519,7 +2522,7 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_linearCharacteristic">
+                    <widget class="QSlider" name="horizontalSlider_crossingLimits_frictionForce_4">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2532,12 +2535,15 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits_5">
                      <property name="spacing">
                       <number>6</number>
                      </property>
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                     </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_lowerLimit_4">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -2565,7 +2571,7 @@ Border-radius: 10px;
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_linearCharacteristic">
+                      <spacer name="horizontalSpacer_crossingLimits_frictionForce_4">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2578,7 +2584,198 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_value_4">
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Segoe UI</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_9">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_upperLimit_4">
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Segoe UI</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>100</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widget_crossingLimits_frictionForce_limitStatusIndicator_4" native="true">
+                  <property name="minimumSize">
+                   <size>
+                    <width>60</width>
+                    <height>60</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>60</width>
+                    <height>60</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_3" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_32">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_4" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_45">
+                   <property name="spacing">
+                    <number>6</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_crossingLimits_linearCharacteristic_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Линейность характеристики</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignmentFlag::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSlider" name="horizontalSlider_crossingLimits_linearCharacteristic_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Orientation::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits_2">
+                     <property name="spacing">
+                      <number>6</number>
+                     </property>
+                     <item>
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit_2">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Segoe UI</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>0</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_crossingLimits_linearCharacteristic_2">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value_2">
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2597,7 +2794,7 @@ Border-radius: 10px;
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_4">
+                      <spacer name="horizontalSpacer_10">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2610,7 +2807,7 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit_2">
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2637,7 +2834,7 @@ Border-radius: 10px;
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator_2" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -2664,8 +2861,8 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_range" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_31">
+              <widget class="QWidget" name="widget_crossingLimits_range_2" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_33">
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -2679,8 +2876,8 @@ Border-radius: 10px;
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_range_control" native="true">
-                  <layout class="QVBoxLayout" name="verticalLayout_38">
+                 <widget class="QWidget" name="widget_crossingLimits_range_control_2" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_48">
                    <property name="spacing">
                     <number>6</number>
                    </property>
@@ -2697,7 +2894,7 @@ Border-radius: 10px;
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_range">
+                    <widget class="QLabel" name="label_crossingLimits_range_2">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2713,7 +2910,7 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_range">
+                    <widget class="QSlider" name="horizontalSlider_crossingLimits_range_2">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2726,12 +2923,12 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits_6">
                      <property name="spacing">
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit_2">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -2762,7 +2959,7 @@ Border-radius: 10px;
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_5">
+                      <spacer name="horizontalSpacer_11">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2775,7 +2972,7 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value_2">
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2794,7 +2991,7 @@ Border-radius: 10px;
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_range">
+                      <spacer name="horizontalSpacer_crossingLimits_range_2">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2807,7 +3004,7 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit_2">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -2837,7 +3034,7 @@ Border-radius: 10px;
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator_2" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -2864,8 +3061,8 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_dynamicError" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_23">
+              <widget class="QWidget" name="widget_crossingLimits_dynamicError_2" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_35">
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -2879,8 +3076,8 @@ Border-radius: 10px;
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_control" native="true">
-                  <layout class="QVBoxLayout" name="verticalLayout_34">
+                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_control_2" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_49">
                    <property name="spacing">
                     <number>6</number>
                    </property>
@@ -2897,7 +3094,7 @@ Border-radius: 10px;
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_dynamicError">
+                    <widget class="QLabel" name="label_crossingLimits_dynamicError_2">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2913,7 +3110,7 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_dynamicError">
+                    <widget class="QSlider" name="horizontalSlider_crossingLimits_dynamicError_2">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2926,12 +3123,12 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_dynamicError_limits">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_dynamicError_limits_2">
                      <property name="spacing">
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_lowerLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_lowerLimit_2">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -2959,7 +3156,7 @@ Border-radius: 10px;
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_6">
+                      <spacer name="horizontalSpacer_12">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2972,7 +3169,7 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_value">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_value_2">
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2991,7 +3188,7 @@ Border-radius: 10px;
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_dynamicError">
+                      <spacer name="horizontalSpacer_crossingLimits_dynamicError_2">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -3004,7 +3201,7 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_upperLimit">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_upperLimit_2">
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -3018,7 +3215,7 @@ Border-radius: 10px;
                         </font>
                        </property>
                        <property name="text">
-                        <string>1000</string>
+                        <string>2.5</string>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -3031,7 +3228,7 @@ Border-radius: 10px;
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_limitStatusIndicator" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_limitStatusIndicator_2" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -3058,12 +3255,12 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="widget_2" native="true">
-               <layout class="QVBoxLayout" name="verticalLayout_46">
+              <widget class="QWidget" name="widget_4" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_51">
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_40">
+                 <layout class="QVBoxLayout" name="verticalLayout_53">
                   <item>
-                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator_2" native="true">
+                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator_5" native="true">
                     <property name="minimumSize">
                      <size>
                       <width>60</width>
@@ -3084,11 +3281,11 @@ Border-radius: 10px;
 
 </string>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_39"/>
+                    <layout class="QVBoxLayout" name="verticalLayout_54"/>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label">
+                   <widget class="QLabel" name="label_4">
                     <property name="text">
                      <string>-</string>
                     </property>
@@ -3097,12 +3294,12 @@ Border-radius: 10px;
                  </layout>
                 </item>
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_43">
+                 <layout class="QVBoxLayout" name="verticalLayout_55">
                   <property name="sizeConstraint">
                    <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                   </property>
                   <item>
-                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator_3" native="true">
+                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator_6" native="true">
                     <property name="minimumSize">
                      <size>
                       <width>60</width>
@@ -3129,7 +3326,7 @@ Border-radius: 10px;
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_3">
+                   <widget class="QLabel" name="label_5">
                     <property name="text">
                      <string>Выход за пределы</string>
                     </property>
@@ -3138,9 +3335,9 @@ Border-radius: 10px;
                  </layout>
                 </item>
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_42">
+                 <layout class="QVBoxLayout" name="verticalLayout_56">
                   <item>
-                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator_4" native="true">
+                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator_7" native="true">
                     <property name="minimumSize">
                      <size>
                       <width>60</width>
@@ -3164,7 +3361,7 @@ Border-radius: 10px;
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_2">
+                   <widget class="QLabel" name="label_6">
                     <property name="text">
                      <string>Не выходит за предел</string>
                     </property>
@@ -3176,7 +3373,7 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <spacer name="verticalSpacer_3">
+              <spacer name="verticalSpacer_4">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>

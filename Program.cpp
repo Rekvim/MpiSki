@@ -161,19 +161,22 @@ void Program::updateSensors()
     emit addPoints(Charts::Trend, points);
 }
 
-void Program::endTest()
-{
+void Program::endTest() {
     m_testing = false;
     emit enableSetTask(true);
     emit setButtonInitEnabled(true);
 
-    emit stopTheTest();
     emit setTask(m_mpi.GetDac()->GetValue());
-
     m_cyclicRunning = false;
+
+    m_activeRunner.reset();
     emit testFinished();
-    disposeActiveRunnerAsync();
 }
+
+void Program::disposeActiveRunnerAsync() {
+    m_activeRunner.reset();
+}
+
 
 void Program::setDAC_real(qreal value)
 {
@@ -449,11 +452,6 @@ bool Program::isInitialized() const {
     return m_isInitialized;
 }
 
-void Program::disposeActiveRunnerAsync() {
-    if (!m_activeRunner) return;
-    QObject* obj = m_activeRunner.release();
-    QMetaObject::invokeMethod(obj, "deleteLater", Qt::QueuedConnection);
-}
 
 void Program::runningMainTest()
 {
@@ -971,30 +969,25 @@ void Program::runningCyclicTest()
         }
         case parameters.TestParameters::Combined: {
             runningCyclicCombined(parameters);
-
             const auto regRaw = makeRawValues(parameters.regSeqValues,
-                                           m_registry->getValveInfo()->safePosition != 0);
+                                              m_registry->getValveInfo()->safePosition != 0);
             quint64 regSteps = static_cast<quint64>(regRaw.size()) * parameters.regulatory_numCycles;
-            quint64 regMs = regSteps * (parameters.regulatory_delayMs
-                                     + parameters.regulatory_holdMs)
-                                     + parameters.regulatory_delayMs;
+            quint64 regMs = regSteps * (parameters.regulatory_delayMs + parameters.regulatory_holdMs)
+                            + parameters.regulatory_delayMs;
 
             const auto offRaw = makeRawValues(parameters.offSeqValues,
-                                           m_registry->getValveInfo()->safePosition != 0);
+                                              m_registry->getValveInfo()->safePosition != 0);
             quint64 offSteps = static_cast<quint64>(offRaw.size()) * parameters.shutoff_numCycles;
-            quint64 offMs = offSteps * (parameters.shutoff_delayMs
-                                       + parameters.shutoff_holdMs)
-                                       + parameters.shutoff_delayMs;
+            quint64 offMs = offSteps * (parameters.shutoff_delayMs + parameters.shutoff_holdMs)
+                            + parameters.shutoff_delayMs;
 
-            quint64 totalMs = (regMs + offMs) / 1000;
+            quint64 totalMs = regMs + offMs;
 
             emit totalTestTimeMs(totalMs);
 
             auto &dst = m_telemetryStore.cyclicTestRecord;
-
             dst.cycles = parameters.shutoff_numCycles;
-            dst.totalTimeSec = totalMs;
-
+            dst.totalTimeSec = totalMs / 1000;
             break;
         }
         default: {

@@ -131,7 +131,6 @@ private:
         connect(r.get(), &ITestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
         connect(r.get(), &ITestRunner::endTest, this, &Program::endTest);
         connect(this, &Program::stopTheTest, r.get(), &ITestRunner::stop);
-        connect(r.get(), &ITestRunner::endTest, this, [this]{ disposeActiveRunnerAsync(); });
         emit setButtonInitEnabled(false);
         m_testing = true;
         emit enableSetTask(false);

@@ -7,7 +7,12 @@
 BaseRunner::BaseRunner(Mpi& mpi, Registry& reg, QObject* parent)
     : ITestRunner(parent), m_mpi(mpi), m_reg(reg) {}
 
-BaseRunner::~BaseRunner() {}
+BaseRunner::~BaseRunner() {
+    if (m_thread) {
+        m_thread->quit();
+        m_thread->wait();
+    }
+}
 
 void BaseRunner::start() {
     auto cfg = buildConfig();
@@ -15,17 +20,15 @@ void BaseRunner::start() {
         emit endTest();
         return;
     }
-    emit requestClearChart(cfg.chartToClear);
 
     m_worker = cfg.worker;
 
-    if (cfg.chartToClear >= 0)
-        emit clearPoints(cfg.chartToClear);
-    if (cfg.totalMs)
-        emit totalTestTimeMs(cfg.totalMs);
+    if (cfg.totalMs > 0) emit totalTestTimeMs(cfg.totalMs);
+    if (cfg.chartToClear >= 0) emit requestClearChart(cfg.chartToClear);
 
     m_thread = new QThread(this);
     m_worker->moveToThread(m_thread);
+
 
     connect(m_thread, &QThread::started,
             m_worker, &Test::Process);
@@ -33,8 +36,8 @@ void BaseRunner::start() {
     connect(m_worker, &Test::EndTest,
             m_thread, &QThread::quit);
 
-    connect(m_worker, SIGNAL(SetDAC(quint16,quint32,bool,bool)),
-            this, SIGNAL(requestSetDAC(quint16,quint32,bool,bool)),
+    connect(m_worker, &Test::SetDAC,
+            this, &BaseRunner::requestSetDAC,
             Qt::QueuedConnection);
 
     connect(this, SIGNAL(releaseBlock()),
@@ -56,9 +59,10 @@ void BaseRunner::start() {
 }
 
 void BaseRunner::stop() {
-    if (m_worker) {
+    if (m_worker)
         QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::QueuedConnection);
-    }
+    if (m_thread)
+        QMetaObject::invokeMethod(m_thread, "quit", Qt::QueuedConnection);
 }
 
 void BaseRunner::releaseBlock() {

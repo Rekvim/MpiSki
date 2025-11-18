@@ -6,15 +6,12 @@
 RunnerConfig MainTestRunner::buildConfig() {
     MainTestSettings::TestParameters p{};
     emit getParameters_mainTest(p);
-    if (p.delay == 0) {
-        return {};
-    }
+    if (p.delay == 0) return {};
 
-    const quint64 delay = p.delay;
-    const quint64 response = p.response;
-    const quint64 pn = static_cast<quint64>(p.pointNumbers * p.delay / p.response);
-    const quint64 totalMs =
-        10000ULL + delay + (pn + 1) * response + delay + (pn + 1) * response + 10000ULL;
+    const quint64 N = static_cast<quint64>(p.pointNumbers);
+    const quint64 upMs   = p.delay + N * p.response;
+    const quint64 downMs = p.delay + N * p.response;
+    const quint64 totalMs = 10000ULL + upMs + downMs + 10000ULL;
 
     p.dac_min = qMax(m_mpi.GetDac()->GetRawFromValue(p.signal_min), m_mpi.GetDac_Min());
     p.dac_max = qMin(m_mpi.GetDac()->GetRawFromValue(p.signal_max), m_mpi.GetDac_Max());
@@ -26,16 +23,17 @@ RunnerConfig MainTestRunner::buildConfig() {
     cfg.worker = worker;
     cfg.totalMs = totalMs;
     cfg.chartToClear = static_cast<int>(Charts::Task);
+
+    // ВАЖНО: если нет общего start(), эмитим здесь:
+    emit totalTestTimeMs(totalMs);
+
     return cfg;
 }
 
 void MainTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<MainTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
-    Q_ASSERT(owner);
 
-    connect(&t, &MainTest::EndTest,
-            owner, &Program::endTest);
 
     connect(&t, &MainTest::EndTest,
             owner, &Program::mainTestFinished);

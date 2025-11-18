@@ -52,12 +52,10 @@ void OptionResponseRunner::wireSpecificSignals(Test& base) {
     auto* owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
     connect(&t, &OptionTest::UpdateGraph,
-            owner, [owner]{ owner->updateCharts_optionTest(Charts::Response); });
+            owner, [owner]{ owner->updateCharts_optionTest(Charts::Response); },
+            Qt::QueuedConnection);
 
     connect(&t, &OptionTest::SetStartTime,
-            owner, &Program::setTimeStart);
-
-    // connect(owner, &Program::releaseBlock,
-    //         &t, &OptionTest::ReleaseBlock);
-
+            owner, &Program::setTimeStart,
+            Qt::QueuedConnection);
 }
