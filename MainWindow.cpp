@@ -110,16 +110,16 @@ MainWindow::MainWindow(QWidget *parent)
             m_program, &Program::runningCyclicTest);
 
     connect(this, &MainWindow::runMainTest,
-            m_program, &Program::runningMainTest);
+            m_program, &Program::startMainTest);
 
     connect(m_program, &Program::mainTestFinished,
             this, &MainWindow::promptSaveCharts);
 
     connect(this, &MainWindow::runStrokeTest,
-            m_program, &Program::runningStrokeTest);
+            m_program, &Program::startStrokeTest);
 
     connect(this, &MainWindow::runOptionalTest,
-            m_program, &Program::runningOptionalTest);
+            m_program, &Program::startOptionalTest);
 
     connect(this, &MainWindow::stopTest,
             m_program, &Program::terminateTest);

@@ -39,10 +39,10 @@ void CyclicTestsShutoff::Process()
             emit SetMultipleDO(currentStates);
         }
 
-        SetDACBlocked(value, m_task.delayMsecs);
+        setDacBlocked(value, m_task.delayMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
-        SetDACBlocked(value, m_task.holdMsecs);
+        setDacBlocked(value, m_task.holdMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
         if (perCycle > 0 && (step + 1) % perCycle == 0) {
@@ -50,7 +50,7 @@ void CyclicTestsShutoff::Process()
         }
     }
 
-    SetDACBlocked(0, 0, true);
+    setDacBlocked(0, 0, true);
     m_graphTimer->stop();
 
     QVector<QVector<QPointF>> pts;

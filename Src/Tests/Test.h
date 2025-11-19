@@ -20,7 +20,7 @@ protected:
     bool m_terminate;
 
     void Sleep(quint16 msecs);
-    void SetDACBlocked(quint16 value,
+    void setDacBlocked(quint16 value,
                        quint32 sleepMs = 0,
                        bool waitForStop = false,
                        bool waitForStart = false);
@@ -31,7 +31,7 @@ public slots:
     void ReleaseBlock();
 
 signals:
-    void SetDAC(quint16 value,
+    void setDac(quint16 value,
                 quint32 sleepMs = 0,
                 bool waitForStop = false,
                 bool waitForStart = false);

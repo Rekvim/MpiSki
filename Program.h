@@ -126,13 +126,13 @@ private:
         connect(r.get(), &ITestRunner::requestClearChart, this, [this](int chart){
             emit clearPoints(static_cast<Charts>(chart));
         });
-        connect(r.get(), &ITestRunner::requestSetDAC, this, &Program::setDAC);
+        connect(r.get(), &ITestRunner::requestSetDAC, this, &Program::setDacRaw);
         connect(this, &Program::releaseBlock, r.get(), &ITestRunner::releaseBlock);
         connect(r.get(), &ITestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
         connect(r.get(), &ITestRunner::endTest, this, &Program::endTest);
         connect(this, &Program::stopTheTest, r.get(), &ITestRunner::stop);
         emit setButtonInitEnabled(false);
-        m_testing = true;
+        m_isTestRunning = true;
         emit enableSetTask(false);
 
         m_activeRunner = std::move(r);
@@ -164,29 +164,29 @@ private:
     Mpi m_mpi;
     TelemetryStore m_telemetryStore;
     QTimer *m_diPollTimer = nullptr;
-    quint8 m_lastDI = 0;
+    quint8 m_lastDiStatus = 0;
     QTimer *m_timerSensors;
     QTimer *m_timerDI;
 
-    quint64 m_cyclicStartTs = 0;
+    quint64 m_cyclicStartTimeMs = 0;
     quint64 m_startTime;
     quint64 m_initTime;
-    QEventLoop *m_dacEventloop;
+    QEventLoop *m_dacEventLoop;
 
     bool m_isInitialized = false;
-    bool m_cyclicRunning = false;
-    bool m_testing = false;
-    bool m_stopSetDac;
-    bool m_waitForButton = false;
-    QVector<bool> m_initDOStates;
-    QVector<bool> m_savedInitDOStates;
+    bool m_isCyclicTestRunning = false;
+    bool m_isTestRunning = false;
+    bool m_isDacStopRequested;
+    bool m_shouldWaitForButton = false;
+    QVector<bool> m_initialDoStates;
+    QVector<bool> m_savedInitialDoStates;
 
 private slots:
     void updateSensors();
     void setMultipleDO(const QVector<bool>& states);
 
 public slots:
-    void setDAC(quint16 dac,
+    void setDacRaw(quint16 dac,
                 quint32 sleep_ms = 0,
                 bool waitForStop = false,
                 bool waitForStart = false);
@@ -222,18 +222,19 @@ public slots:
     void setDAC_real(qreal value);
     void setTimeStart();
 
-    void runningMainTest();
-    void runningStrokeTest();
-    void runningOptionalTest(quint8 testNum);
+    void startStrokeTest();
+    void startMainTest();
+    void startOptionalTest(quint8 testNum);
+    void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicCombined(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicTest();
+
 
     void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }
     void forwardGetParameters_responseTest(OtherTestSettings::TestParameters &p) { emit getParameters_responseTest(p); }
     void forwardGetParameters_resolutionTest(OtherTestSettings::TestParameters &p) { emit getParameters_resolutionTest(p); }
 
-    void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicCombined(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicTest();
 
     void endTest();
     void terminateTest();

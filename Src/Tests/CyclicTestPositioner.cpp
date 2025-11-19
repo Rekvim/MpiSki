@@ -18,12 +18,12 @@ void CyclicTestPositioner::Process()
     //         emit EndTest();
     //         return;
     //     }
-    //     SetDACBlocked(0xFFFF, 0, true, true);
+    //     setDacBlocked(0xFFFF, 0, true, true);
     //     if (m_terminate) {
     //         emit EndTest();
     //         return;
     //     }
-    //     SetDACBlocked(0, 0, true, true);
+    //     setDacBlocked(0, 0, true, true);
     // }
 
     // if (m_terminate) {

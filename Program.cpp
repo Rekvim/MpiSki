@@ -18,12 +18,12 @@ Program::Program(QObject *parent)
     m_timerSensors = new QTimer(this);
     m_timerSensors->setInterval(200);
 
-    m_dacEventloop = new QEventLoop(this);
+    m_dacEventLoop = new QEventLoop(this);
 
     connect(m_timerSensors, &QTimer::timeout,
             this, &Program::updateSensors);
 
-    m_testing = false;
+    m_isTestRunning = false;
 
     m_timerDI = new QTimer(this);
     m_timerDI->setInterval(1000);
@@ -42,9 +42,9 @@ void Program::setRegistry(Registry *registry)
     m_registry = registry;
 }
 
-void Program::setDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart)
+void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart)
 {
-    m_stopSetDac = false;
+    m_isDacStopRequested = false;
 
     if (m_mpi.SensorCount() == 0) {
         emit releaseBlock();
@@ -63,7 +63,7 @@ void Program::setDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitFo
             lineSensor.push_back(m_mpi[0]->GetRawValue());
             if (qAbs(lineSensor.first() - lineSensor.last()) > 10) {
                 timer.stop();
-                m_dacEventloop->quit();
+                m_dacEventLoop->quit();
             }
             if (lineSensor.size() > 50) {
                 lineSensor.pop_front();
@@ -71,24 +71,24 @@ void Program::setDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitFo
         });
 
         timer.start();
-        m_dacEventloop->exec();
+        m_dacEventLoop->exec();
         timer.stop();
     }
 
-    if (m_stopSetDac) {
+    if (m_isDacStopRequested) {
         emit releaseBlock();
         return;
     }
 
     if (sleepMs > 20) {
         QTimer timer;
-        connect(&timer, &QTimer::timeout, m_dacEventloop, &QEventLoop::quit);
+        connect(&timer, &QTimer::timeout, m_dacEventLoop, &QEventLoop::quit);
         timer.start(sleepMs);
-        m_dacEventloop->exec();
+        m_dacEventLoop->exec();
         timer.stop();
     }
 
-    if (m_stopSetDac) {
+    if (m_isDacStopRequested) {
         emit releaseBlock();
         return;
     }
@@ -104,14 +104,14 @@ void Program::setDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitFo
             if (lineSensor.size() == 50) {
                 if (qAbs(lineSensor.first() - lineSensor.last()) < 10) {
                     timer.stop();
-                    m_dacEventloop->quit();
+                    m_dacEventLoop->quit();
                 }
                 lineSensor.pop_front();
             }
         });
 
         timer.start();
-        m_dacEventloop->exec();
+        m_dacEventLoop->exec();
         timer.stop();
     }
 
@@ -142,7 +142,7 @@ void Program::updateSensors()
             break;
         }
     }
-    if (m_testing)
+    if (m_isTestRunning)
         emit setTask(m_mpi.GetDac()->GetValue());
 
     Sensor *feedbackSensor = m_mpi.GetDac();
@@ -161,15 +161,18 @@ void Program::updateSensors()
     emit addPoints(Charts::Trend, points);
 }
 
-void Program::endTest() {
-    m_testing = false;
+
+void Program::endTest()
+{
+    m_isTestRunning = false;
     emit enableSetTask(true);
     emit setButtonInitEnabled(true);
 
     emit setTask(m_mpi.GetDac()->GetValue());
-    m_cyclicRunning = false;
 
     m_activeRunner.reset();
+
+    m_isCyclicTestRunning = false;
     emit testFinished();
 }
 
@@ -186,8 +189,8 @@ void Program::setDAC_real(qreal value)
 
 void Program::setInitDOStates(const QVector<bool> &states)
 {
-    m_initDOStates = states;
-    m_savedInitDOStates = states;
+    m_initialDoStates = states;
+    m_savedInitialDoStates = states;
 }
 
 void Program::initialization()
@@ -308,11 +311,11 @@ void Program::waitForDacCycle()
 {
     QTimer timer(this);
     connect(&timer, &QTimer::timeout, this, [&] {
-        if (!m_waitForButton || m_stopSetDac)
-            m_dacEventloop->quit();
+        if (!m_shouldWaitForButton || m_isDacStopRequested)
+            m_dacEventLoop->quit();
     });
     timer.start(50);
-    m_dacEventloop->exec();
+    m_dacEventLoop->exec();
     timer.stop();
 }
 
@@ -323,7 +326,7 @@ void Program::measureStartPosition(bool normalClosed)
     ts.init.startingPositionColor = Qt::darkYellow;
     emit telemetryUpdated(ts);
 
-    setDAC(0, 10000, true);
+    setDacRaw(0, 10000, true);
     waitForDacCycle();
 
     if (normalClosed) m_mpi[0]->SetMin();
@@ -341,7 +344,7 @@ void Program::measureEndPosition(bool normalClosed)
     ts.init.finalPositionColor = Qt::darkYellow;
     emit telemetryUpdated(ts);
 
-    setDAC(0xFFFF, 10000, true);
+    setDacRaw(0xFFFF, 10000, true);
     waitForDacCycle();
 
     if (normalClosed) m_mpi[0]->SetMax();
@@ -360,15 +363,15 @@ void Program::measureStartPositionShutoff(bool normalClosed)
     ts.init.startingPositionColor = Qt::darkYellow;
     emit telemetryUpdated(ts);
 
-    for (int i = 0; i < m_savedInitDOStates.size(); ++i) {
-        if (m_savedInitDOStates[i]) {
-            m_initDOStates[i] = false;
+    for (int i = 0; i < m_savedInitialDoStates.size(); ++i) {
+        if (m_savedInitialDoStates[i]) {
+            m_initialDoStates[i] = false;
             m_mpi.SetDiscreteOutput(i, false);
         }
     }
     emit setButtonsDOChecked(m_mpi.GetDOStatus());
 
-    setDAC(0, 10000, true, true);
+    setDacRaw(0, 10000, true, true);
 
     waitForDacCycle();
 
@@ -388,15 +391,15 @@ void Program::measureEndPositionShutoff(bool normalClosed)
     s.init.finalPositionColor = Qt::darkYellow;
     emit telemetryUpdated(s);
 
-    for (int i = 0; i < m_savedInitDOStates.size(); ++i) {
-        if (m_savedInitDOStates[i]) {
-            m_initDOStates[i] = true;
+    for (int i = 0; i < m_savedInitialDoStates.size(); ++i) {
+        if (m_savedInitialDoStates[i]) {
+            m_initialDoStates[i] = true;
             m_mpi.SetDiscreteOutput(i, true);
         }
     }
     emit setButtonsDOChecked(m_mpi.GetDOStatus());
 
-    setDAC(0xFFFF, 1000, true);
+    setDacRaw(0xFFFF, 1000, true);
     waitForDacCycle();
 
     if (normalClosed) m_mpi[0]->SetMax();
@@ -427,9 +430,9 @@ void Program::recordStrokeRange(bool normalClosed)
     if (normalClosed) {
         s.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
         s.valveStrokeRecord.real = m_mpi[0]->GetValue();
-        setDAC(0);
+        setDacRaw(0);
     } else {
-        setDAC(0, 10000, true);
+        setDacRaw(0, 10000, true);
         s.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
         s.valveStrokeRecord.real = m_mpi[0]->GetValue();
     }
@@ -453,12 +456,12 @@ bool Program::isInitialized() const {
 }
 
 
-void Program::runningMainTest()
+void Program::startMainTest()
 {
     auto runner = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
 
     connect(runner.get(), &ITestRunner::requestSetDAC,
-            this, &Program::setDAC);
+            this, &Program::setDacRaw);
 
     connect(this, &Program::releaseBlock,
             runner.get(), &ITestRunner::releaseBlock);
@@ -475,7 +478,7 @@ void Program::runningMainTest()
     connect(this, &Program::stopTheTest, runner.get(), &ITestRunner::stop);
 
     emit setButtonInitEnabled(false);
-    m_testing = true;
+    m_isTestRunning = true;
     emit enableSetTask(false);
 
     m_activeRunner = std::move(runner);
@@ -563,7 +566,7 @@ void Program::addRegression(const QVector<QPointF> &points)
     emit setRegressionEnable(true);
 }
 
-void Program::runningStrokeTest() {
+void Program::startStrokeTest() {
     auto r = std::make_unique<StrokeTestRunner>(m_mpi, *m_registry, this);
     startRunner(std::move(r));
 }
@@ -612,10 +615,10 @@ void Program::updateCharts_CyclicTest(Charts chart)
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
         quint8 di = m_mpi.GetDIStatus();
-        if (di != m_lastDI) {
+        if (di != m_lastDiStatus) {
             QVector<Point> diPts;
-            bool lastClosed = (m_lastDI & 0x01);
-            bool lastOpen = (m_lastDI & 0x02);
+            bool lastClosed = (m_lastDiStatus & 0x01);
+            bool lastOpen = (m_lastDiStatus & 0x02);
             bool nowClosed = (di & 0x01);
             bool nowOpen = (di & 0x02);
 
@@ -632,7 +635,7 @@ void Program::updateCharts_CyclicTest(Charts chart)
             }
 
             if (!diPts.isEmpty()) emit addPoints(chart, diPts);
-            m_lastDI = di;
+            m_lastDiStatus = di;
         }
     }
 }
@@ -739,8 +742,8 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
         updateCharts_CyclicTest(Charts::Cyclic);
     });
 
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::SetDAC,
-            this, &Program::setDAC);
+    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::setDac,
+            this, &Program::setDacRaw);
 
     connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::GetPoints,
             this, &Program::receivedPoints_cyclicTest,
@@ -761,7 +764,7 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
     // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::ClearGraph,
     //         this, [&] { emit ClearPoints(Charts::Cyclic); });
 
-    m_testing = true;
+    m_isTestRunning = true;
     emit enableSetTask(false);
     emit clearPoints(Charts::Cyclic);
     threadTest->start();
@@ -842,8 +845,8 @@ void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
         updateCharts_CyclicTest(Charts::Cyclic);
     });
 
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::SetDAC,
-            this, &Program::setDAC);
+    connect(cyclicTestsShutoff, &CyclicTestsShutoff::setDac,
+            this, &Program::setDacRaw);
 
     connect(cyclicTestsShutoff, &CyclicTestsShutoff::GetPoints,
             this, &Program::receivedPoints_cyclicTest,
@@ -867,7 +870,7 @@ void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
     // connect(cyclicTestsShutoff, &CyclicTestsShutoff::ClearGraph,
     //         this, [&] { emit ClearPoints(Charts::Cyclic); });
 
-    m_testing = true;
+    m_isTestRunning = true;
     emit enableSetTask(false);
     emit clearPoints(Charts::Cyclic);
     threadTest->start();
@@ -1023,7 +1026,7 @@ void Program::results_cyclicTests(const CyclicTests::TestResults& r)
     emit telemetryUpdated(m_telemetryStore);
 }
 
-void Program::runningOptionalTest(quint8 testNum)
+void Program::startOptionalTest(quint8 testNum)
 {
     switch (testNum) {
     case 0: {
@@ -1094,21 +1097,21 @@ void Program::updateCharts_optionTest(Charts chart)
 
 void Program::button_set_position()
 {
-    m_stopSetDac = true;
-    m_dacEventloop->quit();
+    m_isDacStopRequested = true;
+    m_dacEventLoop->quit();
 }
 
 void Program::button_DO(quint8 DO_num, bool state)
 {
     if (!m_isInitialized) {
-        if ((int)m_initDOStates.size() < 4)
-            m_initDOStates.resize(4);
+        if ((int)m_initialDoStates.size() < 4)
+            m_initialDoStates.resize(4);
 
-        m_initDOStates[DO_num] = state;
+        m_initialDoStates[DO_num] = state;
 
         quint8 mask = 0;
-        for (int i = 0; i < m_initDOStates.size(); ++i)
-            if (m_initDOStates[i]) mask |= (1 << i);
+        for (int i = 0; i < m_initialDoStates.size(); ++i)
+            if (m_initialDoStates[i]) mask |= (1 << i);
 
         emit setButtonsDOChecked(mask);
         return;
@@ -1120,12 +1123,12 @@ void Program::button_DO(quint8 DO_num, bool state)
 
 void Program::checkbox_autoInit(int state)
 {
-    m_waitForButton = (state == 0);
+    m_shouldWaitForButton = (state == 0);
 }
 
 void Program::terminateTest()
 {
-    m_stopSetDac = true;
-    m_dacEventloop->quit();
+    m_isDacStopRequested = true;
+    m_dacEventLoop->quit();
     emit stopTheTest();
 }

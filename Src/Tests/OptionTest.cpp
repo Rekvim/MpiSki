@@ -13,7 +13,7 @@ void OptionTest::Process()
     }
     emit SetStartTime();
 
-    SetDACBlocked(m_task.value.first(), 10000, true);
+    setDacBlocked(m_task.value.first(), 10000, true);
 
     if (m_terminate) { emit EndTest(); return; }
 
@@ -21,7 +21,7 @@ void OptionTest::Process()
     m_graphTimer->start(50);
 
     for (const auto &value : m_task.value) {
-        SetDACBlocked(value, m_task.delay);
+        setDacBlocked(value, m_task.delay);
 
         if (m_terminate) {
             emit EndTest();

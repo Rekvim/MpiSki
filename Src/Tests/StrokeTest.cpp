@@ -6,7 +6,7 @@ StrokeTest::StrokeTest(QObject *parent)
 
 void StrokeTest::Process()
 {
-    SetDACBlocked(0, 10000, true);
+    setDacBlocked(0, 10000, true);
 
     if (m_terminate) {
         emit EndTest();
@@ -26,7 +26,7 @@ void StrokeTest::Process()
 
     quint64 startTime = QDateTime::currentMSecsSinceEpoch();
 
-    SetDACBlocked(0xFFFF, 0, true, true);
+    setDacBlocked(0xFFFF, 0, true, true);
 
     if (m_terminate) {
         emit EndTest();
@@ -37,7 +37,7 @@ void StrokeTest::Process()
 
     startTime = QDateTime::currentMSecsSinceEpoch();
 
-    SetDACBlocked(0, 0, true, true);
+    setDacBlocked(0, 0, true, true);
 
     if (m_terminate) {
         emit EndTest();

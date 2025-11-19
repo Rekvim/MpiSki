@@ -16,9 +16,9 @@ void Test::Sleep(quint16 msecs)
     loop.exec();
 }
 
-void Test::SetDACBlocked(quint16 value, quint32 sleepMs, bool waitForStop, bool waitForStart)
+void Test::setDacBlocked(quint16 value, quint32 sleepMs, bool waitForStop, bool waitForStart)
 {
-    emit SetDAC(value, sleepMs, waitForStop, waitForStart);
+    emit setDac(value, sleepMs, waitForStop, waitForStart);
     m_eventLoop->exec();
 }
 

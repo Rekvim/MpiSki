@@ -33,10 +33,10 @@ void CyclicTestsRegulatory::Process()
         if (m_terminate) { emit EndTest(); return; }
 
 
-        SetDACBlocked(value, m_task.delayMsecs);
+        setDacBlocked(value, m_task.delayMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
-        SetDACBlocked(value, m_task.holdMsecs);
+        setDacBlocked(value, m_task.holdMsecs);
         if (m_terminate) { emit EndTest(); return; }
 
         emit StepMeasured(rangePercent, 0.0, cycle);
@@ -47,7 +47,7 @@ void CyclicTestsRegulatory::Process()
         }
     }
 
-    SetDACBlocked(0, 0, true, false);
+    setDacBlocked(0, 0, true, false);
     m_graphTimer->stop();
 
     QVector<QVector<QPointF>> pts;

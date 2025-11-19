@@ -22,7 +22,7 @@ void CyclicTests::Process()
 {
     emit ClearGraph();
 
-    SetDACBlocked(0, 10000, true);
+    setDacBlocked(0, 10000, true);
 
     if (m_terminate) {
         emit EndTest();
@@ -55,7 +55,7 @@ void CyclicTests::Process()
         break;
     }
 
-    SetDACBlocked(0, 0, true);
+    setDacBlocked(0, 0, true);
 
     m_graphTimer->stop();
 
@@ -101,7 +101,7 @@ double CyclicTests::processRegulatory()
 
     for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
         for (int i = 0; i < raw.size() && !m_terminate; ++i) {
-            SetDACBlocked(raw.at(i), delayMs);
+            setDacBlocked(raw.at(i), delayMs);
             if (m_terminate) return timer.elapsed() / 1000.0;
             Sleep(holdMs);
             if (m_terminate) return timer.elapsed() / 1000.0;
@@ -129,7 +129,7 @@ double CyclicTests::processShutoff()
     m_doOnCounts.assign(DO_COUNT, 0);
     m_doOffCounts.assign(DO_COUNT, 0);
 
-    SetDACBlocked(0, 0, true);
+    setDacBlocked(0, 0, true);
 
     QElapsedTimer timer; timer.start();
 
@@ -145,7 +145,7 @@ double CyclicTests::processShutoff()
                 emit SetMultipleDO(currentStates);
             }
 
-            SetDACBlocked(raw.at(i), holdMs);
+            setDacBlocked(raw.at(i), holdMs);
             if (m_terminate) return timer.elapsed() / 1000.0;
             Sleep(delayMs);
             if (m_terminate) return timer.elapsed() / 1000.0;
@@ -153,7 +153,7 @@ double CyclicTests::processShutoff()
         if (!m_terminate) emit CycleCompleted(cycle + 1);
     }
 
-    SetDACBlocked(0, 0, true);
+    setDacBlocked(0, 0, true);
 
     return timer.elapsed() / 1000.0;
 }

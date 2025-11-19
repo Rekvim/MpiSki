@@ -10,7 +10,7 @@ void MainTest::Process()
     emit ClearGraph();
     emit ShowDots(!m_parameters.continuous);
 
-    SetDACBlocked(m_parameters.dac_min, 10000, true);
+    setDacBlocked(m_parameters.dac_min, 10000, true);
 
     m_graphTimer->start(m_parameters.delay);
 
@@ -27,7 +27,7 @@ void MainTest::Process()
 
         time += m_parameters.response;
         quint64 currentTime = QDateTime::currentMSecsSinceEpoch();
-        SetDACBlocked(dac, time < currentTime ? 0 : (time - currentTime));
+        setDacBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
         if (m_terminate) {
             emit EndTest();
@@ -35,7 +35,7 @@ void MainTest::Process()
         }
     }
 
-    SetDACBlocked(m_parameters.dac_max, 0, true);
+    setDacBlocked(m_parameters.dac_max, 0, true);
 
     emit DublSeries();
 
@@ -49,7 +49,7 @@ void MainTest::Process()
 
         time += m_parameters.response;
         quint64 currentTime = QDateTime::currentMSecsSinceEpoch();
-        SetDACBlocked(dac, time < currentTime ? 0 : (time - currentTime));
+        setDacBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
         if (m_terminate) {
             emit EndTest();
@@ -57,7 +57,7 @@ void MainTest::Process()
         }
     }
 
-    SetDACBlocked(m_parameters.dac_min, 0, true);
+    setDacBlocked(m_parameters.dac_min, 0, true);
 
     m_graphTimer->stop();
 
