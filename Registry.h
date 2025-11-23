@@ -6,6 +6,25 @@
 #include <QObject>
 #include <QSettings>
 
+struct CrossingLimits {
+
+    bool frictionEnabled = false;
+    bool linearCharacteristicEnabled = false;
+    bool rangeEnabled = false;
+    bool springEnabled = false;
+    bool dynamicErrorEnabled = false;
+
+    double frictionCoefLowerLimit = 0.0;
+    double frictionCoefUpperLimit = 0.0;
+
+    double linearCharacteristicLowerLimit = 0.0;
+
+    double rangeUpperLimit  = 0.0;
+
+    double springLowerLimit = 0.0;
+    double springUpperLimit = 0.0;
+};
+
 struct ObjectInfo
 {
     QString object = "";
@@ -42,6 +61,8 @@ struct ValveInfo
     quint32 toolNumber = 0;
     qreal diameterPulley = 0.0;
     QString materialStuffingBoxSeal = "";
+
+    CrossingLimits crossingLimits;
 };
 
 struct OtherParameters

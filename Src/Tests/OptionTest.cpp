@@ -17,7 +17,6 @@ void OptionTest::Process()
 
     if (m_terminate) { emit EndTest(); return; }
 
-
     m_graphTimer->start(50);
 
     for (const auto &value : m_task.value) {

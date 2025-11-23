@@ -1,12 +1,12 @@
-#ifndef CYCLICREGULATORYRUNNER_H
-#define CYCLICREGULATORYRUNNER_H
+#ifndef CYCLICSHUTOFFRUNNER_H
+#define CYCLICSHUTOFFRUNNER_H
 
 #pragma once
 #include "BaseRunner.h"
 #include "./CyclicTestSettings.h"
-#include "./Src/Tests/CyclicTestsRegulatory.h"
+#include "./Src/Tests/CyclicTestsShutoff.h"
 
-class CyclicRegulatoryRunner final : public BaseRunner {
+class CyclicShutoffRunner final : public BaseRunner {
     Q_OBJECT
 public:
     using BaseRunner::BaseRunner;
@@ -18,5 +18,4 @@ protected:
     void wireSpecificSignals(Test& base) override;
 };
 
-
-#endif // CYCLICREGULATORYRUNNER_H
+#endif // CYCLICSHUTOFFRUNNER_H

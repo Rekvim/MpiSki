@@ -68,6 +68,7 @@ private slots:
     void getDirectory(const QString &current_path, QString &result);
 
     void updateFrictionForceLimitStatus();
+    void updateSpringLimitStatus();
     void updateRangeLimitStatus();
     void updateDynamicErrorLimitStatus();
 

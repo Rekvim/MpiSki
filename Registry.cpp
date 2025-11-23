@@ -53,6 +53,35 @@ ValveInfo *Registry::getValveInfo(const QString &position)
     m_valveInfo.diameterPulley = m_settings.value("diameterPulley", "").toInt();
     m_valveInfo.materialStuffingBoxSeal = m_settings.value("materialStuffingBoxSeal", "").toString();
 
+    // --- crossing limits: enable-флаги ---
+    m_valveInfo.crossingLimits.frictionEnabled =
+        m_settings.value("crossing_enable_friction", false).toBool();
+    m_valveInfo.crossingLimits.linearCharacteristicEnabled =
+        m_settings.value("crossing_enable_linearCharacteristic", false).toBool();
+    m_valveInfo.crossingLimits.rangeEnabled =
+        m_settings.value("crossing_enable_range", false).toBool();
+    m_valveInfo.crossingLimits.springEnabled =
+        m_settings.value("crossing_enable_spring", false).toBool();
+    m_valveInfo.crossingLimits.dynamicErrorEnabled =
+        m_settings.value("crossing_enable_dynamicError", false).toBool();
+
+    // --- новые поля crossingLimits ---
+    m_valveInfo.crossingLimits.frictionCoefLowerLimit =
+        m_settings.value("crossing_frictionCoefLowerLimit", 0.0).toDouble();
+    m_valveInfo.crossingLimits.frictionCoefUpperLimit =
+        m_settings.value("crossing_frictionCoefUpperLimit", 0.0).toDouble();
+
+    m_valveInfo.crossingLimits.linearCharacteristicLowerLimit =
+        m_settings.value("crossing_linearCharacteristicLowerLimit", 0.0).toDouble();
+
+    m_valveInfo.crossingLimits.rangeUpperLimit =
+        m_settings.value("crossing_rangeUpperLimit", 0.0).toDouble();
+
+    m_valveInfo.crossingLimits.springLowerLimit =
+        m_settings.value("crossing_springLowerLimit", 0.0).toDouble();
+    m_valveInfo.crossingLimits.springUpperLimit =
+        m_settings.value("crossing_springUpperLimit", 0.0).toDouble();
+
     m_settings.endGroup();
     m_settings.endGroup();
     m_settings.endGroup();
@@ -95,6 +124,35 @@ void Registry::saveValveInfo()
     m_settings.setValue("toolNumber", m_valveInfo.toolNumber);
     m_settings.setValue("diameterPulley", m_valveInfo.diameterPulley);
     m_settings.setValue("materialStuffingBoxSeal", m_valveInfo.materialStuffingBoxSeal);
+
+
+    // --- crossing limits: enable-флаги ---
+    m_settings.setValue("crossing_enable_friction",
+                        m_valveInfo.crossingLimits.frictionEnabled);
+    m_settings.setValue("crossing_enable_linearCharacteristic",
+                        m_valveInfo.crossingLimits.linearCharacteristicEnabled);
+    m_settings.setValue("crossing_enable_range",
+                        m_valveInfo.crossingLimits.rangeEnabled);
+    m_settings.setValue("crossing_enable_spring",
+                        m_valveInfo.crossingLimits.springEnabled);
+    m_settings.setValue("crossing_enable_dynamicError",
+                        m_valveInfo.crossingLimits.dynamicErrorEnabled);
+
+    m_settings.setValue("crossing_frictionCoefLowerLimit",
+                        m_valveInfo.crossingLimits.frictionCoefLowerLimit);
+    m_settings.setValue("crossing_frictionCoefUpperLimit",
+                        m_valveInfo.crossingLimits.frictionCoefUpperLimit);
+
+    m_settings.setValue("crossing_linearCharacteristicLowerLimit",
+                        m_valveInfo.crossingLimits.linearCharacteristicLowerLimit);
+
+    m_settings.setValue("crossing_rangeUpperLimit",
+                        m_valveInfo.crossingLimits.rangeUpperLimit);
+
+    m_settings.setValue("crossing_springLowerLimit",
+                        m_valveInfo.crossingLimits.springLowerLimit);
+    m_settings.setValue("crossing_springUpperLimit",
+                        m_valveInfo.crossingLimits.springUpperLimit);
 
     m_settings.endGroup();
     m_settings.endGroup();

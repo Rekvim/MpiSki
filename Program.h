@@ -139,6 +139,8 @@ private:
         m_activeRunner->start();
     }
 
+    void updateCrossingStatus();
+
     void disposeActiveRunnerAsync();
 
     // init
@@ -183,9 +185,12 @@ private:
 
 private slots:
     void updateSensors();
-    void setMultipleDO(const QVector<bool>& states);
 
 public slots:
+    void onCyclicStepMeasured(int cycle, int step, bool forward);
+
+    void setMultipleDO(const QVector<bool>& states);
+
     void setDacRaw(quint16 dac,
                 quint32 sleep_ms = 0,
                 bool waitForStop = false,

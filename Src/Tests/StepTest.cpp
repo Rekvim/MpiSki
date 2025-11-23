@@ -64,6 +64,8 @@ QVector<StepTest::TestResult> StepTest::CalculateResult(const QVector<QVector<QP
 
 void StepTest::Process()
 {
+    emit SetStartTime();
+
     OptionTest::Process();
     if (m_terminate) {
         emit EndTest();

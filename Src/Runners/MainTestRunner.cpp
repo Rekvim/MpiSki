@@ -9,7 +9,7 @@ RunnerConfig MainTestRunner::buildConfig() {
     if (p.delay == 0) return {};
 
     const quint64 N = static_cast<quint64>(p.pointNumbers);
-    const quint64 upMs   = p.delay + N * p.response;
+    const quint64 upMs = p.delay + N * p.response;
     const quint64 downMs = p.delay + N * p.response;
     const quint64 totalMs = 10000ULL + upMs + downMs + 10000ULL;
 
@@ -24,7 +24,6 @@ RunnerConfig MainTestRunner::buildConfig() {
     cfg.totalMs = totalMs;
     cfg.chartToClear = static_cast<int>(Charts::Task);
 
-    // ВАЖНО: если нет общего start(), эмитим здесь:
     emit totalTestTimeMs(totalMs);
 
     return cfg;
@@ -34,12 +33,13 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<MainTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-
     connect(&t, &MainTest::EndTest,
-            owner, &Program::mainTestFinished);
+            owner, &Program::mainTestFinished,
+            Qt::QueuedConnection);
 
     connect(&t, &MainTest::UpdateGraph,
-            owner, &Program::updateCharts_mainTest);
+            owner, &Program::updateCharts_mainTest,
+            Qt::QueuedConnection);
 
     connect(&t, &MainTest::DublSeries,
             owner, [owner]{ emit owner->dublSeries(); });
@@ -49,13 +49,16 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
             Qt::BlockingQueuedConnection);
 
     connect(&t, &MainTest::AddRegression,
-            owner, &Program::addRegression);
+            owner, &Program::addRegression,
+            Qt::QueuedConnection);
 
     connect(&t, &MainTest::AddFriction,
-            owner, &Program::addFriction);
+            owner, &Program::addFriction,
+            Qt::QueuedConnection);
 
     connect(&t, &MainTest::Results,
-            owner, &Program::results_mainTest);
+            owner, &Program::results_mainTest,
+            Qt::QueuedConnection);
 
     connect(&t, &MainTest::ShowDots,
             owner, [owner](bool v){ emit owner->showDots(v); });

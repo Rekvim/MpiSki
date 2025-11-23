@@ -36,7 +36,7 @@ void BaseRunner::start() {
     connect(m_worker, &Test::EndTest,
             m_thread, &QThread::quit);
 
-    connect(m_worker, &Test::SetDAC,
+    connect(m_worker, &Test::setDac,
             this, &BaseRunner::requestSetDAC,
             Qt::QueuedConnection);
 
@@ -60,9 +60,9 @@ void BaseRunner::start() {
 
 void BaseRunner::stop() {
     if (m_worker)
-        QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::QueuedConnection);
-    if (m_thread)
-        QMetaObject::invokeMethod(m_thread, "quit", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::DirectConnection);
+    // quit трогаем только через EndTest, он у тебя уже коннектится:
+    // connect(m_worker, &Test::EndTest, m_thread, &QThread::quit);
 }
 
 void BaseRunner::releaseBlock() {

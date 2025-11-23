@@ -1,22 +1,27 @@
 #include "CyclicRegulatoryRunner.h"
 #include "./Program.h"
 
-static QVector<quint16> makeRawValues(const QVector<quint16>& seq, Mpi& mpi, bool normalOpen)
+QVector<quint16> makeRawValues(const QVector<quint16>& seq, Mpi& mpi, bool normalOpen)
 {
-    QVector<quint16> raw; raw.reserve(seq.size());
+    QVector<quint16> raw;
+    raw.reserve(seq.size());
+
     for (quint16 pct : seq) {
-        const qreal cur = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.GetDac()->GetRawFromValue(cur));
+        const qreal current = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
+        raw.push_back(mpi.GetDac()->GetRawFromValue(current));
     }
     return raw;
 }
 
-RunnerConfig CyclicRegulatoryRunner::buildConfig() {
-    CyclicTestSettings::TestParameters p{};
-    auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
-    emit owner->getParameters_cyclicTest(p);
+RunnerConfig CyclicRegulatoryRunner::buildConfig()
+{
+    const auto& p = m_params;
 
-    if (p.testType != CyclicTestSettings::TestParameters::Regulatory) return {};
+    if (p.testType != p.Type::Regulatory &&
+        p.testType != p.Type::Combined)
+    {
+        return {};
+    }
 
     const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
     const auto raw = makeRawValues(p.regSeqValues, m_mpi, normalOpen);
@@ -25,15 +30,15 @@ RunnerConfig CyclicRegulatoryRunner::buildConfig() {
     task.delayMsecs = p.regulatory_delayMs;
     task.holdMsecs = p.regulatory_holdMs;
     task.sequence = p.regSeqValues;
-
-    task.values.reserve(p.regulatory_numCycles * raw.size());
-    for (int c = 0; c < p.regulatory_numCycles; ++c) task.values += raw;
+    task.values = raw;
+    task.cycles = p.regulatory_numCycles;
 
     auto* worker = new CyclicTestsRegulatory;
     worker->SetTask(task);
 
-    const quint64 steps = static_cast<quint64>(raw.size()) * p.regulatory_numCycles;
-    const quint64 totalMs = steps * (p.regulatory_delayMs + p.regulatory_holdMs);
+    const quint64 stepsPerCycle = static_cast<quint64>(raw.size());
+    const quint64 totalSteps = stepsPerCycle * p.regulatory_numCycles;
+    const quint64 totalMs = totalSteps * (p.regulatory_delayMs + p.regulatory_holdMs);
 
     RunnerConfig cfg;
     cfg.worker = worker;
@@ -44,7 +49,7 @@ RunnerConfig CyclicRegulatoryRunner::buildConfig() {
 
 void CyclicRegulatoryRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<CyclicTestsRegulatory&>(base);
-    auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
+    auto owner = qobject_cast<Program*>(parent());
 
     connect(&t, &CyclicTestsRegulatory::UpdateGraph,
             owner, [owner]{ owner->updateCharts_CyclicTest(Charts::Cyclic); },
@@ -57,9 +62,13 @@ void CyclicRegulatoryRunner::wireSpecificSignals(Test& base) {
     connect(&t, &CyclicTestsRegulatory::SetStartTime,
             owner, &Program::setTimeStart);
 
-    connect(&t, &CyclicTestsRegulatory::Results,
-            owner, &Program::results_cyclicRegulatoryTests,
+    connect(&t, &CyclicTestsRegulatory::StepMeasured,
+            owner, &Program::onCyclicStepMeasured,
             Qt::QueuedConnection);
+
+    // connect(&t, &CyclicTestsRegulatory::Results,
+    //         owner, &Program::results_cyclicRegulatoryTests,
+    //         Qt::QueuedConnection);
 
     connect(&t, &CyclicTestsRegulatory::CycleCompleted,
             owner, &Program::cyclicCycleCompleted,

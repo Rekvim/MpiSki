@@ -9,8 +9,8 @@
 #include "./Src/Runners/StrokeTestRunner.h"
 #include "./Src/Runners/OptionResponseRunner.h"
 #include "./Src/Runners/OptionResolutionRunner.h"
-// #include "./Src/Runners/CyclicShutoffRunner.h"
 #include "./Src/Runners/CyclicRegulatoryRunner.h"
+#include "./Src/Runners/CyclicShutoffRunner.h"
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -478,7 +478,6 @@ void Program::startMainTest()
     connect(this, &Program::stopTheTest, runner.get(), &ITestRunner::stop);
 
     emit setButtonInitEnabled(false);
-    m_isTestRunning = true;
     emit enableSetTask(false);
 
     m_activeRunner = std::move(runner);
@@ -488,6 +487,85 @@ void Program::startMainTest()
 void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
 {
     emit getPoints_mainTest(points, Charts::Task);
+}
+
+static bool inRange(double value, double lower, double upper)
+{
+    if (lower > upper)
+        std::swap(lower, upper);
+    return value >= lower && value <= upper;
+}
+
+static bool rangeOverlap(double valueLow, double valueHigh,
+                         double limitLow, double limitHigh)
+{
+    if (limitLow > limitHigh)
+        std::swap(limitLow, limitHigh);
+    if (valueLow > valueHigh)
+        std::swap(valueLow, valueHigh);
+
+    // как у тебя в индикаторе: если хотя бы один конец вылезает — FAIL.
+    return (valueLow >= limitLow && valueHigh <= limitHigh);
+}
+
+void Program::updateCrossingStatus()
+{
+    auto &ts = m_telemetryStore;
+    const ValveInfo *valveInfo = m_registry->getValveInfo();
+    const CrossingLimits &limits = valveInfo->crossingLimits;
+
+    // Коэффициент трения (%)
+    if (limits.frictionEnabled) {
+        ts.crossingStatus.frictionOk = inRange(
+            ts.mainTestRecord.frictionPercent,
+            limits.frictionCoefLowerLimit,
+            limits.frictionCoefUpperLimit
+            );
+    } else {
+        ts.crossingStatus.frictionOk = true; // или false, или N/A
+    }
+
+    // Ход клапана (реальный ход)
+    if (limits.rangeEnabled) {
+        ts.crossingStatus.rangeOk = inRange(
+            ts.valveStrokeRecord.real,
+            0.0,
+            limits.rangeUpperLimit
+            );
+    } else {
+        ts.crossingStatus.rangeOk = true;
+    }
+
+    // Динамическая ошибка
+    if (limits.dynamicErrorEnabled) {
+        ts.crossingStatus.dynamicErrorOk = inRange(
+            ts.mainTestRecord.dynamicErrorReal,
+            0.0,
+            valveInfo->dinamicErrorRecomend
+            );
+    } else {
+        ts.crossingStatus.dynamicErrorOk = true;
+    }
+
+    // Диапазон пружины: [springLow; springHigh] должен лежать в [springLowerLimit; springUpperLimit]
+    if (limits.springEnabled) {
+        ts.crossingStatus.springOk = rangeOverlap(
+            ts.mainTestRecord.springLow,
+            ts.mainTestRecord.springHigh,
+            limits.springLowerLimit,
+            limits.springUpperLimit
+            );
+    } else {
+        ts.crossingStatus.springOk = true;
+    }
+
+    // Линейная характеристика — аналогично, если нужно:
+    if (limits.linearCharacteristicEnabled) {
+        // тут решаешь сам критерий
+        ts.crossingStatus.linearCharacteristicOk = true; // пока заглушка
+    } else {
+        ts.crossingStatus.linearCharacteristicOk = true;
+    }
 }
 
 void Program::results_mainTest(const MainTest::TestResults &results)
@@ -515,6 +593,7 @@ void Program::results_mainTest(const MainTest::TestResults &results)
     s.springLow = results.springLow;
     s.springHigh = results.springHigh;
 
+    // updateCrossingStatus();
     emit telemetryUpdated(m_telemetryStore);
 }
 
@@ -685,7 +764,6 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
 
     auto *cyclicTestsRegulatory = new CyclicTestsRegulatory;
     cyclicTestsRegulatory->SetTask(task);
-    cyclicTestsRegulatory->SetPatternType(m_patternType);
 
     QThread *threadTest = new QThread(this);
     cyclicTestsRegulatory->moveToThread(threadTest);
@@ -772,21 +850,21 @@ void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &
 
 void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results)
 {
-    auto &dst = m_telemetryStore.cyclicTestRecord;
+    // auto &dst = m_telemetryStore.cyclicTestRecord;
 
-    dst.sequence = results.strSequence;
-    dst.ranges.resize(results.ranges.size());
-    for (int i = 0; i < results.ranges.size(); ++i) {
-        const auto &src = results.ranges[i];
-        auto &d = dst.ranges[i];
-        d.rangePercent = src.rangePercent;
-        d.maxForwardValue = src.maxForwardValue;
-        d.maxForwardCycle = src.maxForwardCycle;
-        d.maxReverseValue = src.maxReverseValue;
-        d.maxReverseCycle = src.maxReverseCycle;
-    }
+    // // dst.sequence = results.strSequence;
+    // // dst.ranges.resize(results.ranges.size());
+    // // for (int i = 0; i < results.ranges.size(); ++i) {
+    // //     const auto &src = results.ranges[i];
+    // //     auto &d = dst.ranges[i];
+    // //     d.rangePercent = src.rangePercent;
+    // //     d.maxForwardValue = src.maxForwardValue;
+    // //     d.maxForwardCycle = src.maxForwardCycle;
+    // //     d.maxReverseValue = src.maxReverseValue;
+    // //     d.maxReverseCycle = src.maxReverseCycle;
+    // // }
 
-    emit telemetryUpdated(m_telemetryStore);
+    // emit telemetryUpdated(m_telemetryStore);
 }
 
 void Program::setMultipleDO(const QVector<bool>& states)
@@ -903,120 +981,150 @@ void Program::runningCyclicCombined(const CyclicTestSettings::TestParameters &p)
 void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
                                           const CyclicTestsShutoff::TestResults& shutoffResults)
 {
-    auto &dst = m_telemetryStore.cyclicTestRecord;
-    dst.sequence = dst.sequence;
+    // auto &dst = m_telemetryStore.cyclicTestRecord;
+    // dst.sequence = dst.sequence;
 
-    dst.ranges.resize(regulatoryResults.ranges.size());
-    for (int i = 0; i < regulatoryResults.ranges.size(); ++i) {
-        const auto &src = regulatoryResults.ranges[i];
-        auto &d = dst.ranges[i];
-        d.rangePercent = src.rangePercent;
-        d.maxForwardValue = src.maxForwardValue;
-        d.maxForwardCycle = src.maxForwardCycle;
-        d.maxReverseValue = src.maxReverseValue;
-        d.maxReverseCycle = src.maxReverseCycle;
-    }
+    // dst.ranges.resize(regulatoryResults.ranges.size());
+    // for (int i = 0; i < regulatoryResults.ranges.size(); ++i) {
+    //     const auto &src = regulatoryResults.ranges[i];
+    //     auto &d = dst.ranges[i];
+    //     d.rangePercent = src.rangePercent;
+    //     d.maxForwardValue = src.maxForwardValue;
+    //     d.maxForwardCycle = src.maxForwardCycle;
+    //     d.maxReverseValue = src.maxReverseValue;
+    //     d.maxReverseCycle = src.maxReverseCycle;
+    // }
 
-    dst.doOnCounts = shutoffResults.doOnCounts;
-    dst.doOffCounts = shutoffResults.doOffCounts;
-    dst.switch3to0Count = shutoffResults.switch3to0Count / 2;
-    dst.switch0to3Count = shutoffResults.switch0to3Count / 2;
+    // dst.doOnCounts = shutoffResults.doOnCounts;
+    // dst.doOffCounts = shutoffResults.doOffCounts;
+    // dst.switch3to0Count = shutoffResults.switch3to0Count / 2;
+    // dst.switch0to3Count = shutoffResults.switch0to3Count / 2;
 
-    emit telemetryUpdated(m_telemetryStore);
+    // emit telemetryUpdated(m_telemetryStore);
 }
 
 void Program::runningCyclicTest()
 {
     CyclicTestSettings::TestParameters parameters;
     emit getParameters_cyclicTest(parameters);
+    qDebug() << "Program::runningCyclicTest testType =" << int(parameters.testType);
 
-    // quint16 n = 0;
+    if (parameters.regSeqValues.isEmpty() && parameters.offSeqValues.isEmpty())
+        return;
+
+    if (parameters.testType == CyclicTestSettings::TestParameters::Regulatory ||
+        parameters.testType == CyclicTestSettings::TestParameters::Combined) {
+
+        auto& rec = m_telemetryStore.cyclicTestRecord;
+
+        QStringList parts;
+        parts.reserve(parameters.regSeqValues.size());
+        for (quint16 v : parameters.regSeqValues)
+            parts << QString::number(v);
+        rec.sequence = parts.join('-');
+
+        rec.cycles = parameters.regulatory_numCycles;
+
+        const quint64 stepsPerCycle = static_cast<quint64>(parameters.regSeqValues.size());
+        const quint64 totalSteps    = stepsPerCycle * parameters.regulatory_numCycles;
+        const quint64 totalMs       = totalSteps *
+                                (parameters.regulatory_delayMs + parameters.regulatory_holdMs);
+        rec.totalTimeSec = totalMs / 1000.0; // перевели в секунды
+
+        // 4) Диапазоны для onCyclicStepMeasured
+        rec.ranges.clear();
+        rec.ranges.resize(parameters.regSeqValues.size());
+
+        for (int i = 0; i < parameters.regSeqValues.size(); ++i) {
+            auto& r = rec.ranges[i];
+            r.rangePercent     = parameters.regSeqValues[i];
+
+            // Прямой ход — будем искать максимум
+            r.maxForwardValue  = std::numeric_limits<qreal>::lowest();
+            r.maxForwardCycle  = -1;
+
+            // Обратный ход — будем искать минимум
+            r.maxReverseValue  = std::numeric_limits<qreal>::max();
+            r.maxReverseCycle  = -1;
+        }
+
+        rec.switch3to0Count = 0;
+        rec.switch0to3Count = 0;
+    }
 
     switch (parameters.testType) {
-        case parameters.TestParameters::Regulatory: {
-            runningCyclicRegulatory(parameters);
-            const auto raw = makeRawValues(parameters.regSeqValues,
-                                           m_registry->getValveInfo()->safePosition != 0);
-            quint64 steps = static_cast<quint64>(raw.size()) * parameters.regulatory_numCycles;
-
-            quint64 totalMs = steps * (parameters.regulatory_delayMs
-                                       + parameters.regulatory_holdMs);
-
-            emit totalTestTimeMs(totalMs);
-
-            auto &dst = m_telemetryStore.cyclicTestRecord;
-
-            dst.cycles = parameters.regulatory_numCycles;
-            dst.totalTimeSec = totalMs / 1000;
-
-            break;
-        }
-        case parameters.TestParameters::Shutoff: {
-            runningCyclicShutoff(parameters);
-
-            const auto raw = makeRawValues(parameters.offSeqValues,
-                                           m_registry->getValveInfo()->safePosition != 0);
-            quint64 steps = static_cast<quint64>(raw.size()) * parameters.shutoff_numCycles;
-
-            quint64 totalMs = steps * (parameters.shutoff_delayMs
-                                       + parameters.shutoff_holdMs);
-
-            emit totalTestTimeMs(totalMs);
-
-            auto &dst = m_telemetryStore.cyclicTestRecord;
-
-            dst.cycles = parameters.shutoff_numCycles;
-            dst.totalTimeSec = totalMs / 1000;
-
-            break;
-        }
-        case parameters.TestParameters::Combined: {
-            runningCyclicCombined(parameters);
-            const auto regRaw = makeRawValues(parameters.regSeqValues,
-                                              m_registry->getValveInfo()->safePosition != 0);
-            quint64 regSteps = static_cast<quint64>(regRaw.size()) * parameters.regulatory_numCycles;
-            quint64 regMs = regSteps * (parameters.regulatory_delayMs + parameters.regulatory_holdMs)
-                            + parameters.regulatory_delayMs;
-
-            const auto offRaw = makeRawValues(parameters.offSeqValues,
-                                              m_registry->getValveInfo()->safePosition != 0);
-            quint64 offSteps = static_cast<quint64>(offRaw.size()) * parameters.shutoff_numCycles;
-            quint64 offMs = offSteps * (parameters.shutoff_delayMs + parameters.shutoff_holdMs)
-                            + parameters.shutoff_delayMs;
-
-            quint64 totalMs = regMs + offMs;
-
-            emit totalTestTimeMs(totalMs);
-
-            auto &dst = m_telemetryStore.cyclicTestRecord;
-            dst.cycles = parameters.shutoff_numCycles;
-            dst.totalTimeSec = totalMs / 1000;
-            break;
-        }
-        default: {
-            break;
-        }
-        emit telemetryUpdated(m_telemetryStore);
+    case CyclicTestSettings::TestParameters::Regulatory: {
+        auto r = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry, this);
+        r->setParameters(parameters);
+        startRunner(std::move(r));
+        break;
     }
+    case CyclicTestSettings::TestParameters::Shutoff: {
+        auto r = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, this);
+        r->setParameters(parameters);
+        startRunner(std::move(r));
+        break;
+    }
+    case CyclicTestSettings::TestParameters::Combined: {
+        const quint64 regSteps = quint64(parameters.regSeqValues.size()) * parameters.regulatory_numCycles;
+        const quint64 regMs = regSteps * (parameters.regulatory_delayMs + parameters.regulatory_holdMs)
+                              + parameters.regulatory_delayMs;
+
+        const quint64 offSteps = quint64(parameters.offSeqValues.size()) * parameters.shutoff_numCycles;
+        const quint64 offMs = offSteps * (parameters.shutoff_delayMs + parameters.shutoff_holdMs)
+                              + parameters.shutoff_delayMs;
+
+        emit totalTestTimeMs(regMs + offMs);
+
+        auto reg = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry, this);
+        reg->setParameters(parameters);
+
+        connect(this, &Program::testFinished, this, [this, parameters]() {
+            auto shut = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, this);
+            shut->setParameters(parameters);
+            startRunner(std::move(shut));
+        }, Qt::SingleShotConnection);
+
+        startRunner(std::move(reg));
+        break;
+    }
+    default:
+        break;
+    }
+
+    emit telemetryUpdated(m_telemetryStore);
+}
+
+void Program::onCyclicStepMeasured(int cycle, int step, bool forward)
+{
+    if (step < 0 || step >= m_telemetryStore.cyclicTestRecord.ranges.size())
+        return;
+
+    auto& rec = m_telemetryStore.cyclicTestRecord.ranges[step];
+
+    const qreal measured = m_mpi[0]->GetPersent();
+
+    if (forward) {
+        if (rec.maxForwardCycle < 0 || measured > rec.maxForwardValue) {
+            rec.maxForwardValue = measured;
+            rec.maxForwardCycle = cycle;
+        }
+    } else {
+        if (rec.maxReverseCycle < 0 || measured < rec.maxReverseValue) {
+            rec.maxReverseValue = measured;
+            rec.maxReverseCycle = cycle;
+        }
+    }
+
+    emit telemetryUpdated(m_telemetryStore);
 }
 
 void Program::results_cyclicTests(const CyclicTests::TestResults& r)
 {
-    auto &dst = m_telemetryStore.cyclicTestRecord;
-    dst.sequence = r.sequence;
-    dst.cycles = r.cycles;
+    auto& dst = m_telemetryStore.cyclicTestRecord;
+    dst.sequence     = r.sequence;
+    dst.cycles       = r.cycles;
     dst.totalTimeSec = r.totalTimeSec;
-
-    dst.ranges.resize(r.ranges.size());
-    for (int i = 0; i < r.ranges.size(); ++i) {
-        const auto &src = r.ranges[i];
-        auto &d = dst.ranges[i];
-        d.rangePercent = src.rangePercent;
-        d.maxForwardValue = src.maxForwardValue;
-        d.maxForwardCycle = src.maxForwardCycle;
-        d.maxReverseValue = src.maxReverseValue;
-        d.maxReverseCycle = src.maxReverseCycle;
-    }
 
     dst.doOnCounts = r.doOnCounts;
     dst.doOffCounts = r.doOffCounts;
@@ -1049,6 +1157,10 @@ void Program::startOptionalTest(quint8 testNum)
     }
     case 2: {
         auto r = std::make_unique<StepTestRunner>(m_mpi, *m_registry, this);
+        // connect(r.get(), &StepTestRunner::,
+        //         this, [&](OtherTestSettings::TestParameters& p){
+        //             emit getParameters_resolutionTest(p);
+        //         });
         startRunner(std::move(r));
         break;
     }

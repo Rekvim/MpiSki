@@ -11,6 +11,9 @@ class StepTestRunner : public BaseRunner {
 public:
     using BaseRunner::BaseRunner;
 
+signals:
+    // void getParameters_stepTest(OtherTestSettings::TestParameters&);
+
 protected:
     RunnerConfig buildConfig() override;
     void wireSpecificSignals(Test& t) override;

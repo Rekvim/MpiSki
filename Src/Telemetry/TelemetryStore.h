@@ -59,6 +59,14 @@ struct StrokeTestRecord {
     QString timeBackwardMs = "";
 };
 
+struct CrossingStatus {
+    bool frictionOk = false;
+    bool rangeOk = false;
+    bool dynamicErrorOk = false;
+    bool springOk = false;
+    bool linearCharacteristicOk = false;
+};
+
 struct MainTestRecord {
     double dynamicError_mean = 0.0;
     double dynamicError_meanPercent = 0.0;
@@ -97,6 +105,8 @@ public:
     ValveStrokeRecord valveStrokeRecord;
     SupplyRecord supplyRecord;
     MainTestRecord mainTestRecord;
+    CrossingStatus crossingStatus;
+
 
     TelemetryStore() = default;
 

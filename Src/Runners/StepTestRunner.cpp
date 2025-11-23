@@ -50,7 +50,7 @@ RunnerConfig StepTestRunner::buildConfig() {
 
 void StepTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<StepTest&>(base);
-    auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
+    auto owner = qobject_cast<Program*>(parent());
 
     connect(&t, &StepTest::UpdateGraph,
             owner, [owner]{ owner->updateCharts_optionTest(Charts::Step); },
@@ -62,5 +62,9 @@ void StepTestRunner::wireSpecificSignals(Test& base) {
 
     connect(&t, &StepTest::Results,
             owner, &Program::results_stepTest,
+            Qt::QueuedConnection);
+
+    connect(&t, &OptionTest::SetStartTime,
+            owner, &Program::setTimeStart,
             Qt::QueuedConnection);
 }

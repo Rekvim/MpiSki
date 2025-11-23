@@ -30,6 +30,7 @@ SOURCES += \
     Src/ReportBuilders/ReportSaver.cpp \
     Src/Runners/BaseRunner.cpp \
     Src/Runners/CyclicRegulatoryRunner.cpp \
+    Src/Runners/CyclicShutoffRunner.cpp \
     Src/Runners/MainTestRunner.cpp \
     Src/Runners/OptionResolutionRunner.cpp \
     Src/Runners/OptionResponseRunner.cpp \
@@ -85,6 +86,7 @@ HEADERS += \
     Src/ReportBuilders/ReportSaver.h \
     Src/Runners/BaseRunner.h \
     Src/Runners/CyclicRegulatoryRunner.h \
+    Src/Runners/CyclicShutoffRunner.h \
     Src/Runners/ITestRunner.h \
     Src/Runners/MainTestRunner.h \
     Src/Runners/OptionResolutionRunner.h \

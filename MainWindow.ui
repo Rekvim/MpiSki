@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -105,7 +105,7 @@
                      </font>
                     </property>
                     <property name="text">
-                     <string>100% – 20 мА</string>
+                     <string>20 мА – 100%</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -1480,7 +1480,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>2</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -2271,6 +2271,9 @@
           </item>
           <item>
            <widget class="QWidget" name="widget_crossingLimits" native="true">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="maximumSize">
              <size>
               <width>300</width>
@@ -2279,7 +2282,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_17">
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_frictionForce_3" native="true">
+              <widget class="QWidget" name="widget_crossingLimits_frictionForce" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_29">
                 <property name="leftMargin">
                  <number>0</number>
@@ -2294,10 +2297,10 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget__crossingLimits_frictionForce_control_3" native="true">
+                 <widget class="QWidget" name="widget__crossingLimits_coefficientFriction_control" native="true">
                   <layout class="QVBoxLayout" name="verticalLayout_14">
                    <property name="spacing">
-                    <number>6</number>
+                    <number>10</number>
                    </property>
                    <property name="leftMargin">
                     <number>6</number>
@@ -2312,7 +2315,7 @@
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_frictionForce_3">
+                    <widget class="QLabel" name="label_crossingLimits_coefficientFriction">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2328,20 +2331,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_frictionForce_3">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Orientation::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits_4">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_coefficientFriction_limits">
                      <property name="spacing">
                       <number>6</number>
                      </property>
@@ -2349,7 +2339,10 @@
                       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_lowerLimit_3">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_lowerLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -2369,15 +2362,18 @@
                         </font>
                        </property>
                        <property name="text">
-                        <string>0</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
                        </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_frictionForce_3">
+                      <spacer name="horizontalSpacer_crossingLimits_coefficientFriction">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2390,10 +2386,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_value_3">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_value">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>100</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2402,6 +2401,18 @@
                          <family>Segoe UI</family>
                          <pointsize>10</pointsize>
                         </font>
+                       </property>
+                       <property name="layoutDirection">
+                        <enum>Qt::LayoutDirection::LeftToRight</enum>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -2419,7 +2430,10 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_upperLimit_3">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_upperLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2433,10 +2447,13 @@
                         </font>
                        </property>
                        <property name="text">
-                        <string>100</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -2446,7 +2463,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_frictionForce_limitStatusIndicator_3" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_coefficientFriction_limitStatusIndicator" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -2473,201 +2490,7 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_frictionForce_4" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_30">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QWidget" name="widget__crossingLimits_frictionForce_control_4" native="true">
-                  <layout class="QVBoxLayout" name="verticalLayout_19">
-                   <property name="spacing">
-                    <number>6</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>6</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>6</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>6</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>6</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_crossingLimits_frictionForce_4">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>Сила трения</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignmentFlag::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_frictionForce_4">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Orientation::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits_5">
-                     <property name="spacing">
-                      <number>6</number>
-                     </property>
-                     <property name="sizeConstraint">
-                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                     </property>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_lowerLimit_4">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>40</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>10</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>0</string>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_crossingLimits_frictionForce_4">
-                       <property name="orientation">
-                        <enum>Qt::Orientation::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_value_4">
-                       <property name="maximumSize">
-                        <size>
-                         <width>40</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>10</pointsize>
-                        </font>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_9">
-                       <property name="orientation">
-                        <enum>Qt::Orientation::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_frictionForce_upperLimit_4">
-                       <property name="maximumSize">
-                        <size>
-                         <width>40</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>10</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>100</string>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_frictionForce_limitStatusIndicator_4" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background: #E1E1E1;
-
-Border: 4px solid #ADADAD ;
-Border-radius: 10px;
-
-</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_3" native="true">
+              <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_32">
                 <property name="leftMargin">
                  <number>0</number>
@@ -2682,10 +2505,10 @@ Border-radius: 10px;
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_4" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_control" native="true">
                   <layout class="QVBoxLayout" name="verticalLayout_45">
                    <property name="spacing">
-                    <number>6</number>
+                    <number>10</number>
                    </property>
                    <property name="leftMargin">
                     <number>6</number>
@@ -2700,7 +2523,7 @@ Border-radius: 10px;
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_linearCharacteristic_2">
+                    <widget class="QLabel" name="label_crossingLimits_linearCharacteristic">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2716,25 +2539,15 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_linearCharacteristic_2">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Orientation::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits_2">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits">
                      <property name="spacing">
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -2754,15 +2567,18 @@ Border-radius: 10px;
                         </font>
                        </property>
                        <property name="text">
-                        <string>0</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
                        </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_linearCharacteristic_2">
+                      <spacer name="horizontalSpacer_crossingLimits_linearCharacteristic">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -2775,10 +2591,19 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>60</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>100</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2788,8 +2613,14 @@ Border-radius: 10px;
                          <pointsize>10</pointsize>
                         </font>
                        </property>
+                       <property name="text">
+                        <string/>
+                       </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -2807,7 +2638,10 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -2821,10 +2655,13 @@ Border-radius: 10px;
                         </font>
                        </property>
                        <property name="text">
-                        <string>10</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -2834,7 +2671,7 @@ Border-radius: 10px;
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator_2" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -2861,7 +2698,7 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_range_2" native="true">
+              <widget class="QWidget" name="widget_crossingLimits_range" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_33">
                 <property name="leftMargin">
                  <number>0</number>
@@ -2876,10 +2713,10 @@ Border-radius: 10px;
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_range_control_2" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_range_control" native="true">
                   <layout class="QVBoxLayout" name="verticalLayout_48">
                    <property name="spacing">
-                    <number>6</number>
+                    <number>10</number>
                    </property>
                    <property name="leftMargin">
                     <number>6</number>
@@ -2894,7 +2731,7 @@ Border-radius: 10px;
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_range_2">
+                    <widget class="QLabel" name="label_crossingLimits_range">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -2910,27 +2747,14 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_range_2">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Orientation::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits_6">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits">
                      <property name="spacing">
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -2951,10 +2775,13 @@ Border-radius: 10px;
                         </font>
                        </property>
                        <property name="text">
-                        <string>0</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -2972,10 +2799,13 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>100</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2985,13 +2815,19 @@ Border-radius: 10px;
                          <pointsize>10</pointsize>
                         </font>
                        </property>
+                       <property name="text">
+                        <string/>
+                       </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_range_2">
+                      <spacer name="horizontalSpacer_crossingLimits_range">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -3004,9 +2840,9 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="maximumSize">
                         <size>
@@ -3021,10 +2857,13 @@ Border-radius: 10px;
                         </font>
                        </property>
                        <property name="text">
-                        <string>100</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -3034,7 +2873,7 @@ Border-radius: 10px;
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator_2" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -3061,7 +2900,7 @@ Border-radius: 10px;
               </widget>
              </item>
              <item>
-              <widget class="QWidget" name="widget_crossingLimits_dynamicError_2" native="true">
+              <widget class="QWidget" name="widget_crossingLimits_dynamicError" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_35">
                 <property name="leftMargin">
                  <number>0</number>
@@ -3076,10 +2915,10 @@ Border-radius: 10px;
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_control_2" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_control" native="true">
                   <layout class="QVBoxLayout" name="verticalLayout_49">
                    <property name="spacing">
-                    <number>6</number>
+                    <number>10</number>
                    </property>
                    <property name="leftMargin">
                     <number>6</number>
@@ -3094,7 +2933,7 @@ Border-radius: 10px;
                     <number>6</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="label_crossingLimits_dynamicError_2">
+                    <widget class="QLabel" name="label_crossingLimits_dynamicError">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
@@ -3110,25 +2949,15 @@ Border-radius: 10px;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="horizontalSlider_crossingLimits_dynamicError_2">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Orientation::Horizontal</enum>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_dynamicError_limits_2">
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_dynamicError_limits">
                      <property name="spacing">
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_lowerLimit_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_lowerLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                          <horstretch>0</horstretch>
@@ -3148,10 +2977,13 @@ Border-radius: 10px;
                         </font>
                        </property>
                        <property name="text">
-                        <string>0</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -3169,10 +3001,13 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_value_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_value">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>100</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -3182,13 +3017,19 @@ Border-radius: 10px;
                          <pointsize>10</pointsize>
                         </font>
                        </property>
+                       <property name="text">
+                        <string/>
+                       </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_crossingLimits_dynamicError_2">
+                      <spacer name="horizontalSpacer_crossingLimits_dynamicError">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>
                        </property>
@@ -3201,7 +3042,10 @@ Border-radius: 10px;
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_upperLimit_2">
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_upperLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>40</width>
@@ -3215,10 +3059,13 @@ Border-radius: 10px;
                         </font>
                        </property>
                        <property name="text">
-                        <string>2.5</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -3228,7 +3075,215 @@ Border-radius: 10px;
                  </widget>
                 </item>
                 <item>
-                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_limitStatusIndicator_2" native="true">
+                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_limitStatusIndicator" native="true">
+                  <property name="minimumSize">
+                   <size>
+                    <width>60</width>
+                    <height>60</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>60</width>
+                    <height>60</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="widget_crossingLimits_spring" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_30">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QWidget" name="widget__crossingLimits_spring_control" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_19">
+                   <property name="spacing">
+                    <number>10</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_crossingLimits_spring">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Диапазон пружин привода</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignmentFlag::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_spring_limits">
+                     <property name="spacing">
+                      <number>6</number>
+                     </property>
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                     </property>
+                     <item>
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_lowerLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Segoe UI</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_crossingLimits_spring">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_value">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>100</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Segoe UI</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="layoutDirection">
+                        <enum>Qt::LayoutDirection::LeftToRight</enum>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_9">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_upperLimit">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>40</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>Segoe UI</family>
+                         <pointsize>10</pointsize>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignmentFlag::AlignCenter</set>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widget_crossingLimits_spring_limitStatusIndicator" native="true">
                   <property name="minimumSize">
                    <size>
                     <width>60</width>
@@ -3337,7 +3392,7 @@ Border-radius: 10px;
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_56">
                   <item>
-                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator_7" native="true">
+                   <widget class="QWidget" name="widget_crossingLimits_range_lmitStatusIndicator" native="true">
                     <property name="minimumSize">
                      <size>
                       <width>60</width>
@@ -3872,7 +3927,7 @@ Border-radius: 10px;
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">

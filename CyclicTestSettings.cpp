@@ -6,44 +6,47 @@ void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
 {
     ui->comboBox_testSelection->clear();
     m_pattern = pattern;
+
+    auto add = [&](QString label, TestParameters::Type t){
+        ui->comboBox_testSelection->addItem(label, static_cast<int>(t));
+    };
+
     switch (m_pattern) {
     case SelectTests::Pattern_B_CVT:
     case SelectTests::Pattern_C_CVT:
-        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
+        add(QStringLiteral("Регулирующий"), TestParameters::Regulatory);
         break;
     case SelectTests::Pattern_C_SOVT:
-        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
+        add(QStringLiteral("Отсечной"), TestParameters::Shutoff);
         break;
     case SelectTests::Pattern_B_SACVT:
     case SelectTests::Pattern_C_SACVT:
-        ui->comboBox_testSelection->addItem(QStringLiteral("Запорно-регулирующий"));
-        ui->comboBox_testSelection->addItem(QStringLiteral("Регулирующий"));
-        ui->comboBox_testSelection->addItem(QStringLiteral("Отсечной"));
+        add(QStringLiteral("Запорно-регулирующий"), TestParameters::Combined);
+        add(QStringLiteral("Регулирующий"),            TestParameters::Regulatory);
+        add(QStringLiteral("Отсечной"),                TestParameters::Shutoff);
         break;
-    default:
-        break;
+    default: break;
     }
+
+    ui->comboBox_testSelection->setCurrentIndex(0);
     onTestSelectionChanged();
 }
 
 void CyclicTestSettings::onTestSelectionChanged()
 {
-    const QString sel = ui->comboBox_testSelection->currentText();
-    if (sel == "Регулирующий") {
-        m_parameters.testType = TestParameters::Regulatory;
-        ui->widget_retentionTimeRegulatory->setVisible(true);
-        ui->widget_shutOff->setVisible(false);
-    }
-    else if (sel == "Отсечной") {
-        m_parameters.testType = TestParameters::Shutoff;
-        ui->widget_retentionTimeRegulatory->setVisible(false);
-        ui->widget_shutOff->setVisible(true);
-    }
-    else {
-        m_parameters.testType = TestParameters::Combined;
-        ui->widget_retentionTimeRegulatory->setVisible(true);
-        ui->widget_shutOff->setVisible(true);
-    }
+    const int idx = ui->comboBox_testSelection->currentIndex();
+    if (idx < 0) return; // нет элемента — не трогаем тип
+
+    const auto t = static_cast<TestParameters::Type>(
+        ui->comboBox_testSelection->itemData(idx).toInt()
+        );
+    m_parameters.testType = t;
+
+    const bool showReg  = (t == TestParameters::Regulatory || t == TestParameters::Combined);
+    const bool showOff  = (t == TestParameters::Shutoff    || t == TestParameters::Combined);
+
+    ui->widget_retentionTimeRegulatory->setVisible(showReg);
+    ui->widget_shutOff->setVisible(showOff);
 }
 
 CyclicTestSettings::CyclicTestSettings(QWidget *parent)
@@ -342,10 +345,12 @@ void CyclicTestSettings::onPushButtonStartClicked()
         m_parameters.shutoff_DI[1] = ui->checkBox_switch_0_3_ShutOff->isChecked();
     }
     else {
+        // когда не Shutoff/Combined:
         m_parameters.offSeqValues.clear();
         m_parameters.shutoff_delayMs = 0;
-        m_parameters.shutoff_holdMs = 0;
+        m_parameters.shutoff_holdMs  = 0;
         m_parameters.shutoff_numCycles = 0;
+        m_parameters.shutoff_DO.fill(false);
     }
 
     accept();

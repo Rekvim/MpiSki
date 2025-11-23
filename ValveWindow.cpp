@@ -9,6 +9,8 @@ ValveWindow::ValveWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->tabWidget->setCurrentIndex(0);
+
     QValidator *validatorDigits = ValidatorFactory::create(ValidatorFactory::Type::Digits, this);
     QValidator *validatorDigitsDot = ValidatorFactory::create(ValidatorFactory::Type::DigitsDot, this);
     QValidator *noSpecialChars = ValidatorFactory::create(ValidatorFactory::Type::NoSpecialChars, this);
@@ -156,6 +158,40 @@ void ValveWindow::saveValveInfo()
     m_valveInfo->diameterPulley = ui->lineEdit_pulleyDiameter->text().toDouble();
     m_valveInfo->materialStuffingBoxSeal = ui->comboBox_materialStuffingBoxSeal->currentText();
 
+    m_valveInfo->crossingLimits.frictionCoefLowerLimit =
+        ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit->text().toDouble();
+    m_valveInfo->crossingLimits.frictionCoefUpperLimit =
+        ui->lineEdit_crossingLimits_coefficientFriction_upperLimit->text().toDouble();
+
+    // Линейная характеристика — один нижний порог
+    m_valveInfo->crossingLimits.linearCharacteristicLowerLimit =
+        ui->lineEdit_crossingLimits_linearCharacteristic_lowerLimit->text().toDouble();
+
+    // Диапазон хода — один верхний порог (берём из твоего range_lowerLimit)
+    m_valveInfo->crossingLimits.rangeUpperLimit =
+        ui->lineEdit_crossingLimits_range_lowerLimit->text().toDouble();
+
+    // Пружина
+    m_valveInfo->crossingLimits.springLowerLimit =
+        ui->lineEdit_crossingLimits_spring_lowerLimit->text().toDouble();
+    m_valveInfo->crossingLimits.springUpperLimit =
+        ui->lineEdit_crossingLimits_spring_upperLimit->text().toDouble();
+
+    m_valveInfo->crossingLimits.frictionEnabled =
+        ui->checkBox_crossingLimits_coefficientFriction->isChecked();
+
+    m_valveInfo->crossingLimits.linearCharacteristicEnabled =
+        ui->checkBox_crossingLimits_linearCharacteristic->isChecked();
+
+    m_valveInfo->crossingLimits.rangeEnabled =
+        ui->checkBox_crossingLimits_range->isChecked();
+
+    m_valveInfo->crossingLimits.springEnabled =
+        ui->checkBox_crossingLimits_spring->isChecked();
+
+    m_valveInfo->crossingLimits.dynamicErrorEnabled =
+        ui->checkBox_crossingLimits_dinamicError->isChecked();
+
     m_registry->saveValveInfo();
 }
 
@@ -195,6 +231,49 @@ void ValveWindow::positionChanged(const QString &position)
     ui->comboBox_driveType->setCurrentIndex(m_valveInfo->driveType);
     ui->comboBox_strokeMovement->setCurrentIndex(m_valveInfo->strokeMovement);
     ui->comboBox_toolNumber->setCurrentIndex(m_valveInfo->toolNumber);
+
+
+    // --- enable-флаги -> checkBox-ы ---
+
+    ui->checkBox_crossingLimits_coefficientFriction->setChecked(
+        m_valveInfo->crossingLimits.frictionEnabled);
+
+    ui->checkBox_crossingLimits_linearCharacteristic->setChecked(
+        m_valveInfo->crossingLimits.linearCharacteristicEnabled);
+
+    ui->checkBox_crossingLimits_range->setChecked(
+        m_valveInfo->crossingLimits.rangeEnabled);
+
+    ui->checkBox_crossingLimits_spring->setChecked(
+        m_valveInfo->crossingLimits.springEnabled);
+
+    ui->checkBox_crossingLimits_dinamicError->setChecked(
+        m_valveInfo->crossingLimits.dynamicErrorEnabled);
+
+    // Коэффициент трения (нижний / верхний)
+    ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit->setText(
+        QString::number(m_valveInfo->crossingLimits.frictionCoefLowerLimit, 'f', 2));
+    ui->lineEdit_crossingLimits_coefficientFriction_upperLimit->setText(
+        QString::number(m_valveInfo->crossingLimits.frictionCoefUpperLimit, 'f', 2));
+
+    // Линейная характеристика — один порог (нижний)
+    ui->lineEdit_crossingLimits_linearCharacteristic_lowerLimit->setText(
+        QString::number(m_valveInfo->crossingLimits.linearCharacteristicLowerLimit, 'f', 2));
+
+    // Диапазон хода — один порог (верхний); тут у тебя lineEdit_*_range_lowerLimit,
+    // но по структуре это "верхний". Если захочешь — потом переименуешь в ui.
+    ui->lineEdit_crossingLimits_range_lowerLimit->setText(
+        QString::number(m_valveInfo->crossingLimits.rangeUpperLimit, 'f', 2));
+
+    // Пружина — нижний и верхний
+    ui->lineEdit_crossingLimits_spring_lowerLimit->setText(
+        QString::number(m_valveInfo->crossingLimits.springLowerLimit, 'f', 2));
+    ui->lineEdit_crossingLimits_spring_upperLimit->setText(
+        QString::number(m_valveInfo->crossingLimits.springUpperLimit, 'f', 2));
+
+    // // Динамическая ошибка: от 0 до dinamicErrorRecomend
+    // ui->lineEdit_crossingLimits_dynamicError_upperLimit->setText(
+    //     QString::number(m_valveInfo->dinamicErrorRecomend, 'f', 2));
 }
 
 void ValveWindow::strokeChanged(quint16 n)

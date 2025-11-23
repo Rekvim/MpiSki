@@ -9,8 +9,6 @@
 #include "Src/ReportBuilders/ReportBuilder_C_SOVT.h"
 #include "./Src/ValidatorFactory/ValidatorFactory.h"
 
-#include <QPlainTextEdit>
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -18,12 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     ui->tabWidget->setCurrentIndex(0);
-
-    QValidator *validatorDigits = ValidatorFactory::create(ValidatorFactory::Type::Digits, this);
-    ui->lineEdit_crossingLimits_frictionForce_value_3->setValidator(validatorDigits);
-    ui->lineEdit_crossingLimits_linearCharacteristic_value_2->setValidator(validatorDigits);
-    ui->lineEdit_crossingLimits_range_value_2->setValidator(validatorDigits);
-    ui->lineEdit_crossingLimits_dynamicError_value_2->setValidator(validatorDigits);
 
     lockTabsForPreInit();
 
@@ -213,55 +205,6 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->pushButton_set->setEnabled(!state);
             });
 
-
-    // === Friction Force ===
-    bindSliderAndLineEdit(
-        ui->horizontalSlider_crossingLimits_frictionForce_3,
-        ui->lineEdit_crossingLimits_frictionForce_value_3,
-        [this]() { updateFrictionForceLimitStatus(); }
-        );
-
-    // === Valve Stroke Range ===
-    bindSliderAndLineEdit(
-        ui->horizontalSlider_crossingLimits_range_2,
-        ui->lineEdit_crossingLimits_range_value_2,
-        [this]() { updateRangeLimitStatus(); }
-        );
-
-    // === Dynamic Error ===
-    bindSliderAndLineEdit(
-        ui->horizontalSlider_crossingLimits_dynamicError_2,
-        ui->lineEdit_crossingLimits_dynamicError_value_2,
-        [this]() { updateDynamicErrorLimitStatus(); }
-        );
-
-    // crossingLimits_frictionForce
-    connect(ui->horizontalSlider_crossingLimits_frictionForce_3, &QSlider::valueChanged,
-            this, &MainWindow::updateFrictionForceLimitStatus);
-
-    connect(ui->lineEdit_crossingLimits_frictionForce_lowerLimit_3, &QLineEdit::editingFinished,
-            this, &MainWindow::updateFrictionForceLimitStatus);
-
-    connect(ui->lineEdit_crossingLimits_frictionForce_upperLimit_3, &QLineEdit::editingFinished,
-            this, &MainWindow::updateFrictionForceLimitStatus);
-
-    // crossingLimits_range
-    connect(ui->horizontalSlider_crossingLimits_range_2, &QSlider::valueChanged,
-            this, &MainWindow::updateRangeLimitStatus);
-    connect(ui->lineEdit_crossingLimits_range_lowerLimit_2, &QLineEdit::editingFinished,
-            this, &MainWindow::updateRangeLimitStatus);
-    connect(ui->lineEdit_crossingLimits_range_upperLimit_2, &QLineEdit::editingFinished,
-            this, &MainWindow::updateRangeLimitStatus);
-
-    // label_dynamicErrorMaxPercent
-    connect(ui->horizontalSlider_crossingLimits_dynamicError_2, &QSlider::valueChanged,
-            this, &MainWindow::updateDynamicErrorLimitStatus);
-    connect(ui->lineEdit_crossingLimits_dynamicError_lowerLimit_2, &QLineEdit::editingFinished,
-            this, &MainWindow::updateDynamicErrorLimitStatus);
-    connect(ui->lineEdit_crossingLimits_dynamicError_upperLimit_2, &QLineEdit::editingFinished,
-            this, &MainWindow::updateDynamicErrorLimitStatus);
-
-
     ui->tableWidget_stepResults->setColumnCount(2);
     ui->tableWidget_stepResults->setHorizontalHeaderLabels({QLatin1String("T86"), tr("Перерегулирование")});
     ui->tableWidget_stepResults->resizeColumnsToContents();
@@ -277,7 +220,7 @@ MainWindow::MainWindow(QWidget *parent)
             Qt::QueuedConnection);
 
     connect(m_program, &Program::testFinished,
-            this,        &MainWindow::endTest);
+            this, &MainWindow::endTest);
 
     connect(m_program, &Program::cyclicCycleCompleted,
             this, [this](int completed){
@@ -288,14 +231,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    emit stopTest();
-
-    QMetaObject::invokeMethod(m_program, "terminateTest", Qt::BlockingQueuedConnection);
+    QMetaObject::invokeMethod(
+        m_program, "terminateTest",
+        Qt::BlockingQueuedConnection);
 
     m_programThread->quit();
     m_programThread->wait();
 
-    m_program->deleteLater();
     delete ui;
 }
 
@@ -310,10 +252,8 @@ void MainWindow::lockTabsForPreInit()
 
 void MainWindow::updateAvailableTabs()
 {
-    // После инициализации отдаем контроль существующей логике
     displayDependingPattern();
     if (!m_isInitialized) {
-        // Подстраховка: до инициализации ничего не включаем
         lockTabsForPreInit();
         return;
     }
@@ -402,6 +342,7 @@ void MainWindow::bindSliderAndLineEdit(QSlider* slider, QLineEdit* lineEdit, std
     lineEdit->setText(QString::number(slider->value()));
 }
 
+
 static void setIndicatorColor(QWidget* widget, const QString& color, const QString& border) {
     widget->setStyleSheet(QString(
                               "background: %1;"
@@ -410,62 +351,131 @@ static void setIndicatorColor(QWidget* widget, const QString& color, const QStri
                               ).arg(color, border));
 }
 
-static void updateIndicator(double value, double sliderValue, QWidget* widget) {
-    if (value > sliderValue) {
-        setIndicatorColor(widget, QLatin1String("#B80F0F"), QLatin1String("#510000"));     // Превышение
-    } else if (value < sliderValue) {
-        setIndicatorColor(widget, QLatin1String("#4E8448"), QLatin1String("#16362B"));     // Норма
-    } else {
-        setIndicatorColor(widget, QLatin1String("#E1E1E1"), QLatin1String("#ADADAD"));     // Ровно порог
+static void updateIndicator(double value,
+                            double lowerLimit,
+                            double upperLimit,
+                            QWidget* widget)
+{
+    if (lowerLimit > upperLimit)
+        std::swap(lowerLimit, upperLimit);
+
+    if (value < lowerLimit || value > upperLimit) {
+        setIndicatorColor(widget,
+                          QLatin1String("#B80F0F"),
+                          QLatin1String("#510000"));
+    }
+
+    else {
+        setIndicatorColor(widget,
+                          QLatin1String("#4E8448"),
+                          QLatin1String("#16362B"));
     }
 }
 
 void MainWindow::updateFrictionForceLimitStatus()
 {
-    bool ok;
-    double value = ui->label_frictionForceValue->text().split(" ").first().toDouble(&ok);
-    if (!ok) return;
+    // Берём value из lineEdit_crossingLimits_coefficientFriction_value
+    bool okValue = false;
+    double value = ui->lineEdit_crossingLimits_coefficientFriction_value
+                       ->text().toDouble(&okValue);
+    if (!okValue) return;
 
-    double lower = ui->lineEdit_crossingLimits_frictionForce_lowerLimit_3->text().toDouble();
-    double upper = ui->lineEdit_crossingLimits_frictionForce_upperLimit_3->text().toDouble();
-    ui->horizontalSlider_crossingLimits_frictionForce_3->setRange(static_cast<int>(lower), static_cast<int>(upper));
+    bool okLow = false, okHigh = false;
+    double lower = ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit
+                       ->text().toDouble(&okLow);
+    double upper = ui->lineEdit_crossingLimits_coefficientFriction_upperLimit
+                       ->text().toDouble(&okHigh);
 
-    double sliderValue = ui->horizontalSlider_crossingLimits_frictionForce_3->value();
-    updateIndicator(value, sliderValue, ui->widget_crossingLimits_frictionForce_limitStatusIndicator_3);
+    if (!okLow || !okHigh) return;
+
+    updateIndicator(value,
+                    lower,
+                    upper,
+                    ui->widget_crossingLimits_coefficientFriction_limitStatusIndicator);
+}
+
+static void updateRangeIndicator(double valueLow, double valueHigh, double limitLow, double limitHigh, QWidget* widget) {
+    if (limitLow > limitHigh) std::swap(limitLow, limitHigh);
+    if (valueLow < limitLow || valueHigh > limitHigh) {
+        setIndicatorColor(widget,
+                          QLatin1String("#B80F0F"),
+                          QLatin1String("#510000"));
+    }
+    else { setIndicatorColor(widget, QLatin1String("#4E8448"), QLatin1String("#16362B")); } }
+
+void MainWindow::updateSpringLimitStatus()
+{
+    if (!ui->widget_crossingLimits_spring->isVisible())
+        return;
+
+    QString text = ui->lineEdit_crossingLimits_spring_value->text();
+    if (text.isEmpty())
+        return;
+
+    const QRegularExpression re(R"(\s*[-–]\s*)");
+    const QStringList parts = text.split(re);
+    if (parts.size() != 2)
+        return;
+
+    bool okLow = false;
+    bool okHigh = false;
+    double valueLow  = parts.at(0).toDouble(&okLow);
+    double valueHigh = parts.at(1).toDouble(&okHigh);
+    if (!okLow || !okHigh)
+        return;
+
+    double limitLow  = ui->lineEdit_crossingLimits_spring_lowerLimit->text().toDouble();
+    double limitHigh = ui->lineEdit_crossingLimits_spring_upperLimit->text().toDouble();
+
+    updateRangeIndicator(valueLow, valueHigh,
+                         limitLow, limitHigh,
+                         ui->widget_crossingLimits_spring_limitStatusIndicator);
 }
 
 void MainWindow::updateRangeLimitStatus()
 {
-    bool ok;
-    double value = ui->label_valveStroke_range->text().toDouble(&ok);
-    if (!ok) return;
+    bool okValue = false;
+    double value = ui->lineEdit_crossingLimits_range_value
+                       ->text().toDouble(&okValue);
+    if (!okValue) return;
 
-    double lower = ui->lineEdit_crossingLimits_range_lowerLimit_2->text().toDouble();
-    double upper = ui->lineEdit_crossingLimits_range_upperLimit_2->text().toDouble();
-    ui->horizontalSlider_crossingLimits_range_2->setRange(static_cast<int>(lower), static_cast<int>(upper));
+    bool okLow = false, okHigh = false;
+    double lower = ui->lineEdit_crossingLimits_range_lowerLimit
+                       ->text().toDouble(&okLow);
+    double upper = ui->lineEdit_crossingLimits_range_upperLimit
+                       ->text().toDouble(&okHigh);
+    if (!okLow || !okHigh) return;
 
-    double sliderValue = ui->horizontalSlider_crossingLimits_range_2->value();
-    updateIndicator(value, sliderValue, ui->widget_crossingLimits_range_limitStatusIndicator_2);
+    updateIndicator(value,
+                    lower,
+                    upper,
+                    ui->widget_crossingLimits_range_limitStatusIndicator);
 }
-
 void MainWindow::updateDynamicErrorLimitStatus()
 {
-    bool ok;
-    double value = ui->label_dynamicErrorMaxPercent->text().split(" ").first().toDouble(&ok);
-    if (!ok) return;
+    bool okValue = false;
+    double value = ui->lineEdit_crossingLimits_dynamicError_value
+                       ->text().toDouble(&okValue);
+    if (!okValue) return;
 
-    double lower = ui->lineEdit_crossingLimits_dynamicError_lowerLimit_2->text().toDouble();
-    double upper = ui->lineEdit_crossingLimits_dynamicError_upperLimit_2->text().toDouble();
-    ui->horizontalSlider_crossingLimits_dynamicError_2->setRange(static_cast<int>(lower), static_cast<int>(upper));
+    bool okLow = false, okHigh = false;
+    double lower = ui->lineEdit_crossingLimits_dynamicError_lowerLimit
+                       ->text().toDouble(&okLow);
+    double upper = ui->lineEdit_crossingLimits_dynamicError_upperLimit
+                       ->text().toDouble(&okHigh);
+    if (!okLow || !okHigh) return;
 
-    double sliderValue = ui->horizontalSlider_crossingLimits_dynamicError_2->value();
-    updateIndicator(value, sliderValue, ui->widget_crossingLimits_dynamicError_limitStatusIndicator_2);
+    updateIndicator(value,
+                    lower,
+                    upper,
+                    ui->widget_crossingLimits_dynamicError_limitStatusIndicator);
 }
+
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
 
     m_telemetryStore = TS;
-    // Init
+
     ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
     ui->label_deviceStatusValue->setStyleSheet(
         "color:" + TS.init.deviceStatusColor.name(QColor::HexRgb));
@@ -486,7 +496,6 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     ui->label_finalPositionValue->setStyleSheet(
         "color:" + TS.init.finalPositionColor.name(QColor::HexRgb));
 
-    // MainTest
     ui->label_pressureDifferenceValue->setText(
         QString("%1 bar")
             .arg(TS.mainTestRecord.pressureDifference, 0, 'f', 3)
@@ -495,7 +504,6 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
         QString("%1 H")
             .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
         );
-    updateFrictionForceLimitStatus();
     ui->label_frictionPercentValue->setText(
         QString("%1 %")
             .arg(TS.mainTestRecord.frictionPercent, 0, 'f', 2)
@@ -521,12 +529,13 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
         QString("%1 %")
             .arg(TS.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
         );
+
     ui->label_dynamicErrorMax->setText(
         QString("%1 mA")
             .arg(TS.mainTestRecord.dynamicError_max, 0, 'f', 3)
         );
     ui->lineEdit_dynamicErrorReal->setText(
-        QString("%1 %")
+        QString("%1")
             .arg(TS.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
         );
 
@@ -543,7 +552,12 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
         QString("%1")
             .arg(TS.valveStrokeRecord.range)
         );
-    updateRangeLimitStatus();
+
+    // StrokeRecord
+    ui->lineEdit_strokeReal->setText(
+        QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
+
+
 
     ui->label_lowLimitValue->setText(
         QString("%1")
@@ -585,9 +599,31 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
     // ui->label_cyclicTest_totalTimeValue->setText(
     //     tC.toString("hh:mm:ss.zzz"));
 
-    // StrokeRecord
-    ui->lineEdit_strokeReal->setText(
-        QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
+    // crossing
+
+    // 1) Динамическая ошибка: одно значение
+    ui->lineEdit_crossingLimits_dynamicError_value->setText(
+        QString::number(TS.mainTestRecord.dynamicErrorReal, 'f', 2));
+
+    // 2) Ход клапана: одно значение (реальный ход)
+    ui->lineEdit_crossingLimits_range_value->setText(
+        QString::number(TS.valveStrokeRecord.real, 'f', 2));
+
+    // 3) Диапазон пружины: low–high
+    ui->lineEdit_crossingLimits_spring_value->setText(
+        QString("%1–%2")
+            .arg(TS.mainTestRecord.springLow,  0, 'f', 2)
+            .arg(TS.mainTestRecord.springHigh, 0, 'f', 2));
+
+    // 4) Коэффициент / процент трения: ОДНО значение,
+    ui->lineEdit_crossingLimits_coefficientFriction_value->setText(
+        QString::number(TS.mainTestRecord.frictionPercent, 'f', 2));
+
+    // Обновляем индикаторы
+    updateFrictionForceLimitStatus();
+    updateSpringLimitStatus();
+    updateRangeLimitStatus();
+    updateDynamicErrorLimitStatus();
 }
 
 void MainWindow::appendLog(const QString& text) {
@@ -676,6 +712,7 @@ void MainWindow::setRegistry(Registry *registry)
     ObjectInfo *objectInfo = m_registry->getObjectInfo();
     ValveInfo *valveInfo = m_registry->getValveInfo();
     OtherParameters *otherParameters = m_registry->getOtherParameters();
+    const CrossingLimits &limits = valveInfo->crossingLimits;
 
     ui->lineEdit_date->setText(otherParameters->date);
 
@@ -695,6 +732,61 @@ void MainWindow::setRegistry(Registry *registry)
     ui->lineEdit_safePosition->setText(otherParameters->safePosition);
     ui->lineEdit_dynamicErrorRecomend->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
     ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo->materialStuffingBoxSeal);
+
+    const bool anyCrossingEnabled =
+        limits.frictionEnabled
+        || limits.linearCharacteristicEnabled
+        || limits.rangeEnabled
+        || limits.springEnabled
+        || limits.dynamicErrorEnabled;
+
+    // Если ничего не выбрано — прячем общий блок и выходим
+    ui->widget_crossingLimits->setVisible(anyCrossingEnabled);
+
+    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
+    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
+
+    ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit->setText(
+        QString::number(valveInfo->crossingLimits.frictionCoefLowerLimit, 'f', 2));
+    ui->lineEdit_crossingLimits_coefficientFriction_upperLimit->setText(
+        QString::number(valveInfo->crossingLimits.frictionCoefUpperLimit, 'f', 2));
+
+    ui->widget_crossingLimits_frictionForce->setVisible(limits.frictionEnabled);
+    ui->widget_crossingLimits_linearCharacteristic->setVisible(limits.linearCharacteristicEnabled);
+    ui->widget_crossingLimits_range->setVisible(limits.rangeEnabled);
+    ui->widget_crossingLimits_spring->setVisible(limits.springEnabled);
+    ui->widget_crossingLimits_dynamicError->setVisible(limits.dynamicErrorEnabled);
+
+    if (limits.frictionEnabled) {
+        ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit->setText(
+            QString::number(limits.frictionCoefLowerLimit, 'f', 2));
+        ui->lineEdit_crossingLimits_coefficientFriction_upperLimit->setText(
+            QString::number(limits.frictionCoefUpperLimit, 'f', 2));
+    }
+
+    if (limits.linearCharacteristicEnabled) {
+        ui->lineEdit_crossingLimits_linearCharacteristic_lowerLimit->setText(QStringLiteral("0"));
+        ui->lineEdit_crossingLimits_linearCharacteristic_upperLimit->setText(
+            QString::number(limits.linearCharacteristicLowerLimit, 'f', 2));
+    }
+
+    if (limits.rangeEnabled) {
+        ui->lineEdit_crossingLimits_range_lowerLimit->setText(QStringLiteral("0"));
+        ui->lineEdit_crossingLimits_range_upperLimit->setText(
+            QString::number(limits.rangeUpperLimit, 'f', 2));
+    }
+
+    if (limits.springEnabled) {
+        ui->lineEdit_crossingLimits_spring_lowerLimit->setText(
+            QString::number(limits.springLowerLimit, 'f', 2));
+        ui->lineEdit_crossingLimits_spring_upperLimit->setText(
+            QString::number(limits.springUpperLimit, 'f', 2));
+    }
+
+    if (limits.dynamicErrorEnabled) {
+        ui->lineEdit_crossingLimits_dynamicError_lowerLimit->setText(QStringLiteral("0"));
+        ui->lineEdit_crossingLimits_dynamicError_upperLimit->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
+    }
 
     ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
     ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
@@ -1060,7 +1152,6 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
 
         return;
     } else {
-        parameters = {};
         return;
     }
 }
@@ -1112,7 +1203,7 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
     } else {
         m_userCanceled = false;
         emit runMainTest();
-        // startTest();
+        startTest();
     }
 }
 void MainWindow::on_pushButton_mainTest_save_clicked()
@@ -1406,7 +1497,7 @@ void MainWindow::initCharts()
 
     connect(m_program, &Program::getPoints_cyclicTest,
             this, &MainWindow::receivedPoints_cyclicTest,
-            Qt::BlockingQueuedConnection);
+            Qt::QueuedConnection);
 }
 
 void MainWindow::saveChart(Charts chart)

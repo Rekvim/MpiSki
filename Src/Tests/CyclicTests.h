@@ -18,11 +18,11 @@ public:
     void SetPatternType(SelectTests::PatternType pt);
 
     struct Task {
-        QVector<quint16> values;
-        quint32 delayMs;
-        quint32 holdMs;
-        QVector<bool> doMask;
-        int rawSize;
+        quint32 delayMsecs = 0;
+        quint32 holdMsecs  = 0;
+        QVector<quint16> sequence;   // проценты, как сейчас
+        QVector<quint16> values;     // DAC на один цикл
+        quint32 cycles = 0;          // <-- новое поле
     };
 
     void SetTask(const Task& task);
