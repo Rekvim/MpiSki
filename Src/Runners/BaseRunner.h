@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QMetaObject>
 #include <QObject>
-#include "./Src/Runners/ITestRunner.h"
+#include "./Src/Runners/AbstractTestRunner.h"
 
 class Test;
 class QThread;
@@ -17,7 +17,7 @@ struct RunnerConfig {
     int chartToClear = -1;
 };
 
-class BaseRunner : public ITestRunner {
+class BaseRunner : public AbstractTestRunner {
     Q_OBJECT
 public:
     BaseRunner(Mpi& mpi, Registry& reg, QObject* parent=nullptr);

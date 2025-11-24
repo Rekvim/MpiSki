@@ -16,7 +16,7 @@
 
 #include "Registry.h"
 #include "./Src/Telemetry/TelemetryStore.h"
-#include "./Src/Runners/ITestRunner.h"
+#include "./Src/Runners/AbstractTestRunner.h"
 
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/MainTest.h"
@@ -119,18 +119,18 @@ private:
         return invert ? (100.0 - percent) : percent;
     }
 
-    std::unique_ptr<ITestRunner> m_activeRunner;
+    std::unique_ptr<AbstractTestRunner> m_activeRunner;
     template<typename RunnerT>
     void startRunner(std::unique_ptr<RunnerT> r) {
         disposeActiveRunnerAsync();
-        connect(r.get(), &ITestRunner::requestClearChart, this, [this](int chart){
+        connect(r.get(), &AbstractTestRunner::requestClearChart, this, [this](int chart){
             emit clearPoints(static_cast<Charts>(chart));
         });
-        connect(r.get(), &ITestRunner::requestSetDAC, this, &Program::setDacRaw);
-        connect(this, &Program::releaseBlock, r.get(), &ITestRunner::releaseBlock);
-        connect(r.get(), &ITestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
-        connect(r.get(), &ITestRunner::endTest, this, &Program::endTest);
-        connect(this, &Program::stopTheTest, r.get(), &ITestRunner::stop);
+        connect(r.get(), &AbstractTestRunner::requestSetDAC, this, &Program::setDacRaw);
+        connect(this, &Program::releaseBlock, r.get(), &AbstractTestRunner::releaseBlock);
+        connect(r.get(), &AbstractTestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
+        connect(r.get(), &AbstractTestRunner::endTest, this, &Program::endTest);
+        connect(this, &Program::stopTheTest, r.get(), &AbstractTestRunner::stop);
         emit setButtonInitEnabled(false);
         m_isTestRunning = true;
         emit enableSetTask(false);

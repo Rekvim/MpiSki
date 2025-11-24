@@ -1,11 +1,11 @@
 #include "./Src/Runners/BaseRunner.h"
 #include "./Src/Tests/Test.h"
-#include "./Src/Runners/ITestRunner.h"
+#include "./Src/Runners/AbstractTestRunner.h"
 #include "./Src/Mpi/Mpi.h"
 #include "./Registry.h"
 
 BaseRunner::BaseRunner(Mpi& mpi, Registry& reg, QObject* parent)
-    : ITestRunner(parent), m_mpi(mpi), m_reg(reg) {}
+    : AbstractTestRunner(parent), m_mpi(mpi), m_reg(reg) {}
 
 BaseRunner::~BaseRunner() {
     if (m_thread) {

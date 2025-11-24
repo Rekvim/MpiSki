@@ -7,7 +7,7 @@
 #include "CyclicRegulatoryRunner.h"
 
 
-std::unique_ptr<ITestRunner>
+std::unique_ptr<AbstractTestRunner>
 RunnerFactory::create(RunnerKind kind, Mpi& mpi, Registry& reg, QObject* parent)
 {
     switch (kind) {

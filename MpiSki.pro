@@ -84,10 +84,10 @@ HEADERS += \
     Src/ReportBuilders/ReportBuilder_C_SACVT.h \
     Src/ReportBuilders/ReportBuilder_C_SOVT.h \
     Src/ReportBuilders/ReportSaver.h \
+    Src/Runners/AbstractTestRunner.h \
     Src/Runners/BaseRunner.h \
     Src/Runners/CyclicRegulatoryRunner.h \
     Src/Runners/CyclicShutoffRunner.h \
-    Src/Runners/ITestRunner.h \
     Src/Runners/MainTestRunner.h \
     Src/Runners/OptionResolutionRunner.h \
     Src/Runners/OptionResponseRunner.h \

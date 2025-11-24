@@ -5,7 +5,7 @@
 #include <QObject>
 #include <memory>
 
-class ITestRunner; class Mpi; class Registry; class QObject;
+class AbstractTestRunner; class Mpi; class Registry; class QObject;
 
 enum class RunnerKind {
     Main, Step, Stroke, Response, Resolution, CyclicReg, CyclicShutoff, CyclicCombined
@@ -13,7 +13,7 @@ enum class RunnerKind {
 
 class RunnerFactory {
 public:
-    static std::unique_ptr<ITestRunner>
+    static std::unique_ptr<AbstractTestRunner>
     create(RunnerKind kind, Mpi& mpi, Registry& reg, QObject* parent);
 };
 

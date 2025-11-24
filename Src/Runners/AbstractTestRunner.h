@@ -1,5 +1,5 @@
-#ifndef ITESTRUNNER_H
-#define ITESTRUNNER_H
+#ifndef ABSTRACTTESTRUNNER_H
+#define ABSTRACTTESTRUNNER_H
 
 #pragma once
 #include <QObject>
@@ -7,11 +7,11 @@
 
 class TelemetryStore;
 
-class ITestRunner : public QObject {
+class AbstractTestRunner : public QObject {
     Q_OBJECT
 public:
-    explicit ITestRunner(QObject* parent=nullptr) : QObject(parent) {}
-    ~ITestRunner() override = default;
+    explicit AbstractTestRunner(QObject* parent=nullptr) : QObject(parent) {}
+    ~AbstractTestRunner() override = default;
 
 public slots:
     virtual void start() = 0;  // запустить тест
