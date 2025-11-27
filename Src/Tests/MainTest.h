@@ -21,14 +21,17 @@ public:
 
     struct TestResults
     {
-        qreal pressureDiff;
-        qreal friction;
-        qreal dynamicErrorMean;
-        qreal dynamicErrorMax;
-        qreal lowLimitPressure;
-        qreal highLimitPressure;
-        qreal springLow;
-        qreal springHigh;
+        double pressureDiff;
+        double friction;
+        double dynamicErrorMean;
+        double dynamicErrorMax;
+        double lowLimitPressure;
+        double highLimitPressure;
+        double springLow;
+        double springHigh;
+
+        double linearityError;
+        double linearity;
     };
 
 protected:
@@ -38,16 +41,16 @@ private:
     const bool m_endTestAfterProcess;
     struct Regression
     {
-        qreal k;
-        qreal b;
+        double k;
+        double b;
     };
 
     struct Limits
     {
-        qreal minX;
-        qreal maxX;
-        qreal minY;
-        qreal maxY;
+        double minX;
+        double maxX;
+        double minY;
+        double maxY;
     };
 
     Regression CalculateRegression(const QVector<QPointF> &points, Limits limits);
@@ -56,17 +59,21 @@ private:
 
     QVector<QPointF> GetRegressionPoints(Regression regression, Limits limits);
 
+    double GetLinearityError(const QVector<QPointF>& points,
+                                      const Regression& regression,
+                                      const Limits& limits);
+
     QVector<QPointF> GetFrictionPoints(const QVector<QPointF> &points1,
                                        const QVector<QPointF> &points2,
                                        Limits limits);
 
-    QPair<qreal, qreal> GetMeanMax(const QVector<QPointF> &points_forward,
+    QPair<double, double> GetMeanMax(const QVector<QPointF> &points_forward,
                                    const QVector<QPointF> &points_backward);
 
-    QPair<qreal, qreal> GetRangeLimits(Regression regression1,
+    QPair<double, double> GetRangeLimits(Regression regression1,
                                        Regression regression2,
                                        Limits limits);
-    QPair<qreal, qreal> GetSpringLimits(Regression regression1,
+    QPair<double, double> GetSpringLimits(Regression regression1,
                                         Regression regression2,
                                         Limits limits);
 signals:

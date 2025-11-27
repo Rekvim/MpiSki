@@ -79,11 +79,6 @@ SelectTests::~SelectTests()
     delete ui;
 }
 
-SelectTests::BlockCTS SelectTests::getCTS() const
-{
-    return m_blockCts;
-}
-
 void SelectTests::resetCheckBoxes() {
     for (QCheckBox* cb : allCheckBoxes()) {
         QSignalBlocker blocker(cb);
@@ -159,13 +154,6 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_moving->isChecked() &&
         ui->check_box_input_4_20_mA->isChecked() &&
         ui->check_box_output_4_20_mA->isChecked())
-        // &&
-        // !ui->check_box_imit_switch_0_3->isChecked() &&
-        // !ui->check_box_imit_switch_3_0->isChecked() &&
-        // !ui->check_box_do_1->isChecked() &&
-        // !ui->check_box_do_2->isChecked() &&
-        // !ui->check_box_do_3->isChecked() &&
-        // !ui->check_box_do_4->isChecked())
     {
         return Pattern_C_CVT;
     }
@@ -177,14 +165,6 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_imit_switch_0_3->isChecked() &&
         ui->check_box_imit_switch_3_0->isChecked() &&
         (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
-        // &&
-        // !ui->check_box_pressure_1->isChecked() &&
-        // !ui->check_box_pressure_2->isChecked() &&
-        // !ui->check_box_pressure_3->isChecked() &&
-        // !ui->check_box_moving->isChecked() &&
-        // !ui->check_box_do_2->isChecked() &&
-        // !ui->check_box_do_3->isChecked() &&
-        // !ui->check_box_do_4->isChecked())
     {
         return Pattern_B_SACVT;
     }
@@ -195,12 +175,6 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_imit_switch_3_0->isChecked() &&
         ui->check_box_imit_switch_0_3->isChecked() &&
         (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
-        // &&
-        // !ui->check_box_pressure_1->isChecked() &&
-        // !ui->check_box_pressure_2->isChecked() &&
-        // !ui->check_box_pressure_3->isChecked() &&
-        // !ui->check_box_input_4_20_mA->isChecked() &&
-        // !ui->check_box_output_4_20_mA->isChecked())
     {
         return Pattern_C_SOVT;
     }
@@ -210,14 +184,6 @@ SelectTests::PatternType SelectTests::detectCurrentPattern() const
         ui->check_box_moving->isChecked() &&
         ui->check_box_input_4_20_mA->isChecked() &&
         ui->check_box_output_4_20_mA->isChecked())
-        // &&
-        // !ui->check_box_pressure_1->isChecked() &&
-        // !ui->check_box_pressure_2->isChecked() &&
-        // !ui->check_box_pressure_3->isChecked() &&
-        // !ui->check_box_moving->isChecked() &&
-        // !ui->check_box_imit_switch_0_3->isChecked() &&
-        // !ui->check_box_imit_switch_3_0->isChecked() &&
-        // (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4))
     {
         return Pattern_B_CVT;
     }

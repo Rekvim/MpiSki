@@ -29,7 +29,7 @@ Program::Program(QObject *parent)
     m_timerDI->setInterval(1000);
     connect(m_timerDI, &QTimer::timeout, this, [&]() {
         quint8 DI = m_mpi.GetDIStatus();
-        emit setCheckboxDIChecked(DI);
+        emit setDiCheckboxesChecked(DI);
     });
 
     // connect(&m_mpi, &MPI::errorOccured,
@@ -165,7 +165,7 @@ void Program::updateSensors()
 void Program::endTest()
 {
     m_isTestRunning = false;
-    emit enableSetTask(true);
+    emit setTaskControlsEnabled(true);
     emit setButtonInitEnabled(true);
 
     emit setTask(m_mpi.GetDac()->GetValue());
@@ -180,12 +180,10 @@ void Program::disposeActiveRunnerAsync() {
     m_activeRunner.reset();
 }
 
-
 void Program::setDAC_real(qreal value)
 {
     m_mpi.SetDAC_Real(value);
 }
-
 
 void Program::setInitDOStates(const QVector<bool> &states)
 {
@@ -227,7 +225,7 @@ void Program::initialization()
         m_patternType == SelectTests::Pattern_C_SOVT) {
 
         if ((m_mpi.Version() & 0x40) != 0) {
-            emit setButtonsDOChecked(m_mpi.GetDOStatus());
+            emit setDoButtonsChecked(m_mpi.GetDOStatus());
             m_timerDI->start();
         } else {
             return;
@@ -369,7 +367,7 @@ void Program::measureStartPositionShutoff(bool normalClosed)
             m_mpi.SetDiscreteOutput(i, false);
         }
     }
-    emit setButtonsDOChecked(m_mpi.GetDOStatus());
+    emit setDoButtonsChecked(m_mpi.GetDOStatus());
 
     setDacRaw(0, 10000, true, true);
 
@@ -397,7 +395,7 @@ void Program::measureEndPositionShutoff(bool normalClosed)
             m_mpi.SetDiscreteOutput(i, true);
         }
     }
-    emit setButtonsDOChecked(m_mpi.GetDOStatus());
+    emit setDoButtonsChecked(m_mpi.GetDOStatus());
 
     setDacRaw(0xFFFF, 1000, true);
     waitForDacCycle();
@@ -479,7 +477,7 @@ void Program::startMainTest()
             runner.get(), &AbstractTestRunner::stop);
 
     emit setButtonInitEnabled(false);
-    emit enableSetTask(false);
+    emit setTaskControlsEnabled(false);
 
     m_activeRunner = std::move(runner);
     m_activeRunner->start();
@@ -737,118 +735,6 @@ void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
     emit getPoints_cyclicTest(points, Charts::Cyclic);
 }
 
-void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p)
-{
-
-    QVector<quint16> rawReg = makeRawValues(p.regSeqValues,
-                                            m_registry->getValveInfo()->safePosition != 0);
-
-    CyclicTestsRegulatory::Task task;
-    task.delayMsecs = p.regulatory_delayMs;
-    task.holdMsecs = p.regulatory_holdMs;
-    task.sequence = p.regSeqValues;
-
-    task.values.reserve(p.regulatory_numCycles * rawReg.size());
-    for (int cycle = 0; cycle < p.regulatory_numCycles; ++cycle) {
-        task.values += rawReg;
-    }
-
-    {
-        QStringList listVals;
-        for (const quint16 &values : task.values)
-            listVals << QString::number(values);
-
-        // emit errorOccured(QString("CyclicTestsRegulatory Task.values (count=%1): [%2]")
-        //                       .arg(task.values.size())
-        //                       .arg(listVals.join(',')));
-    }
-
-    auto *cyclicTestsRegulatory = new CyclicTestsRegulatory;
-    cyclicTestsRegulatory->SetTask(task);
-
-    QThread *threadTest = new QThread(this);
-    cyclicTestsRegulatory->moveToThread(threadTest);
-
-    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::errorOccured,
-    //         this, &Program::errorOccured,
-    //         Qt::QueuedConnection);
-
-    connect(threadTest, &QThread::started,
-            cyclicTestsRegulatory, &CyclicTestsRegulatory::Process);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::EndTest,
-            threadTest, &QThread::quit);
-
-    connect(this, &Program::stopTheTest,
-            cyclicTestsRegulatory, &CyclicTestsRegulatory::StoppingTheTest);
-
-
-    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::StepMeasured,
-    //         this, [this](qint16 rangePercent, qreal /*percentValue*/, int cycle) {
-    //             // снимаем актуальный процент прямо с сенсора
-    //             qreal currentPercent = m_mpi[0]->GetPersent();
-
-    //             auto &ranges = m_telemetryStore.cyclicTestRecord.ranges;
-    //             auto it = std::find_if(ranges.begin(), ranges.end(),
-    //                                    [rangePercent, cycle](const RangeDeviationRecord &r) {
-    //                                        return r.rangePercent == rangePercent &&
-    //                                               r.maxForwardCycle == cycle;
-    //                                    });
-
-    //             if (it == ranges.end()) {
-    //                 RangeDeviationRecord rec;
-    //                 rec.rangePercent = rangePercent;
-    //                 rec.maxForwardValue = currentPercent;
-    //                 rec.maxForwardCycle = cycle;
-    //                 m_telemetryStore.cyclicTestRecord.ranges.push_back(rec);
-    //             } else {
-    //                 it->maxForwardValue = std::max(it->maxForwardValue, currentPercent);
-    //             }
-
-    //             emit telemetryUpdated(m_telemetryStore);
-    //         });
-
-    connect(threadTest, &QThread::finished,
-            threadTest, &QObject::deleteLater);
-
-    connect(threadTest, &QThread::finished,
-            cyclicTestsRegulatory, &QObject::deleteLater);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::EndTest,
-            this, &Program::endTest);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::UpdateGraph, this, [&] {
-        updateCharts_CyclicTest(Charts::Cyclic);
-    });
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::setDac,
-            this, &Program::setDacRaw);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::GetPoints,
-            this, &Program::receivedPoints_cyclicTest,
-            Qt::BlockingQueuedConnection);
-
-    connect(this, &Program::releaseBlock,
-            cyclicTestsRegulatory, &CyclicTestsRegulatory::ReleaseBlock);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::SetStartTime,
-            this, &Program::setTimeStart);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::Results,
-            this, &Program::results_cyclicRegulatoryTests);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::CycleCompleted,
-            this, &Program::cyclicCycleCompleted);
-
-    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::ClearGraph,
-    //         this, [&] { emit ClearPoints(Charts::Cyclic); });
-
-    m_isTestRunning = true;
-    emit enableSetTask(false);
-    emit clearPoints(Charts::Cyclic);
-    threadTest->start();
-}
-
 void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results)
 {
     // auto &dst = m_telemetryStore.cyclicTestRecord;
@@ -875,84 +761,7 @@ void Program::setMultipleDO(const QVector<bool>& states)
         m_mpi.SetDiscreteOutput(d, states[d]);
         if (states[d]) mask |= (1 << d);
     }
-    //emit SetButtonsDOChecked(mask);
-}
-
-void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
-{
-    QVector<quint16> rawOff = makeRawValues(p.offSeqValues,
-                                            m_registry->getValveInfo()->safePosition != 0);
-
-    CyclicTestsShutoff::Task task;
-    task.delayMsecs = p.shutoff_delayMs;
-    task.holdMsecs = p.shutoff_holdMs;
-    task.cycles = p.shutoff_numCycles;
-    task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
-
-    task.values.reserve(p.shutoff_numCycles * rawOff.size());
-    for (int cycle = 0; cycle < p.shutoff_numCycles; ++cycle) {
-        task.values += rawOff;
-    }
-
-    emit setButtonsDOChecked(false);
-
-    auto *cyclicTestsShutoff = new CyclicTestsShutoff;
-    cyclicTestsShutoff->SetTask(task);
-
-    QThread *threadTest = new QThread(this);
-    cyclicTestsShutoff->moveToThread(threadTest);
-
-    connect(threadTest, &QThread::started,
-            cyclicTestsShutoff, &CyclicTestsShutoff::Process);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::EndTest,
-            threadTest, &QThread::quit);
-
-    connect(this, &Program::stopTheTest,
-            cyclicTestsShutoff, &CyclicTestsShutoff::StoppingTheTest);
-
-    connect(threadTest, &QThread::finished,
-            threadTest, &QObject::deleteLater);
-
-    connect(threadTest, &QThread::finished,
-            cyclicTestsShutoff, &QObject::deleteLater);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::EndTest,
-            this, &Program::endTest);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::UpdateGraph, this, [&] {
-        updateCharts_CyclicTest(Charts::Cyclic);
-    });
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::setDac,
-            this, &Program::setDacRaw);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::GetPoints,
-            this, &Program::receivedPoints_cyclicTest,
-            Qt::BlockingQueuedConnection);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::SetMultipleDO,
-            this, &Program::setMultipleDO);
-
-    connect(this, &Program::releaseBlock,
-            cyclicTestsShutoff, &CyclicTestsShutoff::ReleaseBlock);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::SetStartTime,
-            this, &Program::setTimeStart);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::Results,
-            this, &Program::results_cyclicShutoffTests);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::CycleCompleted,
-            this, &Program::cyclicCycleCompleted);
-
-    // connect(cyclicTestsShutoff, &CyclicTestsShutoff::ClearGraph,
-    //         this, [&] { emit ClearPoints(Charts::Cyclic); });
-
-    m_isTestRunning = true;
-    emit enableSetTask(false);
-    emit clearPoints(Charts::Cyclic);
-    threadTest->start();
+    //emit setDoButtonsChecked(mask);
 }
 
 void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results)
@@ -966,17 +775,6 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
     dst.switch0to3Count = results.switch0to3Count / 2;
 
     emit telemetryUpdated(m_telemetryStore);
-}
-
-void Program::runningCyclicCombined(const CyclicTestSettings::TestParameters &p) {
-    // 1) стартуем регуляторный
-    auto reg = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry, this);
-    // connect(this, &Program::testFinished, this, [this]() {
-    //     // 2) по завершению – запускаем Shutoff
-    //     auto shut = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, this);
-    //     startRunner(std::move(shut));
-    // }, Qt::SingleShotConnection);
-    startRunner(std::move(reg));
 }
 
 void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
@@ -1004,7 +802,7 @@ void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResul
     // emit telemetryUpdated(m_telemetryStore);
 }
 
-void Program::runningCyclicTest()
+void Program::startCyclicTest()
 {
     CyclicTestSettings::TestParameters parameters;
     emit getParameters_cyclicTest(parameters);
@@ -1226,12 +1024,12 @@ void Program::button_DO(quint8 DO_num, bool state)
         for (int i = 0; i < m_initialDoStates.size(); ++i)
             if (m_initialDoStates[i]) mask |= (1 << i);
 
-        emit setButtonsDOChecked(mask);
+        emit setDoButtonsChecked(mask);
         return;
     }
 
     m_mpi.SetDiscreteOutput(DO_num, state);
-    emit setButtonsDOChecked(m_mpi.GetDOStatus());
+    emit setDoButtonsChecked(m_mpi.GetDOStatus());
 }
 
 void Program::checkbox_autoInit(int state)

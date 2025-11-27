@@ -372,7 +372,7 @@ void MyChart::addPoint(quint8 seriesN, qreal X, qreal Y)
     m_mySeries[seriesN]->append(X, Y);
 }
 
-void MyChart::dublSeries(quint8 seriesN)
+void MyChart::duplicateChartSeries(quint8 seriesN)
 {
     if (seriesN >= m_mySeries.count()) {
         return;

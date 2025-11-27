@@ -42,7 +42,7 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
             Qt::QueuedConnection);
 
     connect(&t, &MainTest::DublSeries,
-            owner, [owner]{ emit owner->dublSeries(); });
+            owner, [owner]{ emit owner->duplicateMainChartsSeries(); });
 
     connect(&t, &MainTest::GetPoints,
             owner, &Program::receivedPoints_mainTest,

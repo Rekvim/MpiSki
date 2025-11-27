@@ -44,10 +44,7 @@ int main(int argc, char *argv[])
     if (valveWindow.exec() == QDialog::Rejected)
         return 0;
 
-    auto cts = selectTests.getCTS();
-
     mainWindow.setPatternType(selectedPattern);
-    mainWindow.setBlockCTS(cts);
     mainWindow.setRegistry(&registry);
     mainWindow.show();
     QTimer::singleShot(0, &mainWindow, [&]{ mainWindow.showMaximized(); });

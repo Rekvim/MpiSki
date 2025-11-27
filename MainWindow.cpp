@@ -72,10 +72,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::totalTestTimeMs,
             this, &MainWindow::onTotalTestTimeMs);
 
-    connect(this, &MainWindow::initialize,
+    connect(this, &MainWindow::initialized,
             m_program, &Program::initialization);
 
-    connect(this, &MainWindow::InitDOSelected,
+    connect(this, &MainWindow::doInitStatesSelected,
             m_program, &Program::setInitDOStates);
 
     connect(ui->pushButton_set, &QPushButton::clicked,
@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
             m_program, &Program::checkbox_autoInit);
 
-    connect(this, &MainWindow::setDO,
+    connect(this, &MainWindow::setDo,
             m_program, &Program::button_DO);
 
     for (int i = 0; i < 4; ++i) {
@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(btn, &QPushButton::clicked,
                 this, [this, i](bool checked)
                 {
-                    emit setDO(i, checked);
+                    emit setDo(i, checked);
                 });
     }
 
@@ -122,13 +122,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::setText,
             this, &MainWindow::setText);
 
-    connect(m_program, &Program::setButtonsDOChecked,
-            this, &MainWindow::setButtonsDOChecked);
+    connect(m_program, &Program::setDoButtonsChecked,
+            this, &MainWindow::setDoButtonsChecked);
 
-    connect(m_program, &Program::setCheckboxDIChecked,
-            this, &MainWindow::setCheckboxDIChecked);
+    connect(m_program, &Program::setDiCheckboxesChecked,
+            this, &MainWindow::setDiCheckboxesChecked);
 
-    connect(this, &MainWindow::setDac,
+    connect(this, &MainWindow::dacValueRequested,
             m_program, &Program::setDAC_real);
 
     connect(ui->doubleSpinBox_task,
@@ -136,7 +136,7 @@ MainWindow::MainWindow(QWidget *parent)
             this,[&](double value) {
                 if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
                     if (ui->verticalSlider_task->isEnabled())
-                        emit setDac(value);
+                        emit dacValueRequested(value);
                     ui->verticalSlider_task->setValue(qRound(value * 1000));
                 }
             });
@@ -145,12 +145,12 @@ MainWindow::MainWindow(QWidget *parent)
             this, [&](int value) {
                 if (qRound(ui->doubleSpinBox_task->value() * 1000) != value) {
                     if (ui->doubleSpinBox_task->isEnabled())
-                        emit setDac(value / 1000.0);
+                        emit dacValueRequested(value / 1000.0);
                     ui->doubleSpinBox_task->setValue(value / 1000.0);
                 }
             });
 
-    connect(this, &MainWindow::PatternChanged,
+    connect(this, &MainWindow::patternChanged,
             m_program, &Program::setPattern);
 
     connect(m_program, &Program::setTask,
@@ -162,8 +162,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::setButtonInitEnabled,
             this, &MainWindow::setButtonInitEnabled);
 
-    connect(m_program, &Program::enableSetTask,
-            this, &MainWindow::enableSetTask);
+    connect(m_program, &Program::setTaskControlsEnabled,
+            this, &MainWindow::setTaskControlsEnabled);
 
     connect(m_program, &Program::setStepResults,
             this, &MainWindow::setStepTestResults);
@@ -322,27 +322,6 @@ void MainWindow::onTotalTestTimeMs(quint64 totalMs)
     onCountdownTimeout();
 }
 
-void MainWindow::bindSliderAndLineEdit(QSlider* slider, QLineEdit* lineEdit, std::function<void()> updateIndicatorFn)
-{
-    connect(slider, &QSlider::valueChanged, this, [lineEdit, updateIndicatorFn](int value) {
-        lineEdit->setText(QString::number(value));
-        if (updateIndicatorFn) updateIndicatorFn();
-    });
-
-    connect(lineEdit, &QLineEdit::editingFinished, this, [slider, lineEdit, updateIndicatorFn]() {
-        bool ok;
-        double val = lineEdit->text().toDouble(&ok);
-        if (ok) {
-            int clamped = std::clamp(static_cast<int>(val), slider->minimum(), slider->maximum());
-            slider->setValue(clamped);
-            if (updateIndicatorFn) updateIndicatorFn();
-        }
-    });
-
-    lineEdit->setText(QString::number(slider->value()));
-}
-
-
 static void setIndicatorColor(QWidget* widget, const QString& color, const QString& border) {
     widget->setStyleSheet(QString(
                               "background: %1;"
@@ -374,7 +353,6 @@ static void updateIndicator(double value,
 
 void MainWindow::updateFrictionForceLimitStatus()
 {
-    // Берём value из lineEdit_crossingLimits_coefficientFriction_value
     bool okValue = false;
     double value = ui->lineEdit_crossingLimits_coefficientFriction_value
                        ->text().toDouble(&okValue);
@@ -472,121 +450,121 @@ void MainWindow::updateDynamicErrorLimitStatus()
 }
 
 
-void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
+void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
 
-    m_telemetryStore = TS;
+    m_telemetryStore = telemetry;
 
-    ui->label_deviceStatusValue->setText(TS.init.deviceStatusText);
+    ui->label_deviceStatusValue->setText(telemetry.init.deviceStatusText);
     ui->label_deviceStatusValue->setStyleSheet(
-        "color:" + TS.init.deviceStatusColor.name(QColor::HexRgb));
+        "color:" + telemetry.init.deviceStatusColor.name(QColor::HexRgb));
 
-    ui->label_deviceInitValue->setText(TS.init.initStatusText);
+    ui->label_deviceInitValue->setText(telemetry.init.initStatusText);
     ui->label_deviceInitValue->setStyleSheet(
-        "color:" + TS.init.initStatusColor.name(QColor::HexRgb));
+        "color:" + telemetry.init.initStatusColor.name(QColor::HexRgb));
 
-    ui->label_connectedSensorsNumber->setText(TS.init.connectedSensorsText);
+    ui->label_connectedSensorsNumber->setText(telemetry.init.connectedSensorsText);
     ui->label_connectedSensorsNumber->setStyleSheet(
-        "color:" + TS.init.connectedSensorsColor.name(QColor::HexRgb));
+        "color:" + telemetry.init.connectedSensorsColor.name(QColor::HexRgb));
 
-    ui->label_startingPositionValue->setText(TS.init.startingPositionText);
+    ui->label_startingPositionValue->setText(telemetry.init.startingPositionText);
     ui->label_startingPositionValue->setStyleSheet(
-        "color:" + TS.init.startingPositionColor.name(QColor::HexRgb));
+        "color:" + telemetry.init.startingPositionColor.name(QColor::HexRgb));
 
-    ui->label_finalPositionValue->setText(TS.init.finalPositionText);
+    ui->label_finalPositionValue->setText(telemetry.init.finalPositionText);
     ui->label_finalPositionValue->setStyleSheet(
-        "color:" + TS.init.finalPositionColor.name(QColor::HexRgb));
+        "color:" + telemetry.init.finalPositionColor.name(QColor::HexRgb));
 
     ui->label_pressureDifferenceValue->setText(
         QString("%1 bar")
-            .arg(TS.mainTestRecord.pressureDifference, 0, 'f', 3)
+            .arg(telemetry.mainTestRecord.pressureDifference, 0, 'f', 3)
         );
     ui->label_frictionForceValue->setText(
         QString("%1 H")
-            .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
+            .arg(telemetry.mainTestRecord.frictionForce, 0, 'f', 3)
         );
     ui->label_frictionPercentValue->setText(
         QString("%1 %")
-            .arg(TS.mainTestRecord.frictionPercent, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.frictionPercent, 0, 'f', 2)
         );
     ui->lineEdit_frictionForceValue->setText(
         QString("%1")
-            .arg(TS.mainTestRecord.frictionForce, 0, 'f', 3)
+            .arg(telemetry.mainTestRecord.frictionForce, 0, 'f', 3)
         );
     ui->lineEdit_frictionPercentValue->setText(
         QString("%1")
-            .arg(TS.mainTestRecord.frictionPercent, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.frictionPercent, 0, 'f', 2)
         );
 
     ui->label_dynamicErrorMeanPercent->setText(
         QString("%1 %")
-            .arg(TS.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
         );
     ui->label_dynamicErrorMean->setText(
         QString("%1 mA")
-            .arg(TS.mainTestRecord.dynamicError_mean, 0, 'f', 3)
+            .arg(telemetry.mainTestRecord.dynamicError_mean, 0, 'f', 3)
         );
     ui->label_dynamicErrorMaxPercent->setText(
         QString("%1 %")
-            .arg(TS.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
         );
 
     ui->label_dynamicErrorMax->setText(
         QString("%1 mA")
-            .arg(TS.mainTestRecord.dynamicError_max, 0, 'f', 3)
+            .arg(telemetry.mainTestRecord.dynamicError_max, 0, 'f', 3)
         );
     ui->lineEdit_dynamicErrorReal->setText(
         QString("%1")
-            .arg(TS.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
         );
 
     ui->label_dynamicErrorMax->setText(
         QString("%1 bar")
-            .arg(TS.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.lowLimitPressure, 0, 'f', 2)
         );
     ui->label_dynamicErrorMax->setText(
         QString("%1 bar")
-            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.highLimitPressure, 0, 'f', 2)
         );
 
     ui->label_valveStroke_range->setText(
         QString("%1")
-            .arg(TS.valveStrokeRecord.range)
+            .arg(telemetry.valveStrokeRecord.range)
         );
 
     // StrokeRecord
     ui->lineEdit_strokeReal->setText(
-        QString("%1").arg(TS.valveStrokeRecord.real, 0, 'f', 2));
+        QString("%1").arg(telemetry.valveStrokeRecord.real, 0, 'f', 2));
 
 
 
     ui->label_lowLimitValue->setText(
         QString("%1")
-            .arg(TS.mainTestRecord.lowLimitPressure)
+            .arg(telemetry.mainTestRecord.lowLimitPressure)
         );
     ui->label_highLimitValue->setText(
         QString("%1")
-            .arg(TS.mainTestRecord.highLimitPressure)
+            .arg(telemetry.mainTestRecord.highLimitPressure)
         );
 
     ui->lineEdit_rangePressure->setText(
         QString("%1–%2")
-            .arg(TS.mainTestRecord.lowLimitPressure, 0, 'f', 2)
-            .arg(TS.mainTestRecord.highLimitPressure, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.highLimitPressure, 0, 'f', 2)
         );
 
     ui->lineEdit_driveRangeReal->setText(
         QString("%1–%2")
-            .arg(TS.mainTestRecord.springLow, 0, 'f', 2)
-            .arg(TS.mainTestRecord.springHigh, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.springLow, 0, 'f', 2)
+            .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2)
         );
 
     // StrokeTest
 
-    ui->label_strokeTest_forwardTime->setText(TS.strokeTestRecord.timeForwardMs);
-    ui->lineEdit_strokeTest_forwardTime->setText(TS.strokeTestRecord.timeForwardMs);
+    ui->label_strokeTest_forwardTime->setText(telemetry.strokeTestRecord.timeForwardMs);
+    ui->lineEdit_strokeTest_forwardTime->setText(telemetry.strokeTestRecord.timeForwardMs);
 
-    ui->label_strokeTest_backwardTime->setText(TS.strokeTestRecord.timeBackwardMs);
-    ui->lineEdit_strokeTest_backwardTime->setText(TS.strokeTestRecord.timeBackwardMs);
+    ui->label_strokeTest_backwardTime->setText(telemetry.strokeTestRecord.timeBackwardMs);
+    ui->lineEdit_strokeTest_backwardTime->setText(telemetry.strokeTestRecord.timeBackwardMs);
 
     // CyclicTestResults
     // ui->label_cyclicTest_sequenceValue->setText(TS.cyclicTestRecord.sequence);
@@ -603,21 +581,21 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
 
     // 1) Динамическая ошибка: одно значение
     ui->lineEdit_crossingLimits_dynamicError_value->setText(
-        QString::number(TS.mainTestRecord.dynamicErrorReal, 'f', 2));
+        QString::number(telemetry.mainTestRecord.dynamicErrorReal, 'f', 2));
 
     // 2) Ход клапана: одно значение (реальный ход)
     ui->lineEdit_crossingLimits_range_value->setText(
-        QString::number(TS.valveStrokeRecord.real, 'f', 2));
+        QString::number(telemetry.valveStrokeRecord.real, 'f', 2));
 
     // 3) Диапазон пружины: low–high
     ui->lineEdit_crossingLimits_spring_value->setText(
         QString("%1–%2")
-            .arg(TS.mainTestRecord.springLow,  0, 'f', 2)
-            .arg(TS.mainTestRecord.springHigh, 0, 'f', 2));
+            .arg(telemetry.mainTestRecord.springLow,  0, 'f', 2)
+            .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2));
 
     // 4) Коэффициент / процент трения: ОДНО значение,
     ui->lineEdit_crossingLimits_coefficientFriction_value->setText(
-        QString::number(TS.mainTestRecord.frictionPercent, 'f', 2));
+        QString::number(telemetry.mainTestRecord.frictionPercent, 'f', 2));
 
     // Обновляем индикаторы
     updateFrictionForceLimitStatus();
@@ -629,7 +607,7 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &TS) {
 void MainWindow::appendLog(const QString& text) {
     const QString stamp = QDateTime::currentDateTime()
     .toString("[hh:mm:ss.zzz] ");
-    logOutput->appendPlainText(stamp + text);
+    m_logOutput->appendPlainText(stamp + text);
 }
 
 void MainWindow::on_pushButton_signal_4mA_clicked()
@@ -652,12 +630,14 @@ void MainWindow::on_pushButton_signal_20mA_clicked()
 {
     ui->doubleSpinBox_task->setValue(20.0);
 }
-void MainWindow::enableSetTask(bool enable)
+
+void MainWindow::setTaskControlsEnabled(bool enable)
 {
     ui->verticalSlider_task->setEnabled(enable);
     ui->doubleSpinBox_task->setEnabled(enable);
     ui->groupBox_SettingCurrentSignal->setEnabled(enable);
 }
+
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (auto w = qobject_cast<QWidget*>(watched)) {
@@ -745,11 +725,6 @@ void MainWindow::setRegistry(Registry *registry)
 
     ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
     ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
-
-    ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit->setText(
-        QString::number(valveInfo->crossingLimits.frictionCoefLowerLimit, 'f', 2));
-    ui->lineEdit_crossingLimits_coefficientFriction_upperLimit->setText(
-        QString::number(valveInfo->crossingLimits.frictionCoefUpperLimit, 'f', 2));
 
     ui->widget_crossingLimits_frictionForce->setVisible(limits.frictionEnabled);
     ui->widget_crossingLimits_linearCharacteristic->setVisible(limits.linearCharacteristicEnabled);
@@ -896,7 +871,7 @@ void MainWindow::displayDependingPattern() {
 
 void MainWindow::setSensorsNumber(quint8 num)
 {
-    bool noSensors = (num == 0);
+    bool hasSensors = (num == 0);
 
     if (num > 0) {
         m_isInitialized = true;
@@ -908,15 +883,15 @@ void MainWindow::setSensorsNumber(quint8 num)
         ui->label_startingPosition->setVisible(false);
     }
 
-    ui->groupBox_SettingCurrentSignal->setEnabled(!noSensors);
+    ui->groupBox_SettingCurrentSignal->setEnabled(!hasSensors);
 
     ui->pushButton_mainTest_start->setEnabled(num > 1);
-    ui->pushButton_strokeTest_start->setEnabled(!noSensors);
-    ui->pushButton_optionalTests_start->setEnabled(!noSensors);
-    ui->pushButton_cyclicTest_start->setEnabled(!noSensors);
+    ui->pushButton_strokeTest_start->setEnabled(!hasSensors);
+    ui->pushButton_optionalTests_start->setEnabled(!hasSensors);
+    ui->pushButton_cyclicTest_start->setEnabled(!hasSensors);
 
-    ui->doubleSpinBox_task->setEnabled(!noSensors);
-    ui->verticalSlider_task->setEnabled(!noSensors);
+    ui->doubleSpinBox_task->setEnabled(!hasSensors);
+    ui->verticalSlider_task->setEnabled(!hasSensors);
 
     displayDependingPattern();
 
@@ -961,16 +936,16 @@ void MainWindow::showDots(bool visible)
     m_charts[Charts::Pressure]->showdots(visible);
 }
 
-void MainWindow::dublSeries()
+void MainWindow::duplicateMainChartsSeries()
 {
-    m_charts[Charts::Task]->dublSeries(1);
-    m_charts[Charts::Task]->dublSeries(2);
-    m_charts[Charts::Task]->dublSeries(3);
-    m_charts[Charts::Task]->dublSeries(4);
-    m_charts[Charts::Pressure]->dublSeries(0);
+    m_charts[Charts::Task]->duplicateChartSeries(1);
+    m_charts[Charts::Task]->duplicateChartSeries(2);
+    m_charts[Charts::Task]->duplicateChartSeries(3);
+    m_charts[Charts::Task]->duplicateChartSeries(4);
+    m_charts[Charts::Pressure]->duplicateChartSeries(0);
 }
 
-void MainWindow::receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart)
+void MainWindow::onMainTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
 
@@ -981,9 +956,8 @@ void MainWindow::receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Char
     points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
     points.push_back({pointsPressure.first.begin(), pointsPressure.first.end()});
     points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
-
 }
-void MainWindow::receivedPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart)
+void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
 
@@ -996,7 +970,7 @@ void MainWindow::receivedPoints_stepTest(QVector<QVector<QPointF>> &points, Char
         points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
     }
 }
-void MainWindow::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart)
+void MainWindow::onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
 
@@ -1018,10 +992,10 @@ void MainWindow::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Ch
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
 
-void MainWindow::setRegressionEnable(bool enable)
+void MainWindow::setRegressionEnabled(bool enabled)
 {
-    ui->checkBox_regression->setEnabled(enable);
-    ui->checkBox_regression->setCheckState(enable ? Qt::Checked : Qt::Unchecked);
+    ui->checkBox_regression->setEnabled(enabled);
+    ui->checkBox_regression->setCheckState(enabled ? Qt::Checked : Qt::Unchecked);
 }
 
 void MainWindow::receivedParameters_mainTest(MainTestSettings::TestParameters &parameters)
@@ -1106,7 +1080,7 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
         }
 
         if (parameters.testType == TP::Regulatory && parameters.regulatory_enable_20mA) {
-            emit setDac(20.0);
+            emit dacValueRequested(20.0);
         }
 
         qint64 totalMs = 0;
@@ -1161,22 +1135,22 @@ void MainWindow::question(const QString &title, const QString &text, bool &resul
     result = (QMessageBox::question(NULL, title, text) == QMessageBox::Yes);
 }
 
-void MainWindow::getDirectory(const QString &current_path, QString &result)
+void MainWindow::getDirectory(const QString &currentPath, QString &result)
 {
     result = QFileDialog::getExistingDirectory(this,
                                                tr("Выберите папку для сохранения изображений"),
-                                               current_path);
+                                               currentPath);
 }
 
 void MainWindow::startTest()
 {
-    m_testing = true;
+    m_isTestRunning  = true;
     ui->statusbar->showMessage(tr("Тест в процессе"));
 }
 
 void MainWindow::endTest()
 {
-    m_testing = false;
+    m_isTestRunning  = false;
 
     ui->statusbar->showMessage(tr("Тест завершён"));
 
@@ -1184,7 +1158,7 @@ void MainWindow::endTest()
         m_durationTimer->stop();
     }
 
-    if (m_userCanceled) {
+    if (m_isUserCanceled ) {
         ui->label_cyclicTest_totalTimeValue->clear();
         ui->label_cyclicTest_specifiedCyclesValue->clear();
         ui->label_cyclicTest_sequenceValue->clear();
@@ -1194,14 +1168,14 @@ void MainWindow::endTest()
 
 void MainWindow::on_pushButton_mainTest_start_clicked()
 {
-    if (m_testing) {
+    if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
         == QMessageBox::Yes) {
-            m_userCanceled = true;
+            m_isUserCanceled  = true;
             emit stopTest();
         }
     } else {
-        m_userCanceled = false;
+        m_isUserCanceled  = false;
         emit runMainTest();
         startTest();
     }
@@ -1219,7 +1193,7 @@ void MainWindow::on_pushButton_mainTest_save_clicked()
 
 void MainWindow::promptSaveCharts()
 {
-    if (m_userCanceled)
+    if (m_isUserCanceled )
         return;
 
     auto answer = QMessageBox::question(
@@ -1239,7 +1213,7 @@ void MainWindow::promptSaveCharts()
 
 void MainWindow::on_pushButton_strokeTest_start_clicked()
 {
-    if (m_testing) {
+    if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             emit stopTest();
@@ -1256,7 +1230,7 @@ void MainWindow::on_pushButton_strokeTest_save_clicked()
 
 void MainWindow::on_pushButton_optionalTests_start_clicked()
 {
-    if (m_testing) {
+    if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             emit stopTest();
@@ -1279,16 +1253,16 @@ void MainWindow::on_pushButton_optionalTests_save_clicked()
 
 void MainWindow::on_pushButton_cyclicTest_start_clicked()
 {
-    if (m_testing) {
+    if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
-            m_userCanceled = true;
+            m_isUserCanceled  = true;
             emit stopTest();
         }
         return;
     }
 
-    m_userCanceled = false;
+    m_isUserCanceled  = false;
 
     m_cyclicTestSettings->setPattern(m_patternType);
 
@@ -1301,17 +1275,17 @@ void MainWindow::on_pushButton_cyclicTest_save_clicked()
     saveChart(Charts::Cyclic);
 }
 
-void MainWindow::setButtonsDOChecked(quint8 status)
+void MainWindow::setDoButtonsChecked(quint8 bitmask)
 {
     ui->pushButton_DO0->blockSignals(true);
     ui->pushButton_DO1->blockSignals(true);
     ui->pushButton_DO2->blockSignals(true);
     ui->pushButton_DO3->blockSignals(true);
 
-    ui->pushButton_DO0->setChecked((status & (1 << 0)) != 0);
-    ui->pushButton_DO1->setChecked((status & (1 << 1)) != 0);
-    ui->pushButton_DO2->setChecked((status & (1 << 2)) != 0);
-    ui->pushButton_DO3->setChecked((status & (1 << 3)) != 0);
+    ui->pushButton_DO0->setChecked((bitmask & (1 << 0)) != 0);
+    ui->pushButton_DO1->setChecked((bitmask & (1 << 1)) != 0);
+    ui->pushButton_DO2->setChecked((bitmask & (1 << 2)) != 0);
+    ui->pushButton_DO3->setChecked((bitmask & (1 << 3)) != 0);
 
     ui->pushButton_DO0->blockSignals(false);
     ui->pushButton_DO1->blockSignals(false);
@@ -1321,10 +1295,10 @@ void MainWindow::setButtonsDOChecked(quint8 status)
     ui->groupBox_DO->setEnabled(true);
 }
 
-void MainWindow::setCheckboxDIChecked(quint8 status)
+void MainWindow::setDiCheckboxesChecked(quint8 bitmask)
 {
-    ui->checkBox_switch_3_0->setChecked((status & (1 << 0)) != 0);
-    ui->checkBox_switch_0_3->setChecked((status & (1 << 1)) != 0);
+    ui->checkBox_switch_3_0->setChecked((bitmask & (1 << 0)) != 0);
+    ui->checkBox_switch_0_3->setChecked((bitmask & (1 << 1)) != 0);
 }
 
 void MainWindow::initCharts()
@@ -1450,53 +1424,58 @@ void MainWindow::initCharts()
     connect(m_program, &Program::clearPoints,
             this, &MainWindow::clearPoints);
 
-    connect(m_program, &Program::dublSeries,
-            this, &MainWindow::dublSeries);
+    connect(m_program, &Program::duplicateMainChartsSeries,
+            this, &MainWindow::duplicateMainChartsSeries);
 
     connect(m_program, &Program::setVisible,
             this, &MainWindow::setChartVisible);
 
     connect(m_program, &Program::setRegressionEnable,
-            this, &MainWindow::setRegressionEnable);
+            this, &MainWindow::setRegressionEnabled);
 
     connect(m_program, &Program::showDots,
             this, &MainWindow::showDots);
 
-    connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Task]->visible(0, k != 0);
+    connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged,
+            this, [&](int state) {
+        m_charts[Charts::Task]->visible(0, state != 0);
     });
 
-    connect(ui->checkBox_showCurve_moving, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Task]->visible(1, k != 0);
+    connect(ui->checkBox_showCurve_moving, &QCheckBox::checkStateChanged,
+            this, [&](int state) {
+        m_charts[Charts::Task]->visible(1, state != 0);
     });
 
-    connect(ui->checkBox_showCurve_pressure_1, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Task]->visible(2, k != 0);
+    connect(ui->checkBox_showCurve_pressure_1, &QCheckBox::checkStateChanged,
+            this, [&](int state) {
+        m_charts[Charts::Task]->visible(2, state != 0);
     });
 
-    connect(ui->checkBox_showCurve_pressure_2, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Task]->visible(3, k != 0);
+    connect(ui->checkBox_showCurve_pressure_2, &QCheckBox::checkStateChanged,
+            this, [&](int state) {
+        m_charts[Charts::Task]->visible(3, state != 0);
     });
 
-    connect(ui->checkBox_showCurve_pressure_3, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Task]->visible(4, k != 0);
+    connect(ui->checkBox_showCurve_pressure_3, &QCheckBox::checkStateChanged,
+            this, [&](int state) {
+        m_charts[Charts::Task]->visible(4, state != 0);
     });
 
-    connect(ui->checkBox_regression, &QCheckBox::checkStateChanged, this, [&](int k) {
-        m_charts[Charts::Pressure]->visible(1, k != 0);
+    connect(ui->checkBox_regression, &QCheckBox::checkStateChanged,
+            this, [&](int state) {
+        m_charts[Charts::Pressure]->visible(1, state != 0);
     });
-
 
     connect(m_program, &Program::getPoints_mainTest,
-            this, &MainWindow::receivedPoints_mainTest,
+            this, &MainWindow::onMainTestPointsRequested,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::getPoints_stepTest,
-            this, &MainWindow::receivedPoints_stepTest,
+            this, &MainWindow::onStepTestPointsRequested,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::getPoints_cyclicTest,
-            this, &MainWindow::receivedPoints_cyclicTest,
+            this, &MainWindow::onCyclicTestPointsRequested,
             Qt::QueuedConnection);
 }
 
@@ -1565,9 +1544,9 @@ void MainWindow::on_pushButton_init_clicked()
         ui->pushButton_DO3->isChecked()
     };
 
-    emit InitDOSelected(states);
-    emit initialize();
-    emit PatternChanged(m_patternType);
+    emit doInitStatesSelected(states);
+    emit initialized();
+    emit patternChanged(m_patternType);
 }
 
 void MainWindow::on_pushButton_imageChartTask_clicked()

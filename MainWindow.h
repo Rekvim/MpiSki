@@ -21,11 +21,6 @@
 namespace Ui { class MainWindow; }
 // QT_END_NAMESPACE
 
-struct CTSRule {
-    std::function<bool(const SelectTests::BlockCTS&)> condition;
-    std::array<bool, 6> pattern;
-};
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -37,13 +32,12 @@ public:
         m_patternType = pattern;
         updateAvailableTabs();
     }
-    void setBlockCTS(const SelectTests::BlockCTS& cts) { m_blockCTS = cts; }
 signals:
-    void initialize();
-    void PatternChanged(SelectTests::PatternType pattern);
+    void initialized();
+    void patternChanged(SelectTests::PatternType pattern);
 
-    void InitDOSelected(const QVector<bool> &states);
-    void setDac(qreal value);
+    void doInitStatesSelected(const QVector<bool> &states);
+    void dacValueRequested(qreal value);
 
     void runMainTest();
     void runStrokeTest();
@@ -52,27 +46,25 @@ signals:
 
     void stopTest();
 
-    void setDO(quint8 DO_num, bool state);
+    void setDo(quint8 doIndex, bool state);
 
 private slots:
     void appendLog(const QString& text);
 
-    void onTelemetryUpdated(const TelemetryStore &TS);
+    void onTelemetryUpdated(const TelemetryStore &telemetry);
     void addPoints(Charts chart, const QVector<Point> &points);
     void clearPoints(Charts chart);
 
     void promptSaveCharts();
     void showDots(bool visible);
-    void dublSeries();
+    void duplicateMainChartsSeries();
 
-    void getDirectory(const QString &current_path, QString &result);
+    void getDirectory(const QString &currentPath, QString &result);
 
     void updateFrictionForceLimitStatus();
     void updateSpringLimitStatus();
     void updateRangeLimitStatus();
     void updateDynamicErrorLimitStatus();
-
-    void bindSliderAndLineEdit(QSlider* slider, QLineEdit* lineEdit, std::function<void()> updateIndicatorFn);
 
     void setText(TextObjects object, const QString &text);
     void setTask(qreal task);
@@ -82,13 +74,13 @@ private slots:
     void setChartVisible(Charts chart, quint16 series, bool visible);
     void setSensorsNumber(quint8 num);
 
-    void setButtonInitEnabled(bool enable);
-    void setRegressionEnable(bool enable);
+    void setButtonInitEnabled(bool enabled);
+    void setRegressionEnabled(bool enabled);
 
-    void setButtonsDOChecked(quint8 status);
-    void setCheckboxDIChecked(quint8 status);
+    void setDoButtonsChecked(quint8 bitmask);
+    void setDiCheckboxesChecked(quint8 bitmask);
 
-    void enableSetTask(bool enable);
+    void setTaskControlsEnabled(bool enable);
 
     void onCountdownTimeout();
     void onTotalTestTimeMs(quint64 totalMs);
@@ -98,9 +90,9 @@ private slots:
     void startTest();
     void endTest();
 
-    void receivedPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
-    void receivedPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart);
-    void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void onMainTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
+    void onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
+    void onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
 
     void receivedParameters_mainTest(MainTestSettings::TestParameters &parameters);
     void receivedParameters_stepTest(StepTestSettings::TestParameters &parameters);
@@ -139,11 +131,11 @@ private:
     Ui::MainWindow *ui;
     TelemetryStore m_telemetryStore;
 
-    QPlainTextEdit* logOutput = nullptr;
+    QPlainTextEdit* m_logOutput  = nullptr;
 
-    bool m_userCanceled = false;
-    bool m_testing = false;
-    bool m_isInitialized = false;
+    bool m_isUserCanceled  = false;
+    bool m_isTestRunning  = false;
+    bool m_isInitialized  = false;
 
     void lockTabsForPreInit();
     void updateAvailableTabs();

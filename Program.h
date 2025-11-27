@@ -80,8 +80,9 @@ signals:
     void setRegressionEnable(bool enable);
 
     void setStepResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
-    void setButtonsDOChecked(quint8 status);
-    void setCheckboxDIChecked(quint8 status);
+    void setDoButtonsChecked(quint8 status);
+
+    void setDiCheckboxesChecked(quint8 status);
     void getPoints(QVector<QVector<QPointF>> &points, Charts chart);
 
     void getPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
@@ -93,8 +94,8 @@ signals:
 
     void stopTheTest();
     void showDots(bool visible);
-    void enableSetTask(bool enable);
-    void dublSeries();
+    void setTaskControlsEnabled(bool enable);
+    void duplicateMainChartsSeries();
     void releaseBlock();
 
     void mainTestFinished();
@@ -133,7 +134,7 @@ private:
         connect(this, &Program::stopTheTest, r.get(), &AbstractTestRunner::stop);
         emit setButtonInitEnabled(false);
         m_isTestRunning = true;
-        emit enableSetTask(false);
+        emit setTaskControlsEnabled(false);
 
         m_activeRunner = std::move(r);
         m_activeRunner->start();
@@ -230,10 +231,8 @@ public slots:
     void startStrokeTest();
     void startMainTest();
     void startOptionalTest(quint8 testNum);
-    void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicCombined(const CyclicTestSettings::TestParameters &p);
-    void runningCyclicTest();
+
+    void startCyclicTest();
 
 
     void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }

@@ -69,12 +69,25 @@ void MainTest::Process()
     QVector<QVector<QPointF>> points;
     emit GetPoints(points);
 
+    TestResults testResults;
+
     Limits regressionLimits = GetLimits(points[2], points[3]);
     Regression regressionForward = CalculateRegression(points[2], regressionLimits);
     Regression regressionBackward = CalculateRegression(points[3], regressionLimits);
 
     QVector<QPointF> pointsForward = GetRegressionPoints(regressionForward, regressionLimits);
     QVector<QPointF> pointsBackward = GetRegressionPoints(regressionBackward, regressionLimits);
+
+    // Ошибка нелинейности характеристики "давление от перемещения", % диапазона
+    qreal linErrForward  = GetLinearityError(points[2], regressionForward,  regressionLimits);
+    qreal linErrBackward = GetLinearityError(points[3], regressionBackward, regressionLimits);
+
+
+    // взять максимум из двух веток
+    testResults.linearityError = qMax(linErrForward, linErrBackward);
+
+    // если нужно "линейность", а не "ошибку":
+    testResults.linearity = 100.0 - testResults.linearityError;
 
     pointsForward.append({pointsBackward.rbegin(), pointsBackward.rend()});
     pointsForward.push_back(pointsForward.first());
@@ -85,9 +98,8 @@ void MainTest::Process()
 
     emit AddFriction(frictionPoints);
 
-    TestResults testResults;
 
-    qreal y_mean = (regressionLimits.maxY + regressionLimits.minY) / 2.0;
+    double y_mean = (regressionLimits.maxY + regressionLimits.minY) / 2.0;
 
     testResults.pressureDiff = qAbs((y_mean - regressionForward.b) / regressionForward.k
                                       - (y_mean - regressionBackward.b) / regressionBackward.k);
@@ -97,7 +109,7 @@ void MainTest::Process()
     testResults.dynamicErrorMean = mean / 2;
     testResults.dynamicErrorMax = max;
 
-    qreal range = qAbs((regressionLimits.minY - regressionForward.b) / regressionForward.k
+    double range = qAbs((regressionLimits.minY - regressionForward.b) / regressionForward.k
                        - (regressionLimits.maxY - regressionForward.b) / regressionForward.k);
 
     testResults.friction = 50.0 * testResults.pressureDiff / range;
@@ -156,6 +168,34 @@ MainTest::Regression MainTest::CalculateRegression(const QVector<QPointF> &point
     result.b = (y - result.k * x) / n;
 
     return result;
+}
+
+qreal MainTest::GetLinearityError(const QVector<QPointF>& points,
+                                  const Regression& regression,
+                                  const Limits& limits)
+{
+    const qreal frac = 0.10;
+    const qreal Pmin = limits.minY + (limits.maxY - limits.minY) * frac;
+    const qreal Pmax = limits.maxY - (limits.maxY - limits.minY) * frac;
+    const qreal Prange = Pmax - Pmin;
+    if (Prange <= 0)
+        return 0.0;
+
+    qreal maxDiff = 0.0;
+
+    for (const auto& P : points) {
+        const qreal p = P.y();
+        if (p < Pmin || p > Pmax)
+            continue;
+
+        const qreal p_lin = regression.k * P.x() + regression.b;
+        const qreal diff = qAbs(p - p_lin);
+
+        if (diff > maxDiff)
+            maxDiff = diff;
+    }
+
+    return (maxDiff / Prange) * 100.0;
 }
 
 MainTest::Limits MainTest::GetLimits(const QVector<QPointF> &points1,

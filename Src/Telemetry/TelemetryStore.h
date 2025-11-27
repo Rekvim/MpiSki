@@ -69,12 +69,12 @@ struct CrossingStatus {
 
 struct MainTestRecord {
     double dynamicError_mean = 0.0;
-    double dynamicError_meanPercent = 0.0;
+    double dynamicError_meanPercent = 0.0; // %
 
-    double dynamicError_max = 0.0;
-    double dynamicError_maxPercent = 0.0;
+    double dynamicError_max = 0.0;   // %
+    double dynamicError_maxPercent = 0.0;   // %
 
-    double dynamicErrorReal = 0.0;
+    double dynamicErrorReal = 0.0;   // %
 
     double lowLimitPressure = 0.0;  // бар
     double highLimitPressure = 0.0;  // бар
@@ -83,7 +83,7 @@ struct MainTestRecord {
     double springHigh = 0.0;  // Н
 
     double pressureDifference = 0.0;  // бар
-    double frictionForce = 0.0;  // Н
+    double frictionForce = 0.0;  //
     double frictionPercent = 0.0;  // %
 };
 
@@ -106,7 +106,6 @@ public:
     SupplyRecord supplyRecord;
     MainTestRecord mainTestRecord;
     CrossingStatus crossingStatus;
-
 
     TelemetryStore() = default;
 

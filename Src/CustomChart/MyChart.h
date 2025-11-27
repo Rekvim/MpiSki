@@ -71,7 +71,7 @@ public slots:
     void addAxis(QString);
     void addSeries(quint8 axisN, QString name, QColor color);
     void addPoint(quint8 seriesN, qreal X, qreal Y);
-    void dublSeries(quint8 seriesN);
+    void duplicateChartSeries(quint8 seriesN);
     void clear();
     void visible(quint8 seriesN, bool visible);
     void showdots(bool show);
