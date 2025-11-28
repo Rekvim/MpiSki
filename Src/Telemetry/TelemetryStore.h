@@ -85,6 +85,9 @@ struct MainTestRecord {
     double pressureDifference = 0.0;  // бар
     double frictionForce = 0.0;  //
     double frictionPercent = 0.0;  // %
+
+    double linearityError = 0.0;
+    double linearity = 0.0;
 };
 
 struct ValveStrokeRecord {

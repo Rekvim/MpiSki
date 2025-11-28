@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     connect(this, &MainWindow::runCyclicTest,
-            m_program, &Program::runningCyclicTest);
+            m_program, &Program::startCyclicTest);
 
     connect(this, &MainWindow::runMainTest,
             m_program, &Program::startMainTest);
@@ -261,7 +261,7 @@ void MainWindow::updateAvailableTabs()
 
 void MainWindow::onCountdownTimeout()
 {
-    const qint64 elapsed = m_elapsedTimer.elapsed();          // qint64
+    const qint64 elapsed = m_elapsedTimer.elapsed();
     qint64 remaining = static_cast<qint64>(m_totalTestMs) - elapsed;
     if (remaining < 0) remaining = 0;
 
@@ -349,6 +349,27 @@ static void updateIndicator(double value,
                           QLatin1String("#4E8448"),
                           QLatin1String("#16362B"));
     }
+}
+
+void MainWindow::updateLinearLimitStatus()
+{
+    bool okValue = false;
+    double value = ui->lineEdit_crossingLimits_linearCharacteristic_value
+                       ->text().toDouble(&okValue);
+    if (!okValue) return;
+
+    bool okLow = false, okHigh = false;
+    double lower = ui->lineEdit_crossingLimits_linearCharacteristic_lowerLimit
+                       ->text().toDouble(&okLow);
+    double upper = ui->lineEdit_crossingLimits_linearCharacteristic_upperLimit
+                       ->text().toDouble(&okHigh);
+
+    if (!okLow || !okHigh) return;
+
+    updateIndicator(value,
+                    lower,
+                    upper,
+                    ui->widget_crossingLimits_linearCharacteristic_limitStatusIndicator);
 }
 
 void MainWindow::updateFrictionForceLimitStatus()
@@ -583,17 +604,21 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
     ui->lineEdit_crossingLimits_dynamicError_value->setText(
         QString::number(telemetry.mainTestRecord.dynamicErrorReal, 'f', 2));
 
-    // 2) Ход клапана: одно значение (реальный ход)
+    // 2) Линейность характеристики
+    ui->lineEdit_crossingLimits_linearCharacteristic_value->setText(
+        QString::number(telemetry.mainTestRecord.linearityError, 'f', 2));
+
+    // 3) Ход клапана: одно значение (реальный ход)
     ui->lineEdit_crossingLimits_range_value->setText(
         QString::number(telemetry.valveStrokeRecord.real, 'f', 2));
 
-    // 3) Диапазон пружины: low–high
+    // 4) Диапазон пружины: low–high
     ui->lineEdit_crossingLimits_spring_value->setText(
         QString("%1–%2")
             .arg(telemetry.mainTestRecord.springLow,  0, 'f', 2)
             .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2));
 
-    // 4) Коэффициент / процент трения: ОДНО значение,
+    // 5) Коэффициент / процент трения: ОДНО значение,
     ui->lineEdit_crossingLimits_coefficientFriction_value->setText(
         QString::number(telemetry.mainTestRecord.frictionPercent, 'f', 2));
 

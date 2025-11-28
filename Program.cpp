@@ -592,6 +592,9 @@ void Program::results_mainTest(const MainTest::TestResults &results)
     s.springLow = results.springLow;
     s.springHigh = results.springHigh;
 
+    s.linearityError = results.linearityError;
+    s.linearity = results.linearity;
+
     // updateCrossingStatus();
     emit telemetryUpdated(m_telemetryStore);
 }
