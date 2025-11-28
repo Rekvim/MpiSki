@@ -5,7 +5,7 @@ static QVector<quint16> makeRawValues(const QVector<quint16>& seq, Mpi& mpi, boo
     QVector<quint16> raw; raw.reserve(seq.size());
     for (quint16 pct : seq) {
         const qreal cur = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.GetDac()->GetRawFromValue(cur));
+        raw.push_back(mpi.GetDac()->rawFromValue(cur));
     }
     return raw;
 }
@@ -23,8 +23,8 @@ RunnerConfig CyclicShutoffRunner::buildConfig() {
     CyclicTestsShutoff::Task task;
     task.delayMsecs = p.shutoff_delayMs;
     task.holdMsecs  = p.shutoff_holdMs;
-    task.cycles     = p.shutoff_numCycles;
-    task.doMask     = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
+    task.cycles = p.shutoff_numCycles;
+    task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
 
     task.values.reserve(p.shutoff_numCycles * raw.size());
     for (int c = 0; c < p.shutoff_numCycles; ++c) task.values += raw;
@@ -32,12 +32,12 @@ RunnerConfig CyclicShutoffRunner::buildConfig() {
     auto* worker = new CyclicTestsShutoff;
     worker->SetTask(task);
 
-    const quint64 steps   = static_cast<quint64>(raw.size()) * p.shutoff_numCycles;
+    const quint64 steps = static_cast<quint64>(raw.size()) * p.shutoff_numCycles;
     const quint64 totalMs = steps * (p.shutoff_delayMs + p.shutoff_holdMs);
 
     RunnerConfig cfg;
-    cfg.worker       = worker;
-    cfg.totalMs      = totalMs;
+    cfg.worker = worker;
+    cfg.totalMs = totalMs;
     cfg.chartToClear = static_cast<int>(Charts::Cyclic);
     return cfg;
 }

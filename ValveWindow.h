@@ -23,7 +23,7 @@ class ValveWindow : public QDialog
 
 public:
     explicit ValveWindow(QWidget *parent = nullptr);
-    ~ValveWindow();
+    ~ValveWindow() = default;
     void setRegistry(Registry *registry);
     void setPatternType(SelectTests::PatternType pattern);
 

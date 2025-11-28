@@ -169,31 +169,31 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::setStepTestResults);
 
     connect(m_program, &Program::getParameters_mainTest,
-            this, &MainWindow::receivedParameters_mainTest,
+            this, &MainWindow::onMainTestParametersRequested,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::getParameters_stepTest,
-            this, &MainWindow::receivedParameters_stepTest,
+            this, &MainWindow::onStepTestParametersRequested,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::getParameters_resolutionTest,
-            this, &MainWindow::receivedParameters_resolutionTest,
+            this, &MainWindow::onResolutionTestParametersRequested,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::getParameters_responseTest,
-            this, &MainWindow::receivedParameters_responseTest,
+            this, &MainWindow::onResponseTestParametersRequested,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::getParameters_cyclicTest,
-            this, &MainWindow::receivedParameters_cyclicTest,
+            this, &MainWindow::onCyclicTestParametersRequested,
             Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::question,
-            this, &MainWindow::question,
+            this, &MainWindow::askQuestion,
             Qt::BlockingQueuedConnection);
 
     connect(m_reportSaver, &ReportSaver::Question,
-            this, &MainWindow::question,
+            this, &MainWindow::askQuestion,
             Qt::DirectConnection);
 
     connect(m_reportSaver, &ReportSaver::GetDirectory,
@@ -266,8 +266,8 @@ void MainWindow::onCountdownTimeout()
     if (remaining < 0) remaining = 0;
 
     const auto formatHMS = [](quint64 ms) -> QString {
-        quint64 h = ms / 3600000ULL;  ms %= 3600000ULL;
-        quint64 m = ms / 60000ULL;    ms %= 60000ULL;
+        quint64 h = ms / 3600000ULL; ms %= 3600000ULL;
+        quint64 m = ms / 60000ULL; ms %= 60000ULL;
         quint64 s = ms / 1000ULL;
         quint64 x = ms % 1000ULL;
         return QString("%1:%2:%3.%4")
@@ -418,12 +418,12 @@ void MainWindow::updateSpringLimitStatus()
 
     bool okLow = false;
     bool okHigh = false;
-    double valueLow  = parts.at(0).toDouble(&okLow);
+    double valueLow = parts.at(0).toDouble(&okLow);
     double valueHigh = parts.at(1).toDouble(&okHigh);
     if (!okLow || !okHigh)
         return;
 
-    double limitLow  = ui->lineEdit_crossingLimits_spring_lowerLimit->text().toDouble();
+    double limitLow = ui->lineEdit_crossingLimits_spring_lowerLimit->text().toDouble();
     double limitHigh = ui->lineEdit_crossingLimits_spring_upperLimit->text().toDouble();
 
     updateRangeIndicator(valueLow, valueHigh,
@@ -615,7 +615,7 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
     // 4) Диапазон пружины: low–high
     ui->lineEdit_crossingLimits_spring_value->setText(
         QString("%1–%2")
-            .arg(telemetry.mainTestRecord.springLow,  0, 'f', 2)
+            .arg(telemetry.mainTestRecord.springLow, 0, 'f', 2)
             .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2));
 
     // 5) Коэффициент / процент трения: ОДНО значение,
@@ -623,6 +623,7 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
         QString::number(telemetry.mainTestRecord.frictionPercent, 'f', 2));
 
     // Обновляем индикаторы
+    updateLinearLimitStatus();
     updateFrictionForceLimitStatus();
     updateSpringLimitStatus();
     updateRangeLimitStatus();
@@ -656,11 +657,11 @@ void MainWindow::on_pushButton_signal_20mA_clicked()
     ui->doubleSpinBox_task->setValue(20.0);
 }
 
-void MainWindow::setTaskControlsEnabled(bool enable)
+void MainWindow::setTaskControlsEnabled(bool enabled)
 {
-    ui->verticalSlider_task->setEnabled(enable);
-    ui->doubleSpinBox_task->setEnabled(enable);
-    ui->groupBox_SettingCurrentSignal->setEnabled(enable);
+    ui->verticalSlider_task->setEnabled(enabled);
+    ui->doubleSpinBox_task->setEnabled(enabled);
+    ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -894,13 +895,14 @@ void MainWindow::displayDependingPattern() {
     }
 }
 
-void MainWindow::setSensorsNumber(quint8 num)
+void MainWindow::setSensorsNumber(quint8 sensorCount)
 {
-    bool hasSensors = (num == 0);
+    bool hasSensors = (sensorCount > 0);
 
-    if (num > 0) {
+    if (hasSensors) {
         m_isInitialized = true;
     }
+
     updateAvailableTabs();
 
     if (!m_blockCTS.moving) {
@@ -908,30 +910,30 @@ void MainWindow::setSensorsNumber(quint8 num)
         ui->label_startingPosition->setVisible(false);
     }
 
-    ui->groupBox_SettingCurrentSignal->setEnabled(!hasSensors);
+    ui->groupBox_SettingCurrentSignal->setEnabled(hasSensors);
 
-    ui->pushButton_mainTest_start->setEnabled(num > 1);
-    ui->pushButton_strokeTest_start->setEnabled(!hasSensors);
-    ui->pushButton_optionalTests_start->setEnabled(!hasSensors);
-    ui->pushButton_cyclicTest_start->setEnabled(!hasSensors);
+    ui->pushButton_mainTest_start->setEnabled(sensorCount > 1);
+    ui->pushButton_strokeTest_start->setEnabled(hasSensors);
+    ui->pushButton_optionalTests_start->setEnabled(hasSensors);
+    ui->pushButton_cyclicTest_start->setEnabled(hasSensors);
 
-    ui->doubleSpinBox_task->setEnabled(!hasSensors);
-    ui->verticalSlider_task->setEnabled(!hasSensors);
+    ui->doubleSpinBox_task->setEnabled(hasSensors);
+    ui->verticalSlider_task->setEnabled(hasSensors);
 
     displayDependingPattern();
 
-    if (num > 0) {
-        ui->checkBox_showCurve_task->setVisible(num > 1);
-        ui->checkBox_showCurve_moving->setVisible(num > 1);
-        ui->checkBox_showCurve_pressure_1->setVisible(num > 1);
-        ui->checkBox_showCurve_pressure_2->setVisible(num > 2);
-        ui->checkBox_showCurve_pressure_3->setVisible(num > 3);
+    if (hasSensors) {
+        ui->checkBox_showCurve_task->setVisible(sensorCount > 1);
+        ui->checkBox_showCurve_moving->setVisible(sensorCount > 1);
+        ui->checkBox_showCurve_pressure_1->setVisible(sensorCount > 1);
+        ui->checkBox_showCurve_pressure_2->setVisible(sensorCount > 2);
+        ui->checkBox_showCurve_pressure_3->setVisible(sensorCount > 3);
 
-        ui->checkBox_showCurve_task->setCheckState(num > 1 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_moving->setCheckState(num > 1 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_pressure_1->setCheckState(num > 1 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_pressure_2->setCheckState(num > 2 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_pressure_3->setCheckState(num > 3 ? Qt::Checked : Qt::Unchecked);
+        ui->checkBox_showCurve_task->setCheckState(sensorCount > 1 ? Qt::Checked : Qt::Unchecked);
+        ui->checkBox_showCurve_moving->setCheckState(sensorCount > 1 ? Qt::Checked : Qt::Unchecked);
+        ui->checkBox_showCurve_pressure_1->setCheckState(sensorCount > 1 ? Qt::Checked : Qt::Unchecked);
+        ui->checkBox_showCurve_pressure_2->setCheckState(sensorCount > 2 ? Qt::Checked : Qt::Unchecked);
+        ui->checkBox_showCurve_pressure_3->setCheckState(sensorCount > 3 ? Qt::Checked : Qt::Unchecked);
     }
 }
 void MainWindow::setButtonInitEnabled(bool enable)
@@ -1023,7 +1025,7 @@ void MainWindow::setRegressionEnabled(bool enabled)
     ui->checkBox_regression->setCheckState(enabled ? Qt::Checked : Qt::Unchecked);
 }
 
-void MainWindow::receivedParameters_mainTest(MainTestSettings::TestParameters &parameters)
+void MainWindow::onMainTestParametersRequested(MainTestSettings::TestParameters &parameters)
 {
     if (m_mainTestSettings->exec() == QDialog::Accepted) {
         parameters = m_mainTestSettings->getParameters();
@@ -1032,7 +1034,7 @@ void MainWindow::receivedParameters_mainTest(MainTestSettings::TestParameters &p
     }
 }
 
-void MainWindow::receivedParameters_stepTest(StepTestSettings::TestParameters &parameters)
+void MainWindow::onStepTestParametersRequested(StepTestSettings::TestParameters &parameters)
 {
     parameters.points.clear();
 
@@ -1045,7 +1047,7 @@ void MainWindow::receivedParameters_stepTest(StepTestSettings::TestParameters &p
     }
 }
 
-void MainWindow::receivedParameters_resolutionTest(OtherTestSettings::TestParameters &parameters)
+void MainWindow::onResolutionTestParametersRequested(OtherTestSettings::TestParameters &parameters)
 {
     parameters.points.clear();
 
@@ -1058,7 +1060,7 @@ void MainWindow::receivedParameters_resolutionTest(OtherTestSettings::TestParame
     }
 }
 
-void MainWindow::receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters)
+void MainWindow::onResponseTestParametersRequested(OtherTestSettings::TestParameters &parameters)
 {
     parameters.points.clear();
 
@@ -1081,7 +1083,7 @@ static QString seqToString(const QVector<quint16>& seq)
     return parts.join('-');
 }
 
-void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters)
+void MainWindow::onCyclicTestParametersRequested(CyclicTestSettings::TestParameters &parameters)
 {
     if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
         using TP = CyclicTestSettings::TestParameters;
@@ -1155,9 +1157,9 @@ void MainWindow::receivedParameters_cyclicTest(CyclicTestSettings::TestParameter
     }
 }
 
-void MainWindow::question(const QString &title, const QString &text, bool &result)
+void MainWindow::askQuestion(const QString &title, const QString &text, bool &result)
 {
-    result = (QMessageBox::question(NULL, title, text) == QMessageBox::Yes);
+    result = (QMessageBox::question(this, title, text) == QMessageBox::Yes);
 }
 
 void MainWindow::getDirectory(const QString &currentPath, QString &result)
@@ -1169,13 +1171,13 @@ void MainWindow::getDirectory(const QString &currentPath, QString &result)
 
 void MainWindow::startTest()
 {
-    m_isTestRunning  = true;
+    m_isTestRunning = true;
     ui->statusbar->showMessage(tr("Тест в процессе"));
 }
 
 void MainWindow::endTest()
 {
-    m_isTestRunning  = false;
+    m_isTestRunning = false;
 
     ui->statusbar->showMessage(tr("Тест завершён"));
 
@@ -1196,11 +1198,11 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
     if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
         == QMessageBox::Yes) {
-            m_isUserCanceled  = true;
+            m_isUserCanceled = true;
             emit stopTest();
         }
     } else {
-        m_isUserCanceled  = false;
+        m_isUserCanceled = false;
         emit runMainTest();
         startTest();
     }
@@ -1281,13 +1283,13 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
     if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
-            m_isUserCanceled  = true;
+            m_isUserCanceled = true;
             emit stopTest();
         }
         return;
     }
 
-    m_isUserCanceled  = false;
+    m_isUserCanceled = false;
 
     m_cyclicTestSettings->setPattern(m_patternType);
 
@@ -1329,17 +1331,17 @@ void MainWindow::setDiCheckboxesChecked(quint8 bitmask)
 void MainWindow::initCharts()
 {
     ValveInfo *valveInfo = m_registry->getValveInfo();
-    bool rotate = (valveInfo->strokeMovement != 0);
+    bool isRotaryStroke = (valveInfo->strokeMovement != 0);
+
+    const QString strokeAxisFormat =
+        isRotaryStroke ? QStringLiteral("%.2f deg")
+                       : QStringLiteral("%.2f mm");
 
     m_charts[Charts::Task] = ui->Chart_task;
     m_charts[Charts::Task]->setName(QStringLiteral("Task"));
     m_charts[Charts::Task]->useTimeaxis(false);
     m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f bar"));
-    if (!rotate) {
-        m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f mm"));
-    } else {
-        m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f deg"));
-    }
+    m_charts[Charts::Task]->addAxis(strokeAxisFormat);
     m_charts[Charts::Task]->addSeries(1, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(0, 0, 255));
@@ -1350,22 +1352,13 @@ void MainWindow::initCharts()
     m_charts[Charts::Friction]->setName(QStringLiteral("Friction"));
     m_charts[Charts::Friction]->addAxis(QStringLiteral("%.2f H"));
     m_charts[Charts::Friction]->addSeries(0, tr("Трение от перемещения"), QColor::fromRgb(255, 0, 0));
-
-    if (!rotate) {
-        m_charts[Charts::Friction]->setLabelXformat(QStringLiteral("%.2f mm"));
-    } else {
-        m_charts[Charts::Friction]->setLabelXformat(QStringLiteral("%.2f deg"));
-    }
+    m_charts[Charts::Friction]->setLabelXformat(strokeAxisFormat);
 
     m_charts[Charts::Pressure] = ui->Chart_pressure;
     m_charts[Charts::Pressure]->setName(QStringLiteral("Pressure"));
     m_charts[Charts::Pressure]->useTimeaxis(false);
     m_charts[Charts::Pressure]->setLabelXformat(QStringLiteral("%.2f bar"));
-    if (!rotate) {
-        m_charts[Charts::Pressure]->addAxis(QStringLiteral("%.2f mm"));
-    } else {
-        m_charts[Charts::Pressure]->addAxis(QStringLiteral("%.2f deg"));
-    }
+    m_charts[Charts::Pressure]->addAxis(strokeAxisFormat);
     m_charts[Charts::Pressure]->addSeries(0, tr("Перемещение от давления"), QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Pressure]->addSeries(0, tr("Линейная регрессия"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Pressure]->visible(1, false);
@@ -1443,8 +1436,8 @@ void MainWindow::initCharts()
         }
     }
 
-    connect(m_program, &Program::addPoints, this,
-            &MainWindow::addPoints);
+    connect(m_program, &Program::addPoints,
+            this, &MainWindow::addPoints);
 
     connect(m_program, &Program::clearPoints,
             this, &MainWindow::clearPoints);

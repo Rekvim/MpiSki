@@ -73,7 +73,7 @@ private slots:
     void setStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
 
     void setChartVisible(Charts chart, quint16 series, bool visible);
-    void setSensorsNumber(quint8 num);
+    void setSensorsNumber(quint8 sensorCount);
 
     void setButtonInitEnabled(bool enabled);
     void setRegressionEnabled(bool enabled);
@@ -81,12 +81,12 @@ private slots:
     void setDoButtonsChecked(quint8 bitmask);
     void setDiCheckboxesChecked(quint8 bitmask);
 
-    void setTaskControlsEnabled(bool enable);
+    void setTaskControlsEnabled(bool enabled);
 
     void onCountdownTimeout();
     void onTotalTestTimeMs(quint64 totalMs);
 
-    void question(const QString &title, const QString &text, bool &result);
+    void askQuestion(const QString &title, const QString &text, bool &result);
 
     void startTest();
     void endTest();
@@ -95,11 +95,11 @@ private slots:
     void onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
     void onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
 
-    void receivedParameters_mainTest(MainTestSettings::TestParameters &parameters);
-    void receivedParameters_stepTest(StepTestSettings::TestParameters &parameters);
-    void receivedParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
-    void receivedParameters_responseTest(OtherTestSettings::TestParameters &parameters);
-    void receivedParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
+    void onMainTestParametersRequested(MainTestSettings::TestParameters &parameters);
+    void onStepTestParametersRequested(StepTestSettings::TestParameters &parameters);
+    void onResolutionTestParametersRequested(OtherTestSettings::TestParameters &parameters);
+    void onResponseTestParametersRequested(OtherTestSettings::TestParameters &parameters);
+    void onCyclicTestParametersRequested(CyclicTestSettings::TestParameters &parameters);
 
     void on_pushButton_init_clicked();
 
@@ -132,11 +132,11 @@ private:
     Ui::MainWindow *ui;
     TelemetryStore m_telemetryStore;
 
-    QPlainTextEdit* m_logOutput  = nullptr;
+    QPlainTextEdit* m_logOutput = nullptr;
 
-    bool m_isUserCanceled  = false;
-    bool m_isTestRunning  = false;
-    bool m_isInitialized  = false;
+    bool m_isUserCanceled = false;
+    bool m_isTestRunning = false;
+    bool m_isInitialized = false;
 
     void lockTabsForPreInit();
     void updateAvailableTabs();

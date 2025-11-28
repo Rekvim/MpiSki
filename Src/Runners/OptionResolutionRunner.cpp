@@ -14,24 +14,24 @@ RunnerConfig OptionResolutionRunner::buildConfig() {
 
     const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
 
-    task.value.push_back(m_mpi.GetDac()->GetRawFromValue(4.0));
+    task.value.push_back(m_mpi.GetDac()->rawFromValue(4.0));
 
     for (auto it = p.points.begin(); it != p.points.end(); ++it) {
         qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
-        qreal dacValue = m_mpi.GetDac()->GetRawFromValue(current);
+        qreal dacValue = m_mpi.GetDac()->rawFromValue(current);
 
         task.value.push_back(dacValue);
 
         for (auto it_s = p.steps.begin(); it_s < p.steps.end(); ++it_s) {
             current = (16 * (normalOpen ? 100 - *it - *it_s : *it + *it_s) / 100 + 4.0);
-            qreal dacValueStep = m_mpi.GetDac()->GetRawFromValue(current);
+            qreal dacValueStep = m_mpi.GetDac()->rawFromValue(current);
             task.value.push_back(dacValueStep);
 
             task.value.push_back(dacValue);
         }
     }
 
-    task.value.push_back(m_mpi.GetDac()->GetRawFromValue(4.0));
+    task.value.push_back(m_mpi.GetDac()->rawFromValue(4.0));
     worker->SetTask(task);
 
     // Тайминги

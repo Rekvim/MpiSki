@@ -47,11 +47,6 @@ ValveWindow::ValveWindow(QWidget *parent)
     diameterChanged(m_diameter[0]);
 }
 
-ValveWindow::~ValveWindow()
-{
-    delete ui;
-}
-
 void ValveWindow::setPatternType(SelectTests::PatternType pattern)
 {
     m_patternType = pattern;

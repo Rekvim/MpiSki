@@ -40,8 +40,8 @@ private:
     QVector<Sensor *> m_sensors;
     Sensor *m_dac = new Sensor;
 
-    quint16 dacMin = 65536 * 3 / 24;
-    quint16 dacMax = 65536 * 21 / 24;
+    quint16 m_dacMin = 65536 * 3 / 24;
+    quint16 m_dacMax = 65536 * 21 / 24;
 
     void Sleep(quint16 msecs);
 

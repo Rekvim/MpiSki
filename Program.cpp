@@ -1,5 +1,4 @@
 #include "Program.h"
-#include <QPushButton>
 
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/StrokeTest.h"
@@ -60,7 +59,7 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
         QList<quint16> lineSensor;
 
         connect(&timer, &QTimer::timeout, this, [&]() {
-            lineSensor.push_back(m_mpi[0]->GetRawValue());
+            lineSensor.push_back(m_mpi[0]->rawValue());
             if (qAbs(lineSensor.first() - lineSensor.last()) > 10) {
                 timer.stop();
                 m_dacEventLoop->quit();
@@ -100,7 +99,7 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
         QList<quint16> lineSensor;
 
         connect(&timer, &QTimer::timeout, this, [&]() {
-            lineSensor.push_back(m_mpi[0]->GetRawValue());
+            lineSensor.push_back(m_mpi[0]->rawValue());
             if (lineSensor.size() == 50) {
                 if (qAbs(lineSensor.first() - lineSensor.last()) < 10) {
                     timer.stop();
@@ -128,35 +127,35 @@ void Program::updateSensors()
     for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
         switch (i) {
         case 0:
-            emit setText(TextObjects::LineEdit_linearSensor, m_mpi[i]->GetFormatedValue());
-            emit setText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->GetPersentFormated());
+            emit setText(TextObjects::LineEdit_linearSensor, m_mpi[i]->formattedValue());
+            emit setText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->formattedValue());
             break;
         case 1:
-            emit setText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->GetFormatedValue());
+            emit setText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->formattedValue());
             break;
         case 2:
-            emit setText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->GetFormatedValue());
+            emit setText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->formattedValue());
             break;
         case 3:
-            emit setText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->GetFormatedValue());
+            emit setText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->formattedValue());
             break;
         }
     }
     if (m_isTestRunning)
-        emit setTask(m_mpi.GetDac()->GetValue());
+        emit setTask(m_mpi.GetDac()->value());
 
     Sensor *feedbackSensor = m_mpi.GetDac();
-    QString fbValue = feedbackSensor->GetFormatedValue();
+    QString fbValue = feedbackSensor->formattedValue();
     emit setText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
 
     QVector<Point> points;
-    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_initTime;
 
     points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+    points.push_back({1, qreal(time), m_mpi[0]->percent()});
 
     emit addPoints(Charts::Trend, points);
 }
@@ -168,7 +167,7 @@ void Program::endTest()
     emit setTaskControlsEnabled(true);
     emit setButtonInitEnabled(true);
 
-    emit setTask(m_mpi.GetDac()->GetValue());
+    emit setTask(m_mpi.GetDac()->value());
 
     m_activeRunner.reset();
 
@@ -327,10 +326,10 @@ void Program::measureStartPosition(bool normalClosed)
     setDacRaw(0, 10000, true);
     waitForDacCycle();
 
-    if (normalClosed) m_mpi[0]->SetMin();
-    else m_mpi[0]->SetMax();
+    if (normalClosed) m_mpi[0]->captureMin();
+    else m_mpi[0]->captureMax();
 
-    ts.init.startingPositionText  = m_mpi[0]->GetFormatedValue();
+    ts.init.startingPositionText  = m_mpi[0]->formattedValue();
     ts.init.startingPositionColor = Qt::darkGreen;
     emit telemetryUpdated(ts);
 }
@@ -342,13 +341,13 @@ void Program::measureEndPosition(bool normalClosed)
     ts.init.finalPositionColor = Qt::darkYellow;
     emit telemetryUpdated(ts);
 
-    setDacRaw(0xFFFF, 10000, true);
+    setDacRaw(65535.0, 10000, true);
     waitForDacCycle();
 
-    if (normalClosed) m_mpi[0]->SetMax();
-    else m_mpi[0]->SetMin();
+    if (normalClosed) m_mpi[0]->captureMax();
+    else m_mpi[0]->captureMin();
 
-    ts.init.finalPositionText  = m_mpi[0]->GetFormatedValue();
+    ts.init.finalPositionText  = m_mpi[0]->formattedValue();
     ts.init.finalPositionColor = Qt::darkGreen;
     emit telemetryUpdated(ts);
 }
@@ -373,10 +372,10 @@ void Program::measureStartPositionShutoff(bool normalClosed)
 
     waitForDacCycle();
 
-    if (normalClosed) m_mpi[0]->SetMin();
-    else m_mpi[0]->SetMax();
+    if (normalClosed) m_mpi[0]->captureMin();
+    else m_mpi[0]->captureMax();
 
-    ts.init.startingPositionText  = m_mpi[0]->GetFormatedValue();
+    ts.init.startingPositionText = m_mpi[0]->formattedValue();
     ts.init.startingPositionColor = Qt::darkGreen;
     emit telemetryUpdated(ts);
 }
@@ -397,13 +396,13 @@ void Program::measureEndPositionShutoff(bool normalClosed)
     }
     emit setDoButtonsChecked(m_mpi.GetDOStatus());
 
-    setDacRaw(0xFFFF, 1000, true);
+    setDacRaw(65535.0, 1000, true);
     waitForDacCycle();
 
-    if (normalClosed) m_mpi[0]->SetMax();
-    else m_mpi[0]->SetMin();
+    if (normalClosed) m_mpi[0]->captureMax();
+    else m_mpi[0]->captureMin();
 
-    s.init.finalPositionText  = m_mpi[0]->GetFormatedValue();
+    s.init.finalPositionText  = m_mpi[0]->formattedValue();
     s.init.finalPositionColor = Qt::darkGreen;
     emit telemetryUpdated(s);
 }
@@ -415,10 +414,10 @@ void Program::calculateAndApplyCoefficients()
 
     if (valveInfo->strokeMovement != 0) {
         coeff = qRadiansToDegrees(2.0 / valveInfo->diameterPulley);
-        m_mpi[0]->SetUnit("°");
+        m_mpi[0]->setUnit("°");
     }
 
-    m_mpi[0]->CorrectCoefficients(coeff);
+    m_mpi[0]->correctCoefficients(coeff);
 }
 
 void Program::recordStrokeRange(bool normalClosed)
@@ -426,17 +425,17 @@ void Program::recordStrokeRange(bool normalClosed)
     auto &s = m_telemetryStore;
 
     if (normalClosed) {
-        s.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
-        s.valveStrokeRecord.real = m_mpi[0]->GetValue();
+        s.valveStrokeRecord.range = m_mpi[0]->formattedValue();
+        s.valveStrokeRecord.real = m_mpi[0]->value();
         setDacRaw(0);
     } else {
         setDacRaw(0, 10000, true);
-        s.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
-        s.valveStrokeRecord.real = m_mpi[0]->GetValue();
+        s.valveStrokeRecord.range = m_mpi[0]->formattedValue();
+        s.valveStrokeRecord.real = m_mpi[0]->value();
     }
 
     emit telemetryUpdated(s);
-    emit setTask(m_mpi.GetDac()->GetValue());
+    emit setTask(m_mpi.GetDac()->value());
 }
 
 void Program::finalizeInitialization()
@@ -603,21 +602,21 @@ void Program::updateCharts_mainTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
-    qreal task = m_mpi[0]->GetValueFromPercent(percent);
-    qreal X = m_mpi.GetDac()->GetValue();
+    qreal task = m_mpi[0]->valueFromPercent(percent);
+    qreal X = m_mpi.GetDac()->value();
     points.push_back({0, X, task});
 
     for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
-        points.push_back({static_cast<quint8>(i + 1), X, m_mpi[i]->GetValue()});
+        points.push_back({static_cast<quint8>(i + 1), X, m_mpi[i]->value()});
     }
 
     emit addPoints(Charts::Task, points);
 
     points.clear();
-    points.push_back({0, m_mpi[1]->GetValue(), m_mpi[0]->GetValue()});
+    points.push_back({0, m_mpi[1]->value(), m_mpi[0]->value()});
 
     emit addPoints(Charts::Pressure, points);
 }
@@ -667,13 +666,13 @@ void Program::updateCharts_strokeTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
     points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+    points.push_back({1, qreal(time), m_mpi[0]->percent()});
 
     emit addPoints(Charts::Stroke, points);
 }
@@ -682,13 +681,13 @@ void Program::updateCharts_CyclicTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
     points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+    points.push_back({1, qreal(time), m_mpi[0]->percent()});
     emit addPoints(chart, points);
 
 
@@ -728,7 +727,7 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
 
     for (quint16 pct : seq) {
         qreal current = 16.0 * (normalOpen ? 100 - pct : pct) / 100.0 + 4.0;
-        raw.push_back(m_mpi.GetDac()->GetRawFromValue(current));
+        raw.push_back(m_mpi.GetDac()->rawFromValue(current));
     }
     return raw;
 }
@@ -904,7 +903,7 @@ void Program::onCyclicStepMeasured(int cycle, int step, bool forward)
 
     auto& rec = m_telemetryStore.cyclicTestRecord.ranges[step];
 
-    const qreal measured = m_mpi[0]->GetPersent();
+    const qreal measured = m_mpi[0]->percent();
 
     if (forward) {
         if (rec.maxForwardCycle < 0 || measured > rec.maxForwardValue) {
@@ -998,13 +997,13 @@ void Program::updateCharts_optionTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->GetValue(),
+    qreal percent = calcPercent(m_mpi.GetDac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
     points.push_back({0, qreal(time), percent});
-    points.push_back({1, qreal(time), m_mpi[0]->GetPersent()});
+    points.push_back({1, qreal(time), m_mpi[0]->percent()});
 
     emit addPoints(chart, points);
 }

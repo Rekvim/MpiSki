@@ -13,8 +13,8 @@ RunnerConfig MainTestRunner::buildConfig() {
     const quint64 downMs = p.delay + N * p.response;
     const quint64 totalMs = 10000ULL + upMs + downMs + 10000ULL;
 
-    p.dac_min = qMax(m_mpi.GetDac()->GetRawFromValue(p.signal_min), m_mpi.GetDac_Min());
-    p.dac_max = qMin(m_mpi.GetDac()->GetRawFromValue(p.signal_max), m_mpi.GetDac_Max());
+    p.dac_min = qMax(m_mpi.GetDac()->rawFromValue(p.signal_min), m_mpi.GetDac_Min());
+    p.dac_max = qMin(m_mpi.GetDac()->rawFromValue(p.signal_max), m_mpi.GetDac_Max());
 
     auto* worker = new MainTest;
     worker->SetParameters(p);

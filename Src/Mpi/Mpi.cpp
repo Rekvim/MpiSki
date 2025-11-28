@@ -128,10 +128,10 @@ bool Mpi::Initialize()
 
     const MpiSettings MpiSettings;
 
-    m_dac->SetCoefficients(24.0 / 0xFFFF, MpiSettings.GetDac().bias);
+    m_dac->setCoefficients(24.0 / 0xFFFF, MpiSettings.GetDac().bias);
 
-    dacMin = 65536 * (MpiSettings.GetDac().min - MpiSettings.GetDac().bias) / 24;
-    dacMax = 65536 * (MpiSettings.GetDac().max - MpiSettings.GetDac().bias) / 24;
+    m_dacMin = 65536 * (MpiSettings.GetDac().min - MpiSettings.GetDac().bias) / 24;
+    m_dacMax = 65536 * (MpiSettings.GetDac().max - MpiSettings.GetDac().bias) / 24;
 
     for (const auto &sensor : m_sensors) {
         delete sensor;
@@ -159,11 +159,11 @@ bool Mpi::Initialize()
             auto sensorSettings = MpiSettings.GetSensor(sensorNum);
             qreal k = ((sensorSettings.max - sensorSettings.min) * adcCur) / (16 * 0xFFF);
             qreal b = (5 * sensorSettings.min - sensorSettings.max) / 4;
-            sensor->SetCoefficients(k, b);
+            sensor->setCoefficients(k, b);
             if (sensorNum++ == 0) {
-                sensor->SetUnit("мм");
+                sensor->setUnit("мм");
             } else {
-                sensor->SetUnit("bar");
+                sensor->setUnit("bar");
             }
             m_sensors.push_back(sensor);
         }
@@ -182,31 +182,31 @@ bool Mpi::Initialize()
 
 void Mpi::SetDAC_Raw(quint16 value)
 {
-    if (value < dacMin)
-        value = dacMin;
-    if (value > dacMax)
-        value = dacMax;
-    m_dac->SetValue(value);
-    emit SetDAC(m_dac->GetRawValue());
+    if (value < m_dacMin)
+        value = m_dacMin;
+    if (value > m_dacMax)
+        value = m_dacMax;
+    m_dac->setValue(value);
+    emit SetDAC(m_dac->rawValue());
 }
 
 void Mpi::SetDAC_Real(qreal value)
 {
-    quint16 dac = m_dac->GetRawFromValue(value);
-    if (dac != m_dac->GetRawValue()) {
-        m_dac->SetValue(m_dac->GetRawFromValue(value));
-        emit SetDAC(m_dac->GetRawValue());
+    quint16 dac = m_dac->rawFromValue(value);
+    if (dac != m_dac->rawValue()) {
+        m_dac->setValue(m_dac->rawFromValue(value));
+        emit SetDAC(m_dac->rawValue());
     }
 }
 
 quint16 Mpi::GetDac_Min()
 {
-    return dacMin;
+    return m_dacMin;
 }
 
 quint16 Mpi::GetDac_Max()
 {
-    return dacMax;
+    return m_dacMax;
 }
 
 quint8 Mpi::SensorCount() const
@@ -252,7 +252,7 @@ void Mpi::ADC(QVector<quint16> adc)
         return;
 
     for (int i = 0; i < adc.size(); ++i) {
-        m_sensors[i]->SetValue(adc.at(i) & 0xFFF);
+        m_sensors[i]->setValue(adc.at(i) & 0xFFF);
     }
 }
 
