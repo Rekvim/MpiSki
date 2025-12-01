@@ -42,7 +42,7 @@ public:
 
 private:
     QByteArray Crc16() const;
-    Command m_command;
+    Command m_command { Command::UnknownCode };
     QByteArray m_data;
     QByteArray m_crc;
 };
