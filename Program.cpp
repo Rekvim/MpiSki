@@ -514,13 +514,13 @@ void Program::updateCrossingStatus()
 
     // Коэффициент трения (%)
     if (limits.frictionEnabled) {
-        ts.crossingStatus.frictionOk = inRange(
+        ts.crossingStatus.frictionPercentOk = inRange(
             ts.mainTestRecord.frictionPercent,
             limits.frictionCoefLowerLimit,
             limits.frictionCoefUpperLimit
             );
     } else {
-        ts.crossingStatus.frictionOk = true; // или false, или N/A
+        ts.crossingStatus.frictionPercentOk = true;
     }
 
     // Ход клапана (реальный ход)

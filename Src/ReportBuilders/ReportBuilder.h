@@ -22,6 +22,31 @@ public:
     ) = 0;
 
     virtual QString templatePath() const = 0;
+
+protected:
+    QString resultOk(bool ok) const {
+        return ok ? "соответствует" : "не соответствует";
+    }
+
+    QString resultLimit(bool ok) const {
+        return ok ? "не превышает" : "превышает";
+    }
+
+    void cell(ReportSaver::Report& report,
+              const QString& sheet,
+              quint16 row, quint16 col,
+              const QVariant& value)
+    {
+        report.data.push_back({sheet, row, col, value.toString()});
+    }
+
+    void image(ReportSaver::Report& report,
+               const QString& sheet,
+               quint16 row, quint16 col,
+               const QImage& img)
+    {
+        report.images.push_back({sheet, row, col, img});
+    }
 };
 
 #endif // REPORTBUILDER_H

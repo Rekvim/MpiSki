@@ -60,7 +60,7 @@ struct StrokeTestRecord {
 };
 
 struct CrossingStatus {
-    bool frictionOk = false;
+    bool frictionPercentOk = false;
     bool rangeOk = false;
     bool dynamicErrorOk = false;
     bool springOk = false;

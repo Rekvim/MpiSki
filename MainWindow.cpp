@@ -614,6 +614,7 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
 
     // 4) Диапазон пружины: low–high
     ui->lineEdit_crossingLimits_spring_value->setText(
+
         QString("%1–%2")
             .arg(telemetry.mainTestRecord.springLow, 0, 'f', 2)
             .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2));
