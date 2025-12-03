@@ -187,7 +187,7 @@ void ReportBuilder_C_SACVT::buildReport(
     cell(report, sheet_1, 87, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
     cell(report, sheet_1, 89, 8, telemetryStore.cyclicTestRecord.sequence);
     cell(report, sheet_1, 91, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
-    cell(report, sheet_1, 93, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz");
+    cell(report, sheet_1, 93, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz"));
 
 
     // Лист 2; Страница: Отчет ЦТ; Блок: Исполнитель
@@ -249,11 +249,11 @@ void ReportBuilder_C_SACVT::buildReport(
         cell(report,
             "Отчет ЦТ", row, 10,
             QString::number(ons[i])
-        });
+        );
         cell(report,
             "Отчет ЦТ", row, 13,
             QString::number(offs.value(i, 0))
-        });
+        );
     }
 
     // Лист 3; Страница: Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения
