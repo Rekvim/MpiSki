@@ -906,11 +906,6 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 
     updateAvailableTabs();
 
-    if (!m_blockCTS.moving) {
-        ui->label_startingPositionValue->setVisible(false);
-        ui->label_startingPosition->setVisible(false);
-    }
-
     ui->groupBox_SettingCurrentSignal->setEnabled(hasSensors);
 
     ui->pushButton_mainTest_start->setEnabled(sensorCount > 1);
