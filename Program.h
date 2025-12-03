@@ -127,6 +127,7 @@ private:
         connect(r.get(), &AbstractTestRunner::requestClearChart, this, [this](int chart){
             emit clearPoints(static_cast<Charts>(chart));
         });
+<<<<<<< Updated upstream
         connect(r.get(), &AbstractTestRunner::requestSetDAC, this, &Program::setDacRaw);
         connect(this, &Program::releaseBlock, r.get(), &AbstractTestRunner::releaseBlock);
         connect(r.get(), &AbstractTestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
@@ -135,6 +136,17 @@ private:
         emit setButtonInitEnabled(false);
         m_isTestRunning = true;
         emit setTaskControlsEnabled(false);
+=======
+        connect(r.get(), &ITestRunner::requestSetDAC, this, &Program::setDacRaw);
+        connect(this, &Program::releaseBlock, r.get(), &ITestRunner::releaseBlock);
+        connect(r.get(), &ITestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
+        connect(r.get(), &ITestRunner::endTest, this, &Program::endTest);
+        connect(this, &Program::stopTheTest, r.get(), &ITestRunner::stop);
+        connect(r.get(), &ITestRunner::endTest, this, [this]{ disposeActiveRunnerAsync(); });
+        emit setButtonInitEnabled(false);
+        m_isTestRunning = true;
+        emit enableSetTask(false);
+>>>>>>> Stashed changes
 
         m_activeRunner = std::move(r);
         m_activeRunner->start();
@@ -188,10 +200,13 @@ private slots:
     void updateSensors();
 
 public slots:
+<<<<<<< Updated upstream
     void onCyclicStepMeasured(int cycle, int step, bool forward);
 
     void setMultipleDO(const QVector<bool>& states);
 
+=======
+>>>>>>> Stashed changes
     void setDacRaw(quint16 dac,
                 quint32 sleep_ms = 0,
                 bool waitForStop = false,
@@ -231,8 +246,15 @@ public slots:
     void startStrokeTest();
     void startMainTest();
     void startOptionalTest(quint8 testNum);
+<<<<<<< Updated upstream
 
     void startCyclicTest();
+=======
+    void runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicShutoff(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicCombined(const CyclicTestSettings::TestParameters &p);
+    void runningCyclicTest();
+>>>>>>> Stashed changes
 
 
     void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }

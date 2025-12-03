@@ -36,8 +36,13 @@ void BaseRunner::start() {
     connect(m_worker, &Test::EndTest,
             m_thread, &QThread::quit);
 
+<<<<<<< Updated upstream
     connect(m_worker, &Test::setDac,
             this, &BaseRunner::requestSetDAC,
+=======
+    connect(m_worker, SIGNAL(setDac(quint16,quint32,bool,bool)),
+            this, SIGNAL(requestSetDAC(quint16,quint32,bool,bool)),
+>>>>>>> Stashed changes
             Qt::QueuedConnection);
 
     connect(this, SIGNAL(releaseBlock()),
