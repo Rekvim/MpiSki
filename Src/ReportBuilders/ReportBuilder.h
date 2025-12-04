@@ -4,6 +4,8 @@
 #pragma once
 #include "ReportSaver.h"
 #include "./Src/Telemetry/TelemetryStore.h"
+#include "./Registry.h"
+
 #include <QWidget>
 
 class ReportBuilder {

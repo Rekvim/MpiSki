@@ -1,13 +1,27 @@
 #include "ReportSaver.h"
-#include "xlsxdatavalidation.h"
+
+#include "./Src/CustomChart/MyChart.h"
+#include "Registry.h"
+
+#include <QCoreApplication>
+#include <QDate>
+#include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QOpenGLWidget>
+#include <QPainter>
+#include <QDataStream>
+#include <QDebug>
+#include <QMap>
+
 #include "xlsxdocument.h"
+#include "xlsxdatavalidation.h"
 
 using namespace QXlsx;
 
 ReportSaver::ReportSaver(QObject *parent)
-    : QObject{parent}
+    : QObject(parent)
 {
-    m_created = false;
 }
 
 void ReportSaver::setRegistry(Registry *registry)
@@ -15,32 +29,40 @@ void ReportSaver::setRegistry(Registry *registry)
     m_registry = registry;
 }
 
+const QDir &ReportSaver::directory() const
+{
+    return m_dir;
+}
+
 void ReportSaver::saveImage(MyChart *chart)
 {
-    if (!m_created)
+    if (!chart)
+        return;
+
+    if (!m_isDirectoryCreated)
         createDir();
 
-    static QMap<QString, quint16> chartNum;
+    static QMap<QString, quint16> chartCounter;
 
-    QString name = chart->getname();
+    const QString name = chart->getname();
+    const quint16 index = ++chartCounter[name];
 
-    ++chartNum[name];
+    QPixmap pixmap = chart->grab();
 
-    QPixmap p = chart->grab();
-    QOpenGLWidget *glWidget = chart->findChild<QOpenGLWidget *>();
-
-    if (glWidget) {
-        QPainter painter(&p);
-        QPoint d = glWidget->mapToGlobal(QPoint()) - chart->mapToGlobal(QPoint());
+    if (auto *glWidget = chart->findChild<QOpenGLWidget *>()) {
+        QPainter painter(&pixmap);
+        const QPoint delta =
+            glWidget->mapToGlobal(QPoint()) - chart->mapToGlobal(QPoint());
         painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-        painter.drawImage(d, glWidget->grabFramebuffer());
-        painter.end();
+        painter.drawImage(delta, glWidget->grabFramebuffer());
     }
 
-    p.save(m_dir.filePath(name + "_" + QString::number(chartNum[name]) + ".bmp"));
+    const QString baseName = QStringLiteral("%1_%2").arg(name).arg(index);
 
-    QFile out(m_dir.filePath(name + "_" + QString::number(chartNum[name]) + ".data"));
+    const QString bmpPath = m_dir.filePath(baseName + QStringLiteral(".bmp"));
+    pixmap.save(bmpPath);
 
+    QFile out(m_dir.filePath(baseName + QStringLiteral(".data")));
     if (out.open(QIODevice::WriteOnly)) {
         QDataStream stream(&out);
         stream.setVersion(QDataStream::Qt_6_2);
@@ -50,102 +72,136 @@ void ReportSaver::saveImage(MyChart *chart)
     }
 }
 
-QDir ReportSaver::directory()
-{
-    return m_dir.path();
-}
-
 bool ReportSaver::saveReport(const Report &report, const QString &templatePath)
 {
-    if (!m_created)
+    if (!m_isDirectoryCreated)
         createDir();
 
     Document xlsx(templatePath);
 
-    for (const auto &data : report.data) {
-        if (!xlsx.selectSheet(data.sheet)) {
-            qWarning() << "Не найден лист" << data.sheet << "для записи данных!";
+    // 1. Данные
+    for (const auto &item : report.data) {
+        if (!xlsx.selectSheet(item.sheet)) {
+            qWarning() << "Не найден лист" << item.sheet << "для записи данных!";
             continue;
         }
-        xlsx.write(data.x, data.y, data.value);
-    }
 
-    for (const auto& img : report.images) {
-        if (!img.image.isNull() && xlsx.selectSheet(img.sheet)) {
-            int targetWidth = 0;
-            int targetHeight = 0;
-
-            targetWidth = 870;
-            targetHeight = 400;
-
-            QImage scaledImage = img.image.scaled(targetWidth, targetHeight,
-                                                  Qt::KeepAspectRatio,
-                                                  Qt::SmoothTransformation);
-
-            xlsx.insertImage(img.row, img.col, scaledImage);
+        if (item.row <= 0 || item.col <= 0) {
+            qWarning() << "Невалидные координаты ячейки" << item.row << item.col;
+            continue;
         }
+
+        xlsx.write(item.row, item.col, item.value);
     }
 
-    for (const auto &valid : report.validation) {
-        DataValidation validation(DataValidation::List, DataValidation::Equal, valid.formula);
-        validation.addRange(valid.range);
+    // 2. Изображения
+    constexpr int targetWidth = 885;
+    constexpr int targetHeight = 460;
 
+    for (const auto &img : report.images) {
+        if (img.image.isNull())
+            continue;
+
+        if (!xlsx.selectSheet(img.sheet)) {
+            qWarning() << "Не найден лист" << img.sheet << "для вставки изображения!";
+            continue;
+        }
+
+        if (img.row <= 0 || img.col <= 0) {
+            qWarning() << "Невалидные координаты изображения" << img.row << img.col;
+            continue;
+        }
+
+        const QImage scaled =
+            img.image.scaled(targetWidth,
+                             targetHeight,
+                             Qt::IgnoreAspectRatio,
+                             Qt::SmoothTransformation);
+
+        xlsx.insertImage(img.row, img.col, scaled);
+    }
+
+    // 3. Валидации
+    for (const auto &v : report.validation) {
+        DataValidation validation(DataValidation::List,
+                                  DataValidation::Equal,
+                                  v.formula);
+        validation.addRange(v.range);
         xlsx.addDataValidation(validation);
     }
 
-    xlsx.saveAs(m_dir.filePath("report.xlsx"));
+    const QString reportPath = m_dir.filePath(QStringLiteral("report.xlsx"));
+    xlsx.saveAs(reportPath);
 
-    return QFile::exists(m_dir.filePath("report.xlsx"));
+    return QFile::exists(reportPath);
 }
 
 void ReportSaver::createDir()
 {
+    if (!m_registry) {
+        qWarning() << "ReportSaver::createDir(): registry is null";
+        return;
+    }
+
     ObjectInfo *objectInfo = m_registry->getObjectInfo();
     ValveInfo *valveInfo = m_registry->getValveInfo();
 
-    QString path = objectInfo->object + "/" + objectInfo->manufactory + "/"
-                   + objectInfo->department + "/" + valveInfo->positionNumber;
-    QString date = QDate::currentDate().toString("dd_MM_yyyy");
+    const QString basePath =
+        QStringLiteral("%1/%2/%3/%4")
+            .arg(objectInfo->object,
+                 objectInfo->manufactory,
+                 objectInfo->department,
+                 valveInfo->positionNumber);
+
+    const QString dateFolder =
+        QDate::currentDate().toString(QStringLiteral("dd_MM_yyyy"));
 
     m_dir.setPath(QCoreApplication::applicationDirPath());
 
-    if (m_dir.mkpath(path)) {
-        m_dir.cd(path);
+    if (m_dir.mkpath(basePath) && m_dir.cd(basePath)) {
 
-        if (m_dir.exists(date)) {
-            for (int i = 2; i < 50; i++) {
-                QString folder = date + "_" + QString::number(i);
-
+        if (m_dir.exists(dateFolder)) {
+            for (int i = 2; i < 50 && !m_isDirectoryCreated; ++i) {
+                const QString folder = QStringLiteral("%1_%2")
+                .arg(dateFolder)
+                    .arg(i);
                 if (m_dir.mkdir(folder)) {
-                    m_created = m_dir.cd(folder);
-                    break;
+                    m_isDirectoryCreated = m_dir.cd(folder);
                 }
             }
-        } else if (m_dir.mkdir(date)) {
-            m_created = m_dir.cd(date);
+        } else if (m_dir.mkdir(dateFolder)) {
+            m_isDirectoryCreated = m_dir.cd(dateFolder);
         }
     }
 
-    while (!m_created) {
-        QString folder;
+    while (!m_isDirectoryCreated) {
+        QString folderPath;
 
         do {
-            emit GetDirectory(m_dir.path(), folder);
-        } while (folder.isEmpty());
+            emit getDirectory(m_dir.path(), folderPath);
+        } while (folderPath.isEmpty());
 
-        if (m_dir.cd(folder)) {
-            if (m_dir.isEmpty()) {
-                m_created = m_dir.cd(folder);
-            } else {
-                bool answer;
-                emit Question("Внимание!",
-                              "Папка не пуста. Вы действительно хотите выбрать эту папку?",
-                              answer);
+        QDir chosenDir(folderPath);
 
-                if (answer) {
-                    m_created = m_dir.cd(folder);
-                }
+        if (!chosenDir.exists()) {
+            if (!QDir().mkpath(folderPath)) {
+                continue;
             }
         }
+
+        if (!chosenDir.isEmpty()) {
+            bool answer = false;
+            emit question(
+                QStringLiteral("Внимание!"),
+                QStringLiteral("Папка не пуста. Вы действительно хотите выбрать эту папку?"),
+                answer);
+
+            if (!answer) {
+                continue;
+            }
+        }
+
+        m_dir = chosenDir;
+        m_isDirectoryCreated = true;
     }
 }

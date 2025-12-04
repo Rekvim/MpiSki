@@ -10,6 +10,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QPlainTextEdit>
+#include <QElapsedTimer>
 
 #include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"

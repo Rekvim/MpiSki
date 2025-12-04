@@ -29,7 +29,6 @@ void BaseRunner::start() {
     m_thread = new QThread(this);
     m_worker->moveToThread(m_thread);
 
-
     connect(m_thread, &QThread::started,
             m_worker, &Test::Process);
 

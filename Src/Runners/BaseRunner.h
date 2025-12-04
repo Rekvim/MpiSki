@@ -24,7 +24,7 @@ public:
     ~BaseRunner() override;
 
 public slots:
-    void start() final;   // вызывает buildConfig(), заводит поток, вешает общие connect’ы
+    void start() final; // вызывает buildConfig(), заводит поток, вешает общие connect’ы
     void stop() override; // дергает worker->StoppingTheTest()
     void releaseBlock() final override;
 

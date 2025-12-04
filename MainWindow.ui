@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -847,6 +847,20 @@
              <layout class="QHBoxLayout" name="horizontalLayout_11">
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_arrow">
+                <item>
+                 <widget class="QToolButton" name="toolButton_arrowUp">
+                  <property name="text">
+                   <string>d</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QToolButton" name="toolButton_arrowDown">
+                  <property name="text">
+                   <string>d</string>
+                  </property>
+                 </widget>
+                </item>
                 <item>
                  <widget class="QLabel" name="label_arrowUp">
                   <property name="maximumSize">
@@ -1715,6 +1729,12 @@
                  <widget class="QCheckBox" name="checkBox_regression">
                   <property name="enabled">
                    <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
                   <property name="text">
                    <string>Линейная регрессия</string>
@@ -3462,6 +3482,12 @@ Border-radius: 10px;
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_mainTest_save">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Сохранить</string>
             </property>
@@ -3469,6 +3495,12 @@ Border-radius: 10px;
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_mainTest_start">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -3927,7 +3959,7 @@ Border-radius: 10px;
         <item row="0" column="0">
          <widget class="QTabWidget" name="tab_widget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="general">
            <attribute name="title">
@@ -4759,6 +4791,12 @@ Border-radius: 10px;
                    </item>
                    <item>
                     <widget class="QPushButton" name="pushButton_imageChartTask">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -4826,6 +4864,12 @@ Border-radius: 10px;
                    </item>
                    <item>
                     <widget class="QPushButton" name="pushButton_imageChartPressure">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -4887,6 +4931,12 @@ Border-radius: 10px;
                    </item>
                    <item>
                     <widget class="QPushButton" name="pushButton_imageChartFriction">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -5242,9 +5292,15 @@ Border-radius: 10px;
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_report_generate">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
-              <family>Roboto</family>
+              <family>Segoe UI</family>
               <pointsize>12</pointsize>
               <stylestrategy>PreferDefault</stylestrategy>
              </font>
@@ -5258,6 +5314,12 @@ Border-radius: 10px;
            <widget class="QPushButton" name="pushButton_report_open">
             <property name="enabled">
              <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
             <property name="text">
              <string>Открыть отчёт</string>

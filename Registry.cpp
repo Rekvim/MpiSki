@@ -126,7 +126,7 @@ void Registry::saveValveInfo()
     m_settings.setValue("materialStuffingBoxSeal", m_valveInfo.materialStuffingBoxSeal);
 
 
-    // --- crossing limits: enable-флаги ---
+    // crossing limits
     m_settings.setValue("crossing_enable_friction",
                         m_valveInfo.crossingLimits.frictionEnabled);
     m_settings.setValue("crossing_enable_linearCharacteristic",

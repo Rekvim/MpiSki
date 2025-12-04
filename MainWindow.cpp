@@ -192,11 +192,11 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::askQuestion,
             Qt::BlockingQueuedConnection);
 
-    connect(m_reportSaver, &ReportSaver::Question,
+    connect(m_reportSaver, &ReportSaver::question,
             this, &MainWindow::askQuestion,
             Qt::DirectConnection);
 
-    connect(m_reportSaver, &ReportSaver::GetDirectory,
+    connect(m_reportSaver, &ReportSaver::getDirectory,
             this, &MainWindow::getDirectory,
             Qt::DirectConnection);
 
@@ -209,10 +209,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_stepResults->setHorizontalHeaderLabels({QLatin1String("T86"), tr("Перерегулирование")});
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
-    ui->label_arrowUp->setCursor(Qt::PointingHandCursor);
+    ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUp.png"));
+    ui->toolButton_arrowUp->setIconSize(ui->toolButton_arrowUp->size());
+    ui->toolButton_arrowUp->setText(QString());
+    ui->toolButton_arrowUp->setFlat(true);
+    ui->toolButton_arrowUp->setAutoRepeat(true);
+    ui->toolButton_arrowUp->setAutoRepeatDelay(300);
+    ui->toolButton_arrowUp->setAutoRepeatInterval(100);
+
     ui->label_arrowDown->setCursor(Qt::PointingHandCursor);
 
-    ui->label_arrowUp->installEventFilter(this);
     ui->label_arrowDown->installEventFilter(this);
 
     connect(m_program, &Program::telemetryUpdated,
@@ -243,11 +249,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::lockTabsForPreInit()
 {
-    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget->setTabEnabled(1, false);
-    ui->tabWidget->setTabEnabled(2, false);
-    ui->tabWidget->setTabEnabled(3, false);
-    ui->tabWidget->setTabEnabled(4, false);
+    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    // ui->tabWidget->setTabEnabled(1, false);
+    // ui->tabWidget->setTabEnabled(2, false);
+    // ui->tabWidget->setTabEnabled(3, false);
+    // ui->tabWidget->setTabEnabled(4, false);
 }
 
 void MainWindow::updateAvailableTabs()
