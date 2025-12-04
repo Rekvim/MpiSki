@@ -255,7 +255,7 @@ void ReportBuilder_C_CVT::buildReport(
     cell(report, sheet_3, 20, 8,
                            QString("%1")
                                 .arg(valveInfo.dinamicErrorRecomend, 0, 'f', 2));
-    cell(report, sheet_3, 20, 11, resultOk(telemetryStore.crossingStatus.dynamicErrorOk));
+    cell(report, sheet_3, 20, 11, resultOk(telemetryStore.crossingStatus.dynamicError));
 
     // cell(report, sheet_3, 22, 5, telemetryStore.dinamicRecord.dinamicIpReal});
     // cell(report, sheet_3, 22, 8, telemetryStore.dinamicRecord.dinamicIpRecomend});
@@ -263,14 +263,14 @@ void ReportBuilder_C_CVT::buildReport(
     cell(report, sheet_3, 24, 5, QString("%1")
                                                .arg(telemetryStore.valveStrokeRecord.real, 0, 'f', 2));
     cell(report, sheet_3, 24, 8, valveInfo.strokValve);
-    cell(report, sheet_3, 24, 11, resultOk(telemetryStore.crossingStatus.rangeOk));
+    cell(report, sheet_3, 24, 11, resultOk(telemetryStore.crossingStatus.range));
 
     cell(report, sheet_3, 26, 5,
         QString("%1–%2")
             .arg(telemetryStore.mainTestRecord.springLow, 0, 'f', 2)
             .arg(telemetryStore.mainTestRecord.springHigh, 0, 'f', 2)
     );
-    cell(report, sheet_3, 26, 11, resultOk(telemetryStore.crossingStatus.springOk));
+    cell(report, sheet_3, 26, 11, resultOk(telemetryStore.crossingStatus.spring));
 
     cell(report, sheet_3, 26, 8, valveInfo.driveRecomendRange);
 
@@ -285,7 +285,7 @@ void ReportBuilder_C_CVT::buildReport(
         QString("%1")
            .arg(telemetryStore.mainTestRecord.frictionPercent, 0, 'f', 2)
     );
-    cell(report, sheet_3, 30, 11, resultLimit(telemetryStore.crossingStatus.frictionPercentOk));
+    cell(report, sheet_3, 30, 11, resultLimit(telemetryStore.crossingStatus.frictionPercent));
 
     cell(report,
         sheet_3, 32, 5,

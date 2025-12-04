@@ -142,11 +142,8 @@ void Program::updateSensors()
         }
     }
     if (m_isTestRunning)
-<<<<<<< Updated upstream
-        emit setTask(m_mpi.GetDac()->value());
-=======
-        emit setTask(m_mpi.GetDac()->GetValue());
->>>>>>> Stashed changes
+
+    emit setTask(m_mpi.GetDac()->value());
 
     Sensor *feedbackSensor = m_mpi.GetDac();
     QString fbValue = feedbackSensor->formattedValue();
@@ -168,20 +165,15 @@ void Program::updateSensors()
 void Program::endTest()
 {
     m_isTestRunning = false;
-<<<<<<< Updated upstream
+
     emit setTaskControlsEnabled(true);
-=======
-    emit enableSetTask(true);
->>>>>>> Stashed changes
+
     emit setButtonInitEnabled(true);
 
     emit setTask(m_mpi.GetDac()->value());
 
-<<<<<<< Updated upstream
     m_activeRunner.reset();
 
-=======
->>>>>>> Stashed changes
     m_isCyclicTestRunning = false;
     emit testFinished();
 }
@@ -352,11 +344,8 @@ void Program::measureEndPosition(bool normalClosed)
     ts.init.finalPositionColor = Qt::darkYellow;
     emit telemetryUpdated(ts);
 
-<<<<<<< Updated upstream
     setDacRaw(65535.0, 10000, true);
-=======
-    setDacRaw(0xFFFF, 10000, true);
->>>>>>> Stashed changes
+
     waitForDacCycle();
 
     if (normalClosed) m_mpi[0]->captureMax();
@@ -411,11 +400,8 @@ void Program::measureEndPositionShutoff(bool normalClosed)
     }
     emit setDoButtonsChecked(m_mpi.GetDOStatus());
 
-<<<<<<< Updated upstream
     setDacRaw(65535.0, 1000, true);
-=======
-    setDacRaw(0xFFFF, 1000, true);
->>>>>>> Stashed changes
+
     waitForDacCycle();
 
     if (normalClosed) m_mpi[0]->captureMax();
@@ -444,7 +430,6 @@ void Program::recordStrokeRange(bool normalClosed)
     auto &s = m_telemetryStore;
 
     if (normalClosed) {
-<<<<<<< Updated upstream
         s.valveStrokeRecord.range = m_mpi[0]->formattedValue();
         s.valveStrokeRecord.real = m_mpi[0]->value();
         setDacRaw(0);
@@ -452,15 +437,6 @@ void Program::recordStrokeRange(bool normalClosed)
         setDacRaw(0, 10000, true);
         s.valveStrokeRecord.range = m_mpi[0]->formattedValue();
         s.valveStrokeRecord.real = m_mpi[0]->value();
-=======
-        s.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
-        s.valveStrokeRecord.real = m_mpi[0]->GetValue();
-        setDacRaw(0);
-    } else {
-        setDacRaw(0, 10000, true);
-        s.valveStrokeRecord.range = m_mpi[0]->GetFormatedValue();
-        s.valveStrokeRecord.real = m_mpi[0]->GetValue();
->>>>>>> Stashed changes
     }
 
     emit telemetryUpdated(s);
@@ -486,11 +462,7 @@ void Program::startMainTest()
 {
     auto runner = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
 
-<<<<<<< Updated upstream
     connect(runner.get(), &AbstractTestRunner::requestSetDAC,
-=======
-    connect(runner.get(), &ITestRunner::requestSetDAC,
->>>>>>> Stashed changes
             this, &Program::setDacRaw);
 
     connect(this, &Program::releaseBlock,
@@ -509,12 +481,10 @@ void Program::startMainTest()
             runner.get(), &AbstractTestRunner::stop);
 
     emit setButtonInitEnabled(false);
-<<<<<<< Updated upstream
+
     emit setTaskControlsEnabled(false);
-=======
+
     m_isTestRunning = true;
-    emit enableSetTask(false);
->>>>>>> Stashed changes
 
     m_activeRunner = std::move(runner);
     m_activeRunner->start();
@@ -540,7 +510,6 @@ static bool rangeOverlap(double valueLow, double valueHigh,
     if (valueLow > valueHigh)
         std::swap(valueLow, valueHigh);
 
-    // как у тебя в индикаторе: если хотя бы один конец вылезает — FAIL.
     return (valueLow >= limitLow && valueHigh <= limitHigh);
 }
 
@@ -549,60 +518,56 @@ void Program::updateCrossingStatus()
     auto &ts = m_telemetryStore;
     const ValveInfo *valveInfo = m_registry->getValveInfo();
     const CrossingLimits &limits = valveInfo->crossingLimits;
+    using State = CrossingStatus::State;
 
-    // Коэффициент трения (%)
     if (limits.frictionEnabled) {
-        ts.crossingStatus.frictionPercentOk = inRange(
-            ts.mainTestRecord.frictionPercent,
-            limits.frictionCoefLowerLimit,
-            limits.frictionCoefUpperLimit
-            );
+        ts.crossingStatus.frictionPercent =
+            inRange(ts.mainTestRecord.frictionPercent,
+                    limits.frictionCoefLowerLimit,
+                    limits.frictionCoefUpperLimit)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.frictionPercentOk = true;
+        ts.crossingStatus.frictionPercent = State::Unknown;
     }
 
-    // Ход клапана (реальный ход)
     if (limits.rangeEnabled) {
-        ts.crossingStatus.rangeOk = inRange(
-            ts.valveStrokeRecord.real,
-            0.0,
-            limits.rangeUpperLimit
-            );
+        ts.crossingStatus.range =
+            inRange(ts.valveStrokeRecord.real,
+                    0.0,
+                    limits.rangeUpperLimit)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.rangeOk = true;
+        ts.crossingStatus.range = State::Unknown;
     }
 
-    // Динамическая ошибка
     if (limits.dynamicErrorEnabled) {
-        ts.crossingStatus.dynamicErrorOk = inRange(
-            ts.mainTestRecord.dynamicErrorReal,
-            0.0,
-            valveInfo->dinamicErrorRecomend
-            );
+        ts.crossingStatus.dynamicError =
+            inRange(ts.mainTestRecord.dynamicErrorReal,
+                    0.0,
+                    valveInfo->dinamicErrorRecomend)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.dynamicErrorOk = true;
+        ts.crossingStatus.dynamicError = State::Unknown;
     }
 
-    // Диапазон пружины: [springLow; springHigh] должен лежать в [springLowerLimit; springUpperLimit]
     if (limits.springEnabled) {
-        ts.crossingStatus.springOk = rangeOverlap(
-            ts.mainTestRecord.springLow,
-            ts.mainTestRecord.springHigh,
-            limits.springLowerLimit,
-            limits.springUpperLimit
-            );
+        ts.crossingStatus.spring =
+            rangeOverlap(ts.mainTestRecord.springLow,
+                         ts.mainTestRecord.springHigh,
+                         limits.springLowerLimit,
+                         limits.springUpperLimit)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.springOk = true;
+        ts.crossingStatus.spring = State::Unknown;
     }
 
-    // Линейная характеристика — аналогично, если нужно:
     if (limits.linearCharacteristicEnabled) {
-        // тут решаешь сам критерий
-        ts.crossingStatus.linearCharacteristicOk = true; // пока заглушка
+        ts.crossingStatus.linearCharacteristic = State::Ok;
     } else {
-        ts.crossingStatus.linearCharacteristicOk = true;
+        ts.crossingStatus.linearCharacteristic = State::Unknown;
     }
 }
+
 
 void Program::results_mainTest(const MainTest::TestResults &results)
 {
@@ -632,7 +597,7 @@ void Program::results_mainTest(const MainTest::TestResults &results)
     s.linearityError = results.linearityError;
     s.linearity = results.linearity;
 
-    // updateCrossingStatus();
+    updateCrossingStatus();
     emit telemetryUpdated(m_telemetryStore);
 }
 
@@ -775,122 +740,6 @@ void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
     emit getPoints_cyclicTest(points, Charts::Cyclic);
 }
 
-<<<<<<< Updated upstream
-=======
-void Program::runningCyclicRegulatory(const CyclicTestSettings::TestParameters &p)
-{
-
-    QVector<quint16> rawReg = makeRawValues(p.regSeqValues,
-                                            m_registry->getValveInfo()->safePosition != 0);
-
-    CyclicTestsRegulatory::Task task;
-    task.delayMsecs = p.regulatory_delayMs;
-    task.holdMsecs = p.regulatory_holdMs;
-    task.sequence = p.regSeqValues;
-
-    task.values.reserve(p.regulatory_numCycles * rawReg.size());
-    for (int cycle = 0; cycle < p.regulatory_numCycles; ++cycle) {
-        task.values += rawReg;
-    }
-
-    {
-        QStringList listVals;
-        for (const quint16 &values : task.values)
-            listVals << QString::number(values);
-
-        // emit errorOccured(QString("CyclicTestsRegulatory Task.values (count=%1): [%2]")
-        //                       .arg(task.values.size())
-        //                       .arg(listVals.join(',')));
-    }
-
-    auto *cyclicTestsRegulatory = new CyclicTestsRegulatory;
-    cyclicTestsRegulatory->SetTask(task);
-    cyclicTestsRegulatory->SetPatternType(m_patternType);
-
-    QThread *threadTest = new QThread(this);
-    cyclicTestsRegulatory->moveToThread(threadTest);
-
-    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::errorOccured,
-    //         this, &Program::errorOccured,
-    //         Qt::QueuedConnection);
-
-    connect(threadTest, &QThread::started,
-            cyclicTestsRegulatory, &CyclicTestsRegulatory::Process);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::EndTest,
-            threadTest, &QThread::quit);
-
-    connect(this, &Program::stopTheTest,
-            cyclicTestsRegulatory, &CyclicTestsRegulatory::StoppingTheTest);
-
-
-    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::StepMeasured,
-    //         this, [this](qint16 rangePercent, qreal /*percentValue*/, int cycle) {
-    //             // снимаем актуальный процент прямо с сенсора
-    //             qreal currentPercent = m_mpi[0]->GetPersent();
-
-    //             auto &ranges = m_telemetryStore.cyclicTestRecord.ranges;
-    //             auto it = std::find_if(ranges.begin(), ranges.end(),
-    //                                    [rangePercent, cycle](const RangeDeviationRecord &r) {
-    //                                        return r.rangePercent == rangePercent &&
-    //                                               r.maxForwardCycle == cycle;
-    //                                    });
-
-    //             if (it == ranges.end()) {
-    //                 RangeDeviationRecord rec;
-    //                 rec.rangePercent = rangePercent;
-    //                 rec.maxForwardValue = currentPercent;
-    //                 rec.maxForwardCycle = cycle;
-    //                 m_telemetryStore.cyclicTestRecord.ranges.push_back(rec);
-    //             } else {
-    //                 it->maxForwardValue = std::max(it->maxForwardValue, currentPercent);
-    //             }
-
-    //             emit telemetryUpdated(m_telemetryStore);
-    //         });
-
-    connect(threadTest, &QThread::finished,
-            threadTest, &QObject::deleteLater);
-
-    connect(threadTest, &QThread::finished,
-            cyclicTestsRegulatory, &QObject::deleteLater);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::EndTest,
-            this, &Program::endTest);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::UpdateGraph, this, [&] {
-        updateCharts_CyclicTest(Charts::Cyclic);
-    });
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::setDac,
-            this, &Program::setDacRaw);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::GetPoints,
-            this, &Program::receivedPoints_cyclicTest,
-            Qt::BlockingQueuedConnection);
-
-    connect(this, &Program::releaseBlock,
-            cyclicTestsRegulatory, &CyclicTestsRegulatory::ReleaseBlock);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::SetStartTime,
-            this, &Program::setTimeStart);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::Results,
-            this, &Program::results_cyclicRegulatoryTests);
-
-    connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::CycleCompleted,
-            this, &Program::cyclicCycleCompleted);
-
-    // connect(cyclicTestsRegulatory, &CyclicTestsRegulatory::ClearGraph,
-    //         this, [&] { emit ClearPoints(Charts::Cyclic); });
-
-    m_isTestRunning = true;
-    emit enableSetTask(false);
-    emit clearPoints(Charts::Cyclic);
-    threadTest->start();
-}
-
->>>>>>> Stashed changes
 void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results)
 {
     // auto &dst = m_telemetryStore.cyclicTestRecord;
@@ -917,88 +766,7 @@ void Program::setMultipleDO(const QVector<bool>& states)
         m_mpi.SetDiscreteOutput(d, states[d]);
         if (states[d]) mask |= (1 << d);
     }
-<<<<<<< Updated upstream
-    //emit setDoButtonsChecked(mask);
-=======
     //emit SetButtonsDOChecked(mask);
-}
-
-void Program::runningCyclicShutoff(const CyclicTestSettings::TestParameters &p)
-{
-    QVector<quint16> rawOff = makeRawValues(p.offSeqValues,
-                                            m_registry->getValveInfo()->safePosition != 0);
-
-    CyclicTestsShutoff::Task task;
-    task.delayMsecs = p.shutoff_delayMs;
-    task.holdMsecs = p.shutoff_holdMs;
-    task.cycles = p.shutoff_numCycles;
-    task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
-
-    task.values.reserve(p.shutoff_numCycles * rawOff.size());
-    for (int cycle = 0; cycle < p.shutoff_numCycles; ++cycle) {
-        task.values += rawOff;
-    }
-
-    emit setButtonsDOChecked(false);
-
-    auto *cyclicTestsShutoff = new CyclicTestsShutoff;
-    cyclicTestsShutoff->SetTask(task);
-
-    QThread *threadTest = new QThread(this);
-    cyclicTestsShutoff->moveToThread(threadTest);
-
-    connect(threadTest, &QThread::started,
-            cyclicTestsShutoff, &CyclicTestsShutoff::Process);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::EndTest,
-            threadTest, &QThread::quit);
-
-    connect(this, &Program::stopTheTest,
-            cyclicTestsShutoff, &CyclicTestsShutoff::StoppingTheTest);
-
-    connect(threadTest, &QThread::finished,
-            threadTest, &QObject::deleteLater);
-
-    connect(threadTest, &QThread::finished,
-            cyclicTestsShutoff, &QObject::deleteLater);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::EndTest,
-            this, &Program::endTest);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::UpdateGraph, this, [&] {
-        updateCharts_CyclicTest(Charts::Cyclic);
-    });
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::setDac,
-            this, &Program::setDacRaw);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::GetPoints,
-            this, &Program::receivedPoints_cyclicTest,
-            Qt::BlockingQueuedConnection);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::SetMultipleDO,
-            this, &Program::setMultipleDO);
-
-    connect(this, &Program::releaseBlock,
-            cyclicTestsShutoff, &CyclicTestsShutoff::ReleaseBlock);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::SetStartTime,
-            this, &Program::setTimeStart);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::Results,
-            this, &Program::results_cyclicShutoffTests);
-
-    connect(cyclicTestsShutoff, &CyclicTestsShutoff::CycleCompleted,
-            this, &Program::cyclicCycleCompleted);
-
-    // connect(cyclicTestsShutoff, &CyclicTestsShutoff::ClearGraph,
-    //         this, [&] { emit ClearPoints(Charts::Cyclic); });
-
-    m_isTestRunning = true;
-    emit enableSetTask(false);
-    emit clearPoints(Charts::Cyclic);
-    threadTest->start();
->>>>>>> Stashed changes
 }
 
 void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results)

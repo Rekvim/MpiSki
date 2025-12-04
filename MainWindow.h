@@ -61,11 +61,8 @@ private slots:
 
     void getDirectory(const QString &currentPath, QString &result);
 
-    void updateLinearLimitStatus();
-    void updateFrictionForceLimitStatus();
-    void updateSpringLimitStatus();
-    void updateRangeLimitStatus();
-    void updateDynamicErrorLimitStatus();
+
+    void updateCrossingIndicators();
 
     void setText(TextObjects object, const QString &text);
     void setTask(qreal task);
@@ -155,7 +152,6 @@ private:
     ReportSaver::Report m_report;
 
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
-    SelectTests::BlockCTS m_blockCTS;
 
     QHash<TextObjects, QLineEdit *> m_lineEdits;
     QHash<Charts, MyChart *> m_charts;

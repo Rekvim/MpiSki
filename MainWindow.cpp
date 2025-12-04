@@ -330,67 +330,44 @@ static void setIndicatorColor(QWidget* widget, const QString& color, const QStri
                               ).arg(color, border));
 }
 
-static void updateIndicator(double value,
-                            double lowerLimit,
-                            double upperLimit,
-                            QWidget* widget)
+static void setIndicatorByState(QWidget* widget,
+                                CrossingStatus::State state)
 {
-    if (lowerLimit > upperLimit)
-        std::swap(lowerLimit, upperLimit);
+    using State = CrossingStatus::State;
 
-    if (value < lowerLimit || value > upperLimit) {
+    switch (state) {
+    case State::Unknown:
         setIndicatorColor(widget,
-                          QLatin1String("#B80F0F"),
-                          QLatin1String("#510000"));
-    }
-
-    else {
+                          QLatin1String("#A0A0A0"),
+                          QLatin1String("#505050"));
+        break;
+    case State::Ok:
         setIndicatorColor(widget,
                           QLatin1String("#4E8448"),
                           QLatin1String("#16362B"));
+        break;
+    case State::Fail:
+        setIndicatorColor(widget,
+                          QLatin1String("#B80F0F"),
+                          QLatin1String("#510000"));
+        break;
     }
 }
 
-void MainWindow::updateLinearLimitStatus()
+void MainWindow::updateCrossingIndicators()
 {
-    bool okValue = false;
-    double value = ui->lineEdit_crossingLimits_linearCharacteristic_value
-                       ->text().toDouble(&okValue);
-    if (!okValue) return;
+    const auto &cs = m_telemetryStore.crossingStatus;
 
-    bool okLow = false, okHigh = false;
-    double lower = ui->lineEdit_crossingLimits_linearCharacteristic_lowerLimit
-                       ->text().toDouble(&okLow);
-    double upper = ui->lineEdit_crossingLimits_linearCharacteristic_upperLimit
-                       ->text().toDouble(&okHigh);
-
-    if (!okLow || !okHigh) return;
-
-    updateIndicator(value,
-                    lower,
-                    upper,
-                    ui->widget_crossingLimits_linearCharacteristic_limitStatusIndicator);
-}
-
-void MainWindow::updateFrictionForceLimitStatus()
-{
-    bool okValue = false;
-    double value = ui->lineEdit_crossingLimits_coefficientFriction_value
-                       ->text().toDouble(&okValue);
-    if (!okValue) return;
-
-    bool okLow = false, okHigh = false;
-    double lower = ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit
-                       ->text().toDouble(&okLow);
-    double upper = ui->lineEdit_crossingLimits_coefficientFriction_upperLimit
-                       ->text().toDouble(&okHigh);
-
-    if (!okLow || !okHigh) return;
-
-    updateIndicator(value,
-                    lower,
-                    upper,
-                    ui->widget_crossingLimits_coefficientFriction_limitStatusIndicator);
+    setIndicatorByState(ui->widget_crossingLimits_coefficientFriction_limitStatusIndicator,
+                        cs.frictionPercent);
+    setIndicatorByState(ui->widget_crossingLimits_linearCharacteristic_limitStatusIndicator,
+                        cs.linearCharacteristic);
+    setIndicatorByState(ui->widget_crossingLimits_range_limitStatusIndicator,
+                        cs.range);
+    setIndicatorByState(ui->widget_crossingLimits_spring_limitStatusIndicator,
+                        cs.spring);
+    setIndicatorByState(ui->widget_crossingLimits_dynamicError_limitStatusIndicator,
+                        cs.dynamicError);
 }
 
 static void updateRangeIndicator(double valueLow, double valueHigh, double limitLow, double limitHigh, QWidget* widget) {
@@ -400,76 +377,8 @@ static void updateRangeIndicator(double valueLow, double valueHigh, double limit
                           QLatin1String("#B80F0F"),
                           QLatin1String("#510000"));
     }
-    else { setIndicatorColor(widget, QLatin1String("#4E8448"), QLatin1String("#16362B")); } }
-
-void MainWindow::updateSpringLimitStatus()
-{
-    if (!ui->widget_crossingLimits_spring->isVisible())
-        return;
-
-    QString text = ui->lineEdit_crossingLimits_spring_value->text();
-    if (text.isEmpty())
-        return;
-
-    const QRegularExpression re(R"(\s*[-–]\s*)");
-    const QStringList parts = text.split(re);
-    if (parts.size() != 2)
-        return;
-
-    bool okLow = false;
-    bool okHigh = false;
-    double valueLow = parts.at(0).toDouble(&okLow);
-    double valueHigh = parts.at(1).toDouble(&okHigh);
-    if (!okLow || !okHigh)
-        return;
-
-    double limitLow = ui->lineEdit_crossingLimits_spring_lowerLimit->text().toDouble();
-    double limitHigh = ui->lineEdit_crossingLimits_spring_upperLimit->text().toDouble();
-
-    updateRangeIndicator(valueLow, valueHigh,
-                         limitLow, limitHigh,
-                         ui->widget_crossingLimits_spring_limitStatusIndicator);
+    else { setIndicatorColor(widget, QLatin1String("#4E8448"), QLatin1String("#16362B")); }
 }
-
-void MainWindow::updateRangeLimitStatus()
-{
-    bool okValue = false;
-    double value = ui->lineEdit_crossingLimits_range_value
-                       ->text().toDouble(&okValue);
-    if (!okValue) return;
-
-    bool okLow = false, okHigh = false;
-    double lower = ui->lineEdit_crossingLimits_range_lowerLimit
-                       ->text().toDouble(&okLow);
-    double upper = ui->lineEdit_crossingLimits_range_upperLimit
-                       ->text().toDouble(&okHigh);
-    if (!okLow || !okHigh) return;
-
-    updateIndicator(value,
-                    lower,
-                    upper,
-                    ui->widget_crossingLimits_range_limitStatusIndicator);
-}
-void MainWindow::updateDynamicErrorLimitStatus()
-{
-    bool okValue = false;
-    double value = ui->lineEdit_crossingLimits_dynamicError_value
-                       ->text().toDouble(&okValue);
-    if (!okValue) return;
-
-    bool okLow = false, okHigh = false;
-    double lower = ui->lineEdit_crossingLimits_dynamicError_lowerLimit
-                       ->text().toDouble(&okLow);
-    double upper = ui->lineEdit_crossingLimits_dynamicError_upperLimit
-                       ->text().toDouble(&okHigh);
-    if (!okLow || !okHigh) return;
-
-    updateIndicator(value,
-                    lower,
-                    upper,
-                    ui->widget_crossingLimits_dynamicError_limitStatusIndicator);
-}
-
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
 
@@ -556,8 +465,6 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
     ui->lineEdit_strokeReal->setText(
         QString("%1").arg(telemetry.valveStrokeRecord.real, 0, 'f', 2));
 
-
-
     ui->label_lowLimitValue->setText(
         QString("%1")
             .arg(telemetry.mainTestRecord.lowLimitPressure)
@@ -624,11 +531,7 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
         QString::number(telemetry.mainTestRecord.frictionPercent, 'f', 2));
 
     // Обновляем индикаторы
-    updateLinearLimitStatus();
-    updateFrictionForceLimitStatus();
-    updateSpringLimitStatus();
-    updateRangeLimitStatus();
-    updateDynamicErrorLimitStatus();
+    updateCrossingIndicators();
 }
 
 void MainWindow::appendLog(const QString& text) {
@@ -747,7 +650,6 @@ void MainWindow::setRegistry(Registry *registry)
         || limits.springEnabled
         || limits.dynamicErrorEnabled;
 
-    // Если ничего не выбрано — прячем общий блок и выходим
     ui->widget_crossingLimits->setVisible(anyCrossingEnabled);
 
     ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
