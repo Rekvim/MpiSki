@@ -33,6 +33,16 @@ void CyclicTestsRegulatory::Process()
             emit CycleCompleted(cycle + 1);
     }
 
+    setDacBlocked(0, 0, true, false);
+    m_graphTimer->stop();
+
+    QVector<QVector<QPointF>> pts;
+    emit GetPoints(pts);
+
+    TestResults r;
+
+    emit Results(r);
+
     emit EndTest();
 }
 

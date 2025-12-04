@@ -26,12 +26,24 @@ public:
     virtual QString templatePath() const = 0;
 
 protected:
-    QString resultOk(bool ok) const {
-        return ok ? "соответствует" : "не соответствует";
+    QString resultOk(CrossingStatus::State state) const {
+        using State = CrossingStatus::State;
+        switch (state) {
+        case State::Ok: return "соответствует";
+        case State::Fail: return "не соответствует";
+        case State::Unknown: return "не определено";
+        }
+        return {};
     }
 
-    QString resultLimit(bool ok) const {
-        return ok ? "не превышает" : "превышает";
+    QString resultLimit(CrossingStatus::State state) const {
+        using State = CrossingStatus::State;
+        switch (state) {
+        case State::Ok:      return "не превышает";
+        case State::Fail:    return "превышает";
+        case State::Unknown: return "не определено";
+        }
+        return {};
     }
 
     void cell(ReportSaver::Report& report,

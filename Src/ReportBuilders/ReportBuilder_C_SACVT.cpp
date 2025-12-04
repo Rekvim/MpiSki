@@ -156,7 +156,6 @@ void ReportBuilder_C_SACVT::buildReport(
         }
     }
 
-
     // Лист 2; Страница: Отчет ЦТ; Блок: Данные по объекту
     cell(report, sheet_1, 68, 4, objectInfo.object);
     cell(report, sheet_1, 69, 4, objectInfo.manufactory);
@@ -365,7 +364,7 @@ void ReportBuilder_C_SACVT::buildReport(
     cell(report, sheet_3, 22, 8,
                            QString("%1")
                                 .arg(valveInfo.dinamicErrorRecomend, 0, 'f', 2));
-    cell(report, sheet_3, 22, 11, resultOk(telemetryStore.crossingStatus.dynamicErrorOk));
+    cell(report, sheet_3, 22, 11, resultOk(telemetryStore.crossingStatus.dynamicError));
 
     // cell(report, sheet_3, 24, 5, telemetryStore.dinamicRecord.dinamicIpReal});
     // cell(report, sheet_3, 24, 8, telemetryStore.dinamicRecord.dinamicIpRecomend});
@@ -374,7 +373,7 @@ void ReportBuilder_C_SACVT::buildReport(
                            QString("%1")
                                 .arg(telemetryStore.valveStrokeRecord.real, 0, 'f', 2));
     cell(report, sheet_3, 26, 8, valveInfo.strokValve);
-    cell(report, sheet_3, 26, 11, resultOk(telemetryStore.crossingStatus.rangeOk));
+    cell(report, sheet_3, 26, 11, resultOk(telemetryStore.crossingStatus.range));
 
     cell(report,
         sheet_3, 28, 5,
@@ -383,7 +382,7 @@ void ReportBuilder_C_SACVT::buildReport(
             .arg(telemetryStore.mainTestRecord.springHigh, 0, 'f', 2)
     );
     cell(report, sheet_3, 28, 8, valveInfo.driveRecomendRange);
-    cell(report, sheet_3, 28, 11, resultOk(telemetryStore.crossingStatus.springOk));
+    cell(report, sheet_3, 28, 11, resultOk(telemetryStore.crossingStatus.spring));
 
     cell(report, sheet_3, 30, 5,
         QString("%1—%2")
@@ -400,7 +399,7 @@ void ReportBuilder_C_SACVT::buildReport(
         QString("%1")
             .arg(telemetryStore.mainTestRecord.frictionForce, 0, 'f', 3)
     );
-    cell(report, sheet_3, 30, 11, resultLimit(telemetryStore.crossingStatus.frictionPercentOk));
+    cell(report, sheet_3, 30, 11, resultLimit(telemetryStore.crossingStatus.frictionPercent));
 
 
     cell(report,  sheet_3, 48, 5,telemetryStore.strokeTestRecord.timeForwardMs

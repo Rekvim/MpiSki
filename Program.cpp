@@ -142,7 +142,8 @@ void Program::updateSensors()
         }
     }
     if (m_isTestRunning)
-        emit setTask(m_mpi.GetDac()->value());
+
+    emit setTask(m_mpi.GetDac()->value());
 
     Sensor *feedbackSensor = m_mpi.GetDac();
     QString fbValue = feedbackSensor->formattedValue();
@@ -164,7 +165,9 @@ void Program::updateSensors()
 void Program::endTest()
 {
     m_isTestRunning = false;
+
     emit setTaskControlsEnabled(true);
+
     emit setButtonInitEnabled(true);
 
     emit setTask(m_mpi.GetDac()->value());
@@ -342,6 +345,7 @@ void Program::measureEndPosition(bool normalClosed)
     emit telemetryUpdated(ts);
 
     setDacRaw(65535.0, 10000, true);
+
     waitForDacCycle();
 
     if (normalClosed) m_mpi[0]->captureMax();
@@ -397,6 +401,7 @@ void Program::measureEndPositionShutoff(bool normalClosed)
     emit setDoButtonsChecked(m_mpi.GetDOStatus());
 
     setDacRaw(65535.0, 1000, true);
+
     waitForDacCycle();
 
     if (normalClosed) m_mpi[0]->captureMax();
@@ -476,7 +481,10 @@ void Program::startMainTest()
             runner.get(), &AbstractTestRunner::stop);
 
     emit setButtonInitEnabled(false);
+
     emit setTaskControlsEnabled(false);
+
+    m_isTestRunning = true;
 
     m_activeRunner = std::move(runner);
     m_activeRunner->start();
@@ -502,7 +510,6 @@ static bool rangeOverlap(double valueLow, double valueHigh,
     if (valueLow > valueHigh)
         std::swap(valueLow, valueHigh);
 
-    // как у тебя в индикаторе: если хотя бы один конец вылезает — FAIL.
     return (valueLow >= limitLow && valueHigh <= limitHigh);
 }
 
@@ -511,60 +518,56 @@ void Program::updateCrossingStatus()
     auto &ts = m_telemetryStore;
     const ValveInfo *valveInfo = m_registry->getValveInfo();
     const CrossingLimits &limits = valveInfo->crossingLimits;
+    using State = CrossingStatus::State;
 
-    // Коэффициент трения (%)
     if (limits.frictionEnabled) {
-        ts.crossingStatus.frictionPercentOk = inRange(
-            ts.mainTestRecord.frictionPercent,
-            limits.frictionCoefLowerLimit,
-            limits.frictionCoefUpperLimit
-            );
+        ts.crossingStatus.frictionPercent =
+            inRange(ts.mainTestRecord.frictionPercent,
+                    limits.frictionCoefLowerLimit,
+                    limits.frictionCoefUpperLimit)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.frictionPercentOk = true;
+        ts.crossingStatus.frictionPercent = State::Unknown;
     }
 
-    // Ход клапана (реальный ход)
     if (limits.rangeEnabled) {
-        ts.crossingStatus.rangeOk = inRange(
-            ts.valveStrokeRecord.real,
-            0.0,
-            limits.rangeUpperLimit
-            );
+        ts.crossingStatus.range =
+            inRange(ts.valveStrokeRecord.real,
+                    0.0,
+                    limits.rangeUpperLimit)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.rangeOk = true;
+        ts.crossingStatus.range = State::Unknown;
     }
 
-    // Динамическая ошибка
     if (limits.dynamicErrorEnabled) {
-        ts.crossingStatus.dynamicErrorOk = inRange(
-            ts.mainTestRecord.dynamicErrorReal,
-            0.0,
-            valveInfo->dinamicErrorRecomend
-            );
+        ts.crossingStatus.dynamicError =
+            inRange(ts.mainTestRecord.dynamicErrorReal,
+                    0.0,
+                    valveInfo->dinamicErrorRecomend)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.dynamicErrorOk = true;
+        ts.crossingStatus.dynamicError = State::Unknown;
     }
 
-    // Диапазон пружины: [springLow; springHigh] должен лежать в [springLowerLimit; springUpperLimit]
     if (limits.springEnabled) {
-        ts.crossingStatus.springOk = rangeOverlap(
-            ts.mainTestRecord.springLow,
-            ts.mainTestRecord.springHigh,
-            limits.springLowerLimit,
-            limits.springUpperLimit
-            );
+        ts.crossingStatus.spring =
+            rangeOverlap(ts.mainTestRecord.springLow,
+                         ts.mainTestRecord.springHigh,
+                         limits.springLowerLimit,
+                         limits.springUpperLimit)
+                ? State::Ok : State::Fail;
     } else {
-        ts.crossingStatus.springOk = true;
+        ts.crossingStatus.spring = State::Unknown;
     }
 
-    // Линейная характеристика — аналогично, если нужно:
     if (limits.linearCharacteristicEnabled) {
-        // тут решаешь сам критерий
-        ts.crossingStatus.linearCharacteristicOk = true; // пока заглушка
+        ts.crossingStatus.linearCharacteristic = State::Ok;
     } else {
-        ts.crossingStatus.linearCharacteristicOk = true;
+        ts.crossingStatus.linearCharacteristic = State::Unknown;
     }
 }
+
 
 void Program::results_mainTest(const MainTest::TestResults &results)
 {
@@ -594,7 +597,7 @@ void Program::results_mainTest(const MainTest::TestResults &results)
     s.linearityError = results.linearityError;
     s.linearity = results.linearity;
 
-    // updateCrossingStatus();
+    updateCrossingStatus();
     emit telemetryUpdated(m_telemetryStore);
 }
 
@@ -763,7 +766,7 @@ void Program::setMultipleDO(const QVector<bool>& states)
         m_mpi.SetDiscreteOutput(d, states[d]);
         if (states[d]) mask |= (1 << d);
     }
-    //emit setDoButtonsChecked(mask);
+    //emit SetButtonsDOChecked(mask);
 }
 
 void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results)

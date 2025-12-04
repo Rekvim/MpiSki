@@ -60,12 +60,19 @@ struct StrokeTestRecord {
 };
 
 struct CrossingStatus {
-    bool frictionPercentOk = false;
-    bool rangeOk = false;
-    bool dynamicErrorOk = false;
-    bool springOk = false;
-    bool linearCharacteristicOk = false;
+    enum class State {
+        Unknown,
+        Ok,
+        Fail
+    };
+
+    State frictionPercent = State::Unknown;
+    State range = State::Unknown;
+    State dynamicError = State::Unknown;
+    State spring = State::Unknown;
+    State linearCharacteristic = State::Unknown;
 };
+
 
 struct MainTestRecord {
     double dynamicError_mean = 0.0;

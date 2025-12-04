@@ -136,6 +136,7 @@ private:
         m_isTestRunning = true;
         emit setTaskControlsEnabled(false);
 
+
         m_activeRunner = std::move(r);
         m_activeRunner->start();
     }
@@ -231,9 +232,7 @@ public slots:
     void startStrokeTest();
     void startMainTest();
     void startOptionalTest(quint8 testNum);
-
     void startCyclicTest();
-
 
     void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }
     void forwardGetParameters_responseTest(OtherTestSettings::TestParameters &p) { emit getParameters_responseTest(p); }
