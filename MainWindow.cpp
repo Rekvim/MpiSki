@@ -212,7 +212,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUp.png"));
     ui->toolButton_arrowUp->setIconSize(ui->toolButton_arrowUp->size());
     ui->toolButton_arrowUp->setText(QString());
-    ui->toolButton_arrowUp->setFlat(true);
+    // ui->toolButton_arrowUp->setFlat(true);
     ui->toolButton_arrowUp->setAutoRepeat(true);
     ui->toolButton_arrowUp->setAutoRepeatDelay(300);
     ui->toolButton_arrowUp->setAutoRepeatInterval(100);
