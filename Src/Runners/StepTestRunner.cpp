@@ -39,7 +39,7 @@ RunnerConfig StepTestRunner::buildConfig() {
     const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
     task.value = buildSequence(p, m_mpi, normalOpen);
     worker->SetTask(task);
-    worker->Set_T_value(p.test_value);
+    worker->Set_T_value(p.testValue);
 
     RunnerConfig cfg;
     cfg.worker = worker;

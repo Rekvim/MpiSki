@@ -833,7 +833,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox_SettingCurrentSignal">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="font">
               <font>
@@ -858,53 +858,6 @@
                  <widget class="QToolButton" name="toolButton_arrowDown">
                   <property name="text">
                    <string>d</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_arrowUp">
-                  <property name="maximumSize">
-                   <size>
-                    <width>70</width>
-                    <height>50</height>
-                   </size>
-                  </property>
-                  <property name="sizeIncrement">
-                   <size>
-                    <width>70</width>
-                    <height>70</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="pixmap">
-                   <pixmap resource="img.qrc">:/Src/Img/arrowUp.png</pixmap>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_arrowDown">
-                  <property name="maximumSize">
-                   <size>
-                    <width>70</width>
-                    <height>50</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="pixmap">
-                   <pixmap resource="img.qrc">:/Src/Img/arrowDown.png</pixmap>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>true</bool>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -5394,8 +5347,6 @@ Border-radius: 10px;
   <tabstop>Chart_friction</tabstop>
   <tabstop>Chart_response</tabstop>
  </tabstops>
- <resources>
-  <include location="img.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

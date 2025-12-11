@@ -19,10 +19,10 @@ public:
 
     struct Task {
         quint32 delayMsecs = 0;
-        quint32 holdMsecs  = 0;
-        QVector<quint16> sequence;   // проценты, как сейчас
-        QVector<quint16> values;     // DAC на один цикл
-        quint32 cycles = 0;          // <-- новое поле
+        quint32 holdMsecs = 0;
+        QVector<qreal> sequence;
+        QVector<quint16> values;
+        quint32 cycles = 0;
     };
 
     void SetTask(const Task& task);

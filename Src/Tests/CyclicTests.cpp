@@ -65,9 +65,9 @@ void CyclicTests::Process()
     const bool shutoffOnly =
         (m_params.testType == CyclicTestSettings::TestParameters::Shutoff);
 
-    const QVector<quint16>& seq = shutoffOnly
-                                  ? m_params.offSeqValues
-                                  : m_params.regSeqValues;
+    // const QVector<qreal>& seq = shutoffOnly
+    //                               ? m_params.offSeqValues
+    //                               : m_params.regSeqValues;
 
     const quint16 cycles = shutoffOnly
                            ? m_params.shutoff_numCycles
@@ -77,7 +77,7 @@ void CyclicTests::Process()
     // r.sequence = seqToString(seq);
     r.cycles = cycles;
     r.totalTimeSec = totalSec;
-    r.ranges = calculateRanges(pts, seq);
+    //r.ranges = calculateRanges(pts, seq);
     r.doOnCounts = m_doOnCounts;
     r.doOffCounts = m_doOffCounts;
 
@@ -87,75 +87,74 @@ void CyclicTests::Process()
     emit EndTest();
 }
 
-double CyclicTests::processRegulatory()
-{
-    const quint16 cycles = m_params.regulatory_numCycles;
-    const quint32 delayMs = m_params.regulatory_delayMs;
-    const quint16 holdMs = m_params.regulatory_holdMs;
-    const auto& raw = m_params.rawRegValues;
+ double CyclicTests::processRegulatory()
+ {
+//     const quint16 cycles = m_params.regulatory_numCycles;
+//     const quint32 delayMs = m_params.regulatory_delayMs;
+//     const quint16 holdMs = m_params.regulatory_holdMs;
+//     const auto& raw = m_params.rawRegValues;
 
-    if (raw.isEmpty() || !delayMs || !cycles)
-        return 0.0;
+//     if (raw.isEmpty() || !delayMs || !cycles)
+//         return 0.0;
 
-    QElapsedTimer timer; timer.start();
+//     QElapsedTimer timer; timer.start();
 
-    for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
-        for (int i = 0; i < raw.size() && !m_terminate; ++i) {
-            setDacBlocked(raw.at(i), delayMs);
-            if (m_terminate) return timer.elapsed() / 1000.0;
-            Sleep(holdMs);
-            if (m_terminate) return timer.elapsed() / 1000.0;
-        }
-        if (!m_terminate) emit CycleCompleted(cycle + 1);
-    }
+//     for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
+//         for (int i = 0; i < raw.size() && !m_terminate; ++i) {
+//             setDacBlocked(raw.at(i), delayMs);
+//             if (m_terminate) return timer.elapsed() / 1000.0;
+//             Sleep(holdMs);
+//             if (m_terminate) return timer.elapsed() / 1000.0;
+//         }
+//         if (!m_terminate) emit CycleCompleted(cycle + 1);
+//     }
 
-    return timer.elapsed() / 1000.0;
+    return  1000.0;
 }
 
-double CyclicTests::processShutoff()
-{
-    const quint16 cycles = m_params.shutoff_numCycles;
-    const quint32 delayMs = m_params.shutoff_delayMs;
-    const quint16 holdMs = m_params.shutoff_holdMs;
-    const auto& raw = m_params.rawOffValues;
+double CyclicTests::processShutoff() {
+//     const quint16 cycles = m_params.shutoff_numCycles;
+//     const quint32 delayMs = m_params.shutoff_delayMs;
+//     const quint16 holdMs = m_params.shutoff_holdMs;
+//     // const auto& raw = m_params.rawOffValues;
 
-    if (raw.isEmpty() || !delayMs || !cycles)
-        return 0.0;
+//     // if (raw.isEmpty() || !delayMs || !cycles)
+//     //     return 0.0;
 
-    QVector<bool> doMask(m_params.shutoff_DO.begin(), m_params.shutoff_DO.end());
-    const int DO_COUNT = doMask.size();
-    QVector<bool> currentStates(DO_COUNT, false);
+//     QVector<bool> doMask(m_params.shutoff_DO.begin(), m_params.shutoff_DO.end());
+//     const int DO_COUNT = doMask.size();
+//     QVector<bool> currentStates(DO_COUNT, false);
 
-    m_doOnCounts.assign(DO_COUNT, 0);
-    m_doOffCounts.assign(DO_COUNT, 0);
+//     m_doOnCounts.assign(DO_COUNT, 0);
+//     m_doOffCounts.assign(DO_COUNT, 0);
 
-    setDacBlocked(0, 0, true);
+//     setDacBlocked(0, 0, true);
 
-    QElapsedTimer timer; timer.start();
+//     QElapsedTimer timer; timer.start();
 
-    for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
-        for (int i = 0; i < raw.size() && !m_terminate; ++i) {
+//     for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {
+//         for (int i = 0; i < raw.size() && !m_terminate; ++i) {
 
-            if (i != 0) {
-                for (int d = 0; d < DO_COUNT; ++d) {
-                    if (!doMask[d]) continue;
-                    currentStates[d] = !currentStates[d];
-                    currentStates[d] ? ++m_doOnCounts[d] : ++m_doOffCounts[d];
-                }
-                emit SetMultipleDO(currentStates);
-            }
+//             if (i != 0) {
+//                 for (int d = 0; d < DO_COUNT; ++d) {
+//                     if (!doMask[d]) continue;
+//                     currentStates[d] = !currentStates[d];
+//                     currentStates[d] ? ++m_doOnCounts[d] : ++m_doOffCounts[d];
+//                 }
+//                 emit SetMultipleDO(currentStates);
+//             }
 
-            setDacBlocked(raw.at(i), holdMs);
-            if (m_terminate) return timer.elapsed() / 1000.0;
-            Sleep(delayMs);
-            if (m_terminate) return timer.elapsed() / 1000.0;
-        }
-        if (!m_terminate) emit CycleCompleted(cycle + 1);
-    }
+//             setDacBlocked(raw.at(i), holdMs);
+//             if (m_terminate) return timer.elapsed() / 1000.0;
+//             Sleep(delayMs);
+//             if (m_terminate) return timer.elapsed() / 1000.0;
+//         }
+//         if (!m_terminate) emit CycleCompleted(cycle + 1);
+//     }
 
-    setDacBlocked(0, 0, true);
+//     setDacBlocked(0, 0, true);
 
-    return timer.elapsed() / 1000.0;
+    return 1000.0;
 }
 
 void CyclicTests::fetchPoints(QVector<QVector<QPointF>>& pts)

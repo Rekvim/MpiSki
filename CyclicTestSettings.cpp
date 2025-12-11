@@ -22,8 +22,8 @@ void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
     case SelectTests::Pattern_B_SACVT:
     case SelectTests::Pattern_C_SACVT:
         add(QStringLiteral("Запорно-регулирующий"), TestParameters::Combined);
-        add(QStringLiteral("Регулирующий"),            TestParameters::Regulatory);
-        add(QStringLiteral("Отсечной"),                TestParameters::Shutoff);
+        add(QStringLiteral("Регулирующий"), TestParameters::Regulatory);
+        add(QStringLiteral("Отсечной"), TestParameters::Shutoff);
         break;
     default: break;
     }
@@ -35,15 +35,15 @@ void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
 void CyclicTestSettings::onTestSelectionChanged()
 {
     const int idx = ui->comboBox_testSelection->currentIndex();
-    if (idx < 0) return; // нет элемента — не трогаем тип
+    if (idx < 0) return;
 
     const auto t = static_cast<TestParameters::Type>(
         ui->comboBox_testSelection->itemData(idx).toInt()
         );
     m_parameters.testType = t;
 
-    const bool showReg  = (t == TestParameters::Regulatory || t == TestParameters::Combined);
-    const bool showOff  = (t == TestParameters::Shutoff    || t == TestParameters::Combined);
+    const bool showReg = (t == TestParameters::Regulatory || t == TestParameters::Combined);
+    const bool showOff = (t == TestParameters::Shutoff || t == TestParameters::Combined);
 
     ui->widget_retentionTimeRegulatory->setVisible(showReg);
     ui->widget_shutOff->setVisible(showOff);
@@ -55,41 +55,9 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Регулирующий
-    connect(ui->pushButton_addRangeRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onAddValueClicked);
-
-    connect(ui->pushButton_editRangeRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onEditValueClicked);
-
-    connect(ui->pushButton_removeRangeRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onRemoveValueClicked);
-
-    connect(ui->pushButton_addDelayRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onAddDelayClicked);
-
-    connect(ui->pushButton_editDelayRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onEditDelayClicked);
-
-    connect(ui->pushButton_removeDelayRegulatory, &QPushButton::clicked,
-            this, &CyclicTestSettings::onRemoveDelayClicked);
-
-    // Отсечной
-    connect(ui->pushButton_addDelayShutOff, &QPushButton::clicked,
-            this, &CyclicTestSettings::onAddDelayShutOffClicked);
-
-    connect(ui->pushButton_editDelayShutOff, &QPushButton::clicked,
-            this, &CyclicTestSettings::onEditDelayShutOffClicked);
-
-    connect(ui->pushButton_removeDelayShutOff, &QPushButton::clicked,
-            this, &CyclicTestSettings::onRemoveDelayShutOffClicked);
-
     // Общие
     connect(ui->pushButton_cancel, &QPushButton::clicked,
             this, &QDialog::reject);
-
-    connect(ui->pushButton_start, &QPushButton::clicked,
-            this, &CyclicTestSettings::onPushButtonStartClicked);
 
     connect(ui->comboBox_testSelection, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CyclicTestSettings::onTestSelectionChanged);
@@ -123,32 +91,51 @@ CyclicTestSettings::~CyclicTestSettings()
 }
 
 static bool parseSequence(const QString& src,
-                          QVector<quint16>& dst,
+                          QVector<qreal>& dst,
                           QString& error)
 {
     const QString s = src.trimmed();
-    static const QRegularExpression re(R"(^(?:\d+)(?:-\d+)*$)");
-    if (!re.match(s).hasMatch()) {
-        error = "Только цифры и дефисы допустимы.";
+
+    // ВАЖНО: инвертируем условие
+    if (!RegexPatterns::floatSequence().match(s).hasMatch()) {
+        error = QStringLiteral(
+            "Формат: X или X-Y, где X и Y — числа (можно с точкой)."
+            );
         return false;
     }
 
     dst.clear();
-    for (const QString& part : s.split('-', Qt::SkipEmptyParts)) {
+
+    const QStringList parts = s.split(
+        QRegularExpression("\\s*-\\s*"),
+        Qt::SkipEmptyParts
+        );
+
+    for (const QString& part : parts) {
         bool ok = false;
-        uint v = part.toUInt(&ok);
-        if (!ok) { error = QStringLiteral("Не удалось преобразовать число."); return false; }
-        if (v > std::numeric_limits<quint16>::max()) {
-            error = QString(QStringLiteral("Значение «%1» > 65535.")).arg(part); return false;
+        qreal v = part.toDouble(&ok);
+        if (!ok) {
+            error = QStringLiteral("Не удалось преобразовать число.");
+            return false;
         }
-        dst.push_back(static_cast<quint16>(v));
+
+        if (v < 0.0 || v > 100.0) {
+            error = QString(QStringLiteral(
+                                "Значение «%1» вне диапазона 0–100%."
+                                )).arg(part);
+            return false;
+        }
+
+        dst.push_back(v);
     }
+
     return true;
 }
 
-// --- Регулирующий
 
-void CyclicTestSettings::onAddValueClicked()
+
+// --- Регулирующий
+void CyclicTestSettings::on_pushButton_addRangeRegulatory_clicked()
 {
     bool ok;
     QString text = QInputDialog::getText(this, QStringLiteral("Добавить последовательность"),
@@ -160,7 +147,7 @@ void CyclicTestSettings::onAddValueClicked()
     }
 }
 
-void CyclicTestSettings::onEditValueClicked()
+void CyclicTestSettings::on_pushButton_editRangeRegulatory_clicked()
 {
     if (auto *item = ui->listWidget_testRangeRegulatory->currentItem()) {
         bool ok;
@@ -173,12 +160,13 @@ void CyclicTestSettings::onEditValueClicked()
     }
 }
 
-void CyclicTestSettings::onRemoveValueClicked()
+
+void CyclicTestSettings::on_pushButton_removeRangeRegulatory_clicked()
 {
     delete ui->listWidget_testRangeRegulatory->currentItem();
 }
 
-void CyclicTestSettings::onAddDelayClicked()
+void CyclicTestSettings::on_pushButton_addDelayRegulatory_clicked()
 {
     bool ok;
     int v = QInputDialog::getInt(this, QStringLiteral("Добавить задержку"),
@@ -189,7 +177,8 @@ void CyclicTestSettings::onAddDelayClicked()
     }
 }
 
-void CyclicTestSettings::onEditDelayClicked()
+
+void CyclicTestSettings::on_pushButton_editDelayRegulatory_clicked()
 {
     if (auto *item = ui->listWidget_delayTimeRegulatory->currentItem()) {
         bool ok;
@@ -202,14 +191,15 @@ void CyclicTestSettings::onEditDelayClicked()
     }
 }
 
-void CyclicTestSettings::onRemoveDelayClicked()
+
+void CyclicTestSettings::on_pushButton_removeDelayRegulatory_clicked()
 {
     delete ui->listWidget_delayTimeRegulatory->currentItem();
+
 }
 
 // --- Отсечной
-
-void CyclicTestSettings::onAddDelayShutOffClicked()
+void CyclicTestSettings::on_pushButton_addDelayShutOff_clicked()
 {
     bool ok;
     int v = QInputDialog::getInt(this, QStringLiteral("Добавить задержку (Отсечной)"),
@@ -220,7 +210,8 @@ void CyclicTestSettings::onAddDelayShutOffClicked()
     }
 }
 
-void CyclicTestSettings::onEditDelayShutOffClicked()
+
+void CyclicTestSettings::on_pushButton_editDelayShutOff_clicked()
 {
     if (auto *item = ui->listWidget_delayTimeShutOff->currentItem()) {
         bool ok;
@@ -233,17 +224,15 @@ void CyclicTestSettings::onEditDelayShutOffClicked()
     }
 }
 
-void CyclicTestSettings::onRemoveDelayShutOffClicked()
+
+void CyclicTestSettings::on_pushButton_removeDelayShutOff_clicked()
 {
     delete ui->listWidget_delayTimeShutOff->currentItem();
 }
 
-// --- Общая обработка «Старт»
-
-void CyclicTestSettings::onPushButtonStartClicked()
+void CyclicTestSettings::on_pushButton_start_clicked()
 {
     using TP = TestParameters;
-
 
     // --- Regulatory или Combined
     if (m_parameters.testType == TP::Regulatory || m_parameters.testType == TP::Combined) {
@@ -259,7 +248,6 @@ void CyclicTestSettings::onPushButtonStartClicked()
             QMessageBox::warning(this, QStringLiteral("Ошибка"), QStringLiteral("Регулирующая последовательность: ") + err);
             return;
         }
-        // m_parameters.regSeqValues = sReg;
 
         // задержка
         if (!ui->listWidget_delayTimeRegulatory->currentItem()) {
@@ -309,7 +297,6 @@ void CyclicTestSettings::onPushButtonStartClicked()
             QMessageBox::warning(this, QStringLiteral("Ошибка"), QStringLiteral("Отсечной: ") + err);
             return;
         }
-        // m_parameters.shutoff_sequence = sOff;
 
         // задержка
         if (!ui->listWidget_delayTimeShutOff->currentItem()) {
@@ -321,7 +308,6 @@ void CyclicTestSettings::onPushButtonStartClicked()
             ui->listWidget_delayTimeShutOff->currentItem()->text().toInt() * 1000;
 
         // удержание
-
         m_parameters.shutoff_holdMs = ui->timeEdit_retentionTimeShutOff->time().msecsSinceStartOfDay();
 
         // число циклов
@@ -348,10 +334,11 @@ void CyclicTestSettings::onPushButtonStartClicked()
         // когда не Shutoff/Combined:
         m_parameters.offSeqValues.clear();
         m_parameters.shutoff_delayMs = 0;
-        m_parameters.shutoff_holdMs  = 0;
+        m_parameters.shutoff_holdMs = 0;
         m_parameters.shutoff_numCycles = 0;
         m_parameters.shutoff_DO.fill(false);
     }
 
     accept();
 }
+

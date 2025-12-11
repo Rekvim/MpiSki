@@ -1,4 +1,3 @@
-// CyclicTestSettings.h
 #ifndef CYCLICTESTSETTINGS_H
 #define CYCLICTESTSETTINGS_H
 
@@ -26,20 +25,19 @@ public:
     struct TestParameters {
         enum Type { Regulatory, Shutoff, Combined } testType;
 
-        QVector<quint16> regSeqValues;
-        QVector<quint16> rawRegValues;
+        // проценты в виде qreal
+        QVector<qreal> regSeqValues;
         quint16 regulatory_numCycles = 0;
 
         quint32 regulatory_delayMs = 0;
-        quint16 regulatory_holdMs = 0;
+        quint32 regulatory_holdMs = 0;
         bool regulatory_enable_20mA = false;
 
-        QVector<quint16> offSeqValues;
-        QVector<quint16> rawOffValues;
+        QVector<qreal> offSeqValues;
         quint16 shutoff_numCycles = 0;
 
         quint32 shutoff_delayMs = 0;
-        quint16 shutoff_holdMs = 0;
+        quint32 shutoff_holdMs = 0;
         std::array<bool,4> shutoff_DO {{false,false,false,false}};
         bool shutoff_DI[2] {false,false};
     };
@@ -47,21 +45,21 @@ public:
     TestParameters getParameters() const { return m_parameters; }
 
 private slots:
-
     void onTestSelectionChanged();
 
-    void onPushButtonStartClicked();
+    void on_pushButton_addRangeRegulatory_clicked();
+    void on_pushButton_editRangeRegulatory_clicked();
+    void on_pushButton_removeRangeRegulatory_clicked();
 
-    void onAddValueClicked();
-    void onEditValueClicked();
-    void onRemoveValueClicked();
-    void onAddDelayClicked();
-    void onEditDelayClicked();
-    void onRemoveDelayClicked();
+    void on_pushButton_addDelayRegulatory_clicked();
+    void on_pushButton_editDelayRegulatory_clicked();
+    void on_pushButton_removeDelayRegulatory_clicked();
 
-    void onAddDelayShutOffClicked();
-    void onEditDelayShutOffClicked();
-    void onRemoveDelayShutOffClicked();
+    void on_pushButton_addDelayShutOff_clicked();
+    void on_pushButton_editDelayShutOff_clicked();
+    void on_pushButton_removeDelayShutOff_clicked();
+
+    void on_pushButton_start_clicked();
 
 private:
     Ui::CyclicTestSettings *ui;

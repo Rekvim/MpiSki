@@ -961,10 +961,6 @@ void Program::startOptionalTest(quint8 testNum)
     }
     case 2: {
         auto r = std::make_unique<StepTestRunner>(m_mpi, *m_registry, this);
-        // connect(r.get(), &StepTestRunner::,
-        //         this, [&](OtherTestSettings::TestParameters& p){
-        //             emit getParameters_resolutionTest(p);
-        //         });
         startRunner(std::move(r));
         break;
     }

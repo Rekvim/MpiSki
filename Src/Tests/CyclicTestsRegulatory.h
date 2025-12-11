@@ -16,7 +16,7 @@ public:
 
     struct Task {
         QVector<quint16> values;
-        QVector<quint16> sequence;
+        QVector<qreal> sequence;
         quint16 cycles;
         quint32 delayMsecs;
         quint16 holdMsecs;

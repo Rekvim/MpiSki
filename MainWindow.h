@@ -174,7 +174,7 @@ private:
     void saveChart(Charts chart);
     void getImage(QLabel *label, QImage *image);
 
-protected:
-    bool eventFilter(QObject *watched, QEvent *event) override;
+// protected:
+//     bool eventFilter(QObject *watched, QEvent *event) override;
 };
 #endif // MAINWINDOW_H

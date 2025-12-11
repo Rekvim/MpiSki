@@ -60,8 +60,6 @@ void BaseRunner::start() {
 void BaseRunner::stop() {
     if (m_worker)
         QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::DirectConnection);
-    // quit трогаем только через EndTest, он у тебя уже коннектится:
-    // connect(m_worker, &Test::EndTest, m_thread, &QThread::quit);
 }
 
 void BaseRunner::releaseBlock() {

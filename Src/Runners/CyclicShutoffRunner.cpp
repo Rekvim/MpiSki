@@ -1,7 +1,7 @@
 #include "CyclicShutoffRunner.h"
 #include "./Program.h"
 
-static QVector<quint16> makeRawValues(const QVector<quint16>& seq, Mpi& mpi, bool normalOpen) {
+static QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen) {
     QVector<quint16> raw; raw.reserve(seq.size());
     for (quint16 pct : seq) {
         const qreal cur = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;

@@ -571,55 +571,55 @@ void MainWindow::setTaskControlsEnabled(bool enabled)
 {
     ui->verticalSlider_task->setEnabled(enabled);
     ui->doubleSpinBox_task->setEnabled(enabled);
-    ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
+    // ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
 }
 
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
-{
-    if (auto w = qobject_cast<QWidget*>(watched)) {
-        if (!w->isEnabled()) {
-            return false;
-        }
-    }
-    if (watched == ui->label_arrowUp && event->type() == QEvent::MouseButtonRelease) {
-        double cur = ui->doubleSpinBox_task->value();
-        double nxt = cur + 0.05;
-        if (nxt > ui->doubleSpinBox_task->maximum())
-            nxt = ui->doubleSpinBox_task->maximum();
-        ui->doubleSpinBox_task->setValue(nxt);
-        return true;
-    }
-    if (watched == ui->label_arrowDown && event->type() == QEvent::MouseButtonRelease) {
-        double cur = ui->doubleSpinBox_task->value();
-        double nxt = cur - 0.05;
-        if (nxt < ui->doubleSpinBox_task->minimum())
-            nxt = ui->doubleSpinBox_task->minimum();
-        ui->doubleSpinBox_task->setValue(nxt);
-        return true;
-    }
-    if (watched == ui->label_arrowUp) {
-        if (event->type() == QEvent::Enter) {
-            ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUpHover.png"));
-            return true;
-        }
-        if (event->type() == QEvent::Leave) {
-            ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUp.png"));
-            return true;
-        }
-    }
-    if (watched == ui->label_arrowDown) {
-        if (event->type() == QEvent::Enter) {
-            ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDownHover.png"));
-            return true;
-        }
-        if (event->type() == QEvent::Leave) {
-            ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDown.png"));
-            return true;
-        }
-    }
+// bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+// {
+//     if (auto w = qobject_cast<QWidget*>(watched)) {
+//         if (!w->isEnabled()) {
+//             return false;
+//         }
+//     }
+//     if (watched == ui->label_arrowUp && event->type() == QEvent::MouseButtonRelease) {
+//         double cur = ui->doubleSpinBox_task->value();
+//         double nxt = cur + 0.05;
+//         if (nxt > ui->doubleSpinBox_task->maximum())
+//             nxt = ui->doubleSpinBox_task->maximum();
+//         ui->doubleSpinBox_task->setValue(nxt);
+//         return true;
+//     }
+//     if (watched == ui->label_arrowDown && event->type() == QEvent::MouseButtonRelease) {
+//         double cur = ui->doubleSpinBox_task->value();
+//         double nxt = cur - 0.05;
+//         if (nxt < ui->doubleSpinBox_task->minimum())
+//             nxt = ui->doubleSpinBox_task->minimum();
+//         ui->doubleSpinBox_task->setValue(nxt);
+//         return true;
+//     }
+//     if (watched == ui->label_arrowUp) {
+//         if (event->type() == QEvent::Enter) {
+//             ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUpHover.png"));
+//             return true;
+//         }
+//         if (event->type() == QEvent::Leave) {
+//             ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUp.png"));
+//             return true;
+//         }
+//     }
+//     if (watched == ui->label_arrowDown) {
+//         if (event->type() == QEvent::Enter) {
+//             ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDownHover.png"));
+//             return true;
+//         }
+//         if (event->type() == QEvent::Leave) {
+//             ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDown.png"));
+//             return true;
+//         }
+//     }
 
-    return QMainWindow::eventFilter(watched, event);
-}
+//     return QMainWindow::eventFilter(watched, event);
+// }
 
 void MainWindow::setRegistry(Registry *registry)
 {
@@ -814,7 +814,7 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 
     updateAvailableTabs();
 
-    ui->groupBox_SettingCurrentSignal->setEnabled(hasSensors);
+    // ui->groupBox_SettingCurrentSignal->setEnabled(hasSensors);
 
     ui->pushButton_mainTest_start->setEnabled(sensorCount > 1);
     ui->pushButton_strokeTest_start->setEnabled(hasSensors);
@@ -979,7 +979,7 @@ void MainWindow::onResponseTestParametersRequested(OtherTestSettings::TestParame
 }
 
 
-static QString seqToString(const QVector<quint16>& seq)
+static QString seqToString(const QVector<qreal>& seq)
 {
     QStringList parts;
     parts.reserve(seq.size());
@@ -1011,7 +1011,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestSettings::TestParamet
         }
 
         if (parameters.testType == TP::Regulatory && parameters.regulatory_enable_20mA) {
-            emit dacValueRequested(20.0);
+            ui->doubleSpinBox_task->setValue(20.0);
         }
 
         qint64 totalMs = 0;

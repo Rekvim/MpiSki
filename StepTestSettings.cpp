@@ -98,7 +98,7 @@ StepTestSettings::TestParameters StepTestSettings::getParameters()
     TestParameters testParameters;
 
     testParameters.delay = ui->timeEdit->time().msecsSinceStartOfDay();
-    testParameters.test_value = ui->spinBox_T_value->value();
+    testParameters.testValue = ui->spinBox_T_value->value();
     for (int i = 0; i < ui->listWidget_value->count(); i++) {
         testParameters.points.append(ui->listWidget_value->item(i)->text().toDouble());
     }

@@ -21,7 +21,7 @@ public:
     struct TestParameters
     {
         quint32 delay;
-        quint32 test_value;
+        qreal testValue;
         QVector<qreal> points;
     };
 
@@ -31,8 +31,8 @@ private:
     Ui::StepTestSettings *ui;
     inline static const QTime m_maxTime = QTime(0, 4, 0, 0);
     inline static const QTime m_minTime = QTime(0, 0, 5, 0);
-    inline static const int m_minTValue = 1;
-    inline static const int m_maxTValue = 99;
+    inline static const qreal m_minTValue = 1;
+    inline static const qreal m_maxTValue = 99;
 };
 
 #endif // STEPTESTSETTINGS_H

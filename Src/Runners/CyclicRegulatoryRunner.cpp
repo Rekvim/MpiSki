@@ -1,7 +1,7 @@
 #include "CyclicRegulatoryRunner.h"
 #include "./Program.h"
 
-QVector<quint16> makeRawValues(const QVector<quint16>& seq, Mpi& mpi, bool normalOpen)
+QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen)
 {
     QVector<quint16> raw;
     raw.reserve(seq.size());
