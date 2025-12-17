@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -856,7 +856,7 @@
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>d</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -869,7 +869,7 @@
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>d</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
