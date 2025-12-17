@@ -1959,9 +1959,6 @@
               <height>16777215</height>
              </size>
             </property>
-            <property name="text">
-             <string>0.0</string>
-            </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
@@ -1993,9 +1990,6 @@
               <width>50</width>
               <height>16777215</height>
              </size>
-            </property>
-            <property name="text">
-             <string>1.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2066,9 +2060,6 @@
               <height>16777215</height>
              </size>
             </property>
-            <property name="text">
-             <string>0.0</string>
-            </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
@@ -2137,9 +2128,6 @@
               <width>50</width>
               <height>16777215</height>
              </size>
-            </property>
-            <property name="text">
-             <string>0.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2210,9 +2198,6 @@
               <height>16777215</height>
              </size>
             </property>
-            <property name="text">
-             <string>0.0</string>
-            </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
@@ -2244,9 +2229,6 @@
               <width>50</width>
               <height>16777215</height>
              </size>
-            </property>
-            <property name="text">
-             <string>1.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
