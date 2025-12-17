@@ -99,7 +99,7 @@ struct MainTestRecord {
 
 struct ValveStrokeRecord {
     QString range = "";
-    double real= 0.0;
+    qreal real= 0.0;
 };
 
 struct SupplyRecord {

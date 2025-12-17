@@ -849,6 +849,12 @@
                <layout class="QVBoxLayout" name="verticalLayout_arrow">
                 <item>
                  <widget class="QToolButton" name="toolButton_arrowUp">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>d</string>
                   </property>
@@ -856,6 +862,12 @@
                 </item>
                 <item>
                  <widget class="QToolButton" name="toolButton_arrowDown">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>d</string>
                   </property>

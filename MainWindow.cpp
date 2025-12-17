@@ -209,17 +209,84 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_stepResults->setHorizontalHeaderLabels({QLatin1String("T86"), tr("Перерегулирование")});
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
+    // Для кнопки arrowUp
     ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUp.png"));
     ui->toolButton_arrowUp->setIconSize(ui->toolButton_arrowUp->size());
+    ui->toolButton_arrowUp->setFixedSize(100, 60);
+    ui->toolButton_arrowUp->setIconSize(QSize(90, 50)); // Почти полный размер
     ui->toolButton_arrowUp->setText(QString());
-    // ui->toolButton_arrowUp->setFlat(true);
     ui->toolButton_arrowUp->setAutoRepeat(true);
     ui->toolButton_arrowUp->setAutoRepeatDelay(300);
     ui->toolButton_arrowUp->setAutoRepeatInterval(100);
 
-    ui->label_arrowDown->setCursor(Qt::PointingHandCursor);
+    // Убираем фон полностью
+    ui->toolButton_arrowUp->setStyleSheet(
+        "QToolButton {"
+        "   background-color: transparent;"    // Прозрачный фон
+        "   border: none;"                     // Без рамки
+        "   padding: 0px;"                     // Без отступов
+        "   margin: 0px;"                      // Без внешних отступов
+        "}"
+        "QToolButton:hover {"
+        "   background-color: transparent;"    // Остаемся прозрачными при наведении
+        "}"
+        "QToolButton:pressed {"
+        "   background-color: transparent;"    // И при нажатии
+        "}"
+        );
 
-    ui->label_arrowDown->installEventFilter(this);
+    // Устанавливаем обработчик нажатия
+    connect(ui->toolButton_arrowUp, &QToolButton::clicked,
+            this, [this]() {
+                double cur = ui->doubleSpinBox_task->value();
+                double nxt = cur + 0.05;
+                if (nxt > ui->doubleSpinBox_task->maximum())
+                    nxt = ui->doubleSpinBox_task->maximum();
+                ui->doubleSpinBox_task->setValue(nxt);
+                if (ui->doubleSpinBox_task->isEnabled())
+                    emit dacValueRequested(nxt);
+            });
+
+    // Для смены иконки при наведении установим eventFilter
+    ui->toolButton_arrowUp->installEventFilter(this);
+
+    // Аналогично для кнопки arrowDown
+    ui->toolButton_arrowDown->setIcon(QIcon(":/Src/Img/arrowDown.png"));
+    ui->toolButton_arrowDown->setIconSize(ui->toolButton_arrowDown->size());
+    ui->toolButton_arrowDown->setFixedSize(100, 60);
+    ui->toolButton_arrowDown->setIconSize(QSize(90, 50)); // Почти полный размер
+    ui->toolButton_arrowDown->setText(QString());
+    ui->toolButton_arrowDown->setAutoRepeat(true);
+    ui->toolButton_arrowDown->setAutoRepeatDelay(300);
+    ui->toolButton_arrowDown->setAutoRepeatInterval(100);
+
+    ui->toolButton_arrowDown->setStyleSheet(
+        "QToolButton {"
+        "   background-color: transparent;"
+        "   border: none;"
+        "   padding: 0px;"
+        "   margin: 0px;"
+        "}"
+        "QToolButton:hover {"
+        "   background-color: transparent;"
+        "}"
+        "QToolButton:pressed {"
+        "   background-color: transparent;"
+        "}"
+        );
+
+    ui->toolButton_arrowDown->installEventFilter(this);
+
+    connect(ui->toolButton_arrowDown, &QToolButton::clicked,
+            this, [this]() {
+                double cur = ui->doubleSpinBox_task->value();
+                double nxt = cur - 0.05;
+                if (nxt < ui->doubleSpinBox_task->minimum())
+                    nxt = ui->doubleSpinBox_task->minimum();
+                ui->doubleSpinBox_task->setValue(nxt);
+                if (ui->doubleSpinBox_task->isEnabled())
+                    emit dacValueRequested(nxt);
+            });
 
     connect(m_program, &Program::telemetryUpdated,
             this, &MainWindow::onTelemetryUpdated,
@@ -574,52 +641,32 @@ void MainWindow::setTaskControlsEnabled(bool enabled)
     // ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
 }
 
-// bool MainWindow::eventFilter(QObject *watched, QEvent *event)
-// {
-//     if (auto w = qobject_cast<QWidget*>(watched)) {
-//         if (!w->isEnabled()) {
-//             return false;
-//         }
-//     }
-//     if (watched == ui->label_arrowUp && event->type() == QEvent::MouseButtonRelease) {
-//         double cur = ui->doubleSpinBox_task->value();
-//         double nxt = cur + 0.05;
-//         if (nxt > ui->doubleSpinBox_task->maximum())
-//             nxt = ui->doubleSpinBox_task->maximum();
-//         ui->doubleSpinBox_task->setValue(nxt);
-//         return true;
-//     }
-//     if (watched == ui->label_arrowDown && event->type() == QEvent::MouseButtonRelease) {
-//         double cur = ui->doubleSpinBox_task->value();
-//         double nxt = cur - 0.05;
-//         if (nxt < ui->doubleSpinBox_task->minimum())
-//             nxt = ui->doubleSpinBox_task->minimum();
-//         ui->doubleSpinBox_task->setValue(nxt);
-//         return true;
-//     }
-//     if (watched == ui->label_arrowUp) {
-//         if (event->type() == QEvent::Enter) {
-//             ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUpHover.png"));
-//             return true;
-//         }
-//         if (event->type() == QEvent::Leave) {
-//             ui->label_arrowUp->setPixmap(QPixmap(":/Src/Img/arrowUp.png"));
-//             return true;
-//         }
-//     }
-//     if (watched == ui->label_arrowDown) {
-//         if (event->type() == QEvent::Enter) {
-//             ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDownHover.png"));
-//             return true;
-//         }
-//         if (event->type() == QEvent::Leave) {
-//             ui->label_arrowDown->setPixmap(QPixmap(":/Src/Img/arrowDown.png"));
-//             return true;
-//         }
-//     }
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->toolButton_arrowUp) {
+        if (event->type() == QEvent::Enter) {
+            ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUpHover.png"));
+            return true;
+        }
+        if (event->type() == QEvent::Leave) {
+            ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUp.png"));
+            return true;
+        }
+    }
 
-//     return QMainWindow::eventFilter(watched, event);
-// }
+    if (watched == ui->toolButton_arrowDown) {
+        if (event->type() == QEvent::Enter) {
+            ui->toolButton_arrowDown->setIcon(QIcon(":/Src/Img/arrowDownHover.png"));
+            return true;
+        }
+        if (event->type() == QEvent::Leave) {
+            ui->toolButton_arrowDown->setIcon(QIcon(":/Src/Img/arrowDown.png"));
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
+}
 
 void MainWindow::setRegistry(Registry *registry)
 {
