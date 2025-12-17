@@ -7,7 +7,6 @@
 #include "Src/ReportBuilders/ReportBuilder_C_CVT.h"
 #include "Src/ReportBuilders/ReportBuilder_C_SACVT.h"
 #include "Src/ReportBuilders/ReportBuilder_C_SOVT.h"
-#include "./Src/ValidatorFactory/ValidatorFactory.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -209,33 +208,30 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_stepResults->setHorizontalHeaderLabels({QLatin1String("T86"), tr("Перерегулирование")});
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
-    // Для кнопки arrowUp
     ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUp.png"));
     ui->toolButton_arrowUp->setIconSize(ui->toolButton_arrowUp->size());
     ui->toolButton_arrowUp->setFixedSize(100, 60);
-    ui->toolButton_arrowUp->setIconSize(QSize(90, 50)); // Почти полный размер
+    ui->toolButton_arrowUp->setIconSize(QSize(90, 50));
     ui->toolButton_arrowUp->setText(QString());
     ui->toolButton_arrowUp->setAutoRepeat(true);
     ui->toolButton_arrowUp->setAutoRepeatDelay(300);
     ui->toolButton_arrowUp->setAutoRepeatInterval(100);
 
-    // Убираем фон полностью
     ui->toolButton_arrowUp->setStyleSheet(
         "QToolButton {"
-        "   background-color: transparent;"    // Прозрачный фон
-        "   border: none;"                     // Без рамки
-        "   padding: 0px;"                     // Без отступов
-        "   margin: 0px;"                      // Без внешних отступов
+        "   background-color: transparent;"
+        "   border: none;"
+        "   padding: 0px;"
+        "   margin: 0px;"
         "}"
         "QToolButton:hover {"
-        "   background-color: transparent;"    // Остаемся прозрачными при наведении
+        "   background-color: transparent;"
         "}"
         "QToolButton:pressed {"
-        "   background-color: transparent;"    // И при нажатии
+        "   background-color: transparent;"
         "}"
         );
 
-    // Устанавливаем обработчик нажатия
     connect(ui->toolButton_arrowUp, &QToolButton::clicked,
             this, [this]() {
                 double cur = ui->doubleSpinBox_task->value();
@@ -246,15 +242,12 @@ MainWindow::MainWindow(QWidget *parent)
                 if (ui->doubleSpinBox_task->isEnabled())
                     emit dacValueRequested(nxt);
             });
-
-    // Для смены иконки при наведении установим eventFilter
     ui->toolButton_arrowUp->installEventFilter(this);
 
-    // Аналогично для кнопки arrowDown
     ui->toolButton_arrowDown->setIcon(QIcon(":/Src/Img/arrowDown.png"));
     ui->toolButton_arrowDown->setIconSize(ui->toolButton_arrowDown->size());
     ui->toolButton_arrowDown->setFixedSize(100, 60);
-    ui->toolButton_arrowDown->setIconSize(QSize(90, 50)); // Почти полный размер
+    ui->toolButton_arrowDown->setIconSize(QSize(90, 50));
     ui->toolButton_arrowDown->setText(QString());
     ui->toolButton_arrowDown->setAutoRepeat(true);
     ui->toolButton_arrowDown->setAutoRepeatDelay(300);
@@ -441,16 +434,6 @@ void MainWindow::updateCrossingIndicators()
                         cs.spring);
     setIndicatorByState(ui->widget_crossingLimits_dynamicError_limitStatusIndicator,
                         cs.dynamicError);
-}
-
-static void updateRangeIndicator(double valueLow, double valueHigh, double limitLow, double limitHigh, QWidget* widget) {
-    if (limitLow > limitHigh) std::swap(limitLow, limitHigh);
-    if (valueLow < limitLow || valueHigh > limitHigh) {
-        setIndicatorColor(widget,
-                          QLatin1String("#B80F0F"),
-                          QLatin1String("#510000"));
-    }
-    else { setIndicatorColor(widget, QLatin1String("#4E8448"), QLatin1String("#16362B")); }
 }
 
 void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
