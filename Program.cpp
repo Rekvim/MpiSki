@@ -169,13 +169,11 @@ void Program::endTest()
     m_isTestRunning = false;
 
     emit setTaskControlsEnabled(true);
-
     emit setButtonInitEnabled(true);
 
     emit setTask(m_mpi.GetDac()->value());
 
     m_activeRunner.reset();
-
     m_isCyclicTestRunning = false;
     emit testFinished();
 }
@@ -346,7 +344,7 @@ void Program::measureEndPosition(bool normalClosed)
     ts.init.finalPositionColor = Qt::darkYellow;
     emit telemetryUpdated(ts);
 
-    setDacRaw(65535.0, 10000, true);
+    setDacRaw(0xFFFF, 10000, true);
 
     waitForDacCycle();
 
@@ -483,7 +481,6 @@ void Program::startMainTest()
             runner.get(), &AbstractTestRunner::stop);
 
     emit setButtonInitEnabled(false);
-
     emit setTaskControlsEnabled(false);
 
     m_isTestRunning = true;

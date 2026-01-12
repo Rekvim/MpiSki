@@ -130,6 +130,7 @@ double CyclicTests::processShutoff() {
 
 //     setDacBlocked(0, 0, true);
 
+
 //     QElapsedTimer timer; timer.start();
 
 //     for (quint16 cycle = 0; cycle < cycles && !m_terminate; ++cycle) {

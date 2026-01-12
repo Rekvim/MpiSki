@@ -155,7 +155,6 @@ private:
         m_isTestRunning = true;
         emit setTaskControlsEnabled(false);
 
-
         m_activeRunner = std::move(r);
         m_activeRunner->start();
     }
@@ -211,7 +210,6 @@ public slots:
     void onCyclicStepMeasured(int cycle, int step, bool forward);
 
     void setMultipleDO(const QVector<bool>& states);
-
     void setDacRaw(quint16 dac,
                 quint32 sleep_ms = 0,
                 bool waitForStop = false,
