@@ -14,6 +14,41 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    QMap<int, QString> labels;
+
+    labels[3000] = "3 мА";
+    labels[4000] = "0% – 4 мА";
+    labels[5000] = "5 мА";
+    labels[6000] = "6 мА";
+    labels[7000] = "7 мА";
+    labels[8000] = "25% – 8 мА";
+    labels[9000] = "9 мА";
+    labels[10000] = "10 мА";
+    labels[11000] = "11 мА";
+    labels[12000] = "50% – 12 мА";
+    labels[13000] = "13 мА";
+    labels[14000] = "14 мА";
+    labels[15000] = "15 мА";
+    labels[16000] = "75% – 16 мА";
+    labels[17000] = "17 мА";
+    labels[18000] = "18 мА";
+    labels[19000] = "19 мА";
+    labels[20000] = "100% – 20 мА";
+    labels[21000] = "21 мА";
+
+    auto* s = qobject_cast<LabeledSlider*>(ui->verticalSlider_task);
+
+    if (s) {
+        s->setTickLabels(labels);
+        s->setTickGap(6);
+        s->setTickLength(10);
+        s->setLabelOffset(8);
+
+        QTimer::singleShot(0, s, [s]{
+            s->setFixedWidth(s->sizeHint().width());
+        });
+    }
+
     ui->tabWidget->setCurrentIndex(0);
 
     lockTabsForPreInit();
@@ -230,7 +265,7 @@ MainWindow::MainWindow(QWidget *parent)
         "QToolButton:pressed {"
         "   background-color: transparent;"
         "}"
-        );
+    );
 
     connect(ui->toolButton_arrowUp, &QToolButton::clicked,
             this, [this]() {

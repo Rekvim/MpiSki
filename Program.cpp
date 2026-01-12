@@ -14,6 +14,8 @@
 Program::Program(QObject *parent)
     : QObject{parent}
 {
+    qRegisterMetaType<RealtimeState>("RealtimeState");
+
     m_timerSensors = new QTimer(this);
     m_timerSensors->setInterval(200);
 
@@ -29,7 +31,7 @@ Program::Program(QObject *parent)
     connect(m_timerDI, &QTimer::timeout, this, [&]() {
         quint8 DI = m_mpi.GetDIStatus();
         emit setDiCheckboxesChecked(DI);
-    });
+    });4
 
     // connect(&m_mpi, &MPI::errorOccured,
     //         this, &Program::errorOccured,

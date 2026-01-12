@@ -69,7 +69,6 @@ void Sensor::setCoefficients(qreal k, qreal b)
 
 void Sensor::correctCoefficients(qreal scale)
 {
-    // Нормируем так, чтобы при minValue → 0 в инженерных единицах
     m_b = -m_k * m_minValue;
 
     if (m_minValue > m_maxValue) {

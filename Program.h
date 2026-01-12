@@ -26,6 +26,24 @@
 
 #include "SelectTests.h"
 
+struct RealtimeState
+{
+    qint64 timestampMs = 0;
+    qint64 elapsedFromInitMs = 0;
+
+    quint8 sensorCount = 0;
+
+    QVector<QString> sensorText;
+    QVector<qreal> sensorPercent;
+
+    qreal dacValue = 0.0;
+    QString dacText;
+
+    quint8 diMask = 0;
+    quint8 doMask = 0;
+};
+Q_DECLARE_METATYPE(RealtimeState)
+
 enum class TextObjects {
 
     LineEdit_linearSensor,
@@ -64,10 +82,11 @@ public:
     bool isInitialized() const;
 
 signals:
+    void realtimeUpdated(const RealtimeState& s);
+    void telemetryUpdated(const TelemetryStore &store);
 
     void errorOccured(const QString&);
 
-    void telemetryUpdated(const TelemetryStore &store);
     void cyclicCycleCompleted(int completedCycles);
 
     void setText(const TextObjects object, const QString &text);

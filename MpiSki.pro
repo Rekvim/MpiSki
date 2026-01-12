@@ -20,6 +20,7 @@ SOURCES += \
     CyclicTestSettings.cpp \
     Src/CustomChart/MyChart.cpp \
     Src/CustomChart/MySeries.cpp \
+    Src/LabeledSlider/LabeledSlider.cpp \
     Src/Mpi/Mpi.cpp \
     Src/Mpi/MpiSettings.cpp \
     Src/ReportBuilders/ReportBuilder_B_CVT.cpp \
@@ -75,6 +76,7 @@ HEADERS += \
     Sensor.h \
     Src/CustomChart/MyChart.h \
     Src/CustomChart/MySeries.h \
+    Src/LabeledSlider/LabeledSlider.h \
     Src/Mpi/Mpi.h \
     Src/Mpi/MpiSettings.h \
     Src/ReportBuilders/ReportBuilder.h \

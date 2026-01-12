@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -68,363 +68,21 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_21">
                <item>
-                <widget class="QWidget" name="widget_3" native="true">
-                 <property name="minimumSize">
-                  <size>
-                   <width>115</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_18">
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_21mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>21 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_20mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>20 мА – 100%</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_19mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>19 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_18mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>18 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_17mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>17 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_16mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>16 мА – 75%</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_15mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>15 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_14mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>14 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_13mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>13 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_12mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>12 мА – 50%</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_11mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>11 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_10mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>10 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_9mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>9 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_8mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>8 мА – 25%</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_7mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>7 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_6mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>6 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_5mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>5 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_4mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>4 мА – 0%</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_signalStrength_3mA">
-                    <property name="font">
-                     <font>
-                      <family>Segoe UI</family>
-                      <pointsize>12</pointsize>
-                      <bold>false</bold>
-                      <stylestrategy>PreferDefault</stylestrategy>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>3 мА</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSlider" name="verticalSlider_task">
+                <widget class="LabeledSlider" name="verticalSlider_task">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
                  </property>
                  <property name="minimum">
                   <number>3000</number>
@@ -3486,7 +3144,7 @@ Border-radius: 10px;
         <item>
          <widget class="QTabWidget" name="tabWidget_optionalTests">
           <property name="currentIndex">
-           <number>3</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -5311,7 +4969,12 @@ Border-radius: 10px;
   <customwidget>
    <class>MyChart</class>
    <extends>QGraphicsView</extends>
-   <header>mychart.h</header>
+   <header>./Src/CustomChart/MyChart.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LabeledSlider</class>
+   <extends>QSlider</extends>
+   <header>./Src/LabeledSlider/LabeledSlider.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
