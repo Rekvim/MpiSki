@@ -26,9 +26,7 @@ void ReportBuilder_B_CVT::buildReport(
     cell(report, sheet_1, 5, 13, valveInfo.serialNumber);
     cell(report, sheet_1, 6, 13, valveInfo.valveModel);
     cell(report, sheet_1, 7, 13, valveInfo.manufacturer);
-    cell(report, sheet_1, 8, 13, QString("%1 / %2")
-                                               .arg(valveInfo.DN)
-                                               .arg(valveInfo.PN));
+    cell(report, sheet_1, 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
     cell(report, sheet_1, 9, 13, valveInfo.positionerModel);
     cell(report, sheet_1, 10, 13, QString("%1").arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
     cell(report, sheet_1, 11, 13, otherParams.safePosition);
@@ -164,9 +162,7 @@ void ReportBuilder_B_CVT::buildReport(
     cell(report, sheet_1, 66, 13, valveInfo.serialNumber);
     cell(report, sheet_1, 67, 13, valveInfo.valveModel);
     cell(report, sheet_1, 68, 13, valveInfo.manufacturer);
-    cell(report, sheet_1, 69, 13, QString("%1 / %2")
-                                               .arg(valveInfo.DN)
-                                               .arg(valveInfo.PN));
+    cell(report, sheet_1, 69, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
     cell(report, sheet_1, 70, 13, valveInfo.positionerModel);
     cell(report, sheet_1, 71, 13, QString("%1")
                                                 .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));

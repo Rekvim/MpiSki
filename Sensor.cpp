@@ -13,17 +13,12 @@ quint16 Sensor::rawValue() const
 
 quint16 Sensor::rawFromValue(qreal physicalValue) const
 {
-    if (m_k == 0.0)
+    if (qFuzzyIsNull(m_k))
         return 0;
 
-    qreal raw = (physicalValue - m_b) / m_k;
-
-    if (raw < 0.0)
-        raw = 0.0;
-    else if (raw > 65535.0)
-        raw = 65535.0;
-
-    return static_cast<quint16>(qRound(raw));
+    const qreal raw = (physicalValue - m_b) / m_k;
+    const qreal clamped = std::clamp(raw, 0.0, 65535.0);
+    return static_cast<quint16>(qRound(clamped));
 }
 
 qreal Sensor::value() const
@@ -41,7 +36,9 @@ qreal Sensor::percent() const
     if (m_maxValue == m_minValue)
         return 0.0;
 
-    return 100.0 * qreal(m_value - m_minValue) / (m_maxValue - m_minValue);
+    const qreal span = static_cast<qreal>(m_maxValue) - static_cast<qreal>(m_minValue);
+    const qreal pos = static_cast<qreal>(m_value) - static_cast<qreal>(m_minValue);
+    return 100.0 * pos / span;
 }
 
 QString Sensor::percentFormatted() const

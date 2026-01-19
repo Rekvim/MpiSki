@@ -37,8 +37,9 @@ private:
     QThread *m_uartThread;
     bool m_isConnected = false;
     QString m_portName;
+
     QVector<Sensor *> m_sensors;
-    Sensor *m_dac = new Sensor;
+    Sensor *m_dac = nullptr;
 
     quint16 m_dacMin = 65536 * 3 / 24;
     quint16 m_dacMax = 65536 * 21 / 24;

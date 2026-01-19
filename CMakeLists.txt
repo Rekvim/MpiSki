@@ -217,4 +217,4 @@ install(
         ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_NAME}ConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${EXPORT_NAME}/
 )
-include(CPackConfig)
+include(CPack)
