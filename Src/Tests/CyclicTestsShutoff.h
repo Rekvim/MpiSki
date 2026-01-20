@@ -3,7 +3,6 @@
 
 #include "MainTest.h"
 #include <QVector>
-#include <QPointF>
 
 class CyclicTestsShutoff : public MainTest
 {
@@ -13,10 +12,10 @@ public:
 
     struct Task {
         QVector<quint16> values;
-        quint64 delayMsecs;
-        quint64 holdMsecs;
-        quint16 cycles;
-        QVector<bool> doMask;
+        quint64 delayMsecs = 0;
+        quint64 holdMsecs  = 0;
+        quint16 cycles     = 0;
+        QVector<bool> doMask;  // какие DO участвуют в переключении
     };
 
     struct TestResults {
@@ -38,13 +37,13 @@ signals:
     void SetMultipleDO(const QVector<bool>& states);
     void SetStartTime();
 
+    // НОВОЕ: запросить у Program текущие маски (BlockingQueuedConnection)
+    void GetDI(quint8& di);
+    void GetDO(quint8& doMask);
+
 private:
     Task m_task;
 
-    void calcSwitchCounts(const QVector<QVector<QPointF>>& pts,
-                          int& s3to0, int& s0to3) const;
-
-    void fetchPoints(QVector<QVector<QPointF>>& pts);
     QVector<quint16> m_doOnCounts, m_doOffCounts;
 };
 

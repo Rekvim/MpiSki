@@ -693,33 +693,33 @@ void Program::updateCharts_CyclicTest(Charts chart)
     emit addPoints(chart, points);
 
 
-    if (m_patternType == SelectTests::Pattern_C_SOVT  ||
-        m_patternType == SelectTests::Pattern_B_SACVT ||
-        m_patternType == SelectTests::Pattern_C_SACVT) {
-        quint8 di = m_mpi.GetDIStatus();
-        if (di != m_lastDiStatus) {
-            QVector<Point> diPts;
-            bool lastClosed = (m_lastDiStatus & 0x01);
-            bool lastOpen = (m_lastDiStatus & 0x02);
-            bool nowClosed = (di & 0x01);
-            bool nowOpen = (di & 0x02);
+    // if (m_patternType == SelectTests::Pattern_C_SOVT  ||
+    //     m_patternType == SelectTests::Pattern_B_SACVT ||
+    //     m_patternType == SelectTests::Pattern_C_SACVT) {
+    //     quint8 di = m_mpi.GetDIStatus();
+    //     if (di != m_lastDiStatus) {
+    //         QVector<Point> diPts;
+    //         bool lastClosed = (m_lastDiStatus & 0x01);
+    //         bool lastOpen = (m_lastDiStatus & 0x02);
+    //         bool nowClosed = (di & 0x01);
+    //         bool nowOpen = (di & 0x02);
 
-            if (nowClosed && !lastClosed) {
-                ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
-                diPts.push_back({2, qreal(time), 0.0});
-            } if (!nowClosed && lastClosed) {
-                diPts.push_back({2, qreal(time), 0.0});
-            } if (nowOpen && !lastOpen) {
-                ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
-                diPts.push_back({3, qreal(time), 100.0});
-            } if (!nowOpen && lastOpen) {
-                diPts.push_back({3, qreal(time), 100.0});
-            }
+    //         if (nowClosed && !lastClosed) {
+    //             ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
+    //             diPts.push_back({2, qreal(time), 0.0});
+    //         } if (!nowClosed && lastClosed) {
+    //             diPts.push_back({2, qreal(time), 0.0});
+    //         } if (nowOpen && !lastOpen) {
+    //             ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
+    //             diPts.push_back({3, qreal(time), 100.0});
+    //         } if (!nowOpen && lastOpen) {
+    //             diPts.push_back({3, qreal(time), 100.0});
+    //         }
 
-            if (!diPts.isEmpty()) emit addPoints(chart, diPts);
-            m_lastDiStatus = di;
-        }
-    }
+    //         if (!diPts.isEmpty()) emit addPoints(chart, diPts);
+    //         m_lastDiStatus = di;
+    //     }
+    // }
 }
 
 QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normalOpen)
@@ -772,13 +772,23 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
 
-    dst.sequence = "0-100-0";
-    dst.doOnCounts = results.doOnCounts;
+    dst.doOnCounts  = results.doOnCounts;
     dst.doOffCounts = results.doOffCounts;
-    dst.switch3to0Count = results.switch3to0Count / 2;
-    dst.switch0to3Count = results.switch0to3Count / 2;
+
+    dst.switch3to0Count = results.switch3to0Count;
+    dst.switch0to3Count = results.switch0to3Count;
 
     emit telemetryUpdated(m_telemetryStore);
+
+    // auto &dst = m_telemetryStore.cyclicTestRecord;
+
+    // dst.sequence = "0-100-0";
+    // dst.doOnCounts = results.doOnCounts;
+    // dst.doOffCounts = results.doOffCounts;
+    // dst.switch3to0Count = results.switch3to0Count / 2;
+    // dst.switch0to3Count = results.switch0to3Count / 2;
+
+    // emit telemetryUpdated(m_telemetryStore);
 }
 
 void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,

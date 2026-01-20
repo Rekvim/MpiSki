@@ -4,6 +4,7 @@
 *.qmake.stash
 .qtc_clangd*
 .qt
+.cache
 
 
 ALL_BUILD*

@@ -50,9 +50,10 @@ void CyclicShutoffRunner::wireSpecificSignals(Test& base) {
             owner, [owner]{ owner->updateCharts_CyclicTest(Charts::Cyclic); },
             Qt::QueuedConnection);
 
-    connect(&t, &CyclicTestsShutoff::GetPoints,
-            owner, &Program::receivedPoints_cyclicTest,
-            Qt::BlockingQueuedConnection);
+    // GetPoints больше НЕ нужен для подсчёта DI — можешь оставить, если рисование требует.
+    // connect(&t, &CyclicTestsShutoff::GetPoints,
+    //         owner, &Program::receivedPoints_cyclicTest,
+    //         Qt::BlockingQueuedConnection);
 
     connect(&t, &CyclicTestsShutoff::SetStartTime,
             owner, &Program::setTimeStart);
@@ -68,4 +69,13 @@ void CyclicShutoffRunner::wireSpecificSignals(Test& base) {
     connect(&t, &CyclicTestsShutoff::SetMultipleDO,
             owner, &Program::setMultipleDO,
             Qt::QueuedConnection);
+
+    // НОВОЕ: Blocking-опрос DI/DO из воркера
+    connect(&t, &CyclicTestsShutoff::GetDI,
+            owner, [&](quint8& di){ di = owner->getDIStatus(); },
+            Qt::BlockingQueuedConnection);
+
+    connect(&t, &CyclicTestsShutoff::GetDO,
+            owner, [&](quint8& m){ m = owner->getDOStatus(); },
+            Qt::BlockingQueuedConnection);
 }

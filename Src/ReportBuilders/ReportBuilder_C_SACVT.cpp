@@ -230,29 +230,21 @@ void ReportBuilder_C_SACVT::buildReport(
                                                .toString("mm:ss.zzz"));
 
     // Лист 3; Страница: Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
-    cell(report,
-        "Отчет ЦТ", 164, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
-    );
-    cell(report,
-        "Отчет ЦТ", 166, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
-    );
-    const auto &ons  = telemetryStore.cyclicTestRecord.doOnCounts;
-    const auto &offs = telemetryStore.cyclicTestRecord.doOffCounts;
-    for (int i = 0; i < ons.size(); ++i) {
-        if (ons[i] == 0 && offs.value(i, 0) == 0)
-            continue;
+    cell(report, sheet_1, 164, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
+    cell(report, sheet_1, 166, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
 
-        quint16 row = 164 + quint16(i) * 2;
-        cell(report,
-            "Отчет ЦТ", row, 10,
-            QString::number(ons[i])
-        );
-        cell(report,
-            "Отчет ЦТ", row, 13,
-            QString::number(offs.value(i, 0))
-        );
+    const auto& ons = telemetryStore.cyclicTestRecord.doOnCounts;
+    const auto& offs = telemetryStore.cyclicTestRecord.doOffCounts;
+
+    const quint16 baseRow = 164;
+    const quint16 rowStep = 2;
+
+    // Выводим все DO, даже если 0 — так шаблон всегда совпадает (DOi -> строка baseRow + i*rowStep)
+    for (int i = 0; i < ons.size(); ++i) {
+        const quint16 row = baseRow + quint16(i) * rowStep;
+
+        cell(report, sheet_1, row, 10, QString::number(ons.value(i, 0)));
+        cell(report, sheet_1, row, 13, QString::number(offs.value(i, 0)));
     }
 
     // Лист 3; Страница: Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения

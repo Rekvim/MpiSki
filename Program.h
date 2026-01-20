@@ -80,6 +80,8 @@ public:
     explicit Program(QObject *parent = nullptr);
     void setRegistry(Registry *registry);
     bool isInitialized() const;
+    quint8 getDIStatus() { return m_mpi.GetDIStatus(); }
+    quint8 getDOStatus() { return m_mpi.GetDOStatus(); }
 
 signals:
     void realtimeUpdated(const RealtimeState& s);
