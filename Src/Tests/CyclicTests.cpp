@@ -109,6 +109,7 @@ void CyclicTests::Process()
 //         if (!m_terminate) emit CycleCompleted(cycle + 1);
 //     }
 
+
     return  1000.0;
 }
 

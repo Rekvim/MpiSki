@@ -148,6 +148,7 @@ private:
         connect(r.get(), &AbstractTestRunner::requestClearChart, this, [this](int chart){
             emit clearPoints(static_cast<Charts>(chart));
         });
+
         connect(r.get(), &AbstractTestRunner::requestSetDAC, this, &Program::setDacRaw);
         connect(this, &Program::releaseBlock, r.get(), &AbstractTestRunner::releaseBlock);
         connect(r.get(), &AbstractTestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
@@ -212,6 +213,7 @@ public slots:
     void onCyclicStepMeasured(int cycle, int step, bool forward);
 
     void setMultipleDO(const QVector<bool>& states);
+
     void setDacRaw(quint16 dac,
                 quint32 sleep_ms = 0,
                 bool waitForStop = false,

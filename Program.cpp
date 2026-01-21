@@ -169,11 +169,13 @@ void Program::endTest()
     m_isTestRunning = false;
 
     emit setTaskControlsEnabled(true);
+
     emit setButtonInitEnabled(true);
 
     emit setTask(m_mpi.GetDac()->value());
 
     m_activeRunner.reset();
+
     m_isCyclicTestRunning = false;
     emit testFinished();
 }
@@ -692,7 +694,6 @@ void Program::updateCharts_CyclicTest(Charts chart)
     points.push_back({1, qreal(time), m_mpi[0]->percent()});
     emit addPoints(chart, points);
 
-
     // if (m_patternType == SelectTests::Pattern_C_SOVT  ||
     //     m_patternType == SelectTests::Pattern_B_SACVT ||
     //     m_patternType == SelectTests::Pattern_C_SACVT) {
@@ -703,7 +704,6 @@ void Program::updateCharts_CyclicTest(Charts chart)
     //         bool lastOpen = (m_lastDiStatus & 0x02);
     //         bool nowClosed = (di & 0x01);
     //         bool nowOpen = (di & 0x02);
-
     //         if (nowClosed && !lastClosed) {
     //             ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
     //             diPts.push_back({2, qreal(time), 0.0});
@@ -720,6 +720,7 @@ void Program::updateCharts_CyclicTest(Charts chart)
     //         m_lastDiStatus = di;
     //     }
     // }
+    }
 }
 
 QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normalOpen)
@@ -738,6 +739,7 @@ void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
 {
     emit getPoints_cyclicTest(points, Charts::Cyclic);
 }
+
 
 void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results)
 {
