@@ -36,7 +36,7 @@ void MainTest::Process()
     }
 
     setDacBlocked(m_parameters.dac_max, 0, true);
-a
+
     emit DublSeries();
 
     Sleep(m_parameters.delay);

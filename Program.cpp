@@ -10,6 +10,45 @@
 #include "./Src/Runners/OptionResolutionRunner.h"
 #include "./Src/Runners/CyclicRegulatoryRunner.h"
 #include "./Src/Runners/CyclicShutoffRunner.h"
+#include <QRegularExpression>
+#include <QLocale>
+#include <optional>
+
+namespace {
+
+double toDouble(QString s, bool* okOut = nullptr)
+{
+    s = s.trimmed();
+    s.replace(',', '.');
+    bool ok = false;
+    const double v = QLocale::c().toDouble(s, &ok);
+    if (okOut) *okOut = ok;
+    return v;
+}
+
+std::optional<QPair<double,double>> parseRange2(const QString& s)
+{
+    // достаём 2 числа из "1–2", "1-2", "1 .. 2", "1 2"
+    static const QRegularExpression re(R"(([+-]?\d+(?:[.,]\d+)?))");
+    auto it = re.globalMatch(s);
+
+    double a = 0.0, b = 0.0;
+    int n = 0;
+    while (it.hasNext() && n < 2) {
+        const auto m = it.next();
+        bool ok = false;
+        const double v = toDouble(m.captured(1), &ok);
+        if (!ok) continue;
+        if (n == 0) a = v; else b = v;
+        ++n;
+    }
+
+    if (n == 2) return QPair<double,double>(a, b);
+    return std::nullopt;
+}
+
+} // namespace
+
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -144,8 +183,7 @@ void Program::updateSensors()
         }
     }
     if (m_isTestRunning)
-
-    emit setTask(m_mpi.GetDac()->value());
+        emit setTask(m_mpi.GetDac()->value());
 
     Sensor *feedbackSensor = m_mpi.GetDac();
     QString fbValue = feedbackSensor->formattedValue();
@@ -520,6 +558,7 @@ void Program::updateCrossingStatus()
     const CrossingLimits &limits = valveInfo->crossingLimits;
     using State = CrossingStatus::State;
 
+    // --- friction ---
     if (limits.frictionEnabled) {
         ts.crossingStatus.frictionPercent =
             inRange(ts.mainTestRecord.frictionPercent,
@@ -530,16 +569,25 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.frictionPercent = State::Unknown;
     }
 
+    // --- range / stroke : сравниваем реальный ход с (recomend ± %) ---
     if (limits.rangeEnabled) {
-        ts.crossingStatus.range =
-            inRange(ts.valveStrokeRecord.real,
-                    0.0,
-                    limits.rangeUpperLimit)
-                ? State::Ok : State::Fail;
+        bool ok = false;
+        const double recStroke = toDouble(valveInfo->strokValve, &ok);
+        if (ok) {
+            const double d = std::abs(recStroke) * (limits.rangeUpperLimit / 100.0); // rangeUpperLimit как %
+            const double lo = recStroke - d;
+            const double hi = recStroke + d;
+
+            ts.crossingStatus.range =
+                inRange(ts.valveStrokeRecord.real, lo, hi) ? State::Ok : State::Fail;
+        } else {
+            ts.crossingStatus.range = State::Unknown;
+        }
     } else {
         ts.crossingStatus.range = State::Unknown;
     }
 
+    // --- dynamicError (оставил как абсолютный лимит: 0..recomend) ---
     if (limits.dynamicErrorEnabled) {
         ts.crossingStatus.dynamicError =
             inRange(ts.mainTestRecord.dynamicErrorReal,
@@ -550,19 +598,42 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.dynamicError = State::Unknown;
     }
 
+    // --- spring : два диапазона, проверяем каждое число отдельно ---
     if (limits.springEnabled) {
-        ts.crossingStatus.spring =
-            rangeOverlap(ts.mainTestRecord.springLow,
-                         ts.mainTestRecord.springHigh,
-                         limits.springLowerLimit,
-                         limits.springUpperLimit)
-                ? State::Ok : State::Fail;
+        const auto r = parseRange2(valveInfo->driveRecomendRange); // "low–high"
+        if (r) {
+            double recLow  = r->first;
+            double recHigh = r->second;
+            if (recLow > recHigh) std::swap(recLow, recHigh);
+
+            const double lowD  = std::abs(recLow)  * (limits.springLowerLimit / 100.0); // springLowerLimit как %
+            const double highD = std::abs(recHigh) * (limits.springUpperLimit / 100.0); // springUpperLimit как %
+
+            const double lowLo  = recLow  - lowD;
+            const double lowHi  = recLow  + lowD;
+
+            const double highLo = recHigh - highD;
+            const double highHi = recHigh + highD;
+
+            const bool okLow  = inRange(ts.mainTestRecord.springLow,  lowLo,  lowHi);
+            const bool okHigh = inRange(ts.mainTestRecord.springHigh, highLo, highHi);
+
+            ts.crossingStatus.spring = (okLow && okHigh) ? State::Ok : State::Fail;
+        } else {
+            ts.crossingStatus.spring = State::Unknown;
+        }
     } else {
         ts.crossingStatus.spring = State::Unknown;
     }
 
+    // --- linearCharacteristic ---
+    // Сейчас у тебя всегда Ok, это подозрительно.
+    // Если у тебя есть лимит (например 0..limits.linearCharacteristicLowerLimit),
+    // то сравнивай реальную ошибку:
     if (limits.linearCharacteristicEnabled) {
-        ts.crossingStatus.linearCharacteristic = State::Ok;
+        ts.crossingStatus.linearCharacteristic =
+            inRange(ts.mainTestRecord.linearityError, 0.0, limits.linearCharacteristicLowerLimit)
+                ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.linearCharacteristic = State::Unknown;
     }

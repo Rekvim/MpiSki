@@ -8,6 +8,60 @@
 #include "Src/ReportBuilders/ReportBuilder_C_SACVT.h"
 #include "Src/ReportBuilders/ReportBuilder_C_SOVT.h"
 
+namespace {
+static QString formatRange(double lo, double hi, int prec = 2)
+{
+    if (lo > hi) std::swap(lo, hi);
+    return QString("%1–%2")
+        .arg(lo, 0, 'f', prec)
+        .arg(hi, 0, 'f', prec);
+}
+
+double toDouble(QString s, bool* okOut = nullptr)
+{
+    s = s.trimmed();
+    s.replace(',', '.');
+    bool ok = false;
+    const double v = QLocale::c().toDouble(s, &ok);
+    if (okOut) *okOut = ok;
+    return v;
+}
+
+void setNum(QLineEdit* le, double v, int prec = 2)
+{
+    le->setText(QString::number(v, 'f', prec));
+}
+
+std::optional<QPair<double,double>> parseRange2(const QString& s)
+{
+    // достаём 2 числа из "1–2", "1-2", "1 .. 2", "1 2"
+    static const QRegularExpression re(R"(([+-]?\d+(?:[.,]\d+)?))");
+    auto it = re.globalMatch(s);
+
+    double a = 0.0, b = 0.0;
+    int n = 0;
+    while (it.hasNext() && n < 2) {
+        const auto m = it.next();
+        bool ok = false;
+        const double v = toDouble(m.captured(1), &ok);
+        if (!ok) continue;
+        if (n == 0) a = v; else b = v;
+        ++n;
+    }
+    if (n == 2) return QPair<double,double>(a, b);
+    return std::nullopt;
+}
+
+void setPlusMinusPercent(QLineEdit* loLe, QLineEdit* hiLe,
+                         double base, double pct, int prec = 2)
+{
+    const double d = std::abs(base) * (pct / 100.0);
+    setNum(loLe, base - d, prec);
+    setNum(hiLe, base + d, prec);
+}
+
+} // namespace
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -455,6 +509,61 @@ static void setIndicatorByState(QWidget* widget,
     }
 }
 
+void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo* valveInfo)
+{
+    const CrossingLimits& limits = valveInfo->crossingLimits;
+
+    // 1) Ход (одно число): берем рекомендацию strokValve и применяем % rangeUpperLimit
+    if (limits.rangeEnabled) {
+        bool ok = false;
+        const double stroke = toDouble(valveInfo->strokValve, &ok);
+        if (ok) {
+            setPlusMinusPercent(ui->lineEdit_crossingLimits_range_lowerLimit,
+                                ui->lineEdit_crossingLimits_range_upperLimit,
+                                stroke, limits.rangeUpperLimit);
+        }
+    }
+
+    // 2) Пружина (два числа): берем driveRecomendRange "low–high"
+    //    и применяем % отдельно к началу и концу.
+    //    В UI у тебя 2 поля, поэтому логично:
+    //      lowerLimit = low - %low
+    //      upperLimit = high + %high
+    if (limits.springEnabled) {
+        const auto r = parseRange2(valveInfo->driveRecomendRange); // "low–high"
+        if (r) {
+            double low  = r->first;
+            double high = r->second;
+            if (low > high) std::swap(low, high);
+
+            // допуски в %: отдельно для low и отдельно для high
+            const double lowDelta  = std::abs(low)  * (limits.springLowerLimit / 100.0);
+            const double highDelta = std::abs(high) * (limits.springUpperLimit / 100.0);
+
+            const double lowLo  = low  - lowDelta;
+            const double lowHi  = low  + lowDelta;
+
+            const double highLo = high - highDelta;
+            const double highHi = high + highDelta;
+
+            // ВАЖНО: теперь в каждом поле лежит "диапазон"
+            ui->lineEdit_crossingLimits_spring_lowerLimit->setText(formatRange(lowLo, lowHi));
+            ui->lineEdit_crossingLimits_spring_upperLimit->setText(formatRange(highLo, highHi));
+        }
+    }
+
+    // 3) Dynamic error:
+    // Если у тебя dynamicError лимит тоже задаётся В % — сделай поле в CrossingLimits (например dynamicErrorUpperLimitPercent)
+    // и используй setPlusMinusPercent().
+    //
+    // Если же лимит динамической ошибки — абсолютное число (как сейчас), то оставь как у тебя:
+    if (limits.dynamicErrorEnabled) {
+        ui->lineEdit_crossingLimits_dynamicError_lowerLimit->setText(QStringLiteral("0"));
+        ui->lineEdit_crossingLimits_dynamicError_upperLimit->setText(
+            QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
+    }
+}
+
 void MainWindow::updateCrossingIndicators()
 {
     const auto &cs = m_telemetryStore.crossingStatus;
@@ -745,18 +854,10 @@ void MainWindow::setRegistry(Registry *registry)
             QString::number(limits.linearCharacteristicLowerLimit, 'f', 2));
     }
 
-    if (limits.rangeEnabled) {
-        ui->lineEdit_crossingLimits_range_lowerLimit->setText(QStringLiteral("0"));
-        ui->lineEdit_crossingLimits_range_upperLimit->setText(
-            QString::number(limits.rangeUpperLimit, 'f', 2));
-    }
+    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
+    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
 
-    if (limits.springEnabled) {
-        ui->lineEdit_crossingLimits_spring_lowerLimit->setText(
-            QString::number(limits.springLowerLimit, 'f', 2));
-        ui->lineEdit_crossingLimits_spring_upperLimit->setText(
-            QString::number(limits.springUpperLimit, 'f', 2));
-    }
+    applyCrossingLimitsFromRecommend(valveInfo);
 
     if (limits.dynamicErrorEnabled) {
         ui->lineEdit_crossingLimits_dynamicError_lowerLimit->setText(QStringLiteral("0"));

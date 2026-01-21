@@ -138,6 +138,7 @@ private:
 
     void lockTabsForPreInit();
     void updateAvailableTabs();
+    void applyCrossingLimitsFromRecommend(const ValveInfo* valveInfo);
 
     Registry *m_registry = nullptr;
 
