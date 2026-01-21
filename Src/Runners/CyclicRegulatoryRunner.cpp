@@ -9,7 +9,7 @@ QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalO
 
     for (quint16 pct : seq) {
         const qreal current = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.GetDac()->rawFromValue(current));
+        raw.push_back(mpi.dac()->rawFromValue(current));
     }
     return raw;
 }

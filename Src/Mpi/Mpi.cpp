@@ -46,7 +46,7 @@ Mpi::Mpi(QObject *parent)
             m_uartReader, &UartReader::setAdcPolling,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::SetDO,
+    connect(this, &Mpi::setDigitalOutput,
             m_uartReader, &UartReader::setDigitalOutput,
             Qt::BlockingQueuedConnection);
 
@@ -59,18 +59,18 @@ Mpi::Mpi(QObject *parent)
             Qt::BlockingQueuedConnection);
 
     connect(m_uartReader, &UartReader::adcDataReady,
-            this, &Mpi::ADC);
+            this, &Mpi::onAdcData);
 
     connect(m_uartReader, &UartReader::portOpened,
-            this, &Mpi::UartConnected,
+            this, &Mpi::onUartConnected,
             Qt::DirectConnection);
 
     connect(m_uartReader, &UartReader::portClosed,
-            this, &Mpi::UartDisconnected,
+            this, &Mpi::onUartDisconnected,
             Qt::DirectConnection);
 
     connect(m_uartReader, &UartReader::portError,
-            this, &Mpi::UartError,
+            this, &Mpi::onUartError,
             Qt::DirectConnection);
 
     // connect(m_uartReader, &UartReader::errorOccured,
@@ -84,13 +84,13 @@ Mpi::~Mpi()
     m_uartThread->wait();
 }
 
-bool Mpi::Connect()
+bool Mpi::isConnect()
 {
     emit ConnectToUart();
     return m_isConnected;
 }
 
-quint8 Mpi::Version()
+quint8 Mpi::version()
 {
     if (!m_isConnected)
         return 0;
@@ -99,7 +99,7 @@ quint8 Mpi::Version()
     return version;
 }
 
-quint8 Mpi::GetDOStatus()
+quint8 Mpi::digitalOutputs()
 {
     if (!m_isConnected)
         return 0;
@@ -109,7 +109,7 @@ quint8 Mpi::GetDOStatus()
     return DO;
 }
 
-quint8 Mpi::GetDIStatus()
+quint8 Mpi::digitalInputs()
 {
     if (!m_isConnected)
         return 0;
@@ -119,7 +119,7 @@ quint8 Mpi::GetDIStatus()
     return DI;
 }
 
-bool Mpi::Initialize()
+bool Mpi::initialize()
 {
     emit ADC_Timer(false);
 
@@ -142,12 +142,13 @@ bool Mpi::Initialize()
     emit TurnADC_On();
     QVector<quint16> adc;
 
-    Sleep(1000);
+    sleep(1000);
 
     emit GetADC(adc);
 
     quint8 sensorNum = 0;
     quint8 channelMask = 0;
+
     for (const auto &a : adc) {
         if ((a & 0xFFF) > 0x050) {
             quint8 adcNum = a >> 12;
@@ -155,11 +156,14 @@ bool Mpi::Initialize()
             channelMask |= (1 << adcNum);
 
             Sensor *sensor = new Sensor;
+            m_sensorByAdc[adcNum] = sensor;
             qreal adcCur = MpiSettings.GetAdc(adcNum);
             auto sensorSettings = MpiSettings.GetSensor(sensorNum);
             qreal k = ((sensorSettings.max - sensorSettings.min) * adcCur) / (16 * 0xFFF);
             qreal b = (5 * sensorSettings.min - sensorSettings.max) / 4;
+
             sensor->setCoefficients(k, b);
+
             if (sensorNum++ == 0) {
                 sensor->setUnit("мм");
             } else {
@@ -199,22 +203,22 @@ void Mpi::SetDAC_Real(qreal value)
     }
 }
 
-quint16 Mpi::GetDac_Min()
+quint16 Mpi::dacMin()
 {
     return m_dacMin;
 }
 
-quint16 Mpi::GetDac_Max()
+quint16 Mpi::dacMax()
 {
     return m_dacMax;
 }
 
-quint8 Mpi::SensorCount() const
+quint8 Mpi::sensorCount() const
 {
     return m_sensors.size();
 }
 
-const QString &Mpi::PortName() const
+const QString &Mpi::portName() const
 {
     return m_portName;
 }
@@ -226,48 +230,56 @@ Sensor *Mpi::operator[](quint8 n)
     return m_sensors.at(n);
 }
 
-Sensor *Mpi::GetDac()
+Sensor *Mpi::dac() const
 {
     return m_dac;
 }
 
-void Mpi::SetDiscreteOutput(quint8 DO_num, bool state)
+void Mpi::setDiscreteOutput(quint8 index, bool state)
 {
     if (!m_isConnected)
         return;
 
-    emit SetDO(DO_num, state);
+    emit setDigitalOutput(index, state);
 }
 
-void Mpi::Sleep(quint16 msecs)
+void Mpi::sleep(quint16 msecs)
 {
     QEventLoop loop;
     QTimer::singleShot(msecs, &loop, &QEventLoop::quit);
     loop.exec();
 }
 
-void Mpi::ADC(QVector<quint16> adc)
+void Mpi::onAdcData(QVector<quint16> adc)
 {
-    if (m_sensors.size() < adc.size())
-        return;
+    // if (m_sensors.size() < adc.size())
+    //     return;
 
-    for (int i = 0; i < adc.size(); ++i) {
-        m_sensors[i]->setValue(adc.at(i) & 0xFFF);
+    // for (int i = 0; i < adc.size(); ++i) {
+    //     m_sensors[i]->setValue(adc.at(i) & 0xFFF);
+    // }
+
+    for (quint16 w : adc) {
+        const quint8 adcNum = w >> 12;
+        const quint16 raw   = w & 0x0FFF;
+
+        if (adcNum < m_sensorByAdc.size() && m_sensorByAdc[adcNum])
+            m_sensorByAdc[adcNum]->setValue(raw);
     }
 }
 
-void Mpi::UartConnected(const QString portName)
+void Mpi::onUartConnected(const QString portName)
 {
     m_isConnected = true;
     m_portName = portName;
 }
 
-void Mpi::UartDisconnected()
+void Mpi::onUartDisconnected()
 {
     m_isConnected = false;
 }
 
-void Mpi::UartError(QSerialPort::SerialPortError err)
+void Mpi::onUartError(QSerialPort::SerialPortError err)
 {
     qDebug() << err << Qt::endl;
 }

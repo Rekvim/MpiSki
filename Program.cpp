@@ -68,7 +68,7 @@ Program::Program(QObject *parent)
     m_timerDI = new QTimer(this);
     m_timerDI->setInterval(1000);
     connect(m_timerDI, &QTimer::timeout, this, [&]() {
-        quint8 DI = m_mpi.GetDIStatus();
+        quint8 DI = m_mpi.digitalInputs();
         emit setDiCheckboxesChecked(DI);
     });
 
@@ -86,7 +86,7 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
 {
     m_isDacStopRequested = false;
 
-    if (m_mpi.SensorCount() == 0) {
+    if (m_mpi.sensorCount() == 0) {
         emit releaseBlock();
         return;
     }
@@ -165,7 +165,7 @@ void Program::setTimeStart()
 
 void Program::updateSensors()
 {
-    for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
+    for (quint8 i = 0; i < m_mpi.sensorCount(); ++i) {
         switch (i) {
         case 0:
             emit setText(TextObjects::LineEdit_linearSensor, m_mpi[i]->formattedValue());
@@ -183,14 +183,14 @@ void Program::updateSensors()
         }
     }
     if (m_isTestRunning)
-        emit setTask(m_mpi.GetDac()->value());
+        emit setTask(m_mpi.dac()->value());
 
-    Sensor *feedbackSensor = m_mpi.GetDac();
+    Sensor *feedbackSensor = m_mpi.dac();
     QString fbValue = feedbackSensor->formattedValue();
     emit setText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
 
     QVector<Point> points;
-    qreal percent = calcPercent(m_mpi.GetDac()->value(),
+    qreal percent = calcPercent(m_mpi.dac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_initTime;
@@ -210,7 +210,7 @@ void Program::endTest()
 
     emit setButtonInitEnabled(true);
 
-    emit setTask(m_mpi.GetDac()->value());
+    emit setTask(m_mpi.dac()->value());
 
     m_activeRunner.reset();
 
@@ -266,8 +266,8 @@ void Program::initialization()
         m_patternType == SelectTests::Pattern_C_SACVT ||
         m_patternType == SelectTests::Pattern_C_SOVT) {
 
-        if ((m_mpi.Version() & 0x40) != 0) {
-            emit setDoButtonsChecked(m_mpi.GetDOStatus());
+        if ((m_mpi.version() & 0x40) != 0) {
+            emit setDoButtonsChecked(m_mpi.digitalOutputs());
             m_timerDI->start();
         } else {
             return;
@@ -303,9 +303,9 @@ void Program::initialization()
 bool Program::connectAndInitDevice()
 {
     auto &ts = m_telemetryStore;
-    bool ok = m_mpi.Connect();
+    bool ok = m_mpi.isConnect();
     ts.init.deviceStatusText  = ok
-                                   ? QString("Успешное подключение к порту %1").arg(m_mpi.PortName())
+                                   ? QString("Успешное подключение к порту %1").arg(m_mpi.portName())
                                    : "Ошибка подключения";
     ts.init.deviceStatusColor = ok ? Qt::darkGreen : Qt::red;
     emit telemetryUpdated(ts);
@@ -314,7 +314,7 @@ bool Program::connectAndInitDevice()
         return false;
     }
 
-    ok = m_mpi.Initialize();
+    ok = m_mpi.initialize();
     ts.init.initStatusText  = ok ? "Успешная инициализация" : "Ошибка инициализации";
     ts.init.initStatusColor = ok ? Qt::darkGreen : Qt::red;
     emit telemetryUpdated(ts);
@@ -327,7 +327,7 @@ bool Program::connectAndInitDevice()
 bool Program::detectAndReportSensors()
 {
     auto &ts = m_telemetryStore;
-    int cnt = m_mpi.SensorCount();
+    int cnt = m_mpi.sensorCount();
 
     if (cnt == 0) {
         ts.init.connectedSensorsText = "Датчики не обнаружены";
@@ -407,10 +407,10 @@ void Program::measureStartPositionShutoff(bool normalClosed)
     for (int i = 0; i < m_savedInitialDoStates.size(); ++i) {
         if (m_savedInitialDoStates[i]) {
             m_initialDoStates[i] = false;
-            m_mpi.SetDiscreteOutput(i, false);
+            m_mpi.setDiscreteOutput(i, false);
         }
     }
-    emit setDoButtonsChecked(m_mpi.GetDOStatus());
+    emit setDoButtonsChecked(m_mpi.digitalOutputs());
 
     setDacRaw(0, 10000, true, true);
 
@@ -435,10 +435,10 @@ void Program::measureEndPositionShutoff(bool normalClosed)
     for (int i = 0; i < m_savedInitialDoStates.size(); ++i) {
         if (m_savedInitialDoStates[i]) {
             m_initialDoStates[i] = true;
-            m_mpi.SetDiscreteOutput(i, true);
+            m_mpi.setDiscreteOutput(i, true);
         }
     }
-    emit setDoButtonsChecked(m_mpi.GetDOStatus());
+    emit setDoButtonsChecked(m_mpi.digitalOutputs());
 
     setDacRaw(65535, 1000, true);
 
@@ -480,7 +480,7 @@ void Program::recordStrokeRange(bool normalClosed)
     }
 
     emit telemetryUpdated(s);
-    emit setTask(m_mpi.GetDac()->value());
+    emit setTask(m_mpi.dac()->value());
 }
 
 void Program::finalizeInitialization()
@@ -488,7 +488,7 @@ void Program::finalizeInitialization()
     emit clearPoints(Charts::Trend);
     m_initTime = QDateTime::currentMSecsSinceEpoch();
 
-    emit setSensorNumber(m_mpi.SensorCount());
+    emit setSensorNumber(m_mpi.sensorCount());
     emit setButtonInitEnabled(true);
     m_timerSensors->start();
 }
@@ -676,14 +676,14 @@ void Program::updateCharts_mainTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->value(),
+    qreal percent = calcPercent(m_mpi.dac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     qreal task = m_mpi[0]->valueFromPercent(percent);
-    qreal X = m_mpi.GetDac()->value();
+    qreal X = m_mpi.dac()->value();
     points.push_back({0, X, task});
 
-    for (quint8 i = 0; i < m_mpi.SensorCount(); ++i) {
+    for (quint8 i = 0; i < m_mpi.sensorCount(); ++i) {
         points.push_back({static_cast<quint8>(i + 1), X, m_mpi[i]->value()});
     }
 
@@ -740,7 +740,7 @@ void Program::updateCharts_strokeTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->value(),
+    qreal percent = calcPercent(m_mpi.dac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
@@ -755,7 +755,7 @@ void Program::updateCharts_CyclicTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->value(),
+    qreal percent = calcPercent(m_mpi.dac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
@@ -799,7 +799,7 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
 
     for (quint16 pct : seq) {
         qreal current = 16.0 * (normalOpen ? 100 - pct : pct) / 100.0 + 4.0;
-        raw.push_back(m_mpi.GetDac()->rawFromValue(current));
+        raw.push_back(m_mpi.dac()->rawFromValue(current));
     }
     return raw;
 }
@@ -833,7 +833,7 @@ void Program::setMultipleDO(const QVector<bool>& states)
 {
     quint8 mask = 0;
     for (int d = 0; d < states.size(); ++d) {
-        m_mpi.SetDiscreteOutput(d, states[d]);
+        m_mpi.setDiscreteOutput(d, states[d]);
         if (states[d]) mask |= (1 << d);
     }
     //emit SetButtonsDOChecked(mask);
@@ -1076,7 +1076,7 @@ void Program::updateCharts_optionTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.GetDac()->value(),
+    qreal percent = calcPercent(m_mpi.dac()->value(),
                                 m_registry->getValveInfo()->safePosition != 0);
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
@@ -1110,7 +1110,7 @@ void Program::button_DO(quint8 DO_num, bool state)
     }
 
     m_mpi.SetDiscreteOutput(DO_num, state);
-    emit setDoButtonsChecked(m_mpi.GetDOStatus());
+    emit setDoButtonsChecked(m_mpi.digitalOutputs());
 }
 
 void Program::checkbox_autoInit(int state)
