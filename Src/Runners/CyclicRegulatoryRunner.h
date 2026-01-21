@@ -4,7 +4,6 @@
 #pragma once
 #include "BaseRunner.h"
 #include "./CyclicTestSettings.h"
-#include "./Src/Tests/CyclicTestsRegulatory.h"
 
 class CyclicRegulatoryRunner final : public BaseRunner {
     Q_OBJECT

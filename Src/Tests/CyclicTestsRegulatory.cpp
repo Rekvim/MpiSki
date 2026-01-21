@@ -15,6 +15,8 @@ void CyclicTestsRegulatory::Process()
     const auto& raw = m_task.values;
     const auto& seq = m_task.sequence;
 
+    setDacBlocked(raw.front(), 10000, true);
+
     for (quint32 cycle = 0; cycle < m_task.cycles && !m_terminate; ++cycle) {
         for (int i = 0; i < raw.size() && !m_terminate; ++i) {
             const quint16 dacRaw = raw.at(i);
@@ -33,7 +35,7 @@ void CyclicTestsRegulatory::Process()
             emit CycleCompleted(cycle + 1);
     }
 
-    setDacBlocked(0, 0, true, false);
+    setDacBlocked(0, 0, true);
     m_graphTimer->stop();
 
     QVector<QVector<QPointF>> pts;
@@ -43,7 +45,9 @@ void CyclicTestsRegulatory::Process()
 
     emit Results(r);
 
-    emit EndTest();
+    if (m_endTestAfterProcess) {
+        emit EndTest();
+    }
 }
 
 void CyclicTestsRegulatory::SetTask(Task task)

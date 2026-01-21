@@ -1,5 +1,6 @@
 #include "CyclicRegulatoryRunner.h"
 #include "./Program.h"
+#include "./Src/Tests/CyclicTestsRegulatory.h"
 
 QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen)
 {
@@ -60,7 +61,8 @@ void CyclicRegulatoryRunner::wireSpecificSignals(Test& base) {
             Qt::BlockingQueuedConnection);
 
     connect(&t, &CyclicTestsRegulatory::SetStartTime,
-            owner, &Program::setTimeStart);
+            owner, &Program::setTimeStart,
+            Qt::QueuedConnection);
 
     connect(&t, &CyclicTestsRegulatory::StepMeasured,
             owner, &Program::onCyclicStepMeasured,

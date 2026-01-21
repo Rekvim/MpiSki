@@ -28,7 +28,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -1930,12 +1930,12 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>230</width>
+              <width>280</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>Коэффициент трения</string>
+             <string>Коэффициент трения, %</string>
             </property>
            </widget>
           </item>
@@ -1997,6 +1997,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>PTFE: 1–9 %; Graphite: 8–15 %</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_coefficientFriction">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
@@ -2031,12 +2038,12 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>230</width>
+              <width>280</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>Линейность характеристики</string>
+             <string>Линейность характеристики, %</string>
             </property>
            </widget>
           </item>
@@ -2100,12 +2107,12 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>230</width>
+              <width>280</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>Диапазон хода</string>
+             <string>Диапазон хода, ±%</string>
             </property>
            </widget>
           </item>
@@ -2163,18 +2170,18 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>0</width>
+              <width>260</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>230</width>
+              <width>280</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>Диапазон пружин привода</string>
+             <string>Диапазон пружин привода, ±%</string>
             </property>
            </widget>
           </item>
@@ -2253,6 +2260,12 @@
        </item>
        <item>
         <widget class="QWidget" name="widget_6" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>260</width>
+           <height>0</height>
+          </size>
+         </property>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
            <widget class="QCheckBox" name="checkBox_crossingLimits_dinamicError">
@@ -2270,12 +2283,12 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>230</width>
+              <width>280</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>Динамическая ошибка</string>
+             <string>Динамическая ошибка, %</string>
             </property>
            </widget>
           </item>

@@ -33,20 +33,16 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<MainTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    connect(&t, &MainTest::EndTest,
-            owner, &Program::mainTestFinished,
-            Qt::QueuedConnection);
-
     connect(&t, &MainTest::UpdateGraph,
             owner, &Program::updateCharts_mainTest,
             Qt::QueuedConnection);
 
-    connect(&t, &MainTest::DublSeries,
-            owner, [owner]{ emit owner->duplicateMainChartsSeries(); });
-
     connect(&t, &MainTest::GetPoints,
             owner, &Program::receivedPoints_mainTest,
             Qt::BlockingQueuedConnection);
+
+    connect(&t, &MainTest::DublSeries,
+            owner, [owner]{ emit owner->duplicateMainChartsSeries(); });
 
     connect(&t, &MainTest::AddRegression,
             owner, &Program::addRegression,
@@ -69,4 +65,8 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
         emit owner->clearPoints(Charts::Friction);
         emit owner->setRegressionEnable(false);
     });
+
+    connect(&t, &MainTest::EndTest,
+            owner, &Program::mainTestFinished,
+            Qt::QueuedConnection);
 }

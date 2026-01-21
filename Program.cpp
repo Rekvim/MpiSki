@@ -346,7 +346,7 @@ void Program::measureEndPosition(bool normalClosed)
     ts.init.finalPositionColor = Qt::darkYellow;
     emit telemetryUpdated(ts);
 
-    setDacRaw(0xFFFF, 10000, true);
+    setDacRaw(65535, 10000, true);
 
     waitForDacCycle();
 
@@ -402,7 +402,7 @@ void Program::measureEndPositionShutoff(bool normalClosed)
     }
     emit setDoButtonsChecked(m_mpi.GetDOStatus());
 
-    setDacRaw(65535.0, 1000, true);
+    setDacRaw(65535, 1000, true);
 
     waitForDacCycle();
 
@@ -458,7 +458,6 @@ void Program::finalizeInitialization()
 bool Program::isInitialized() const {
     return m_isInitialized;
 }
-
 
 void Program::startMainTest()
 {
@@ -720,7 +719,6 @@ void Program::updateCharts_CyclicTest(Charts chart)
     //         m_lastDiStatus = di;
     //     }
     // }
-    }
 }
 
 QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normalOpen)
