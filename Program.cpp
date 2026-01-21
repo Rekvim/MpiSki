@@ -186,6 +186,7 @@ void Program::updateSensors()
         emit setTask(m_mpi.dac()->value());
 
     Sensor *feedbackSensor = m_mpi.dac();
+
     QString fbValue = feedbackSensor->formattedValue();
     emit setText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
 

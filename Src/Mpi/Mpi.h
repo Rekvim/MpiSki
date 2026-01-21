@@ -9,6 +9,7 @@
 
 #include "Sensor.h"
 #include "./Src/Uart/UartReader.h"
+#include "./Src/Mpi/MpiSettings.h"
 
 class Mpi : public QObject
 {

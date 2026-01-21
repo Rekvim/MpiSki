@@ -10,6 +10,12 @@ class MyChart : public QChartView
 {
     Q_OBJECT
 private:
+    QTimer m_axisTimer;
+    QElapsedTimer m_markerTimer;
+
+    void updateAxes();               // new
+    bool allowMarkerUpdate();  // new
+
     QString m_name;
     const qreal m_minR = 0.1;
     const qreal m_minRTime = 1000;
@@ -74,7 +80,7 @@ public slots:
     void duplicateChartSeries(quint8 seriesN);
     void clear();
     void visible(quint8 seriesN, bool visible);
-    void showdots(bool show);
+    void showDots(bool show);
     void setLabelXformat(QString);
     void autoUpdate(bool);
 

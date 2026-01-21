@@ -3,8 +3,8 @@
 
 static QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen) {
     QVector<quint16> raw; raw.reserve(seq.size());
-    for (quint16 pct : seq) {
-        const qreal cur = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
+    for (qreal pct : seq) {
+        const qreal cur = 16.0 * (normalOpen ? (100.0 - pct) : pct) / 100.0 + 4.0;
         raw.push_back(mpi.GetDac()->rawFromValue(cur));
     }
     return raw;
@@ -18,21 +18,40 @@ RunnerConfig CyclicShutoffRunner::buildConfig() {
     if (p.testType != p.Type::Shutoff) return {};
 
     const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
-    const auto raw = makeRawValues(p.offSeqValues, m_mpi, normalOpen);
+
+    const quint16 rawSafe = m_mpi.GetDac()->rawFromValue(4.0);          // <-- как в Option*Runner
+    const auto rawCycle   = makeRawValues(p.offSeqValues, m_mpi, normalOpen);
 
     CyclicTestsShutoff::Task task;
     task.delayMsecs = p.shutoff_delayMs;
     task.holdMsecs  = p.shutoff_holdMs;
-    task.cycles = p.shutoff_numCycles;
-    task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
+    task.cycles     = p.shutoff_numCycles;
+    task.doMask     = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
 
-    task.values.reserve(p.shutoff_numCycles * raw.size());
-    for (int c = 0; c < p.shutoff_numCycles; ++c) task.values += raw;
+    task.values.clear();
+    task.values.reserve(2 + static_cast<int>(rawCycle.size()) * p.shutoff_numCycles);
+
+    // Стартуем из safe (0% для NC, 100% для NO)
+    task.values.push_back(rawSafe);
+
+    // Дальше выполняем циклы, но без мгновенных дублей
+    for (int c = 0; c < p.shutoff_numCycles; ++c) {
+        if (!rawCycle.isEmpty() && task.values.last() == rawCycle.first()) {
+            task.values += rawCycle.mid(1);
+        } else {
+            task.values += rawCycle;
+        }
+    }
+
+    // Возвращаемся в safe в конце (если уже не там)
+    if (!task.values.isEmpty() && task.values.last() != rawSafe) {
+        task.values.push_back(rawSafe);
+    }
 
     auto* worker = new CyclicTestsShutoff;
     worker->SetTask(task);
 
-    const quint64 steps = static_cast<quint64>(raw.size()) * p.shutoff_numCycles;
+    const quint64 steps   = static_cast<quint64>(task.values.size());
     const quint64 totalMs = steps * (p.shutoff_delayMs + p.shutoff_holdMs);
 
     RunnerConfig cfg;
@@ -72,10 +91,10 @@ void CyclicShutoffRunner::wireSpecificSignals(Test& base) {
 
     // НОВОЕ: Blocking-опрос DI/DO из воркера
     connect(&t, &CyclicTestsShutoff::GetDI,
-            owner, [&](quint8& di){ di = owner->getDIStatus(); },
+            owner, [owner](quint8& di){ di = owner->getDIStatus(); },
             Qt::BlockingQueuedConnection);
 
     connect(&t, &CyclicTestsShutoff::GetDO,
-            owner, [&](quint8& m){ m = owner->getDOStatus(); },
+            owner, [owner](quint8& m){ m = owner->getDOStatus(); },
             Qt::BlockingQueuedConnection);
 }

@@ -485,8 +485,7 @@ static void setIndicatorColor(QWidget* widget, const QString& color, const QStri
                               ).arg(color, border));
 }
 
-static void setIndicatorByState(QWidget* widget,
-                                CrossingStatus::State state)
+static void setIndicatorByState(QWidget* widget, CrossingStatus::State state)
 {
     using State = CrossingStatus::State;
 
@@ -980,7 +979,7 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 
     updateAvailableTabs();
 
-    // ui->groupBox_SettingCurrentSignal->setEnabled(hasSensors);
+    ui->groupBox_SettingCurrentSignal->setEnabled(hasSensors);
 
     ui->pushButton_mainTest_start->setEnabled(sensorCount > 1);
     ui->pushButton_strokeTest_start->setEnabled(hasSensors);
@@ -1029,8 +1028,8 @@ void MainWindow::setChartVisible(Charts chart, quint16 series, bool visible)
 
 void MainWindow::showDots(bool visible)
 {
-    m_charts[Charts::Task]->showdots(visible);
-    m_charts[Charts::Pressure]->showdots(visible);
+    m_charts[Charts::Task]->showDots(visible);
+    m_charts[Charts::Pressure]->showDots(visible);
 }
 
 void MainWindow::duplicateMainChartsSeries()
@@ -1413,10 +1412,10 @@ void MainWindow::initCharts()
     m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f bar"));
     m_charts[Charts::Task]->addAxis(strokeAxisFormat);
     m_charts[Charts::Task]->addSeries(1, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(0, 0, 255));
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), QColor::fromRgb(0, 200, 0));
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), QColor::fromRgb(150, 0, 200));
+    m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), QColor::fromRgb(42, 104, 100));
+    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(42, 0, 255));
+    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), QColor::fromRgb(69, 116, 72));
+    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), QColor::fromRgb(211, 187, 42));
 
     m_charts[Charts::Friction] = ui->Chart_friction;
     m_charts[Charts::Friction]->setName(QStringLiteral("Friction"));

@@ -110,7 +110,7 @@ signals:
     void getPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
 
-    void addPoints(Charts chart, QVector<Point> points);
+    void addPoints(Charts chart, const QVector<Point>& points);
     void clearPoints(Charts chart);
 
     void stopTheTest();

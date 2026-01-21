@@ -68,7 +68,7 @@ void MyChart::drawMarkers(QPoint pos)
 
     set.clear();
 
-    for (MySeries *mySerial : m_mySeries) {
+    for (MySeries *mySerial : qAsConst(m_mySeries)) {
         if (!set.contains(mySerial->getAxisN())) {
             if (mySerial->isVisible()) {
                 set.insert(mySerial->getAxisN());
@@ -319,7 +319,7 @@ void MyChart::addSeries(quint8 axisN, QString name, QColor color)
 
     chart()->legend()->markers(m_mySeriesDubl.last())[0]->setVisible(false);
 
-    this->thread()->msleep(50);
+    // this->thread()->msleep(50);
 
     m_mySeries.push_back(new MySeries(this, axisN));
 
@@ -438,7 +438,7 @@ void MyChart::visible(quint8 seriesN, bool visible)
     autoScale(m_axisX_min, m_axisX_max);
 }
 
-void MyChart::showdots(bool show)
+void MyChart::showDots(bool show)
 {
     for (MySeries *mySerial : m_mySeries) {
         mySerial->setPointsVisible(show);

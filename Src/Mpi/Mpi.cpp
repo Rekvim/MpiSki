@@ -1,11 +1,15 @@
 #include "Mpi.h"
-#include "MpiSettings.h"
 
 Mpi::Mpi(QObject *parent)
     : QObject{parent}
 {
+    m_dac = new Sensor(this);
+
     m_uartReader = new UartReader;
     m_uartThread = new QThread(this);
+
+    connect(m_uartThread, &QThread::finished,
+            m_uartReader, &QObject::deleteLater);
 
     m_uartReader->moveToThread(m_uartThread);
     m_uartThread->start();
@@ -126,12 +130,12 @@ bool Mpi::initialize()
     if (!m_isConnected)
         return false;
 
-    const MpiSettings MpiSettings;
+    const MpiSettings mpiSettings;
 
-    m_dac->setCoefficients(24.0 / 0xFFFF, MpiSettings.GetDac().bias);
+    m_dac->setCoefficients(24.0 / 0xFFFF, mpiSettings.GetDac().bias);
 
-    m_dacMin = 65536 * (MpiSettings.GetDac().min - MpiSettings.GetDac().bias) / 24;
-    m_dacMax = 65536 * (MpiSettings.GetDac().max - MpiSettings.GetDac().bias) / 24;
+    m_dacMin = 65536 * (mpiSettings.GetDac().min - mpiSettings.GetDac().bias) / 24;
+    m_dacMax = 65536 * (mpiSettings.GetDac().max - mpiSettings.GetDac().bias) / 24;
 
     for (const auto &sensor : m_sensors) {
         delete sensor;
@@ -158,6 +162,7 @@ bool Mpi::initialize()
             Sensor *sensor = new Sensor;
             m_sensorByAdc[adcNum] = sensor;
             qreal adcCur = MpiSettings.GetAdc(adcNum);
+
             auto sensorSettings = MpiSettings.GetSensor(sensorNum);
             qreal k = ((sensorSettings.max - sensorSettings.min) * adcCur) / (16 * 0xFFF);
             qreal b = (5 * sensorSettings.min - sensorSettings.max) / 4;
