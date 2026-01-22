@@ -5,7 +5,7 @@ static QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool 
     QVector<quint16> raw; raw.reserve(seq.size());
     for (qreal pct : seq) {
         const qreal cur = 16.0 * (normalOpen ? (100.0 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.GetDac()->rawFromValue(cur));
+        raw.push_back(mpi.dac()->rawFromValue(cur));
     }
     return raw;
 }
@@ -19,7 +19,7 @@ RunnerConfig CyclicShutoffRunner::buildConfig() {
 
     const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
 
-    const quint16 rawSafe = m_mpi.GetDac()->rawFromValue(4.0);          // <-- как в Option*Runner
+    const quint16 rawSafe = m_mpi.dac()->rawFromValue(4.0);          // <-- как в Option*Runner
     const auto rawCycle   = makeRawValues(p.offSeqValues, m_mpi, normalOpen);
 
     CyclicTestsShutoff::Task task;

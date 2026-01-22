@@ -75,11 +75,19 @@ Program::Program(QObject *parent)
     // connect(&m_mpi, &MPI::errorOccured,
     //         this, &Program::errorOccured,
     //         Qt::QueuedConnection);
+
+    qDebug() << "Program thread:" << this->thread();
+    qDebug() << "Mpi thread:" << m_mpi.thread();
 }
 
 void Program::setRegistry(Registry *registry)
 {
     m_registry = registry;
+}
+
+void Program::setup()
+{
+    m_mpi = new Mpi(this);
 }
 
 void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart)
@@ -904,8 +912,10 @@ void Program::startCyclicTest()
 
         QStringList parts;
         parts.reserve(parameters.regSeqValues.size());
+
         for (quint16 v : parameters.regSeqValues)
             parts << QString::number(v);
+
         rec.sequence = parts.join('-');
 
         rec.cycles = parameters.regulatory_numCycles;
@@ -1110,7 +1120,7 @@ void Program::button_DO(quint8 DO_num, bool state)
         return;
     }
 
-    m_mpi.SetDiscreteOutput(DO_num, state);
+    m_mpi.setDiscreteOutput(DO_num, state);
     emit setDoButtonsChecked(m_mpi.digitalOutputs());
 }
 

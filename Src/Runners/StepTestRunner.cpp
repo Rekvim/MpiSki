@@ -8,16 +8,16 @@ static QVector<quint16> buildSequence(const StepTestSettings::TestParameters& p,
     QVector<quint16> seq;
     auto rawFromPct = [&](quint16 pct){
         const qreal cur = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
-        return mpi.GetDac()->rawFromValue(cur);
+        return mpi.dac()->rawFromValue(cur);
     };
 
     const qreal start = 4.0, end = 20.0;
-    seq.push_back(mpi.GetDac()->rawFromValue(start));
+    seq.push_back(mpi.dac()->rawFromValue(start));
     for (auto v : p.points)  seq.push_back(rawFromPct(v));
-    seq.push_back(mpi.GetDac()->rawFromValue(end));
+    seq.push_back(mpi.dac()->rawFromValue(end));
     for (auto it = p.points.crbegin(); it != p.points.crend(); ++it)
         seq.push_back(rawFromPct(*it));
-    seq.push_back(mpi.GetDac()->rawFromValue(start));
+    seq.push_back(mpi.dac()->rawFromValue(start));
     return seq;
 }
 

@@ -14,23 +14,23 @@ RunnerConfig OptionResponseRunner::buildConfig() {
 
     const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
 
-    task.value.push_back(m_mpi.GetDac()->rawFromValue(4.0));
+    task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
 
     for (auto it = p.points.begin(); it != p.points.end(); ++it) {
         for (quint8 i = 0; i < 2; i++) {
             qreal current = 16.0 * (normalOpen ? 100 - *it : *it) / 100 + 4.0;
-            qreal dacValue = m_mpi.GetDac()->rawFromValue(current);
+            qreal dacValue = m_mpi.dac()->rawFromValue(current);
             task.value.push_back(dacValue);
 
             for (auto it_s = p.steps.begin(); it_s < p.steps.end(); ++it_s) {
                 current += (16 * *it_s / 100) * (i == 0 ? 1 : -1) * (normalOpen ? -1 : 1);
-                dacValue = m_mpi.GetDac()->rawFromValue(current);
+                dacValue = m_mpi.dac()->rawFromValue(current);
                 task.value.push_back(dacValue);
             }
         }
     }
 
-    task.value.push_back(m_mpi.GetDac()->rawFromValue(4.0));
+    task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
 
     worker->SetTask(task);
 

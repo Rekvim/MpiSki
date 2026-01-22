@@ -35,8 +35,6 @@ public slots:
     void readDigitalOutputs(quint8 &DO);
     void readDigitalInputs(quint8 &DI);
 
-
-
 private slots:
     void onPortOpened(const QString &portName);
     void onPortClosed();

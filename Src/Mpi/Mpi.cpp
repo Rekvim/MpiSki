@@ -1,4 +1,5 @@
 #include "Mpi.h"
+#include <utility>
 
 Mpi::Mpi(QObject *parent)
     : QObject{parent}
@@ -127,8 +128,11 @@ bool Mpi::initialize()
 {
     emit ADC_Timer(false);
 
-    if (!m_isConnected)
-        return false;
+    if (!m_isConnected) return false;
+
+    qDeleteAll(m_sensors);
+    m_sensors.clear();
+    m_sensorByAdc.fill(nullptr);
 
     const MpiSettings mpiSettings;
 
@@ -137,43 +141,35 @@ bool Mpi::initialize()
     m_dacMin = 65536 * (mpiSettings.GetDac().min - mpiSettings.GetDac().bias) / 24;
     m_dacMax = 65536 * (mpiSettings.GetDac().max - mpiSettings.GetDac().bias) / 24;
 
-    for (const auto &sensor : m_sensors) {
-        delete sensor;
-    }
-    m_sensors.clear();
-
     emit SetChannels(0x3F);
     emit TurnADC_On();
+
     QVector<quint16> adc;
-
     sleep(1000);
-
     emit GetADC(adc);
 
     quint8 sensorNum = 0;
     quint8 channelMask = 0;
 
-    for (const auto &a : adc) {
+    for (const auto& a : std::as_const(adc)) {
         if ((a & 0xFFF) > 0x050) {
+
             quint8 adcNum = a >> 12;
 
             channelMask |= (1 << adcNum);
 
-            Sensor *sensor = new Sensor;
+            Sensor *sensor = new Sensor(this);
             m_sensorByAdc[adcNum] = sensor;
-            qreal adcCur = MpiSettings.GetAdc(adcNum);
 
-            auto sensorSettings = MpiSettings.GetSensor(sensorNum);
+            const qreal adcCur = mpiSettings.GetAdc(adcNum);
+
+            const auto sensorSettings = mpiSettings.GetSensor(sensorNum);
             qreal k = ((sensorSettings.max - sensorSettings.min) * adcCur) / (16 * 0xFFF);
             qreal b = (5 * sensorSettings.min - sensorSettings.max) / 4;
 
             sensor->setCoefficients(k, b);
 
-            if (sensorNum++ == 0) {
-                sensor->setUnit("мм");
-            } else {
-                sensor->setUnit("bar");
-            }
+            sensor->setUnit((sensorNum++ == 0) ? "мм" : "bar");
             m_sensors.push_back(sensor);
         }
     }
@@ -255,7 +251,7 @@ void Mpi::sleep(quint16 msecs)
     loop.exec();
 }
 
-void Mpi::onAdcData(QVector<quint16> adc)
+void Mpi::onAdcData(const QVector<quint16>& adc)
 {
     // if (m_sensors.size() < adc.size())
     //     return;

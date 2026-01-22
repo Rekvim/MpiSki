@@ -80,8 +80,8 @@ public:
     explicit Program(QObject *parent = nullptr);
     void setRegistry(Registry *registry);
     bool isInitialized() const;
-    quint8 getDIStatus() { return m_mpi.GetDIStatus(); }
-    quint8 getDOStatus() { return m_mpi.GetDOStatus(); }
+    quint8 getDIStatus() { return m_mpi.digitalInputs(); }
+    quint8 getDOStatus() { return m_mpi.digitalOutputs(); }
 
 signals:
     void realtimeUpdated(const RealtimeState& s);
@@ -186,7 +186,9 @@ private:
 
     Registry *m_registry;
 
-    Mpi m_mpi;
+    // Mpi m_mpi;
+    Mpi* m_mpi = nullptr;
+
     TelemetryStore m_telemetryStore;
     QTimer *m_diPollTimer = nullptr;
     quint8 m_lastDiStatus = 0;
@@ -210,6 +212,7 @@ private slots:
     void updateSensors();
 
 public slots:
+    void setup();
     void onCyclicStepMeasured(int cycle, int step, bool forward);
 
     void setMultipleDO(const QVector<bool>& states);

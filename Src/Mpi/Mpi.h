@@ -43,7 +43,7 @@ public:
     void setDiscreteOutput(quint8 index, bool state);
 
 public slots:
-    void onAdcData(QVector<quint16> adc);
+    void onAdcData(const QVector<quint16>& adc);
     void onUartConnected(const QString portName);
     void onUartDisconnected();
     void onUartError(QSerialPort::SerialPortError err);

@@ -131,6 +131,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
+    connect(m_programThread, &QThread::started,
+            m_program, &Program::setup);
+
     // соговое окно
     // logOutput = new QPlainTextEdit(this);
     // logOutput->setReadOnly(true);
@@ -434,9 +437,9 @@ void MainWindow::onCountdownTimeout()
 
     ui->statusbar->showMessage(
         tr("Тест в процессе. До завершения теста осталось: %1 (прошло %2 из %3)")
-            .arg(formatHMS(static_cast<quint64>(remaining)))
-            .arg(formatHMS(static_cast<quint64>(elapsed)))
-            .arg(formatHMS(m_totalTestMs))
+            .arg(formatHMS(static_cast<quint64>(remaining)),
+                 formatHMS(static_cast<quint64>(elapsed)),
+                 formatHMS(m_totalTestMs))
         );
 
     if (remaining == 0) m_durationTimer->stop();

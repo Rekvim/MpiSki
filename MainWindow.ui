@@ -1919,7 +1919,7 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>300</width>
+              <width>340</width>
               <height>16777215</height>
              </size>
             </property>
@@ -1992,9 +1992,15 @@
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2077,9 +2083,15 @@
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2197,9 +2209,15 @@ Border-radius: 10px;
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2285,9 +2303,15 @@ Border-radius: 10px;
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2405,9 +2429,15 @@ Border-radius: 10px;
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2487,9 +2517,15 @@ Border-radius: 10px;
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2607,9 +2643,15 @@ Border-radius: 10px;
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2689,9 +2731,15 @@ Border-radius: 10px;
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2812,9 +2860,15 @@ Border-radius: 10px;
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -2897,9 +2951,15 @@ Border-radius: 10px;
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>70</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>40</width>
+                         <width>70</width>
                          <height>16777215</height>
                         </size>
                        </property>
