@@ -120,7 +120,7 @@ signals:
     void releaseBlock();
 
     void mainTestFinished();
-    void getParameters_mainTest(struct MainTestSettings::TestParameters& parameters);
+    void getParameters_mainTest(MainTestSettings::TestParameters& parameters);
     void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
     void getParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
@@ -186,8 +186,7 @@ private:
 
     Registry *m_registry;
 
-    // Mpi m_mpi;
-    Mpi* m_mpi = nullptr;
+    Mpi m_mpi;
 
     TelemetryStore m_telemetryStore;
     QTimer *m_diPollTimer = nullptr;
@@ -212,7 +211,6 @@ private slots:
     void updateSensors();
 
 public slots:
-    void setup();
     void onCyclicStepMeasured(int cycle, int step, bool forward);
 
     void setMultipleDO(const QVector<bool>& states);

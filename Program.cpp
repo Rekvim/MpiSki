@@ -13,6 +13,7 @@
 #include <QRegularExpression>
 #include <QLocale>
 #include <optional>
+#include <utility>
 
 namespace {
 
@@ -75,19 +76,11 @@ Program::Program(QObject *parent)
     // connect(&m_mpi, &MPI::errorOccured,
     //         this, &Program::errorOccured,
     //         Qt::QueuedConnection);
-
-    qDebug() << "Program thread:" << this->thread();
-    qDebug() << "Mpi thread:" << m_mpi.thread();
 }
 
 void Program::setRegistry(Registry *registry)
 {
     m_registry = registry;
-}
-
-void Program::setup()
-{
-    m_mpi = new Mpi(this);
 }
 
 void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart)
@@ -615,16 +608,16 @@ void Program::updateCrossingStatus()
             double recHigh = r->second;
             if (recLow > recHigh) std::swap(recLow, recHigh);
 
-            const double lowD  = std::abs(recLow)  * (limits.springLowerLimit / 100.0); // springLowerLimit как %
+            const double lowD = std::abs(recLow)  * (limits.springLowerLimit / 100.0); // springLowerLimit как %
             const double highD = std::abs(recHigh) * (limits.springUpperLimit / 100.0); // springUpperLimit как %
 
-            const double lowLo  = recLow  - lowD;
-            const double lowHi  = recLow  + lowD;
+            const double lowLo = recLow  - lowD;
+            const double lowHi = recLow  + lowD;
 
             const double highLo = recHigh - highD;
             const double highHi = recHigh + highD;
 
-            const bool okLow  = inRange(ts.mainTestRecord.springLow,  lowLo,  lowHi);
+            const bool okLow = inRange(ts.mainTestRecord.springLow,  lowLo,  lowHi);
             const bool okHigh = inRange(ts.mainTestRecord.springHigh, highLo, highHi);
 
             ts.crossingStatus.spring = (okLow && okHigh) ? State::Ok : State::Fail;
@@ -647,7 +640,6 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.linearCharacteristic = State::Unknown;
     }
 }
-
 
 void Program::results_mainTest(const MainTest::TestResults &results)
 {
@@ -898,7 +890,7 @@ void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResul
 
 void Program::startCyclicTest()
 {
-    CyclicTestSettings::TestParameters parameters;
+    CyclicTestSettings::TestParameters parameters{};
     emit getParameters_cyclicTest(parameters);
     qDebug() << "Program::runningCyclicTest testType =" << int(parameters.testType);
 
@@ -913,7 +905,7 @@ void Program::startCyclicTest()
         QStringList parts;
         parts.reserve(parameters.regSeqValues.size());
 
-        for (quint16 v : parameters.regSeqValues)
+        for (const quint16 v : std::as_const(parameters.regSeqValues))
             parts << QString::number(v);
 
         rec.sequence = parts.join('-');

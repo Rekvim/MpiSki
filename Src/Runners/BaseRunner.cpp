@@ -39,10 +39,6 @@ void BaseRunner::start() {
             this, &BaseRunner::requestSetDAC,
             Qt::QueuedConnection);
 
-    connect(this, SIGNAL(releaseBlock()),
-            m_worker, SLOT(ReleaseBlock()),
-            Qt::QueuedConnection);
-
     connect(m_thread, &QThread::finished,
             m_thread, &QObject::deleteLater);
 
@@ -59,7 +55,7 @@ void BaseRunner::start() {
 
 void BaseRunner::stop() {
     if (m_worker)
-        QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::DirectConnection);
+        QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::QueuedConnection);
 }
 
 void BaseRunner::releaseBlock() {

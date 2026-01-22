@@ -68,15 +68,15 @@ Mpi::Mpi(QObject *parent)
 
     connect(m_uartReader, &UartReader::portOpened,
             this, &Mpi::onUartConnected,
-            Qt::DirectConnection);
+            Qt::QueuedConnection);
 
     connect(m_uartReader, &UartReader::portClosed,
             this, &Mpi::onUartDisconnected,
-            Qt::DirectConnection);
+            Qt::QueuedConnection);
 
     connect(m_uartReader, &UartReader::portError,
             this, &Mpi::onUartError,
-            Qt::DirectConnection);
+            Qt::QueuedConnection);
 
     // connect(m_uartReader, &UartReader::errorOccured,
     //         this, &Mpi::errorOccured,
@@ -197,10 +197,12 @@ void Mpi::SetDAC_Raw(quint16 value)
 
 void Mpi::SetDAC_Real(qreal value)
 {
-    quint16 dac = m_dac->rawFromValue(value);
-    if (dac != m_dac->rawValue()) {
-        m_dac->setValue(m_dac->rawFromValue(value));
-        emit SetDAC(m_dac->rawValue());
+    quint16 newRaw = m_dac->rawFromValue(value);
+    quint16 curRaw = m_dac->rawValue();
+
+    if (newRaw != curRaw) {
+        m_dac->setValue(newRaw);
+        emit SetDAC(newRaw);
     }
 }
 

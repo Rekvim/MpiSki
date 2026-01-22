@@ -1,5 +1,5 @@
 #include "UartReader.h"
-
+#include <QThread>
 UartReader::UartReader(QObject *parent)
     : QObject(parent)
 {
@@ -41,24 +41,43 @@ QByteArray UartReader::SendMessage(const UartMessage &message)
         emit writeAndRead(message.ToByteArray(), readData);
 
         if (readData.isEmpty()) {
-        } else {
-            UartMessage response(readData);
-
-            if (response.CheckCrc()
-                && (response.GetCommand() == Command::OK
-                    || response.GetCommand() == message.GetCommand()))
-            {
-                return response.GetData();
-            }
+            qDebug() << "UART empty reply cmd" << int(message.GetCommand())
+            << "attempt" << attempt;
+            QThread::msleep(20);
+            continue;
         }
+
+        UartMessage response(readData);
+
+        if (!response.CheckCrc()) {
+            qDebug() << "UART CRC fail cmd" << int(message.GetCommand())
+            << "attempt" << attempt;
+            continue;
+        }
+
+        if (!(response.GetCommand() == Command::OK ||
+              response.GetCommand() == message.GetCommand())) {
+            qDebug() << "UART unexpected cmd" << int(response.GetCommand())
+            << "expected" << int(message.GetCommand());
+            continue;
+        }
+
+        return response.GetData();
     }
-    return QByteArray();
+
+    qDebug() << "UART failed cmd" << int(message.GetCommand())
+             << "after attempts" << m_maxAttempts;
+    return {};
 }
 
 void UartReader::autoConnect()
 {
     for (const QSerialPortInfo &port : QSerialPortInfo::availablePorts()) {
         emit openPort(port.portName());
+        if (!m_isConnected) {
+            emit closePort();
+            continue;
+        }
         QByteArray version = SendMessage(UartMessage(Command::GetVersion));
         if (!version.isEmpty()) {
             m_version = version.at(0);
@@ -162,8 +181,28 @@ void UartReader::onPortClosed()
 
 void UartReader::onPortError(QSerialPort::SerialPortError error)
 {
-    if (error != QSerialPort::NoError && error != QSerialPort::TimeoutError)
-        emit portError(error);
+    if (error == QSerialPort::NoError || error == QSerialPort::TimeoutError)
+        return;
+
+    qWarning() << "UART error:" << error; // + добавь errorString из Uart/QSerialPort
+
+    // Фатальные ошибки — дальше бессмысленно продолжать опрос
+    switch (error) {
+    case QSerialPort::WriteError:
+    case QSerialPort::ReadError:
+    case QSerialPort::ResourceError:
+    case QSerialPort::DeviceNotFoundError:
+    case QSerialPort::PermissionError:
+        m_isConnected = false;
+        m_adcPollTimer->stop();
+        emit closePort();          // закрыть реальный порт
+        // можно ещё emit portClosed(); если close() не эмитит portClosed сам
+        break;
+    default:
+        break;
+    }
+
+    emit portError(error);
 }
 
 void UartReader::onAdcPollTimer()

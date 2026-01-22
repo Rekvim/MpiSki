@@ -131,9 +131,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
-    connect(m_programThread, &QThread::started,
-            m_program, &Program::setup);
-
     // соговое окно
     // logOutput = new QPlainTextEdit(this);
     // logOutput->setReadOnly(true);
@@ -155,7 +152,7 @@ MainWindow::MainWindow(QWidget *parent)
     // appendLog("Логовое окно инициализировано");
 
     m_durationTimer = new QTimer(this);
-    m_durationTimer->setInterval(100);
+    m_durationTimer->setInterval(1000);
 
     connect(m_durationTimer, &QTimer::timeout,
             this, &MainWindow::onCountdownTimeout);
@@ -401,11 +398,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::lockTabsForPreInit()
 {
-    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget->setTabEnabled(1, false);
-    // ui->tabWidget->setTabEnabled(2, false);
-    // ui->tabWidget->setTabEnabled(3, false);
-    // ui->tabWidget->setTabEnabled(4, false);
+    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    ui->tabWidget->setTabEnabled(1, false);
+    ui->tabWidget->setTabEnabled(2, false);
+    ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
 }
 
 void MainWindow::updateAvailableTabs()
@@ -417,23 +414,24 @@ void MainWindow::updateAvailableTabs()
     }
 }
 
+static QString formatHMS(quint64 ms)
+{
+    const quint64 totalSec = ms / 1000ULL;
+    const quint64 h = totalSec / 3600ULL;
+    const quint64 m = (totalSec % 3600ULL) / 60ULL;
+    const quint64 s = totalSec % 60ULL;
+
+    return QString("%1:%2:%3")
+        .arg(h, 2, 10, QChar('0'))
+        .arg(m, 2, 10, QChar('0'))
+        .arg(s, 2, 10, QChar('0'));
+}
+
 void MainWindow::onCountdownTimeout()
 {
     const qint64 elapsed = m_elapsedTimer.elapsed();
     qint64 remaining = static_cast<qint64>(m_totalTestMs) - elapsed;
     if (remaining < 0) remaining = 0;
-
-    const auto formatHMS = [](quint64 ms) -> QString {
-        quint64 h = ms / 3600000ULL; ms %= 3600000ULL;
-        quint64 m = ms / 60000ULL; ms %= 60000ULL;
-        quint64 s = ms / 1000ULL;
-        quint64 x = ms % 1000ULL;
-        return QString("%1:%2:%3.%4")
-            .arg(h, 2, 10, QChar('0'))
-            .arg(m, 2, 10, QChar('0'))
-            .arg(s, 2, 10, QChar('0'))
-            .arg(x, 3, 10, QChar('0'));
-    };
 
     ui->statusbar->showMessage(
         tr("Тест в процессе. До завершения теста осталось: %1 (прошло %2 из %3)")
@@ -442,7 +440,8 @@ void MainWindow::onCountdownTimeout()
                  formatHMS(m_totalTestMs))
         );
 
-    if (remaining == 0) m_durationTimer->stop();
+    if (remaining == 0)
+        m_durationTimer->stop();
 }
 
 void MainWindow::onTotalTestTimeMs(quint64 totalMs)
@@ -450,32 +449,11 @@ void MainWindow::onTotalTestTimeMs(quint64 totalMs)
     m_totalTestMs = totalMs;
     m_elapsedTimer.restart();
 
-    if (!m_durationTimer) {
-        m_durationTimer = new QTimer(this);
-        m_durationTimer->setInterval(250);
-        connect(m_durationTimer, &QTimer::timeout,
-                this, &MainWindow::onCountdownTimeout);
-    }
-
-    auto formatHMS = [](quint64 ms) -> QString {
-        const quint64 hours = ms / 3600000ULL;
-        ms %= 3600000ULL;
-        const quint64 minutes = ms / 60000ULL;
-        ms %= 60000ULL;
-        const quint64 seconds = ms / 1000ULL;
-        const quint64 msec = ms % 1000ULL;
-
-        return QString("%1:%2:%3.%4")
-            .arg(hours, 2, 10, QChar('0'))
-            .arg(minutes, 2, 10, QChar('0'))
-            .arg(seconds, 2, 10, QChar('0'))
-            .arg(msec, 3, 10, QChar('0'));
-    };
-
     ui->statusbar->showMessage(
         tr("Плановая длительность теста: %1").arg(formatHMS(m_totalTestMs))
         );
 
+    m_durationTimer->setInterval(1000);
     m_durationTimer->start();
     onCountdownTimeout();
 }
@@ -1006,6 +984,8 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
         ui->checkBox_showCurve_pressure_1->setCheckState(sensorCount > 1 ? Qt::Checked : Qt::Unchecked);
         ui->checkBox_showCurve_pressure_2->setCheckState(sensorCount > 2 ? Qt::Checked : Qt::Unchecked);
         ui->checkBox_showCurve_pressure_3->setCheckState(sensorCount > 3 ? Qt::Checked : Qt::Unchecked);
+
+        syncTaskChartSeriesVisibility(sensorCount);
     }
 }
 void MainWindow::setButtonInitEnabled(bool enable)
@@ -1400,6 +1380,20 @@ void MainWindow::setDiCheckboxesChecked(quint8 bitmask)
     ui->checkBox_switch_0_3->setChecked((bitmask & (1 << 1)) != 0);
 }
 
+void MainWindow::syncTaskChartSeriesVisibility(quint8 sensorCount)
+{
+    auto *ch = m_charts.value(Charts::Task, nullptr);
+    if (!ch) return;
+
+    // 0 - Задание, 1 - линейный датчик, 2..4 - давления 1..3
+    ch->visible(0, sensorCount > 1 && ui->checkBox_showCurve_task->isChecked());
+    ch->visible(1, sensorCount > 1 && ui->checkBox_showCurve_moving->isChecked());
+
+    ch->visible(2, sensorCount > 1 && ui->checkBox_showCurve_pressure_1->isChecked());
+    ch->visible(3, sensorCount > 2 && ui->checkBox_showCurve_pressure_2->isChecked());
+    ch->visible(4, sensorCount > 3 && ui->checkBox_showCurve_pressure_3->isChecked());
+}
+
 void MainWindow::initCharts()
 {
     ValveInfo *valveInfo = m_registry->getValveInfo();
@@ -1415,8 +1409,8 @@ void MainWindow::initCharts()
     m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f bar"));
     m_charts[Charts::Task]->addAxis(strokeAxisFormat);
     m_charts[Charts::Task]->addSeries(1, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), QColor::fromRgb(42, 104, 100));
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(42, 0, 255));
+    m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(42, 104, 159));
     m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), QColor::fromRgb(69, 116, 72));
     m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), QColor::fromRgb(211, 187, 42));
 

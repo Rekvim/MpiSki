@@ -169,6 +169,7 @@ private:
     QImage m_imageChartFriction;
     QImage m_imageChartStep;
 
+    void syncTaskChartSeriesVisibility(quint8 sensorCount);
     void displayDependingPattern();
 
     void initCharts();
