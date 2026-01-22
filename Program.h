@@ -231,7 +231,6 @@ public slots:
     void results_strokeTest(const quint64 forwardTime, const  quint64 backwardTime);
     void results_stepTest(const QVector<StepTest::TestResult> &results, const quint32 T_value);
 
-    void results_cyclicTests(const CyclicTests::TestResults& r);
     void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results);
     void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results);
 

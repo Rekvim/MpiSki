@@ -92,7 +92,22 @@ Mpi::~Mpi()
 bool Mpi::isConnect()
 {
     emit ConnectToUart();
-    return m_isConnected;
+
+    bool ok = false;
+    QString pn;
+
+    QMetaObject::invokeMethod(m_uartReader, "isConnected",
+                              Qt::BlockingQueuedConnection,
+                              Q_RETURN_ARG(bool, ok));
+
+    QMetaObject::invokeMethod(m_uartReader, "portName",
+                              Qt::BlockingQueuedConnection,
+                              Q_RETURN_ARG(QString, pn));
+
+    m_isConnected = ok;
+    if (ok) m_portName = pn;
+
+    return ok;
 }
 
 quint8 Mpi::version()

@@ -39,7 +39,9 @@ struct RangeDeviationRecord {
 
 struct CyclicTestRecord {
     QString sequence = "";
-    quint16 cycles = 0;
+    quint16 numCyclesRegulatory = 0;
+    quint16 numCyclesShutoff = 0;
+
     double  totalTimeSec = 0.0;
     QVector<RangeDeviationRecord> ranges = {};
     int switch3to0Count = 0;

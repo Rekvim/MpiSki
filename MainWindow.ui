@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -3404,6 +3404,21 @@ Border-radius: 10px;
            <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_41">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>1</number>
+           </property>
+           <property name="topMargin">
+            <number>1</number>
+           </property>
+           <property name="rightMargin">
+            <number>1</number>
+           </property>
+           <property name="bottomMargin">
+            <number>1</number>
+           </property>
            <item>
             <widget class="MyChart" name="Chart_cyclicTests"/>
            </item>

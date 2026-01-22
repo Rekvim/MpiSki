@@ -41,18 +41,18 @@ void ReportBuilder_C_SOVT::buildReport(
     // Страница:Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
     cell(report, "Отчет ЦТ", 20, 8, telemetryStore.strokeTestRecord.timeForwardMs);
     cell(report, "Отчет ЦТ", 22, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, "Отчет ЦТ", 24, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
+    cell(report, "Отчет ЦТ", 24, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff));
     cell(report, "Отчет ЦТ", 26, 8, telemetryStore.cyclicTestRecord.sequence);
     cell(report, "Отчет ЦТ", 28, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz"));
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     cell(report,
         "Отчет ЦТ", 36, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
+        QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff)
     );
     cell(report,
         "Отчет ЦТ", 38, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
+        QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff)
     );
 
     const auto &ons  = telemetryStore.cyclicTestRecord.doOnCounts;
@@ -75,7 +75,7 @@ void ReportBuilder_C_SOVT::buildReport(
     // Страница:Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения
     cell(report,
         "Отчет ЦТ", 44, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
+        QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff)
     );
     cell(report,
         "Отчет ЦТ", 44, 10,
@@ -88,7 +88,7 @@ void ReportBuilder_C_SOVT::buildReport(
 
     cell(report,
         "Отчет ЦТ", 46, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
+        QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff)
     );
     cell(report,
         "Отчет ЦТ", 46, 10,

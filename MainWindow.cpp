@@ -743,8 +743,10 @@ void MainWindow::on_pushButton_signal_20mA_clicked()
 
 void MainWindow::setTaskControlsEnabled(bool enabled)
 {
+
     ui->verticalSlider_task->setEnabled(enabled);
     ui->doubleSpinBox_task->setEnabled(enabled);
+    ui->groupBox_DO->setEnabled(enabled);
     ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
 }
 
@@ -1465,7 +1467,6 @@ void MainWindow::initCharts()
     m_charts[Charts::Trend] = ui->Chart_trend;
     m_charts[Charts::Trend]->useTimeaxis(true);
     m_charts[Charts::Trend]->addAxis(QStringLiteral("%.2f%%"));
-    m_charts[Charts::Trend]->addAxis(QStringLiteral("%.2f bar"));
 
     m_charts[Charts::Trend]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Trend]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));

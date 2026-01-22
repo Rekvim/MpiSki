@@ -765,32 +765,32 @@ void Program::updateCharts_CyclicTest(Charts chart)
     points.push_back({1, qreal(time), m_mpi[0]->percent()});
     emit addPoints(chart, points);
 
-    // if (m_patternType == SelectTests::Pattern_C_SOVT  ||
-    //     m_patternType == SelectTests::Pattern_B_SACVT ||
-    //     m_patternType == SelectTests::Pattern_C_SACVT) {
-    //     quint8 di = m_mpi.GetDIStatus();
-    //     if (di != m_lastDiStatus) {
-    //         QVector<Point> diPts;
-    //         bool lastClosed = (m_lastDiStatus & 0x01);
-    //         bool lastOpen = (m_lastDiStatus & 0x02);
-    //         bool nowClosed = (di & 0x01);
-    //         bool nowOpen = (di & 0x02);
-    //         if (nowClosed && !lastClosed) {
-    //             ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
-    //             diPts.push_back({2, qreal(time), 0.0});
-    //         } if (!nowClosed && lastClosed) {
-    //             diPts.push_back({2, qreal(time), 0.0});
-    //         } if (nowOpen && !lastOpen) {
-    //             ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
-    //             diPts.push_back({3, qreal(time), 100.0});
-    //         } if (!nowOpen && lastOpen) {
-    //             diPts.push_back({3, qreal(time), 100.0});
-    //         }
+    if (m_patternType == SelectTests::Pattern_C_SOVT  ||
+        m_patternType == SelectTests::Pattern_B_SACVT ||
+        m_patternType == SelectTests::Pattern_C_SACVT) {
+        quint8 di = m_mpi.digitalInputs();
+        if (di != m_lastDiStatus) {
+            QVector<Point> diPts;
+            bool lastClosed = (m_lastDiStatus & 0x01);
+            bool lastOpen = (m_lastDiStatus & 0x02);
+            bool nowClosed = (di & 0x01);
+            bool nowOpen = (di & 0x02);
+            if (nowClosed && !lastClosed) {
+                ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
+                diPts.push_back({2, qreal(time), 0.0});
+            } if (!nowClosed && lastClosed) {
+                diPts.push_back({2, qreal(time), 0.0});
+            } if (nowOpen && !lastOpen) {
+                ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
+                diPts.push_back({3, qreal(time), 100.0});
+            } if (!nowOpen && lastOpen) {
+                diPts.push_back({3, qreal(time), 100.0});
+            }
 
-    //         if (!diPts.isEmpty()) emit addPoints(chart, diPts);
-    //         m_lastDiStatus = di;
-    //     }
-    // }
+            if (!diPts.isEmpty()) emit addPoints(chart, diPts);
+            m_lastDiStatus = di;
+        }
+    }
 }
 
 QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normalOpen)
@@ -910,11 +910,11 @@ void Program::startCyclicTest()
 
         rec.sequence = parts.join('-');
 
-        rec.cycles = parameters.regulatory_numCycles;
+        rec.numCyclesRegulatory = parameters.regulatory_numCycles;
 
         const quint64 stepsPerCycle = static_cast<quint64>(parameters.regSeqValues.size());
-        const quint64 totalSteps    = stepsPerCycle * parameters.regulatory_numCycles;
-        const quint64 totalMs       = totalSteps *
+        const quint64 totalSteps = stepsPerCycle * parameters.regulatory_numCycles;
+        const quint64 totalMs = totalSteps *
                                 (parameters.regulatory_delayMs + parameters.regulatory_holdMs);
         rec.totalTimeSec = totalMs / 1000.0; // перевели в секунды
 
@@ -934,9 +934,6 @@ void Program::startCyclicTest()
             r.maxReverseValue  = std::numeric_limits<qreal>::max();
             r.maxReverseCycle  = -1;
         }
-
-        rec.switch3to0Count = 0;
-        rec.switch0to3Count = 0;
     }
 
     switch (parameters.testType) {
@@ -1002,21 +999,6 @@ void Program::onCyclicStepMeasured(int cycle, int step, bool forward)
             rec.maxReverseCycle = cycle;
         }
     }
-
-    emit telemetryUpdated(m_telemetryStore);
-}
-
-void Program::results_cyclicTests(const CyclicTests::TestResults& r)
-{
-    auto& dst = m_telemetryStore.cyclicTestRecord;
-    dst.sequence     = r.sequence;
-    dst.cycles       = r.cycles;
-    dst.totalTimeSec = r.totalTimeSec;
-
-    dst.doOnCounts = r.doOnCounts;
-    dst.doOffCounts = r.doOffCounts;
-    dst.switch3to0Count = r.switch3to0Count / 2;
-    dst.switch0to3Count = r.switch0to3Count / 2;
 
     emit telemetryUpdated(m_telemetryStore);
 }

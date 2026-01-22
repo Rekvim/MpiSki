@@ -11,17 +11,18 @@ public:
     explicit CyclicTestsShutoff(QObject* parent = nullptr);
 
     struct Task {
+        int delayMsecs = 0;
+        int holdMsecs  = 0;
+        int cycles     = 0;
+        int stepsPerCycle = 0;
+        QVector<bool> doMask;
         QVector<quint16> values;
-        quint64 delayMsecs = 0;
-        quint64 holdMsecs  = 0;
-        quint16 cycles     = 0;
-        QVector<bool> doMask;  // какие DO участвуют в переключении
     };
 
     struct TestResults {
         QVector<quint16> doOnCounts;
         QVector<quint16> doOffCounts;
-
+        int numCycles;
         quint16 switch3to0Count = 0;
         quint16 switch0to3Count = 0;
     };

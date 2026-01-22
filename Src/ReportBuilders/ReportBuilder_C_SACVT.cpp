@@ -47,7 +47,7 @@ void ReportBuilder_C_SACVT::buildReport(
     cell(report, sheet_1, 21, 8, telemetryStore.strokeTestRecord.timeForwardMs);
     cell(report, sheet_1, 23, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
     cell(report, sheet_1, 25, 8, telemetryStore.cyclicTestRecord.sequence);
-    cell(report, sheet_1, 27, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
+    cell(report, sheet_1, 27, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
     cell(report, sheet_1, 29, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz"));
 
 
@@ -185,7 +185,7 @@ void ReportBuilder_C_SACVT::buildReport(
     cell(report, sheet_1, 85, 8, telemetryStore.strokeTestRecord.timeForwardMs);
     cell(report, sheet_1, 87, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
     cell(report, sheet_1, 89, 8, telemetryStore.cyclicTestRecord.sequence);
-    cell(report, sheet_1, 91, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
+    cell(report, sheet_1, 91, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
     cell(report, sheet_1, 93, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz"));
 
 
@@ -224,14 +224,14 @@ void ReportBuilder_C_SACVT::buildReport(
     // Лист 3; Страница: Отчет ЦТ; Блок: РЕЗУЛЬТАТЫ ИСПЫТАНИЙ СОЛЕНОИДА/КОНЦЕВОГО ВЫКЛЮЧАТЕЛЯ
     cell(report, sheet_1, 148, 8, telemetryStore.strokeTestRecord.timeForwardMs);
     cell(report, sheet_1, 150, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, sheet_1, 152, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
+    cell(report, sheet_1, 152, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff));
     cell(report, sheet_1, 154, 8, telemetryStore.cyclicTestRecord.sequence);
     cell(report, sheet_1, 156, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec)
                                                .toString("mm:ss.zzz"));
 
     // Лист 3; Страница: Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
-    cell(report, sheet_1, 164, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
-    cell(report, sheet_1, 166, 8, QString::number(telemetryStore.cyclicTestRecord.cycles));
+    cell(report, sheet_1, 164, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff));
+    cell(report, sheet_1, 166, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff));
 
     const auto& ons = telemetryStore.cyclicTestRecord.doOnCounts;
     const auto& offs = telemetryStore.cyclicTestRecord.doOffCounts;
@@ -250,7 +250,7 @@ void ReportBuilder_C_SACVT::buildReport(
     // Лист 3; Страница: Отчет ЦТ; Блок: Циклические испытания концевого выключателя/датчика положения
     cell(report,
         "Отчет ЦТ", 172, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
+        QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff)
     );
     cell(report,
         "Отчет ЦТ", 172, 10,
@@ -262,7 +262,7 @@ void ReportBuilder_C_SACVT::buildReport(
     );
     cell(report,
         "Отчет ЦТ", 174, 8,
-        QString::number(telemetryStore.cyclicTestRecord.cycles)
+        QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff)
     );
     cell(report,
         "Отчет ЦТ", 174, 10,

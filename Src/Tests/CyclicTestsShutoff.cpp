@@ -102,6 +102,7 @@ void CyclicTestsShutoff::Process()
     m_graphTimer->stop();
 
     TestResults r;
+    r.numCycles = m_task.cycles;
     r.doOnCounts = m_doOnCounts;
     r.doOffCounts = m_doOffCounts;
     r.switch3to0Count = quint16(s3to0);

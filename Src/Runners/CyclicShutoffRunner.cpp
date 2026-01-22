@@ -10,42 +10,30 @@ static QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool 
     return raw;
 }
 
-RunnerConfig CyclicShutoffRunner::buildConfig() {
+RunnerConfig CyclicShutoffRunner::buildConfig()
+{
     const auto& p = m_params;
-
-    auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
-
     if (p.testType != p.Type::Shutoff) return {};
 
     const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
-
-    const quint16 rawSafe = m_mpi.dac()->rawFromValue(4.0);          // <-- как в Option*Runner
-    const auto rawCycle   = makeRawValues(p.offSeqValues, m_mpi, normalOpen);
+    const auto rawCycle = makeRawValues(p.offSeqValues, m_mpi, normalOpen);
+    if (rawCycle.isEmpty() || p.shutoff_numCycles <= 0) return {};
 
     CyclicTestsShutoff::Task task;
     task.delayMsecs = p.shutoff_delayMs;
-    task.holdMsecs  = p.shutoff_holdMs;
-    task.cycles     = p.shutoff_numCycles;
-    task.doMask     = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
+    task.holdMsecs = p.shutoff_holdMs;
+    task.cycles = p.shutoff_numCycles;
+    task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
+
+    // ВАЖНО: stepsPerCycle = размер шаблона, а не values/cycles
+    task.stepsPerCycle = rawCycle.size();
 
     task.values.clear();
-    task.values.reserve(2 + static_cast<int>(rawCycle.size()) * p.shutoff_numCycles);
+    task.values.reserve(rawCycle.size() * p.shutoff_numCycles);
 
-    // Стартуем из safe (0% для NC, 100% для NO)
-    task.values.push_back(rawSafe);
-
-    // Дальше выполняем циклы, но без мгновенных дублей
+    // Просто повторяем шаблон. Дубли на стыке сохраняются (они нужны!)
     for (int c = 0; c < p.shutoff_numCycles; ++c) {
-        if (!rawCycle.isEmpty() && task.values.last() == rawCycle.first()) {
-            task.values += rawCycle.mid(1);
-        } else {
-            task.values += rawCycle;
-        }
-    }
-
-    // Возвращаемся в safe в конце (если уже не там)
-    if (!task.values.isEmpty() && task.values.last() != rawSafe) {
-        task.values.push_back(rawSafe);
+        task.values += rawCycle;
     }
 
     auto* worker = new CyclicTestsShutoff;

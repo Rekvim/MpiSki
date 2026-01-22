@@ -41,6 +41,9 @@ private slots:
     void onPortError(QSerialPort::SerialPortError err);
     void onAdcPollTimer();
 
+    bool isConnected() const { return m_isConnected; }
+    QString portName() const { return m_portName; }
+
 signals:
     void openPort(const QString &portName);
     void closePort();
