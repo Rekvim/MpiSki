@@ -844,6 +844,7 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
 {
     auto &dst = m_telemetryStore.cyclicTestRecord;
 
+    dst.numCyclesShutoff = results.numCycles;
     dst.doOnCounts  = results.doOnCounts;
     dst.doOffCounts = results.doOffCounts;
 
