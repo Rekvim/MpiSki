@@ -131,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
 
-    // соговое окно
+    // kоговое окно
     // logOutput = new QPlainTextEdit(this);
     // logOutput->setReadOnly(true);
     // logOutput->setStyleSheet("font-size: 8pt;");
@@ -596,11 +596,11 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
         QString("%1 %")
             .arg(telemetry.mainTestRecord.frictionPercent, 0, 'f', 2)
         );
-    ui->lineEdit_frictionForceValue->setText(
+    ui->lineEdit_resultsTable_frictionForceValue->setText(
         QString("%1")
             .arg(telemetry.mainTestRecord.frictionForce, 0, 'f', 3)
         );
-    ui->lineEdit_frictionPercentValue->setText(
+    ui->lineEdit_resultsTable_frictionPercentValue->setText(
         QString("%1")
             .arg(telemetry.mainTestRecord.frictionPercent, 0, 'f', 2)
         );
@@ -622,7 +622,7 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
         QString("%1 mA")
             .arg(telemetry.mainTestRecord.dynamicError_max, 0, 'f', 3)
         );
-    ui->lineEdit_dynamicErrorReal->setText(
+    ui->lineEdit_resultsTable_dynamicErrorReal->setText(
         QString("%1")
             .arg(telemetry.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
         );
@@ -642,7 +642,7 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
         );
 
     // StrokeRecord
-    ui->lineEdit_strokeReal->setText(
+    ui->lineEdit_resultsTable_strokeReal->setText(
         QString("%1").arg(telemetry.valveStrokeRecord.real, 0, 'f', 2));
 
     ui->label_lowLimitValue->setText(
@@ -654,25 +654,24 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
             .arg(telemetry.mainTestRecord.highLimitPressure)
         );
 
-    ui->lineEdit_rangePressure->setText(
+    ui->lineEdit_resultsTable_rangePressure->setText(
         QString("%1–%2")
             .arg(telemetry.mainTestRecord.lowLimitPressure, 0, 'f', 2)
             .arg(telemetry.mainTestRecord.highLimitPressure, 0, 'f', 2)
         );
 
-    ui->lineEdit_driveRangeReal->setText(
+    ui->lineEdit_resultsTable_driveRangeReal->setText(
         QString("%1–%2")
             .arg(telemetry.mainTestRecord.springLow, 0, 'f', 2)
             .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2)
         );
 
     // StrokeTest
-
-    ui->label_strokeTest_forwardTime->setText(telemetry.strokeTestRecord.timeForwardMs);
     ui->lineEdit_strokeTest_forwardTime->setText(telemetry.strokeTestRecord.timeForwardMs);
+    ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(telemetry.strokeTestRecord.timeForwardMs);
 
-    ui->label_strokeTest_backwardTime->setText(telemetry.strokeTestRecord.timeBackwardMs);
     ui->lineEdit_strokeTest_backwardTime->setText(telemetry.strokeTestRecord.timeBackwardMs);
+    ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(telemetry.strokeTestRecord.timeBackwardMs);
 
     // CyclicTestResults
     // ui->label_cyclicTest_sequenceValue->setText(TS.cyclicTestRecord.sequence);
@@ -802,7 +801,7 @@ void MainWindow::setRegistry(Registry *registry)
     ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
     ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
     ui->lineEdit_safePosition->setText(otherParameters->safePosition);
-    ui->lineEdit_dynamicErrorRecomend->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
+    ui->lineEdit_resultsTable_dynamicErrorRecomend->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
     ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo->materialStuffingBoxSeal);
 
     const bool anyCrossingEnabled =
@@ -814,8 +813,8 @@ void MainWindow::setRegistry(Registry *registry)
 
     ui->widget_crossingLimits->setVisible(anyCrossingEnabled);
 
-    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
+    ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo->strokValve);
+    ui->lineEdit_resultsTable_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
 
     ui->widget_crossingLimits_frictionForce->setVisible(limits.frictionEnabled);
     ui->widget_crossingLimits_linearCharacteristic->setVisible(limits.linearCharacteristicEnabled);
@@ -836,8 +835,8 @@ void MainWindow::setRegistry(Registry *registry)
             QString::number(limits.linearCharacteristicLowerLimit, 'f', 2));
     }
 
-    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
+    ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo->strokValve);
+    ui->lineEdit_resultsTable_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
 
     applyCrossingLimitsFromRecommend(valveInfo);
 
@@ -846,8 +845,8 @@ void MainWindow::setRegistry(Registry *registry)
         ui->lineEdit_crossingLimits_dynamicError_upperLimit->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
     }
 
-    ui->lineEdit_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
+    ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo->strokValve);
+    ui->lineEdit_resultsTable_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
 
     if (valveInfo->safePosition != 0) {
         m_stepTestSettings->reverse();
@@ -1207,6 +1206,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestSettings::TestParamet
 
         return;
     } else {
+        parameters = {};
         return;
     }
 }
@@ -1341,14 +1341,14 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
             emit stopTest();
         }
         return;
+    } else {
+        m_isUserCanceled = false;
+
+        m_cyclicTestSettings->setPattern(m_patternType);
+
+        emit runCyclicTest();
+        startTest();
     }
-
-    m_isUserCanceled = false;
-
-    m_cyclicTestSettings->setPattern(m_patternType);
-
-    emit runCyclicTest();
-    startTest();
 }
 
 void MainWindow::on_pushButton_cyclicTest_save_clicked()

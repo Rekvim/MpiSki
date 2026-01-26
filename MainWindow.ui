@@ -25,7 +25,7 @@
    <string>Тестирование</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_16">
+   <layout class="QHBoxLayout" name="horizontalLayout_15">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
@@ -38,7 +38,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1007,7 +1007,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_26">
         <item>
-         <widget class="QFrame" name="frame_6">
+         <widget class="QFrame" name="frame_chart_stroke">
           <property name="styleSheet">
            <string notr="true">background-color: rgb(152, 118, 84);</string>
           </property>
@@ -1041,16 +1041,43 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_strokeTest_menu">
+          <property name="spacing">
+           <number>15</number>
+          </property>
           <item>
            <widget class="QGroupBox" name="groupBox_strokeTest_forwardTime">
             <property name="title">
-             <string>Время прямого хода:</string>
+             <string>Время прямого хода</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_19">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>15</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>15</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
              <item>
-              <widget class="QLabel" name="label_strokeTest_forwardTime">
-               <property name="text">
-                <string/>
+              <widget class="QLineEdit" name="lineEdit_strokeTest_forwardTime">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1060,13 +1087,37 @@
           <item>
            <widget class="QGroupBox" name="groupBox__strokeTest_backwardTime">
             <property name="title">
-             <string>Время обратного хода:</string>
+             <string>Время обратного хода</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_20">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>15</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>15</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
              <item>
-              <widget class="QLabel" name="label_strokeTest_backwardTime">
-               <property name="text">
-                <string/>
+              <widget class="QLineEdit" name="lineEdit_strokeTest_backwardTime">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1088,6 +1139,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_strokeTest_save">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Сохранить</string>
             </property>
@@ -1095,6 +1152,12 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_strokeTest_start">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -1117,7 +1180,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>2</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -3428,191 +3491,143 @@ Border-radius: 10px;
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="spacing">
-           <number>20</number>
+           <number>15</number>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_sequence">
-            <property name="spacing">
-             <number>10</number>
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>Диапозон испытаний</string>
             </property>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_sequence">
-              <property name="font">
-               <font>
-                <family>Segoe UI</family>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Диапозон испытаний</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_sequenceValue">
-              <property name="minimumSize">
-               <size>
-                <width>188</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Segoe UI</family>
-                <pointsize>12</pointsize>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: #E0B7B7; padding: 5px 10px; border-radius: 5px;</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>15</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>15</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="label_cyclicTest_sequenceValue">
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_totalTime">
-            <property name="spacing">
-             <number>10</number>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>Общее время</string>
             </property>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_totalTime">
-              <property name="font">
-               <font>
-                <family>Segoe UI</family>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Общее время</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_totalTimeValue">
-              <property name="minimumSize">
-               <size>
-                <width>188</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Segoe UI</family>
-                <pointsize>12</pointsize>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: #E0B7B7; padding: 5px 10px; border-radius: 5px;</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+            <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>15</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>15</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="label_cyclicTest_totalTimeValue">
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_specifiedCycles">
-            <property name="spacing">
-             <number>10</number>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Количество заданных циклов</string>
             </property>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_specifiedCycles">
-              <property name="font">
-               <font>
-                <family>Segoe UI</family>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Количество заданных циклов</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_specifiedCyclesValue">
-              <property name="minimumSize">
-               <size>
-                <width>188</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Segoe UI</family>
-                <pointsize>12</pointsize>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: #E0B7B7; padding: 5px 10px; border-radius: 5px;</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+            <layout class="QHBoxLayout" name="horizontalLayout_17">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>15</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>15</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="label_cyclicTest_specifiedCyclesValue">
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_completedCycles">
-            <property name="spacing">
-             <number>10</number>
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Количество выполненных циклов</string>
             </property>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_completedCycles">
-              <property name="font">
-               <font>
-                <family>Roboto</family>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Количество выполненных циклов</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_cyclicTest_completedCyclesValue">
-              <property name="minimumSize">
-               <size>
-                <width>188</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Roboto</family>
-                <pointsize>12</pointsize>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: #E0B7B7; padding: 5px 10px; border-radius: 5px;</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+            <layout class="QHBoxLayout" name="horizontalLayout_22">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>15</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>15</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="label_cyclicTest_completedCyclesValue">
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
         </item>
@@ -3649,7 +3664,7 @@ Border-radius: 10px;
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_report">
+      <widget class="QWidget" name="tab_reportGeneration">
        <attribute name="title">
         <string>Формирование отчета</string>
        </attribute>
@@ -3659,15 +3674,18 @@ Border-radius: 10px;
           <property name="currentIndex">
            <number>2</number>
           </property>
-          <widget class="QWidget" name="general">
+          <widget class="QWidget" name="reportGenerationGeneral">
            <attribute name="title">
             <string>Общие данные</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <property name="spacing">
+             <number>15</number>
+            </property>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_36">
+             <layout class="QVBoxLayout" name="verticalLayout_reportGenerationGeneral">
               <item>
-               <widget class="QGroupBox" name="groupBox_objectData">
+               <widget class="QGroupBox" name="groupBox_reportGenerationGeneral_objectData">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                   <horstretch>2</horstretch>
@@ -3919,7 +3937,7 @@ Border-radius: 10px;
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_valveSpecification">
               <item>
-               <widget class="QGroupBox" name="groupBox_valveSpecification">
+               <widget class="QGroupBox" name="groupBox_reportGenerationGeneral_valveSpecification">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -4662,15 +4680,48 @@ Border-radius: 10px;
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="results">
+          <widget class="QWidget" name="verticalLayout_reportGenerationGeneral_resultsTable">
            <attribute name="title">
             <string>Результат диагностики</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_52">
             <item>
-             <layout class="QGridLayout" name="gridLayout">
+             <layout class="QGridLayout" name="gridLayout_resultsTable" rowstretch="0,0,0,0,0,0,0,0,0,0">
+              <property name="sizeConstraint">
+               <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+              </property>
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
+               <number>5</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>15</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>5</number>
+              </property>
               <item row="7" column="0">
-               <widget class="QLabel" name="label_result_frictionPercent">
+               <widget class="QLabel" name="label_resultsTable_frictionPercent">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4684,7 +4735,19 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLabel" name="label_validValue">
+               <widget class="QLabel" name="label_resultsTable_titleValidValue">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>300</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4692,13 +4755,31 @@ Border-radius: 10px;
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
+                <property name="lineWidth">
+                 <number>1</number>
+                </property>
                 <property name="text">
                  <string>Действительное значение</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
               <item row="9" column="0">
-               <widget class="QLabel" name="label_result_strokeTest_backwardTime">
+               <widget class="QLabel" name="label_resultsTable_strokeTest_backwardTime">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4711,7 +4792,19 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="5" column="0">
-               <widget class="QLabel" name="label_result_rangePressure">
+               <widget class="QLabel" name="label_resultsTable_rangePressure">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4726,7 +4819,19 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="4" column="0">
-               <widget class="QLabel" name="label_result_rangeReal_rangeRecomend">
+               <widget class="QLabel" name="label_resultsTable_rangeSpring">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4741,21 +4846,39 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="5" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_rangePressure">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_rangePressure">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="6" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_frictionForceValue">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_frictionForceValue">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QLineEdit" name="lineEdit_dinamicIpRecomend">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_dinamicIpRecomend">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string>0.2–1.0</string>
                 </property>
@@ -4765,35 +4888,71 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="4" column="2">
-               <widget class="QLineEdit" name="lineEdit_driveRangeRecomend">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_driveRangeRecomend">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="8" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_strokeTest_forwardTime">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_strokeTest_forwardTime">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="4" column="1">
-               <widget class="QLineEdit" name="lineEdit_driveRangeReal">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_driveRangeReal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEdit_dynamicErrorReal">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_dynamicErrorReal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QLabel" name="label_result_strokeReal_strokeRecomend">
+               <widget class="QLabel" name="label_resultsTable_strokeReal_strokeRecomend">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4808,28 +4967,58 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="3" column="1">
-               <widget class="QLineEdit" name="lineEdit_strokeReal">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_strokeReal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="3" column="2">
-               <widget class="QLineEdit" name="lineEdit_strokeRecomend">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_strokeRecomend">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QLineEdit" name="lineEdit_dynamicErrorRecomend">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_dynamicErrorRecomend">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="label_result_dinamicIpReal_dinamicIpRecomend">
+               <widget class="QLabel" name="label_resultsTable_dinamicIpReal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4844,7 +5033,13 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_measurementParameter">
+               <widget class="QLabel" name="label_resultsTable_titileMeasurementParameter">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4852,13 +5047,31 @@ Border-radius: 10px;
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
+                <property name="lineWidth">
+                 <number>1</number>
+                </property>
                 <property name="text">
                  <string>Параметр измерения</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_result_dinamicReal_dinamicRecomend">
+               <widget class="QLabel" name="label_resultsTable_dinamicReal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4873,13 +5086,34 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="6" column="0">
-               <widget class="QLabel" name="label_result_friction">
+               <widget class="QLabel" name="label_resultsTable_friction">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
                   <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Shape::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Shadow::Plain</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>2</number>
                 </property>
                 <property name="text">
                  <string>Трение, среднее значение, N</string>
@@ -4887,14 +5121,32 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="9" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_strokeTest_backwardTime">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_strokeTest_backwardTime">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QLabel" name="label_recommendedValue">
+               <widget class="QLabel" name="label_resultsTable_titleRecommendedValue">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>300</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4902,13 +5154,31 @@ Border-radius: 10px;
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
+                <property name="lineWidth">
+                 <number>1</number>
+                </property>
                 <property name="text">
                  <string>Рекомендованное значение</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
               <item row="8" column="0">
-               <widget class="QLabel" name="label_result_strokeTest_forwardTime">
+               <widget class="QLabel" name="label_resultsTable_strokeTest_forwardTime">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>42</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -4921,21 +5191,39 @@ Border-radius: 10px;
                </widget>
               </item>
               <item row="7" column="1" colspan="2">
-               <widget class="QLineEdit" name="lineEdit_frictionPercentValue">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_frictionPercentValue">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QLineEdit" name="lineEdit_dinamicIpReal">
+               <widget class="QLineEdit" name="lineEdit_resultsTable_dinamicIpReal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
               <item row="0" column="3" rowspan="10">
-               <spacer name="horizontalSpacer_19">
+               <spacer name="horizontalSpacer_resultsTable">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="font">
                  <font>
                   <family>Roboto</family>
@@ -4945,6 +5233,9 @@ Border-radius: 10px;
                 </property>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Policy::Expanding</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -5081,17 +5372,17 @@ Border-radius: 10px;
   <tabstop>pushButton_imageChartTask</tabstop>
   <tabstop>pushButton_imageChartPressure</tabstop>
   <tabstop>pushButton_imageChartFriction</tabstop>
-  <tabstop>lineEdit_dynamicErrorReal</tabstop>
-  <tabstop>lineEdit_strokeReal</tabstop>
-  <tabstop>lineEdit_driveRangeReal</tabstop>
-  <tabstop>lineEdit_frictionForceValue</tabstop>
-  <tabstop>lineEdit_frictionPercentValue</tabstop>
-  <tabstop>lineEdit_strokeTest_forwardTime</tabstop>
-  <tabstop>lineEdit_strokeTest_backwardTime</tabstop>
-  <tabstop>lineEdit_driveRangeRecomend</tabstop>
-  <tabstop>lineEdit_dynamicErrorRecomend</tabstop>
+  <tabstop>lineEdit_resultsTable_dynamicErrorReal</tabstop>
+  <tabstop>lineEdit_resultsTable_strokeReal</tabstop>
+  <tabstop>lineEdit_resultsTable_driveRangeReal</tabstop>
+  <tabstop>lineEdit_resultsTable_frictionForceValue</tabstop>
+  <tabstop>lineEdit_resultsTable_frictionPercentValue</tabstop>
+  <tabstop>lineEdit_resultsTable_strokeTest_forwardTime</tabstop>
+  <tabstop>lineEdit_resultsTable_strokeTest_backwardTime</tabstop>
+  <tabstop>lineEdit_resultsTable_driveRangeRecomend</tabstop>
+  <tabstop>lineEdit_resultsTable_dynamicErrorRecomend</tabstop>
   <tabstop>Chart_step</tabstop>
-  <tabstop>lineEdit_strokeRecomend</tabstop>
+  <tabstop>lineEdit_resultsTable_strokeRecomend</tabstop>
   <tabstop>Chart_resolution</tabstop>
   <tabstop>Chart_pressure</tabstop>
   <tabstop>Chart_friction</tabstop>

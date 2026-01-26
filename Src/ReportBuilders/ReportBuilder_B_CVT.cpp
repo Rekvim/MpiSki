@@ -37,9 +37,9 @@ void ReportBuilder_B_CVT::buildReport(
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
     cell(report, sheet_1, 19, 8, telemetryStore.strokeTestRecord.timeForwardMs);
     cell(report, sheet_1, 21, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, sheet_1, 23, 8, telemetryStore.cyclicTestRecord.sequence);
+    cell(report, sheet_1, 23, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
     cell(report, sheet_1, 25, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
-    cell(report, sheet_1, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz"));
+    cell(report, sheet_1, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory).toString("mm:ss.zzz"));
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
@@ -174,9 +174,9 @@ void ReportBuilder_B_CVT::buildReport(
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
     cell(report, sheet_1, 80, 8, telemetryStore.strokeTestRecord.timeForwardMs);
     cell(report, sheet_1, 82, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, sheet_1, 84, 8, telemetryStore.cyclicTestRecord.sequence);
+    cell(report, sheet_1, 84, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
     cell(report, sheet_1, 86, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
-    cell(report, sheet_1, 88, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz"));
+    cell(report, sheet_1, 88, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory).toString("mm:ss.zzz"));
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
     cell(report, sheet_1, 117, 4, objectInfo.FIO);

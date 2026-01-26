@@ -56,10 +56,6 @@ void CyclicRegulatoryRunner::wireSpecificSignals(Test& base) {
             owner, [owner]{ owner->updateCharts_CyclicTest(Charts::Cyclic); },
             Qt::QueuedConnection);
 
-    connect(&t, &CyclicTestsRegulatory::GetPoints,
-            owner, &Program::receivedPoints_cyclicTest,
-            Qt::BlockingQueuedConnection);
-
     connect(&t, &CyclicTestsRegulatory::SetStartTime,
             owner, &Program::setTimeStart,
             Qt::QueuedConnection);

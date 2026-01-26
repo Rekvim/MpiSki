@@ -21,26 +21,19 @@ RunnerConfig CyclicShutoffRunner::buildConfig()
 
     CyclicTestsShutoff::Task task;
     task.delayMsecs = p.shutoff_delayMs;
-    task.holdMsecs = p.shutoff_holdMs;
+    task.holdMsecs  = p.shutoff_holdMs;
     task.cycles = p.shutoff_numCycles;
     task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
 
-    // ВАЖНО: stepsPerCycle = размер шаблона, а не values/cycles
-    task.stepsPerCycle = rawCycle.size();
-
-    task.values.clear();
-    task.values.reserve(rawCycle.size() * p.shutoff_numCycles);
-
-    // Просто повторяем шаблон. Дубли на стыке сохраняются (они нужны!)
-    for (int c = 0; c < p.shutoff_numCycles; ++c) {
-        task.values += rawCycle;
-    }
+    // values = шаблон одного цикла
+    task.values = rawCycle;
 
     auto* worker = new CyclicTestsShutoff;
     worker->SetTask(task);
 
-    const quint64 steps   = static_cast<quint64>(task.values.size());
-    const quint64 totalMs = steps * (p.shutoff_delayMs + p.shutoff_holdMs);
+    const quint64 stepsPerCycle = static_cast<quint64>(rawCycle.size());
+    const quint64 totalSteps    = stepsPerCycle * static_cast<quint64>(task.cycles);
+    const quint64 totalMs       = totalSteps * static_cast<quint64>(task.delayMsecs + task.holdMsecs);
 
     RunnerConfig cfg;
     cfg.worker = worker;
@@ -57,13 +50,9 @@ void CyclicShutoffRunner::wireSpecificSignals(Test& base) {
             owner, [owner]{ owner->updateCharts_CyclicTest(Charts::Cyclic); },
             Qt::QueuedConnection);
 
-    // GetPoints больше НЕ нужен для подсчёта DI — можешь оставить, если рисование требует.
-    // connect(&t, &CyclicTestsShutoff::GetPoints,
-    //         owner, &Program::receivedPoints_cyclicTest,
-    //         Qt::BlockingQueuedConnection);
-
     connect(&t, &CyclicTestsShutoff::SetStartTime,
-            owner, &Program::setTimeStart);
+            owner, &Program::setTimeStart,
+            Qt::QueuedConnection);
 
     connect(&t, &CyclicTestsShutoff::Results,
             owner, &Program::results_cyclicShutoffTests,
@@ -80,9 +69,9 @@ void CyclicShutoffRunner::wireSpecificSignals(Test& base) {
     // НОВОЕ: Blocking-опрос DI/DO из воркера
     connect(&t, &CyclicTestsShutoff::GetDI,
             owner, [owner](quint8& di){ di = owner->getDIStatus(); },
-            Qt::BlockingQueuedConnection);
+            Qt::DirectConnection);
 
     connect(&t, &CyclicTestsShutoff::GetDO,
             owner, [owner](quint8& m){ m = owner->getDOStatus(); },
-            Qt::BlockingQueuedConnection);
+            Qt::DirectConnection);
 }

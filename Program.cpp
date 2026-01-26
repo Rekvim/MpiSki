@@ -414,7 +414,7 @@ void Program::measureStartPositionShutoff(bool normalClosed)
     }
     emit setDoButtonsChecked(m_mpi.digitalOutputs());
 
-    setDacRaw(0, 10000, true, true);
+    setDacRaw(0, 1000, true, true);
 
     waitForDacCycle();
 
@@ -430,7 +430,7 @@ void Program::measureEndPositionShutoff(bool normalClosed)
 {
     auto &s = m_telemetryStore;
 
-    s.init.finalPositionText  = "Измерение";
+    s.init.finalPositionText = "Измерение";
     s.init.finalPositionColor = Qt::darkYellow;
     emit telemetryUpdated(s);
 
@@ -449,7 +449,7 @@ void Program::measureEndPositionShutoff(bool normalClosed)
     if (normalClosed) m_mpi[0]->captureMax();
     else m_mpi[0]->captureMin();
 
-    s.init.finalPositionText  = m_mpi[0]->formattedValue();
+    s.init.finalPositionText = m_mpi[0]->formattedValue();
     s.init.finalPositionColor = Qt::darkGreen;
     emit telemetryUpdated(s);
 }
@@ -845,23 +845,13 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
     auto &dst = m_telemetryStore.cyclicTestRecord;
 
     dst.numCyclesShutoff = results.numCycles;
-    dst.doOnCounts  = results.doOnCounts;
+    dst.doOnCounts = results.doOnCounts;
     dst.doOffCounts = results.doOffCounts;
 
     dst.switch3to0Count = results.switch3to0Count;
     dst.switch0to3Count = results.switch0to3Count;
 
     emit telemetryUpdated(m_telemetryStore);
-
-    // auto &dst = m_telemetryStore.cyclicTestRecord;
-
-    // dst.sequence = "0-100-0";
-    // dst.doOnCounts = results.doOnCounts;
-    // dst.doOffCounts = results.doOffCounts;
-    // dst.switch3to0Count = results.switch3to0Count / 2;
-    // dst.switch0to3Count = results.switch0to3Count / 2;
-
-    // emit telemetryUpdated(m_telemetryStore);
 }
 
 void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
@@ -895,8 +885,10 @@ void Program::startCyclicTest()
     emit getParameters_cyclicTest(parameters);
     qDebug() << "Program::runningCyclicTest testType =" << int(parameters.testType);
 
-    if (parameters.regSeqValues.isEmpty() && parameters.offSeqValues.isEmpty())
+    if (parameters.regSeqValues.isEmpty() && parameters.offSeqValues.isEmpty()) {
+        emit testFinished();
         return;
+    }
 
     if (parameters.testType == CyclicTestSettings::TestParameters::Regulatory ||
         parameters.testType == CyclicTestSettings::TestParameters::Combined) {
@@ -909,7 +901,7 @@ void Program::startCyclicTest()
         for (const quint16 v : std::as_const(parameters.regSeqValues))
             parts << QString::number(v);
 
-        rec.sequence = parts.join('-');
+        rec.sequenceRegulatory = parts.join('-');
 
         rec.numCyclesRegulatory = parameters.regulatory_numCycles;
 
@@ -917,7 +909,7 @@ void Program::startCyclicTest()
         const quint64 totalSteps = stepsPerCycle * parameters.regulatory_numCycles;
         const quint64 totalMs = totalSteps *
                                 (parameters.regulatory_delayMs + parameters.regulatory_holdMs);
-        rec.totalTimeSec = totalMs / 1000.0; // перевели в секунды
+        rec.totalTimeSecRegulatory = totalMs / 1000.0; // перевели в секунды
 
         // 4) Диапазоны для onCyclicStepMeasured
         rec.ranges.clear();
@@ -935,6 +927,27 @@ void Program::startCyclicTest()
             r.maxReverseValue  = std::numeric_limits<qreal>::max();
             r.maxReverseCycle  = -1;
         }
+    }
+
+    if (parameters.testType == CyclicTestSettings::TestParameters::Shutoff) {
+
+        auto& rec = m_telemetryStore.cyclicTestRecord;
+
+        QStringList parts;
+        parts.reserve(parameters.offSeqValues.size());
+
+        for (const quint16 v : std::as_const(parameters.offSeqValues))
+            parts << QString::number(v);
+
+        rec.sequenceShutoff = parts.join('-');
+
+        rec.numCyclesShutoff = parameters.shutoff_numCycles;
+
+        const quint64 stepsPerCycle = static_cast<quint64>(parameters.offSeqValues.size());
+        const quint64 totalSteps = stepsPerCycle * parameters.shutoff_numCycles;
+        const quint64 totalMs = totalSteps *
+                                (parameters.shutoff_delayMs + parameters.shutoff_holdMs);
+        rec.totalTimeSecShutoff = totalMs / 1000.0; // перевели в секунды
     }
 
     switch (parameters.testType) {

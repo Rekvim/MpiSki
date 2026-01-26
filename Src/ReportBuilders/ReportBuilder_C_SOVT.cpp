@@ -25,13 +25,9 @@ void ReportBuilder_C_SOVT::buildReport(
     cell(report, "Отчет ЦТ", 5, 13, valveInfo.serialNumber);
     cell(report, "Отчет ЦТ", 6, 13, valveInfo.valveModel);
     cell(report, "Отчет ЦТ", 7, 13, valveInfo.manufacturer);
-    cell(report, "Отчет ЦТ", 8, 13, QString("%1 / %2")
-                                                  .arg(valveInfo.DN)
-                                                  .arg(valveInfo.PN));
+    cell(report, "Отчет ЦТ", 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
     cell(report, "Отчет ЦТ", 9, 13, valveInfo.solenoidValveModel);
-    cell(report, "Отчет ЦТ", 10, 13, QString("%1 / %2")
-                                                   .arg(valveInfo.limitSwitchModel)
-                                                   .arg(valveInfo.positionSensorModel));
+    cell(report, "Отчет ЦТ", 10, 13, QString("%1 / %2").arg(valveInfo.limitSwitchModel, valveInfo.positionSensorModel));
     cell(report, "Отчет ЦТ",11, 13, QString::asprintf("%.2f", telemetryStore.supplyRecord.pressure_bar));
     cell(report, "Отчет ЦТ", 12, 13, otherParams.safePosition);
     cell(report, "Отчет ЦТ", 13, 13, valveInfo.driveModel);
@@ -42,8 +38,8 @@ void ReportBuilder_C_SOVT::buildReport(
     cell(report, "Отчет ЦТ", 20, 8, telemetryStore.strokeTestRecord.timeForwardMs);
     cell(report, "Отчет ЦТ", 22, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
     cell(report, "Отчет ЦТ", 24, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesShutoff));
-    cell(report, "Отчет ЦТ", 26, 8, telemetryStore.cyclicTestRecord.sequence);
-    cell(report, "Отчет ЦТ", 28, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSec).toString("mm:ss.zzz"));
+    cell(report, "Отчет ЦТ", 26, 8, telemetryStore.cyclicTestRecord.sequenceShutoff);
+    cell(report, "Отчет ЦТ", 28, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecShutoff).toString("mm:ss.zzz"));
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания соленоидного клапана
     cell(report,

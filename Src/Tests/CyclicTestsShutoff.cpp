@@ -17,7 +17,6 @@ static inline bool bit(quint8 mask, int b)
 void CyclicTestsShutoff::Process()
 {
     emit ClearGraph();
-
     emit SetStartTime();
     m_graphTimer->start(100);
 
@@ -43,62 +42,61 @@ void CyclicTestsShutoff::Process()
 
     auto consumeDI = [&](quint8 nowDI) {
         const bool lastClosed = bit(lastDI, 0);
-        const bool lastOpen   = bit(lastDI, 1);
-        const bool nowClosed  = bit(nowDI, 0);
-        const bool nowOpen    = bit(nowDI, 1);
+        const bool lastOpen = bit(lastDI, 1);
+        const bool nowClosed = bit(nowDI, 0);
+        const bool nowOpen = bit(nowDI, 1);
 
-        // считаем только сработки (rising edges)
         if (nowClosed && !lastClosed) ++s3to0;
-        if (nowOpen   && !lastOpen)   ++s0to3;
+        if (nowOpen && !lastOpen) ++s0to3;
 
         lastDI = nowDI;
     };
 
-    const int perCycle = (m_task.cycles > 0
-                              ? int(m_task.values.size() / m_task.cycles)
-                              : int(m_task.values.size()));
+    const auto& cycleValues = m_task.values;
+    if (cycleValues.isEmpty() || m_task.cycles <= 0) {
+        setDacBlocked(0, 0, true);
+        m_graphTimer->stop();
+        emit EndTest();
+        return;
+    }
 
-    for (quint32 step = 0; step < quint32(m_task.values.size()) && !m_terminate; ++step) {
-        const quint16 value = m_task.values.at(int(step));
+    for (quint32 cycle = 0; cycle < quint32(m_task.cycles) && !m_terminate; ++cycle) {
+        for (int i = 0; i < cycleValues.size() && !m_terminate; ++i) {
+            const quint16 value = cycleValues.at(i);
 
-        // Переключаем DO (как у тебя), но DI считаем по факту после воздействия
-        if (perCycle > 0 && (step % quint32(perCycle)) != 0) {
-            for (int d = 0; d < DO_COUNT; ++d) {
-                if (!m_task.doMask[d]) continue;
+            // Поведение сохраняем: DO toggling на каждом шаге, кроме первого шага цикла
+            if (i != 0) {
+                for (int d = 0; d < DO_COUNT; ++d) {
+                    if (!m_task.doMask[d]) continue;
 
-                currentStates[d] = !currentStates[d];
+                    currentStates[d] = !currentStates[d];
+                    if (currentStates[d]) ++m_doOnCounts[d];
+                    else ++m_doOffCounts[d];
+                }
 
-                if (currentStates[d]) ++m_doOnCounts[d];
-                else ++m_doOffCounts[d];
+                emit SetMultipleDO(currentStates);
+
+                // DI сразу после переключения DO
+                quint8 di = 0;
+                emit GetDI(di);
+                consumeDI(di);
             }
 
-            emit SetMultipleDO(currentStates);
+            setDacBlocked(value, m_task.delayMsecs, m_task.holdMsecs);
 
-            // DI сразу после переключения DO (иногда уже успевает измениться)
-            quint8 di = 0;
-            emit GetDI(di);
-            consumeDI(di);
+            // DI после выдержки — обычно надёжнее всего ловить сработку тут
+            {
+                quint8 di = 0;
+                emit GetDI(di);
+                consumeDI(di);
+            }
         }
 
-        setDacBlocked(value, m_task.delayMsecs);
-        if (m_terminate) { emit EndTest(); return; }
-
-        setDacBlocked(value, m_task.holdMsecs);
-        if (m_terminate) { emit EndTest(); return; }
-
-        // DI после выдержки — обычно самое надёжное место для фиксации сработки
-        {
-            quint8 di = 0;
-            emit GetDI(di);
-            consumeDI(di);
-        }
-
-        if (perCycle > 0 && (step + 1) % quint32(perCycle) == 0) {
-            emit CycleCompleted(int((step + 1) / quint32(perCycle)));
+        if (!m_terminate) {
+            emit CycleCompleted(int(cycle + 1));
         }
     }
 
-    setDacBlocked(0, 0, true);
     m_graphTimer->stop();
 
     TestResults r;
