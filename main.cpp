@@ -24,8 +24,6 @@ int main(int argc, char *argv[])
 
     Registry registry;
 
-    MainWindow mainWindow;
-
     ObjectWindow objectWindow;
     objectWindow.LoadFromReg(&registry);
     if (objectWindow.exec() == QDialog::Rejected)
@@ -44,9 +42,11 @@ int main(int argc, char *argv[])
     if (valveWindow.exec() == QDialog::Rejected)
         return 0;
 
+    MainWindow mainWindow;
     mainWindow.setPatternType(selectedPattern);
     mainWindow.setRegistry(&registry);
     mainWindow.show();
     QTimer::singleShot(0, &mainWindow, [&]{ mainWindow.showMaximized(); });
+    qDebug() << "topLevelWidgets:" << QApplication::topLevelWidgets();
     return a.exec();
 }

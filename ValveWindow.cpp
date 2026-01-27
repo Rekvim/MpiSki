@@ -2,12 +2,23 @@
 #include "ui_ValveWindow.h"
 #include "./Src/ValidatorFactory/ValidatorFactory.h"
 #include <QDebug>
-
+#include <QTimer>
+#include <QScreen>
+#include <QGuiApplication>
 ValveWindow::ValveWindow(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::ValveWindow)
 {
     ui->setupUi(this);
+
+    QTimer::singleShot(0, this, [this]{
+        auto *scr = screen(); // экран, где окно
+        if (!scr) scr = QGuiApplication::primaryScreen();
+
+        const QRect r = scr->availableGeometry();
+        setWindowState(Qt::WindowNoState);
+        setGeometry(r);
+    });
 
     ui->tabWidget->setCurrentIndex(0);
 

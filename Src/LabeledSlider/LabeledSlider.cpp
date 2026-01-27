@@ -3,13 +3,12 @@
 #include <QStylePainter>
 #include <QStyleOptionSlider>
 #include <QFontMetrics>
-#include <algorithm>
 #include <QEvent>
+#include <algorithm>
 
 LabeledSlider::LabeledSlider(QWidget* parent)
     : QSlider(parent)
 {
-    // НЕ Fixed: иначе легко получить width == leftAreaWidth и слайдер исчезает
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 }
 
@@ -45,11 +44,26 @@ void LabeledSlider::setTickGap(int px)
     update();
 }
 
+void LabeledSlider::setLabelPointSize(int pt)
+{
+    m_labelPointSize = std::max(1, pt);
+    updateWidthConstraints();
+    updateGeometry();
+    update();
+}
+
+QFont LabeledSlider::labelFont() const
+{
+    QFont f = font();
+    f.setPointSize(m_labelPointSize);
+    return f;
+}
+
 int LabeledSlider::labelsMaxTextWidth() const
 {
     if (m_labels.isEmpty()) return 0;
 
-    QFontMetrics fm(font());
+    QFontMetrics fm(labelFont());  // ✅ тот же шрифт, что и в paint
     int w = 0;
     for (auto it = m_labels.cbegin(); it != m_labels.cend(); ++it)
         w = std::max(w, fm.horizontalAdvance(it.value()));
@@ -59,23 +73,16 @@ int LabeledSlider::labelsMaxTextWidth() const
 int LabeledSlider::leftAreaWidth() const
 {
     if (m_labels.isEmpty()) return 0;
-    return labelsMaxTextWidth() + m_labelOffset + m_tickLen + 2;
+    return labelsMaxTextWidth() + m_labelOffset + m_tickLen + m_tickGap + 2;
 }
 
 void LabeledSlider::updateWidthConstraints()
 {
     if (orientation() != Qt::Vertical) return;
 
-    // сколько нужно под "сам слайдер" (без подписей)
     const int sliderW = QSlider::sizeHint().width();
-
-    // минимальная ширина = слайдер + левое поле
     const int minW = sliderW + leftAreaWidth();
-
     setMinimumWidth(minW);
-
-    // Если хочешь, чтобы он вообще не растягивался шире:
-    // setMaximumWidth(minW);
 }
 
 QSize LabeledSlider::sizeHint() const
@@ -85,7 +92,7 @@ QSize LabeledSlider::sizeHint() const
     if (orientation() == Qt::Vertical) {
         base.rwidth() += leftAreaWidth();
     } else {
-        QFontMetrics fm(font());
+        QFontMetrics fm(labelFont());
         base.rheight() += fm.height() + m_labelOffset + m_tickLen + 2;
     }
     return base;
@@ -98,7 +105,7 @@ QSize LabeledSlider::minimumSizeHint() const
     if (orientation() == Qt::Vertical) {
         base.rwidth() += leftAreaWidth();
     } else {
-        QFontMetrics fm(font());
+        QFontMetrics fm(labelFont());
         base.rheight() += fm.height() + m_labelOffset + m_tickLen + 2;
     }
     return base;
@@ -118,9 +125,7 @@ bool LabeledSlider::event(QEvent* e)
     return QSlider::event(e);
 }
 
-
-
-void LabeledSlider::paintEvent(QPaintEvent* /*e*/)
+void LabeledSlider::paintEvent(QPaintEvent*)
 {
     QStylePainter p(this);
     p.setRenderHint(QPainter::TextAntialiasing, true);
@@ -128,32 +133,21 @@ void LabeledSlider::paintEvent(QPaintEvent* /*e*/)
     QStyleOptionSlider opt;
     initStyleOption(&opt);
 
-    // На всякий случай явно укажем что рисуем
     opt.subControls = QStyle::SC_SliderGroove | QStyle::SC_SliderHandle;
     if (tickPosition() != QSlider::NoTicks)
         opt.subControls |= QStyle::SC_SliderTickmarks;
 
-    const int leftWanted = (orientation() == Qt::Vertical) ? leftAreaWidth() : 0;
-
+    // --- выделяем место слева под подписи (vertical) ---
     QRect sliderRect = rect();
-
-    if (orientation() == Qt::Vertical) {
-        // минимальная ширина "самого слайдера"
+    if (orientation() == Qt::Vertical && !m_labels.isEmpty()) {
         const int minSliderW = QSlider::sizeHint().width();
-
-        int left = leftWanted;
-
-        // если внезапно не помещается — не даём схлопнуться в ноль
-        if (sliderRect.width() < left + minSliderW) {
+        int left = leftAreaWidth();
+        if (sliderRect.width() < left + minSliderW)
             left = std::max(0, sliderRect.width() - minSliderW);
-        }
-
         sliderRect.adjust(left, 0, 0, 0);
     }
 
     opt.rect = sliderRect;
-
-    // Рисуем сам слайдер
     p.drawComplexControl(QStyle::CC_Slider, opt);
 
     if (m_labels.isEmpty())
@@ -162,8 +156,9 @@ void LabeledSlider::paintEvent(QPaintEvent* /*e*/)
     const QRect groove = style()->subControlRect(QStyle::CC_Slider, &opt,
                                                  QStyle::SC_SliderGroove, this);
 
-    QFontMetrics fm(font());
-    p.setPen(Qt::black);
+    const QFont lf = labelFont();
+    p.setFont(lf);
+    const QFontMetrics fm(lf);
 
     if (orientation() == Qt::Vertical) {
         for (auto it = m_labels.cbegin(); it != m_labels.cend(); ++it) {
@@ -177,20 +172,22 @@ void LabeledSlider::paintEvent(QPaintEvent* /*e*/)
                                                          QStyle::SC_SliderHandle, this);
             const int y = handle.center().y();
 
-            // Риска у слайдера (слева от groove)
+            // tick
             const int xTick0 = groove.left() - m_tickGap;
             const int xTick1 = xTick0 - m_tickLen;
-            p.drawLine(QPoint(xTick0, y), QPoint(xTick1, y));
 
             QPen tickPen(palette().color(QPalette::Mid));
             tickPen.setWidth(1);
             p.setPen(tickPen);
             p.drawLine(QPoint(xTick0, y), QPoint(xTick1, y));
 
-            p.setPen(Qt::black); // вернуть для текста
+            // text
+            p.setPen(palette().color(QPalette::WindowText));
 
-            // Текст левее риски
-            const QString text = it.value();
+            // максимум доступной ширины для текста — до левого края виджета
+            const int maxTextW = std::max(0, xTick1 - m_labelOffset);
+            const QString text = fm.elidedText(it.value(), Qt::ElideLeft, maxTextW);
+
             const int textW = fm.horizontalAdvance(text);
             const int textH = fm.height();
 
@@ -199,9 +196,8 @@ void LabeledSlider::paintEvent(QPaintEvent* /*e*/)
 
             QRect r(xText, yText, textW, textH);
             r = r.intersected(rect());
-            if (!r.isValid()) continue;
-
-            p.drawText(r, Qt::AlignLeft | Qt::AlignVCenter, text);
+            if (r.isValid())
+                p.drawText(r, Qt::AlignLeft | Qt::AlignVCenter, text);
         }
     }
 }

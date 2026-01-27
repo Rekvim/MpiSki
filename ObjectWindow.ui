@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>826</width>
-    <height>300</height>
+    <width>525</width>
+    <height>258</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="font">
    <font>
@@ -24,7 +30,7 @@
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>14</pointsize>
+       <pointsize>11</pointsize>
       </font>
      </property>
      <property name="title">
@@ -44,7 +50,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -58,7 +64,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -79,7 +85,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -93,7 +99,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -114,7 +120,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -134,7 +140,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -158,7 +164,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -172,7 +178,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -193,7 +199,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -207,7 +213,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>14</pointsize>
+            <pointsize>11</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -247,7 +253,7 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
        <property name="text">
