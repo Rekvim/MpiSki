@@ -53,7 +53,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1268,7 +1268,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -2113,6 +2113,1132 @@
                </widget>
               </item>
               <item>
+               <widget class="QGroupBox" name="groupBox_5">
+                <property name="title">
+                 <string>Pass | Fail</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_16">
+                 <item>
+                  <widget class="QWidget" name="widget_crossingLimits" native="true">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_3">
+                    <property name="sizeConstraint">
+                     <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item row="0" column="1">
+                     <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_32">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_control" native="true">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_45">
+                          <property name="spacing">
+                           <number>10</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label_crossingLimits_linearCharacteristic">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <family>Segoe UI</family>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Линейность характеристики</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits">
+                            <property name="spacing">
+                             <number>5</number>
+                            </property>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QWidget" name="widget_crossingLimits_frictionForce" native="true">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_29">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QWidget" name="widget__crossingLimits_coefficientFriction_control" native="true">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_14">
+                          <property name="spacing">
+                           <number>10</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label_crossingLimits_coefficientFriction">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <family>Segoe UI</family>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Коэффицент трения</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_coefficientFriction_limits">
+                            <property name="spacing">
+                             <number>5</number>
+                            </property>
+                            <property name="sizeConstraint">
+                             <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                            </property>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_lowerLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_value">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="layoutDirection">
+                               <enum>Qt::LayoutDirection::LeftToRight</enum>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_upperLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_coefficientFriction_limitStatusIndicator" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QWidget" name="widget_crossingLimits_dynamicError" native="true">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_35">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_dynamicError_control" native="true">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_49">
+                          <property name="spacing">
+                           <number>10</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label_crossingLimits_dynamicError">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <family>Segoe UI</family>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Динамическая ошибка</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_dynamicError_limits">
+                            <property name="spacing">
+                             <number>5</number>
+                            </property>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_lowerLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_value">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_upperLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_dynamicError_limitStatusIndicator" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QWidget" name="widget_crossingLimits_range" native="true">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_33">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_range_control" native="true">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_48">
+                          <property name="spacing">
+                           <number>10</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label_crossingLimits_range">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <family>Segoe UI</family>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Диапазон хода</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits">
+                            <property name="spacing">
+                             <number>5</number>
+                            </property>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QWidget" name="widget_crossingLimits_spring" native="true">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_30">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QWidget" name="widget__crossingLimits_spring_control" native="true">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_19">
+                          <property name="spacing">
+                           <number>10</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QLabel" name="label_crossingLimits_spring">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <family>Segoe UI</family>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Диапазон пружин привода</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_spring_limits">
+                            <property name="spacing">
+                             <number>5</number>
+                            </property>
+                            <property name="sizeConstraint">
+                             <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                            </property>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_lowerLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_value">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="layoutDirection">
+                               <enum>Qt::LayoutDirection::LeftToRight</enum>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_upperLimit">
+                              <property name="enabled">
+                               <bool>true</bool>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>5</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>60</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <family>Segoe UI</family>
+                                <pointsize>8</pointsize>
+                               </font>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
+                              </property>
+                              <property name="readOnly">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QWidget" name="widget_crossingLimits_spring_limitStatusIndicator" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
                <spacer name="verticalSpacer">
                 <property name="orientation">
                  <enum>Qt::Orientation::Vertical</enum>
@@ -2127,1103 +3253,6 @@
               </item>
              </layout>
             </widget>
-           </widget>
-          </item>
-          <item>
-           <widget class="QWidget" name="widget_crossingLimits" native="true">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>340</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_17">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>28</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QWidget" name="widget_crossingLimits_frictionForce" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_29">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QWidget" name="widget__crossingLimits_coefficientFriction_control" native="true">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_14">
-                   <property name="spacing">
-                    <number>10</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_crossingLimits_coefficientFriction">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Segoe UI</family>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Коэффицент трения</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignmentFlag::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_coefficientFriction_limits">
-                     <property name="spacing">
-                      <number>5</number>
-                     </property>
-                     <property name="sizeConstraint">
-                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                     </property>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_lowerLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_value">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="layoutDirection">
-                        <enum>Qt::LayoutDirection::LeftToRight</enum>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_upperLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_coefficientFriction_limitStatusIndicator" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background: #E1E1E1;
-
-Border: 4px solid #ADADAD ;
-Border-radius: 10px;
-
-</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_32">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_control" native="true">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_45">
-                   <property name="spacing">
-                    <number>10</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_crossingLimits_linearCharacteristic">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Segoe UI</family>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Линейность характеристики</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignmentFlag::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits">
-                     <property name="spacing">
-                      <number>5</number>
-                     </property>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background: #E1E1E1;
-
-Border: 4px solid #ADADAD ;
-Border-radius: 10px;
-
-</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QWidget" name="widget_crossingLimits_range" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_33">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_range_control" native="true">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_48">
-                   <property name="spacing">
-                    <number>10</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_crossingLimits_range">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Segoe UI</family>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Диапазон хода</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignmentFlag::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits">
-                     <property name="spacing">
-                      <number>5</number>
-                     </property>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background: #E1E1E1;
-
-Border: 4px solid #ADADAD ;
-Border-radius: 10px;
-
-</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QWidget" name="widget_crossingLimits_dynamicError" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_35">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_control" native="true">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_49">
-                   <property name="spacing">
-                    <number>10</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_crossingLimits_dynamicError">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Segoe UI</family>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Динамическая ошибка</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignmentFlag::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_dynamicError_limits">
-                     <property name="spacing">
-                      <number>5</number>
-                     </property>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_lowerLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_value">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_dynamicError_upperLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_dynamicError_limitStatusIndicator" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background: #E1E1E1;
-
-Border: 4px solid #ADADAD ;
-Border-radius: 10px;
-
-</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QWidget" name="widget_crossingLimits_spring" native="true">
-               <layout class="QHBoxLayout" name="horizontalLayout_30">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QWidget" name="widget__crossingLimits_spring_control" native="true">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_19">
-                   <property name="spacing">
-                    <number>10</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_crossingLimits_spring">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Segoe UI</family>
-                       <pointsize>10</pointsize>
-                      </font>
-                     </property>
-                     <property name="text">
-                      <string>Диапазон пружин привода</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignmentFlag::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_spring_limits">
-                     <property name="spacing">
-                      <number>5</number>
-                     </property>
-                     <property name="sizeConstraint">
-                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                     </property>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_lowerLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_value">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="layoutDirection">
-                        <enum>Qt::LayoutDirection::LeftToRight</enum>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_upperLimit">
-                       <property name="enabled">
-                        <bool>true</bool>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>5</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>60</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="font">
-                        <font>
-                         <family>Segoe UI</family>
-                         <pointsize>8</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignmentFlag::AlignCenter</set>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="widget_crossingLimits_spring_limitStatusIndicator" native="true">
-                  <property name="minimumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background: #E1E1E1;
-
-Border: 4px solid #ADADAD ;
-Border-radius: 10px;
-
-</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
            </widget>
           </item>
          </layout>
