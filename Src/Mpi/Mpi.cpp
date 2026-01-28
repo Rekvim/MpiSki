@@ -1,5 +1,25 @@
 #include "Mpi.h"
 #include <utility>
+#include "./Src/Mpi/MpiSettings.h"
+
+namespace {
+// DAC: 16-bit scale
+constexpr quint32 kDacFullScale = 1u << 16;  // 65536 = 2^16 (полная шкала 16-бит)
+constexpr quint16 kDacMaxRaw = (1u << 16) - 1;
+// ADC word packing: [adcIndex:4 bits][raw:12 bits]
+constexpr quint8  kAdcShift = 12; // raw занимает младшие 12 бит, индекс в старших
+constexpr quint16 kAdcRawMask = 0x0FFF; // маска для выделения 12-бит raw
+
+// Каналы
+constexpr quint8  kAll6Channels = 0x3F; // включить 6 каналов
+
+// Порог "датчик обнаружен"
+// constexpr quint16 kAdcDetectThreshold = 0x0050; // эмпирический порог сырого ADC
+
+constexpr qreal kDacRange_mA = 24.0;      // диапазон преобразования (0..24 мА)
+
+constexpr quint16 kDefaultAdcPollingMs = 50;
+}
 
 Mpi::Mpi(QObject *parent)
     : QObject{parent}
@@ -15,39 +35,39 @@ Mpi::Mpi(QObject *parent)
     m_uartReader->moveToThread(m_uartThread);
     m_uartThread->start();
 
-    connect(this, &Mpi::ConnectToUart,
+    connect(this, &Mpi::requestConnect,
             m_uartReader, &UartReader::autoConnect,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::GetVersion,
+    connect(this, &Mpi::requestVersion,
             m_uartReader, &UartReader::readVersion,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::SetDAC,
+    connect(this, &Mpi::requestSetDac,
             m_uartReader, &UartReader::setDacValue,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::SetChannels,
+    connect(this, &Mpi::requestSetAdcChannelMask,
             m_uartReader, &UartReader::setAdcChannels,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::SetTimer,
+    connect(this, &Mpi::requestSetAdcTimerArr,
             m_uartReader, &UartReader::setAdcTimerInterval,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::TurnADC_On,
+    connect(this, &Mpi::requestEnableAdc,
             m_uartReader, &UartReader::enableAdc,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::TurnADC_Off,
+    connect(this, &Mpi::requestDisableAdc,
             m_uartReader, &UartReader::disableAdc,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::GetADC,
+    connect(this, &Mpi::requestAdcRead,
             m_uartReader, &UartReader::readAdcValues,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::ADC_Timer,
+    connect(this, &Mpi::requestSetAdcPolling,
             m_uartReader, &UartReader::setAdcPolling,
             Qt::BlockingQueuedConnection);
 
@@ -55,11 +75,11 @@ Mpi::Mpi(QObject *parent)
             m_uartReader, &UartReader::setDigitalOutput,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::GetDO,
+    connect(this, &Mpi::requestDigitalOutputs,
             m_uartReader, &UartReader::readDigitalOutputs,
             Qt::BlockingQueuedConnection);
 
-    connect(this, &Mpi::GetDI,
+    connect(this, &Mpi::requestDigitalInputs,
             m_uartReader, &UartReader::readDigitalInputs,
             Qt::BlockingQueuedConnection);
 
@@ -91,7 +111,7 @@ Mpi::~Mpi()
 
 bool Mpi::isConnect()
 {
-    emit ConnectToUart();
+    emit requestConnect();
 
     bool ok = false;
     QString pn;
@@ -114,8 +134,8 @@ quint8 Mpi::version()
 {
     if (!m_isConnected)
         return 0;
-    quint8 version;
-    emit GetVersion(version);
+    quint8 version = 0;
+    emit requestVersion(version);
     return version;
 }
 
@@ -124,8 +144,8 @@ quint8 Mpi::digitalOutputs()
     if (!m_isConnected)
         return 0;
 
-    quint8 DO;
-    emit GetDO(DO);
+    quint8 DO = 0;
+    emit requestDigitalOutputs(DO);
     return DO;
 }
 
@@ -134,14 +154,14 @@ quint8 Mpi::digitalInputs()
     if (!m_isConnected)
         return 0;
 
-    quint8 DI;
-    emit GetDI(DI);
+    quint8 DI = 0;
+    emit requestDigitalInputs(DI);
     return DI;
 }
 
 bool Mpi::initialize()
 {
-    emit ADC_Timer(false);
+    emit requestSetAdcPolling(false, kDefaultAdcPollingMs);
 
     if (!m_isConnected) return false;
 
@@ -151,17 +171,17 @@ bool Mpi::initialize()
 
     const MpiSettings mpiSettings;
 
-    m_dac->setCoefficients(24.0 / 0xFFFF, mpiSettings.GetDac().bias);
+    m_dac->setCoefficients(kDacRange_mA / kDacMaxRaw, mpiSettings.GetDac().bias);
 
-    m_dacMin = 65536 * (mpiSettings.GetDac().min - mpiSettings.GetDac().bias) / 24;
-    m_dacMax = 65536 * (mpiSettings.GetDac().max - mpiSettings.GetDac().bias) / 24;
+    m_dacMin = kDacFullScale * (mpiSettings.GetDac().min - mpiSettings.GetDac().bias) / kDacRange_mA;
+    m_dacMax = kDacFullScale * (mpiSettings.GetDac().max - mpiSettings.GetDac().bias) / kDacRange_mA;
 
-    emit SetChannels(0x3F);
-    emit TurnADC_On();
+    emit requestSetAdcChannelMask(kAll6Channels);
+    emit requestEnableAdc();
 
     QVector<quint16> adc;
     sleep(1000);
-    emit GetADC(adc);
+    emit requestAdcRead(adc);
 
     quint8 sensorNum = 0;
     quint8 channelMask = 0;
@@ -169,9 +189,9 @@ bool Mpi::initialize()
     for (const auto& a : std::as_const(adc)) {
         if ((a & 0xFFF) > 0x050) {
 
-            quint8 adcNum = a >> 12;
+            quint8 adcNum = a >> kAdcShift;
 
-            channelMask |= (1 << adcNum);
+            channelMask |= quint8(1u << adcNum);
 
             Sensor *sensor = new Sensor(this);
             m_sensorByAdc[adcNum] = sensor;
@@ -190,34 +210,35 @@ bool Mpi::initialize()
     }
 
     if (sensorNum == 0) {
-        emit TurnADC_Off();
+        emit requestDisableAdc();
         return true;
     }
 
-    emit SetChannels(channelMask);
-    emit SetTimer(40 / sensorNum);
-    emit ADC_Timer(true, 50);
+    emit requestSetAdcChannelMask(channelMask);
+    emit requestSetAdcTimerArr(40 / sensorNum);
+    emit requestSetAdcPolling(true, kDefaultAdcPollingMs);
+
     return true;
 }
 
-void Mpi::SetDAC_Raw(quint16 value)
+void Mpi::setDacRaw(quint16 value)
 {
     if (value < m_dacMin)
         value = m_dacMin;
     if (value > m_dacMax)
         value = m_dacMax;
     m_dac->setValue(value);
-    emit SetDAC(m_dac->rawValue());
+    emit requestSetDac(m_dac->rawValue());
 }
 
-void Mpi::SetDAC_Real(qreal value)
+void Mpi::setDacValue(qreal value)
 {
     quint16 newRaw = m_dac->rawFromValue(value);
     quint16 curRaw = m_dac->rawValue();
 
     if (newRaw != curRaw) {
         m_dac->setValue(newRaw);
-        emit SetDAC(newRaw);
+        emit requestSetDac(newRaw);
     }
 }
 
@@ -270,16 +291,9 @@ void Mpi::sleep(quint16 msecs)
 
 void Mpi::onAdcData(const QVector<quint16>& adc)
 {
-    // if (m_sensors.size() < adc.size())
-    //     return;
-
-    // for (int i = 0; i < adc.size(); ++i) {
-    //     m_sensors[i]->setValue(adc.at(i) & 0xFFF);
-    // }
-
     for (quint16 w : adc) {
-        const quint8 adcNum = w >> 12;
-        const quint16 raw   = w & 0x0FFF;
+        const quint8 adcNum = w >> kAdcShift;
+        const quint16 raw = w & kAdcRawMask;
 
         if (adcNum < m_sensorByAdc.size() && m_sensorByAdc[adcNum])
             m_sensorByAdc[adcNum]->setValue(raw);

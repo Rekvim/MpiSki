@@ -14,7 +14,7 @@ public:
     explicit UartReader(QObject *parent = nullptr);
 
 private:
-    QByteArray SendMessage(const UartMessage &message);
+    QByteArray sendMessage(const UartMessage& message);
 
 public slots:
     void autoConnect();
@@ -29,7 +29,7 @@ public slots:
 
     void readAdcValues(QVector<quint16> &adc);
 
-    void setAdcPolling(bool enable, quint16 interval = 50);
+    void setAdcPolling(bool enable, quint16 interval);
 
     void setDigitalOutput(quint8 outputNumber, bool state);
     void readDigitalOutputs(quint8 &DO);

@@ -34,7 +34,7 @@ UartReader::UartReader(QObject *parent)
             this, &UartReader::onAdcPollTimer);
 }
 
-QByteArray UartReader::SendMessage(const UartMessage &message)
+QByteArray UartReader::sendMessage(const UartMessage& message)
 {
     for (quint8 attempt = 0; attempt < m_maxAttempts; ++attempt) {
         QByteArray readData;
@@ -78,7 +78,7 @@ void UartReader::autoConnect()
             emit closePort();
             continue;
         }
-        QByteArray version = SendMessage(UartMessage(Command::GetVersion));
+        QByteArray version = sendMessage(UartMessage(Command::GetVersion));
         if (!version.isEmpty()) {
             m_version = version.at(0);
             return;
@@ -86,6 +86,7 @@ void UartReader::autoConnect()
         emit closePort();
     }
 }
+
 void UartReader::readVersion(quint8 &version)
 {
     if (!m_isConnected) return;
@@ -95,37 +96,37 @@ void UartReader::readVersion(quint8 &version)
 void UartReader::setDacValue(quint16 value)
 {
     if (!m_isConnected) return;
-    SendMessage(UartMessage(Command::DAC, value));
+    sendMessage(UartMessage(Command::DAC, value));
 }
 
 void UartReader::setAdcChannels(quint8 channels)
 {
     if (!m_isConnected) return;
-    SendMessage(UartMessage(Command::SetChADC, channels));
+    sendMessage(UartMessage(Command::SetChADC, channels));
 }
 
 void UartReader::setAdcTimerInterval(quint16 timer)
 {
     if (!m_isConnected) return;
-    SendMessage(UartMessage(Command::TimerArr, timer));
+    sendMessage(UartMessage(Command::TimerArr, timer));
 }
 
 void UartReader::enableAdc()
 {
     if (!m_isConnected) return;
-    SendMessage(UartMessage(Command::ADC_OnOff, static_cast<quint8>(1)));
+    sendMessage(UartMessage(Command::ADC_OnOff, static_cast<quint8>(1)));
 }
 
 void UartReader::disableAdc()
 {
     if (!m_isConnected) return;
-    SendMessage(UartMessage(Command::ADC_OnOff, static_cast<quint8>(0)));
+    sendMessage(UartMessage(Command::ADC_OnOff, static_cast<quint8>(0)));
 }
 
 void UartReader::readAdcValues(QVector<quint16> &adc)
 {
     if (!m_isConnected) return;
-    QByteArray raw = SendMessage(UartMessage(Command::ADC));
+    QByteArray raw = sendMessage(UartMessage(Command::ADC));
     adc.clear();
     for (int i = 0; i + 1 < raw.size(); i += 2) {
         quint16 val = (static_cast<quint8>(raw.at(i)) << 8) |
@@ -146,13 +147,13 @@ void UartReader::setDigitalOutput(quint8 outputNumber, bool state)
 {
     if (!m_isConnected || outputNumber > 7) return;
     quint8 value = (state ? 0x08 : 0) | outputNumber;
-    SendMessage(UartMessage(Command::SetDO, value));
+    sendMessage(UartMessage(Command::SetDO, value));
 }
 
 void UartReader::readDigitalOutputs(quint8 &digitalOutputs)
 {
     if (!m_isConnected) return;
-    QByteArray raw = SendMessage(UartMessage(Command::GetDO));
+    QByteArray raw = sendMessage(UartMessage(Command::GetDO));
     if (!raw.isEmpty())
         digitalOutputs = static_cast<quint8>(raw.at(0));
 }
@@ -160,7 +161,7 @@ void UartReader::readDigitalOutputs(quint8 &digitalOutputs)
 void UartReader::readDigitalInputs(quint8 &digitalInputs)
 {
     if (!m_isConnected) return;
-    QByteArray raw = SendMessage(UartMessage(Command::GetDI));
+    QByteArray raw = sendMessage(UartMessage(Command::GetDI));
     if (!raw.isEmpty())
         digitalInputs = static_cast<quint8>(raw.at(0));
 }
@@ -184,9 +185,8 @@ void UartReader::onPortError(QSerialPort::SerialPortError error)
     if (error == QSerialPort::NoError || error == QSerialPort::TimeoutError)
         return;
 
-    qWarning() << "UART error:" << error; // + добавь errorString из Uart/QSerialPort
+    qWarning() << "UART error:" << error;
 
-    // Фатальные ошибки — дальше бессмысленно продолжать опрос
     switch (error) {
     case QSerialPort::WriteError:
     case QSerialPort::ReadError:
@@ -195,8 +195,7 @@ void UartReader::onPortError(QSerialPort::SerialPortError error)
     case QSerialPort::PermissionError:
         m_isConnected = false;
         m_adcPollTimer->stop();
-        emit closePort();          // закрыть реальный порт
-        // можно ещё emit portClosed(); если close() не эмитит portClosed сам
+        emit closePort();
         break;
     default:
         break;
