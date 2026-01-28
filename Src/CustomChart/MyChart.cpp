@@ -57,9 +57,53 @@ MyChart::MyChart(QWidget *parent)
 
     QOpenGLWidget *glWidget = this->findChild<QOpenGLWidget *>();
     glWidget->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+    m_axisTimer.setInterval(100); // 10 Hz, можно 50..200
+    connect(&m_axisTimer, &QTimer::timeout, this, &MyChart::updateAxes);
+    m_axisTimer.start();
+
+    m_markerTimer.start(); // для троттлинга маркеров
 }
 
 MyChart::~MyChart() {}
+
+bool MyChart::allowMarkerUpdate()
+{
+    // ограничим до ~60 fps
+    if (!m_markerTimer.isValid()) {
+        m_markerTimer.start();
+        return true;
+    }
+    if (m_markerTimer.elapsed() < 16)
+        return false;
+    m_markerTimer.restart();
+    return true;
+}
+
+void MyChart::updateAxes()
+{
+    if (!m_axesDirty) return;
+    if (m_zoomed) { m_axesDirty = false; return; }
+    if (!m_update) { m_axesDirty = false; return; }
+
+    m_axisX_min = m_min_X;
+    m_axisX_max = qMax(m_max_X, m_min_X + m_minRange);
+
+    if (m_xaxis == m_xaxisValue) {
+        m_axisX_min = qMax<qreal>(qFloor(m_axisX_min), 0.0);
+
+        m_axisX_max = qCeil(m_axisX_max);
+        m_xaxis->setRange(m_axisX_min, m_axisX_max);
+    } else {
+        m_axisX_min = qMax<qreal>(qFloor(m_axisX_min / 1000.0), 0.0) * 1000.0;
+        m_axisX_max = qMax(m_axisX_min + 1000.0, qCeil(m_axisX_max / 1000.0) * 1000.0);
+        m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_min)),
+                          QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
+    }
+
+    autoScale(m_axisX_min, m_axisX_max);
+    m_axesDirty = false;
+}
 
 void MyChart::drawMarkers(QPoint pos)
 {
@@ -224,12 +268,12 @@ void MyChart::mousePressEvent(QMouseEvent *event)
 void MyChart::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_mySeries.count()) {
-        m_coordItem->setVisible(true);
-        m_markersPos = event->pos();
-
-        drawMarkers(m_markersPos);
+        if (allowMarkerUpdate()) {
+            m_coordItem->setVisible(true);
+            m_markersPos = event->pos();
+            drawMarkers(m_markersPos);
+        }
     }
-
     QChartView::mouseMoveEvent(event);
 }
 
@@ -327,6 +371,8 @@ void MyChart::addSeries(quint8 axisN, QString name, QColor color)
 
     m_mySeries.last()->setName(name);
     m_mySeries.last()->setColor(color);
+    m_mySeriesDubl.last()->setUseOpenGL(true);
+    m_mySeries.last()->setUseOpenGL(true);
 
     m_mySeries.last()->attachAxis(m_yaxis[axisN]);
     m_mySeries.last()->attachAxis(m_xaxis);
@@ -334,42 +380,25 @@ void MyChart::addSeries(quint8 axisN, QString name, QColor color)
 
 void MyChart::addPoint(quint8 seriesN, qreal X, qreal Y)
 {
-    if (seriesN >= m_mySeries.count()) {
-        return;
-    }
+    if (seriesN >= m_mySeries.count()) return;
 
     if (m_empty) {
-        m_min_X = X;
-        m_max_X = X;
+        m_min_X = X; m_max_X = X;
         m_empty = false;
     } else {
         m_min_X = qMin(m_min_X, X);
         m_max_X = qMax(m_max_X, X);
     }
 
-    if (m_maxRange != 0) {
+    if (m_maxRange != 0)
         m_min_X = qMax(m_min_X, m_max_X - m_maxRange);
-    }
 
-    if ((!m_zoomed) && (m_update)) {
-        m_axisX_min = m_min_X;
-        m_axisX_max = qMax(m_max_X, m_min_X + m_minRange);
-
-        if (m_xaxis == m_xaxisValue) {
-            m_axisX_min = qMax(qFloor(m_axisX_min), 0);
-            m_axisX_max = qCeil(m_axisX_max);
-            m_xaxis->setRange(m_axisX_min, m_axisX_max);
-        } else {
-            m_axisX_min = qMax(qFloor(m_axisX_min / 1000.0), 0) * 1000.0;
-            m_axisX_max = qMax(m_axisX_min + 1000.0, qCeil(m_axisX_max / 1000.0) * 1000.0);
-            m_xaxis->setRange(QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_min)),
-                              QDateTime::fromMSecsSinceEpoch(qCeil(m_axisX_max)));
-        }
-
-        autoScale(m_axisX_min, m_axisX_max);
-    }
-
+    // 1) добавляем точку
     m_mySeries[seriesN]->append(X, Y);
+
+    // 2) просим обновить оси таймером
+    if (!m_zoomed && m_update)
+        m_axesDirty = true;
 }
 
 void MyChart::duplicateChartSeries(quint8 seriesN)

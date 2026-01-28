@@ -13,6 +13,9 @@ private:
     QTimer m_axisTimer;
     QElapsedTimer m_markerTimer;
 
+    bool m_axesDirty = false;
+    bool m_pendingPointAdded = false;
+
     void updateAxes();               // new
     bool allowMarkerUpdate();  // new
 
