@@ -222,6 +222,50 @@
            </widget>
           </item>
           <item>
+           <widget class="QComboBox" name="comboBox">
+            <item>
+             <property name="text">
+              <string>Masoneilan</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Samson</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Fisher</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Flowserve</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ЛГ-Автоматика</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>РУСТ-95</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>НТ Вэлв</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Ручной ввод</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
            <widget class="QLineEdit" name="lineEdit_manufacturer">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
