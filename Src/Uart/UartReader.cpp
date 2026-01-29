@@ -38,10 +38,10 @@ QByteArray UartReader::sendMessage(const UartMessage& message)
 {
     for (quint8 attempt = 0; attempt < m_maxAttempts; ++attempt) {
         QByteArray readData;
-        emit writeAndRead(message.ToByteArray(), readData);
+        emit writeAndRead(message.toByteArray(), readData);
 
         if (readData.isEmpty()) {
-            qDebug() << "UART empty reply cmd" << int(message.GetCommand())
+            qDebug() << "UART empty reply cmd" << int(message.command())
             << "attempt" << attempt;
             QThread::msleep(20);
             continue;
@@ -49,24 +49,25 @@ QByteArray UartReader::sendMessage(const UartMessage& message)
 
         UartMessage response(readData);
 
-        if (!response.CheckCrc()) {
-            qDebug() << "UART CRC fail cmd" << int(message.GetCommand())
+        if (!response.checkCrc()) {
+            qDebug() << "UART CRC fail cmd" << int(message.command())
             << "attempt" << attempt;
             continue;
         }
 
-        if (!(response.GetCommand() == Command::OK ||
-              response.GetCommand() == message.GetCommand())) {
-            qDebug() << "UART unexpected cmd" << int(response.GetCommand())
-            << "expected" << int(message.GetCommand());
+        if (!(response.command() == Command::OK ||
+              response.command() == message.command())) {
+            qDebug() << "UART unexpected cmd" << int(response.command())
+            << "expected" << int(message.command());
             continue;
         }
 
-        return response.GetData();
+        return response.data();
     }
 
-    qDebug() << "UART failed cmd" << int(message.GetCommand())
+    qDebug() << "UART failed cmd" << int(message.command())
              << "after attempts" << m_maxAttempts;
+
     return {};
 }
 

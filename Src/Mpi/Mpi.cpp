@@ -16,7 +16,7 @@ constexpr quint8  kAll6Channels = 0x3F; // включить 6 каналов
 // Порог "датчик обнаружен"
 // constexpr quint16 kAdcDetectThreshold = 0x0050; // эмпирический порог сырого ADC
 
-constexpr qreal kDacRange_mA = 24.0;      // диапазон преобразования (0..24 мА)
+constexpr qreal kDacRange_mA = 24.0; // диапазон преобразования (0..24 мА)
 
 constexpr quint16 kDefaultAdcPollingMs = 50;
 }

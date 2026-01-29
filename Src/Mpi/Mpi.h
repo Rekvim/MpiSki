@@ -51,9 +51,7 @@ signals:
     void errorOccured(const QString& message);
 
     void requestConnect();
-
     void requestVersion(quint8& version);
-
     void requestSetDac(quint16 value);
 
     void requestSetAdcPolling(bool enable, quint16 interval);
@@ -62,7 +60,6 @@ signals:
     void requestAdcRead(QVector<quint16>& adc);
     void requestEnableAdc();
     void requestDisableAdc();
-
 
     void setDigitalOutput(quint8 index, bool state);
     void requestDigitalOutputs(quint8& DO);
