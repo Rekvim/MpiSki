@@ -5,6 +5,59 @@
 #include <QTimer>
 #include <QScreen>
 #include <QGuiApplication>
+
+namespace {
+static QString formatRange(double lo, double hi, int prec = 2)
+{
+    if (lo > hi) std::swap(lo, hi);
+    return QString("%1–%2")
+        .arg(lo, 0, 'f', prec)
+        .arg(hi, 0, 'f', prec);
+}
+
+double toDouble(QString s, bool* okOut = nullptr)
+{
+    s = s.trimmed();
+    s.replace(',', '.');
+    bool ok = false;
+    const double v = QLocale::c().toDouble(s, &ok);
+    if (okOut) *okOut = ok;
+    return v;
+}
+
+void setNum(QLineEdit* le, double v, int prec = 2)
+{
+    le->setText(QString::number(v, 'f', prec));
+}
+
+std::optional<QPair<double,double>> parseRange2(const QString& s)
+{
+    static const QRegularExpression re(R"(([+-]?\d+(?:[.,]\d+)?))");
+    auto it = re.globalMatch(s);
+
+    double a = 0.0, b = 0.0;
+    int n = 0;
+    while (it.hasNext() && n < 2) {
+        const auto m = it.next();
+        bool ok = false;
+        const double v = toDouble(m.captured(1), &ok);
+        if (!ok) continue;
+        if (n == 0) a = v; else b = v;
+        ++n;
+    }
+    if (n == 2) return QPair<double,double>(a, b);
+    return std::nullopt;
+}
+
+void setPlusMinusPercent(QLineEdit* loLe, QLineEdit* hiLe,
+                         double base, double pct, int prec = 2)
+{
+    const double d = std::abs(base) * (pct / 100.0);
+    setNum(loLe, base - d, prec);
+    setNum(hiLe, base + d, prec);
+}
+} // namespace
+
 ValveWindow::ValveWindow(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::ValveWindow)
@@ -158,7 +211,14 @@ void ValveWindow::saveValveInfo()
     m_valveInfo->driveModel = ui->lineEdit_driveModel->text();
     m_valveInfo->safePosition = ui->comboBox_safePosition->currentIndex();
     m_valveInfo->driveType = ui->comboBox_driveType->currentIndex();
-    m_valveInfo->driveRecomendRange = ui->lineEdit_driveRange->text();
+
+    // m_valveInfo->driveRecomendRange = ui->lineEdit_driveRange->text();
+    auto r = parseRange2(ui->lineEdit_driveRange->text());
+    if (r) {
+        m_valveInfo->driveRangeLow = r->first;
+        m_valveInfo->driveRangeHigh = r->second;
+    }
+
     m_valveInfo->driveDiameter = ui->lineEdit_driveDiameter->text().toDouble();
     m_valveInfo->toolNumber = ui->comboBox_toolNumber->currentIndex();
     m_valveInfo->diameterPulley = ui->lineEdit_pulleyDiameter->text().toDouble();

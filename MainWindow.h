@@ -53,6 +53,13 @@ private slots:
     void appendLog(const QString& text);
 
     void onTelemetryUpdated(const TelemetryStore &telemetry);
+
+    void updateInitUI(const InitState& init);
+    void updateMainTestUI(const TelemetryStore& t);
+    void updateStrokeTestUI(const StrokeTestRecord& r);
+    // void updateCyclicTestUI(const CyclicTestRecord& r);
+    void updateCrossingUI(const TelemetryStore& t);
+
     void addPoints(Charts chart, const QVector<Point> &points);
     void clearPoints(Charts chart);
 

@@ -508,11 +508,11 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo* valveInfo)
             double high = r->second;
             if (low > high) std::swap(low, high);
 
-            const double lowDelta  = std::abs(low)  * (limits.springLowerLimit / 100.0);
+            const double lowDelta = std::abs(low)  * (limits.springLowerLimit / 100.0);
             const double highDelta = std::abs(high) * (limits.springUpperLimit / 100.0);
 
-            const double lowLo  = low  - lowDelta;
-            const double lowHi  = low  + lowDelta;
+            const double lowLo = low  - lowDelta;
+            const double lowHi = low  + lowDelta;
 
             const double highLo = high - highDelta;
             const double highHi = high + highDelta;
@@ -545,118 +545,17 @@ void MainWindow::updateCrossingIndicators()
                         cs.dynamicError);
 }
 
-void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
+void MainWindow::onTelemetryUpdated(const TelemetryStore &t) {
 
-    m_telemetryStore = telemetry;
+    m_telemetryStore = t;
 
-    ui->label_deviceStatusValue->setText(telemetry.init.deviceStatusText);
-    ui->label_deviceStatusValue->setStyleSheet(
-        "color:" + telemetry.init.deviceStatusColor.name(QColor::HexRgb));
-
-    ui->label_deviceInitValue->setText(telemetry.init.initStatusText);
-    ui->label_deviceInitValue->setStyleSheet(
-        "color:" + telemetry.init.initStatusColor.name(QColor::HexRgb));
-
-    ui->label_connectedSensorsNumber->setText(telemetry.init.connectedSensorsText);
-    ui->label_connectedSensorsNumber->setStyleSheet(
-        "color:" + telemetry.init.connectedSensorsColor.name(QColor::HexRgb));
-
-    ui->label_startingPositionValue->setText(telemetry.init.startingPositionText);
-    ui->label_startingPositionValue->setStyleSheet(
-        "color:" + telemetry.init.startingPositionColor.name(QColor::HexRgb));
-
-    ui->label_finalPositionValue->setText(telemetry.init.finalPositionText);
-    ui->label_finalPositionValue->setStyleSheet(
-        "color:" + telemetry.init.finalPositionColor.name(QColor::HexRgb));
-
-    ui->label_pressureDifferenceValue->setText(
-        QString("%1 bar")
-            .arg(telemetry.mainTestRecord.pressureDifference, 0, 'f', 3)
-        );
-    ui->label_frictionForceValue->setText(
-        QString("%1 H")
-            .arg(telemetry.mainTestRecord.frictionForce, 0, 'f', 3)
-        );
-    ui->label_frictionPercentValue->setText(
-        QString("%1 %")
-            .arg(telemetry.mainTestRecord.frictionPercent, 0, 'f', 2)
-        );
-    ui->lineEdit_resultsTable_frictionForceValue->setText(
-        QString("%1")
-            .arg(telemetry.mainTestRecord.frictionForce, 0, 'f', 3)
-        );
-    ui->lineEdit_resultsTable_frictionPercentValue->setText(
-        QString("%1")
-            .arg(telemetry.mainTestRecord.frictionPercent, 0, 'f', 2)
-        );
-
-    ui->label_dynamicErrorMeanPercent->setText(
-        QString("%1 %")
-            .arg(telemetry.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
-        );
-    ui->label_dynamicErrorMean->setText(
-        QString("%1 mA")
-            .arg(telemetry.mainTestRecord.dynamicError_mean, 0, 'f', 3)
-        );
-    ui->label_dynamicErrorMaxPercent->setText(
-        QString("%1 %")
-            .arg(telemetry.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
-        );
-
-    ui->label_dynamicErrorMax->setText(
-        QString("%1 mA")
-            .arg(telemetry.mainTestRecord.dynamicError_max, 0, 'f', 3)
-        );
-    ui->lineEdit_resultsTable_dynamicErrorReal->setText(
-        QString("%1")
-            .arg(telemetry.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
-        );
-
-    ui->label_dynamicErrorMax->setText(
-        QString("%1 bar")
-            .arg(telemetry.mainTestRecord.lowLimitPressure, 0, 'f', 2)
-        );
-    ui->label_dynamicErrorMax->setText(
-        QString("%1 bar")
-            .arg(telemetry.mainTestRecord.highLimitPressure, 0, 'f', 2)
-        );
-
-    ui->label_valveStroke_range->setText(
-        QString("%1")
-            .arg(telemetry.valveStrokeRecord.range)
-        );
-
-    // StrokeRecord
-    ui->lineEdit_resultsTable_strokeReal->setText(
-        QString("%1").arg(telemetry.valveStrokeRecord.real, 0, 'f', 2));
-
-    ui->label_lowLimitValue->setText(
-        QString("%1")
-            .arg(telemetry.mainTestRecord.lowLimitPressure)
-        );
-    ui->label_highLimitValue->setText(
-        QString("%1")
-            .arg(telemetry.mainTestRecord.highLimitPressure)
-        );
-
-    ui->lineEdit_resultsTable_rangePressure->setText(
-        QString("%1–%2")
-            .arg(telemetry.mainTestRecord.lowLimitPressure, 0, 'f', 2)
-            .arg(telemetry.mainTestRecord.highLimitPressure, 0, 'f', 2)
-        );
-
-    ui->lineEdit_resultsTable_driveRangeReal->setText(
-        QString("%1–%2")
-            .arg(telemetry.mainTestRecord.springLow, 0, 'f', 2)
-            .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2)
-        );
+    updateInitUI(t.init);
+    updateMainTestUI(t);
+    updateStrokeTestUI(t.strokeTestRecord);
+    // updateCyclicTestUI(t.cyclicTestRecord);
+    updateCrossingUI(t);
 
     // StrokeTest
-    ui->lineEdit_strokeTest_forwardTime->setText(telemetry.strokeTestRecord.timeForwardMs);
-    ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(telemetry.strokeTestRecord.timeForwardMs);
-
-    ui->lineEdit_strokeTest_backwardTime->setText(telemetry.strokeTestRecord.timeBackwardMs);
-    ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(telemetry.strokeTestRecord.timeBackwardMs);
 
     // CyclicTestResults
     // ui->label_cyclicTest_sequenceValue->setText(TS.cyclicTestRecord.sequence);
@@ -669,34 +568,148 @@ void MainWindow::onTelemetryUpdated(const TelemetryStore &telemetry) {
     // ui->label_cyclicTest_totalTimeValue->setText(
     //     tC.toString("hh:mm:ss.zzz"));
 
-    // crossing
 
-    // 1) Динамическая ошибка: одно значение
-    ui->lineEdit_crossingLimits_dynamicError_value->setText(
-        QString::number(telemetry.mainTestRecord.dynamicErrorReal, 'f', 2));
+}
 
-    // 2) Линейность характеристики
-    ui->lineEdit_crossingLimits_linearCharacteristic_value->setText(
-        QString::number(telemetry.mainTestRecord.linearityError, 'f', 2));
+void MainWindow::updateInitUI(const InitState& init)
+{
+    ui->label_deviceStatusValue->setText(init.deviceStatusText);
+    ui->label_deviceStatusValue->setStyleSheet(
+        "color:" + init.deviceStatusColor.name(QColor::HexRgb));
 
-    // 3) Ход клапана: одно значение (реальный ход)
-    ui->lineEdit_crossingLimits_range_value->setText(
-        QString::number(telemetry.valveStrokeRecord.real, 'f', 2));
+    ui->label_deviceInitValue->setText(init.initStatusText);
+    ui->label_deviceInitValue->setStyleSheet(
+        "color:" + init.initStatusColor.name(QColor::HexRgb));
 
-    // 4) Диапазон пружины: low–high
-    ui->lineEdit_crossingLimits_spring_value->setText(
+    ui->label_connectedSensorsNumber->setText(init.connectedSensorsText);
+    ui->label_connectedSensorsNumber->setStyleSheet(
+        "color:" + init.connectedSensorsColor.name(QColor::HexRgb));
 
+    ui->label_startingPositionValue->setText(init.startingPositionText);
+    ui->label_startingPositionValue->setStyleSheet(
+        "color:" + init.startingPositionColor.name(QColor::HexRgb));
+
+    ui->label_finalPositionValue->setText(init.finalPositionText);
+    ui->label_finalPositionValue->setStyleSheet(
+        "color:" + init.finalPositionColor.name(QColor::HexRgb));
+}
+
+void MainWindow::updateMainTestUI(const TelemetryStore& t)
+{
+    ui->label_pressureDifferenceValue->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.pressureDifference, 0, 'f', 3)
+        );
+    ui->label_frictionForceValue->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.frictionForce, 0, 'f', 3)
+        );
+    ui->label_frictionPercentValue->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.frictionPercent, 0, 'f', 2)
+        );
+    ui->lineEdit_resultsTable_frictionForceValue->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.frictionForce, 0, 'f', 3)
+        );
+    ui->lineEdit_resultsTable_frictionPercentValue->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.frictionPercent, 0, 'f', 2)
+        );
+
+    ui->label_dynamicErrorMeanPercent->setText(
+        QString("%1 %")
+            .arg(t.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
+        );
+    ui->label_dynamicErrorMean->setText(
+        QString("%1 mA")
+            .arg(t.mainTestRecord.dynamicError_mean, 0, 'f', 3)
+        );
+    ui->label_dynamicErrorMaxPercent->setText(
+        QString("%1 %")
+            .arg(t.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
+        );
+
+    ui->label_dynamicErrorMax->setText(
+        QString("%1 mA")
+            .arg(t.mainTestRecord.dynamicError_max, 0, 'f', 3)
+        );
+    ui->lineEdit_resultsTable_dynamicErrorReal->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
+        );
+
+    ui->label_dynamicErrorMax->setText(
+        QString("%1 bar")
+            .arg(t.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+        );
+    ui->label_dynamicErrorMax->setText(
+        QString("%1 bar")
+            .arg(t.mainTestRecord.highLimitPressure, 0, 'f', 2)
+        );
+
+    ui->label_valveStroke_range->setText(
+        QString("%1")
+            .arg(t.valveStrokeRecord.range)
+        );
+
+    // StrokeRecord
+    ui->lineEdit_resultsTable_strokeReal->setText(
+        QString("%1").arg(t.valveStrokeRecord.real, 0, 'f', 2));
+
+    ui->label_lowLimitValue->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.lowLimitPressure)
+        );
+    ui->label_highLimitValue->setText(
+        QString("%1")
+            .arg(t.mainTestRecord.highLimitPressure)
+        );
+
+    ui->lineEdit_resultsTable_rangePressure->setText(
         QString("%1–%2")
-            .arg(telemetry.mainTestRecord.springLow, 0, 'f', 2)
-            .arg(telemetry.mainTestRecord.springHigh, 0, 'f', 2));
+            .arg(t.mainTestRecord.lowLimitPressure, 0, 'f', 2)
+            .arg(t.mainTestRecord.highLimitPressure, 0, 'f', 2)
+        );
 
-    // 5) Коэффициент / процент трения: ОДНО значение,
+    ui->lineEdit_resultsTable_driveRangeReal->setText(
+        QString("%1–%2")
+            .arg(t.mainTestRecord.springLow, 0, 'f', 2)
+            .arg(t.mainTestRecord.springHigh, 0, 'f', 2)
+        );
+}
+
+void MainWindow::updateStrokeTestUI(const StrokeTestRecord& r)
+{
+    ui->lineEdit_strokeTest_forwardTime->setText(r.timeForwardMs);
+    ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(r.timeForwardMs);
+
+    ui->lineEdit_strokeTest_backwardTime->setText(r.timeBackwardMs);
+    ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(r.timeBackwardMs);
+}
+
+void MainWindow::updateCrossingUI(const TelemetryStore& t)
+{
+    ui->lineEdit_crossingLimits_dynamicError_value->setText(
+        QString::number(t.mainTestRecord.dynamicErrorReal, 'f', 2));
+
+    ui->lineEdit_crossingLimits_linearCharacteristic_value->setText(
+        QString::number(t.mainTestRecord.linearityError, 'f', 2));
+
+    ui->lineEdit_crossingLimits_range_value->setText(
+        QString::number(t.valveStrokeRecord.real, 'f', 2));
+
+    ui->lineEdit_crossingLimits_spring_value->setText(
+        QString("%1–%2")
+            .arg(t.mainTestRecord.springLow, 0, 'f', 2)
+            .arg(t.mainTestRecord.springHigh, 0, 'f', 2));
+
     ui->lineEdit_crossingLimits_coefficientFriction_value->setText(
-        QString::number(telemetry.mainTestRecord.frictionPercent, 'f', 2));
+        QString::number(t.mainTestRecord.frictionPercent, 'f', 2));
 
-    // Обновляем индикаторы
     updateCrossingIndicators();
 }
+
 
 void MainWindow::appendLog(const QString& text) {
     const QString stamp = QDateTime::currentDateTime()
@@ -765,9 +778,9 @@ void MainWindow::setRegistry(Registry *registry)
 {
     m_registry = registry;
 
-    ObjectInfo *objectInfo = m_registry->getObjectInfo();
-    ValveInfo *valveInfo = m_registry->getValveInfo();
-    OtherParameters *otherParameters = m_registry->getOtherParameters();
+    const ObjectInfo *objectInfo = m_registry->getObjectInfo();
+    const ValveInfo *valveInfo = m_registry->getValveInfo();
+    const OtherParameters *otherParameters = m_registry->getOtherParameters();
     const CrossingLimits &limits = valveInfo->crossingLimits;
 
     ui->lineEdit_date->setText(otherParameters->date);
@@ -781,7 +794,7 @@ void MainWindow::setRegistry(Registry *registry)
     ui->lineEdit_manufacturer->setText(valveInfo->manufacturer);
     ui->lineEdit_valveModel->setText(valveInfo->valveModel);
     ui->lineEdit_serialNumber->setText(valveInfo->serialNumber);
-    ui->lineEdit_DNPN->setText(valveInfo->DN + "/" + valveInfo->PN);
+    ui->lineEdit_DNPN->setText(QString("%1 / %2").arg(valveInfo->DN, valveInfo->PN));
     ui->lineEdit_driveModel->setText(valveInfo->driveModel);
     ui->lineEdit_positionerModel->setText(valveInfo->positionerModel);
     ui->lineEdit_strokeMovement->setText(otherParameters->strokeMovement);
@@ -796,10 +809,14 @@ void MainWindow::setRegistry(Registry *registry)
         || limits.springEnabled
         || limits.dynamicErrorEnabled;
 
-    ui->widget_crossingLimits->setVisible(anyCrossingEnabled);
+    ui->groupBox_crossingLimits->setVisible(anyCrossingEnabled);
 
     ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_resultsTable_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
+
+    ui->lineEdit_resultsTable_driveRangeRecomend->setText(
+        formatRange(valveInfo->driveRangeLow,
+                    valveInfo->driveRangeHigh)
+        );
 
     ui->widget_crossingLimits_frictionForce->setVisible(limits.frictionEnabled);
     ui->widget_crossingLimits_linearCharacteristic->setVisible(limits.linearCharacteristicEnabled);
@@ -820,18 +837,12 @@ void MainWindow::setRegistry(Registry *registry)
             QString::number(limits.linearCharacteristicLowerLimit, 'f', 2));
     }
 
-    ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_resultsTable_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
-
     applyCrossingLimitsFromRecommend(valveInfo);
 
     if (limits.dynamicErrorEnabled) {
         ui->lineEdit_crossingLimits_dynamicError_lowerLimit->setText(QStringLiteral("0"));
         ui->lineEdit_crossingLimits_dynamicError_upperLimit->setText(QString::number(valveInfo->dinamicErrorRecomend, 'f', 2));
     }
-
-    ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo->strokValve);
-    ui->lineEdit_resultsTable_driveRangeRecomend->setText(valveInfo->driveRecomendRange);
 
     if (valveInfo->safePosition != 0) {
         m_stepTestSettings->reverse();

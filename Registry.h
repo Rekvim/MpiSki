@@ -55,7 +55,11 @@ struct ValveInfo
     QString driveModel = "";
     quint32 safePosition = 0;
     quint32 driveType = 0;
+
     QString driveRecomendRange = "";
+    double driveRangeLow  = 0.0;
+    double driveRangeHigh = 0.0;
+
     qreal driveDiameter = 0.0;
 
     quint32 toolNumber = 0;

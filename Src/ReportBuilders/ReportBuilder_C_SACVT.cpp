@@ -349,7 +349,7 @@ void ReportBuilder_C_SACVT::buildReport(
             .arg(telemetryStore.mainTestRecord.springLow, 0, 'f', 2)
             .arg(telemetryStore.mainTestRecord.springHigh, 0, 'f', 2)
     );
-    cell(report, sheet_3, 28, 8, valveInfo.driveRecomendRange);
+    cell(report, sheet_3, 28, 8, QString("%1–%2").arg(valveInfo.driveRangeLow, valveInfo.driveRangeHigh));
     cell(report, sheet_3, 28, 11, resultOk(telemetryStore.crossingStatus.spring));
 
     cell(report, sheet_3, 30, 5,

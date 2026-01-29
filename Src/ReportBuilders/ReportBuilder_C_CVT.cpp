@@ -265,7 +265,7 @@ void ReportBuilder_C_CVT::buildReport(
     );
     cell(report, sheet_3, 26, 11, resultOk(telemetryStore.crossingStatus.spring));
 
-    cell(report, sheet_3, 26, 8, valveInfo.driveRecomendRange);
+    cell(report, sheet_3, 26, 8, QString("%1–%2").arg(valveInfo.driveRangeLow, valveInfo.driveRangeHigh));
 
     cell(report, sheet_3, 28, 5,
         QString("%1–%2")

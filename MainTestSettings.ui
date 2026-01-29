@@ -50,8 +50,8 @@
            <property name="minimumDateTime">
             <datetime>
              <hour>0</hour>
-             <minute>0</minute>
-             <second>30</second>
+             <minute>3</minute>
+             <second>0</second>
              <year>2000</year>
              <month>1</month>
              <day>1</day>
@@ -67,8 +67,8 @@
            <property name="minimumTime">
             <time>
              <hour>0</hour>
-             <minute>0</minute>
-             <second>30</second>
+             <minute>3</minute>
+             <second>0</second>
             </time>
            </property>
            <property name="displayFormat">

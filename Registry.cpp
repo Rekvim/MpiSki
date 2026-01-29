@@ -47,7 +47,11 @@ ValveInfo *Registry::getValveInfo(const QString &position)
     m_valveInfo.driveModel = m_settings.value("driveModel", "").toString();
     m_valveInfo.safePosition = m_settings.value("safePosition", "").toInt();
     m_valveInfo.driveType = m_settings.value("driveType", "").toInt();
+
     m_valveInfo.driveRecomendRange = m_settings.value("driveRecomendRange", "").toString();
+    m_valveInfo.driveRangeLow = m_settings.value("driveRangeLow", 0.0).toDouble();
+    m_valveInfo.driveRangeHigh = m_settings.value("driveRangeHigh", 0.0).toDouble();
+
     m_valveInfo.driveDiameter = m_settings.value("driveDiameter", "").toDouble();
     m_valveInfo.toolNumber = m_settings.value("toolNumber", "").toInt();
     m_valveInfo.diameterPulley = m_settings.value("diameterPulley", "").toInt();
