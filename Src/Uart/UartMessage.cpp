@@ -54,7 +54,7 @@ UartMessage::UartMessage(const QByteArray &data)
     m_crc.push_back(data.at(len + 3));
 }
 
-QByteArray UartMessage::ToByteArray() const
+QByteArray UartMessage::toByteArray() const
 {
     QByteArray result;
     result.push_back(startbyte);
@@ -62,32 +62,32 @@ QByteArray UartMessage::ToByteArray() const
     result.push_back(static_cast<quint8>(m_command));
     result.push_back(m_data);
     if (m_crc.isEmpty())
-        result.push_back(Crc16());
+        result.push_back(crc16());
     result.push_back(m_crc);
     return result;
 }
 
-bool UartMessage::CheckCrc() const
+bool UartMessage::checkCrc() const
 {
-    return Crc16() == m_crc;
+    return crc16() == m_crc;
 }
 
-void UartMessage::AddCrc()
+void UartMessage::updateCrc()
 {
-    m_crc = Crc16();
+    m_crc = crc16();
 }
 
-Command UartMessage::GetCommand() const
+Command UartMessage::command() const
 {
     return m_command;
 }
 
-QByteArray UartMessage::GetData() const
+QByteArray UartMessage::data() const
 {
     return m_data;
 }
 
-QByteArray UartMessage::Crc16() const
+QByteArray UartMessage::crc16() const
 {
     quint16 wCrc = 0xFFFF;
 

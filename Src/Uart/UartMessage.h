@@ -29,19 +29,19 @@ class UartMessage
 public:
     UartMessage() = default;
     UartMessage(const Command command);
-    UartMessage(const Command command, const QByteArray &data);
+    UartMessage(const Command command, const QByteArray& data);
     UartMessage(const Command command, quint16 data);
     UartMessage(const Command command, quint8 data);
     UartMessage(const QByteArray& data);
 
-    QByteArray ToByteArray() const;
-    bool CheckCrc() const;
-    void AddCrc();
-    Command GetCommand() const;
-    QByteArray GetData() const;
+    QByteArray toByteArray() const;
+    bool checkCrc() const;
+    void updateCrc();
+    Command command() const;
+    QByteArray data() const;
 
 private:
-    QByteArray Crc16() const;
+    QByteArray crc16() const;
     Command m_command { Command::UnknownCode };
     QByteArray m_data;
     QByteArray m_crc;

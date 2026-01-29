@@ -9,14 +9,13 @@
 
 #include "Sensor.h"
 #include "./Src/Uart/UartReader.h"
-#include "./Src/Mpi/MpiSettings.h"
 
 class Mpi : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Mpi(QObject *parent = nullptr);
+    explicit Mpi(QObject* parent = nullptr);
     ~Mpi();
 
     bool initialize();
@@ -28,8 +27,8 @@ public:
     quint8 digitalOutputs();
     quint8 digitalInputs();
 
-    void SetDAC_Raw(quint16 value);
-    void SetDAC_Real(qreal value);
+    void setDacRaw(quint16 value);
+    void setDacValue(qreal value);
 
     quint16 dacMin();
     quint16 dacMax();
@@ -49,30 +48,22 @@ public slots:
     void onUartError(QSerialPort::SerialPortError err);
 
 signals:
-    void errorOccured(const QString &message);
+    void errorOccured(const QString& message);
 
-    void ConnectToUart();
+    void requestConnect();
+    void requestVersion(quint8& version);
+    void requestSetDac(quint16 value);
 
-    void GetVersion(quint8 &version);
-
-    void SetDAC(quint16 value);
-
-    void SetChannels(quint8 channels);
-
-    void SetTimer(quint16 timer);
-
-    void TurnADC_On();
-
-    void TurnADC_Off();
-
-    void GetADC(QVector<quint16> &adc);
-
-    void ADC_Timer(bool enable, quint16 interval = 50);
+    void requestSetAdcPolling(bool enable, quint16 interval);
+    void requestSetAdcChannelMask(quint8 channels);
+    void requestSetAdcTimerArr(quint16 timer);
+    void requestAdcRead(QVector<quint16>& adc);
+    void requestEnableAdc();
+    void requestDisableAdc();
 
     void setDigitalOutput(quint8 index, bool state);
-
-    void GetDO(quint8 &DO);
-    void GetDI(quint8 &DI);
+    void requestDigitalOutputs(quint8& DO);
+    void requestDigitalInputs(quint8& DI);
 
 private:
     std::array<Sensor*, 6> m_sensorByAdc { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };

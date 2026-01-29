@@ -92,7 +92,7 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
         return;
     }
 
-    m_mpi.SetDAC_Raw(dac);
+    m_mpi.setDacRaw(dac);
 
     if (waitForStart) {
         QTimer timer;
@@ -203,7 +203,6 @@ void Program::updateSensors()
     emit addPoints(Charts::Trend, points);
 }
 
-
 void Program::endTest()
 {
     m_isTestRunning = false;
@@ -226,7 +225,7 @@ void Program::disposeActiveRunnerAsync() {
 
 void Program::setDAC_real(qreal value)
 {
-    m_mpi.SetDAC_Real(value);
+    m_mpi.setDacValue(value);
 }
 
 void Program::setInitDOStates(const QVector<bool> &states)
