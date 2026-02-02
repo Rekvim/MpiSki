@@ -12,7 +12,7 @@ RunnerConfig OptionResolutionRunner::buildConfig() {
     OptionTest::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
+    const bool normalOpen = (m_reg.valveInfo().safePosition != 0);
 
     task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
 

@@ -80,6 +80,11 @@ bool MyChart::allowMarkerUpdate()
     return true;
 }
 
+QVector<MySeries*>& MyChart::series()
+{
+    return m_mySeries;
+}
+
 void MyChart::updateAxes()
 {
     if (!m_axesDirty) return;
@@ -346,6 +351,15 @@ void MyChart::addAxis(QString format)
     m_marker_Y.attachAxis(m_yaxis.last());
 }
 
+void MyChart::setSeriesMarkersOnly(quint8 seriesN, bool on)
+{
+    if (seriesN >= m_mySeries.size()) return;
+    m_mySeries[seriesN]->setMarkersOnly(on);
+
+    if (seriesN < m_mySeriesDubl.size())
+        m_mySeriesDubl[seriesN]->setMarkersOnly(on);
+}
+
 void MyChart::addSeries(quint8 axisN, QString name, QColor color)
 {
     if (axisN >= m_yaxis.count()) {
@@ -469,12 +483,18 @@ void MyChart::visible(quint8 seriesN, bool visible)
 
 void MyChart::showDots(bool show)
 {
-    for (MySeries *mySerial : m_mySeries) {
-        mySerial->setPointsVisible(show);
+    for (MySeries *s : m_mySeries) {
+        if (s->isMarkersOnly())
+            s->setPointsVisible(true);
+        else
+            s->setPointsVisible(show);
     }
 
-    for (MySeries *mySerial : m_mySeriesDubl) {
-        mySerial->setPointsVisible(show);
+    for (MySeries *s : m_mySeriesDubl) {
+        if (s->isMarkersOnly())
+            s->setPointsVisible(true);
+        else
+            s->setPointsVisible(show);
     }
 }
 

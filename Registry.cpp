@@ -1,18 +1,24 @@
 #include "Registry.h"
 
-Registry::Registry(QObject *parent)
-    : QObject{parent}
-    , m_settings("MPPI", "Data")
+Registry::Registry() : m_settings("MPPI", "Data")
+{}
+
+void Registry::loadObjectInfo()
 {
-    m_objectInfo.object = m_settings.value("object", "").toString();
-    m_objectInfo.manufactory = m_settings.value("manufactory", "").toString();
-    m_objectInfo.department = m_settings.value("department", "").toString();
-    m_objectInfo.FIO = m_settings.value("FIO", "").toString();
+    m_objectInfo.object = m_settings.value("object").toString();
+    m_objectInfo.manufactory = m_settings.value("manufactory").toString();
+    m_objectInfo.department = m_settings.value("department").toString();
+    m_objectInfo.FIO = m_settings.value("FIO").toString();
 }
 
-ObjectInfo *Registry::getObjectInfo()
+ObjectInfo& Registry::objectInfo()
 {
-    return &m_objectInfo;
+    return m_objectInfo;
+}
+
+const ObjectInfo& Registry::objectInfo() const
+{
+    return m_objectInfo;
 }
 
 void Registry::saveObjectInfo()
@@ -23,13 +29,22 @@ void Registry::saveObjectInfo()
     m_settings.setValue("FIO", m_objectInfo.FIO);
 }
 
-ValveInfo *Registry::getValveInfo(const QString &position)
+bool Registry::loadValveInfo(const QString& position)
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
     m_settings.beginGroup(m_objectInfo.department);
+
+    if (!m_settings.childGroups().contains(position)) {
+        m_settings.endGroup();
+        m_settings.endGroup();
+        m_settings.endGroup();
+        return false;
+    }
+
     m_settings.beginGroup(position);
 
+    m_valveInfo = {};
     m_valveInfo.positionNumber = position;
 
     m_valveInfo.manufacturer = m_settings.value("manufacturer", "").toString();
@@ -48,7 +63,6 @@ ValveInfo *Registry::getValveInfo(const QString &position)
     m_valveInfo.safePosition = m_settings.value("safePosition", "").toInt();
     m_valveInfo.driveType = m_settings.value("driveType", "").toInt();
 
-    m_valveInfo.driveRecomendRange = m_settings.value("driveRecomendRange", "").toString();
     m_valveInfo.driveRangeLow = m_settings.value("driveRangeLow", 0.0).toDouble();
     m_valveInfo.driveRangeHigh = m_settings.value("driveRangeHigh", 0.0).toDouble();
 
@@ -91,11 +105,7 @@ ValveInfo *Registry::getValveInfo(const QString &position)
     m_settings.endGroup();
     m_settings.endGroup();
 
-    return &m_valveInfo;
-}
-ValveInfo *Registry::getValveInfo()
-{
-    return &m_valveInfo;
+    return true;
 }
 
 void Registry::saveValveInfo()
@@ -123,12 +133,13 @@ void Registry::saveValveInfo()
     m_settings.setValue("driveModel", m_valveInfo.driveModel);
     m_settings.setValue("safePosition", m_valveInfo.safePosition);
     m_settings.setValue("driveType", m_valveInfo.driveType);
-    m_settings.setValue("driveRecomendRange", m_valveInfo.driveRecomendRange);
+    // m_settings.setValue("driveRecomendRange", m_valveInfo.driveRecomendRange);
+    m_settings.setValue("driveRangeLow",  m_valveInfo.driveRangeLow);
+    m_settings.setValue("driveRangeHigh", m_valveInfo.driveRangeHigh);
     m_settings.setValue("driveDiameter", m_valveInfo.driveDiameter);
     m_settings.setValue("toolNumber", m_valveInfo.toolNumber);
     m_settings.setValue("diameterPulley", m_valveInfo.diameterPulley);
     m_settings.setValue("materialStuffingBoxSeal", m_valveInfo.materialStuffingBoxSeal);
-
 
     // crossing limits
     m_settings.setValue("crossing_enable_friction",
@@ -164,10 +175,29 @@ void Registry::saveValveInfo()
     m_settings.endGroup();
 }
 
-OtherParameters *Registry::getOtherParameters()
+
+ValveInfo& Registry::valveInfo()
 {
-    return &m_otherParameters;
+    return m_valveInfo;
 }
+
+const ValveInfo& Registry::valveInfo() const
+{
+    return m_valveInfo;
+}
+
+
+OtherParameters& Registry::otherParameters()
+{
+    return m_otherParameters;
+}
+
+
+const OtherParameters& Registry::otherParameters() const
+{
+    return m_otherParameters;
+}
+
 
 bool Registry::checkObject(const QString &object)
 {
@@ -213,7 +243,7 @@ bool Registry::checkPosition(const QString &position)
     return result;
 }
 
-QStringList Registry::getPositions()
+QStringList Registry::positions()
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);
@@ -228,7 +258,7 @@ QStringList Registry::getPositions()
     return result;
 }
 
-QString Registry::getLastPosition()
+QString Registry::lastPosition()
 {
     m_settings.beginGroup(m_objectInfo.object);
     m_settings.beginGroup(m_objectInfo.manufactory);

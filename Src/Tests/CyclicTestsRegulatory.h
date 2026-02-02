@@ -2,7 +2,7 @@
 #define CYCLICTESTSREGULATORY_H
 
 #include "MainTest.h"
-#include "SelectTests.h"
+#include "./Src/Ui/Setup/SelectTests.h"
 
 #include <QVector>
 #include <QPointF>

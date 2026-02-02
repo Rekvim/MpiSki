@@ -9,7 +9,7 @@
 #include <QDateTime>
 
 #include "Test.h"
-#include "MainTestSettings.h"
+#include "./Src/Ui/TestSettings/MainTestSettings.h"
 
 class MainTest : public Test
 {

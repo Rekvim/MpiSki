@@ -57,7 +57,7 @@ struct ValveInfo
     quint32 driveType = 0;
 
     QString driveRecomendRange = "";
-    double driveRangeLow  = 0.0;
+    double driveRangeLow = 0.0;
     double driveRangeHigh = 0.0;
 
     qreal driveDiameter = 0.0;
@@ -76,22 +76,31 @@ struct OtherParameters
     QString strokeMovement = "";
 };
 
-class Registry : public QObject
+class Registry
 {
-    Q_OBJECT
 public:
-    explicit Registry(QObject *parent = nullptr);
+    Registry();
+
+    // ObjectInfo
+    void loadObjectInfo();
     void saveObjectInfo();
+
+    ObjectInfo& objectInfo();
+    const ObjectInfo& objectInfo() const;
+
+    // ValveInfo
+    bool loadValveInfo(const QString& position);
     void saveValveInfo();
 
-    ValveInfo *getValveInfo(const QString &position);
-    ValveInfo *getValveInfo();
+    ValveInfo& valveInfo();
+    const ValveInfo& valveInfo() const;
 
-    OtherParameters *getOtherParameters();
-    ObjectInfo *getObjectInfo();
+    // Other
+    OtherParameters& otherParameters();
+    const OtherParameters& otherParameters() const;
 
-    QStringList getPositions();
-    QString getLastPosition();
+    QStringList positions();
+    QString lastPosition();
 
     bool checkObject(const QString &object);
     bool checkManufactory(const QString &manufactory);
@@ -103,7 +112,6 @@ private:
     ObjectInfo m_objectInfo;
     ValveInfo m_valveInfo;
     OtherParameters m_otherParameters;
-signals:
 };
 
 #endif // REGISTRY_H

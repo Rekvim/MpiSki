@@ -4,7 +4,7 @@
 #pragma once
 #include <QObject>
 #include "BaseRunner.h"
-#include "./MainTestSettings.h"
+#include "./Src/Ui/TestSettings/MainTestSettings.h"
 
 class MainTestRunner : public BaseRunner {
     Q_OBJECT

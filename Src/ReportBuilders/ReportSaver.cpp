@@ -143,15 +143,15 @@ void ReportSaver::createDir()
         return;
     }
 
-    ObjectInfo *objectInfo = m_registry->getObjectInfo();
-    ValveInfo *valveInfo = m_registry->getValveInfo();
+    auto& objectInfo = m_registry->objectInfo();
+    auto& valveInfo = m_registry->valveInfo();
 
     const QString basePath =
         QStringLiteral("%1/%2/%3/%4")
-            .arg(objectInfo->object,
-                 objectInfo->manufactory,
-                 objectInfo->department,
-                 valveInfo->positionNumber);
+            .arg(objectInfo.object,
+                 objectInfo.manufactory,
+                 objectInfo.department,
+                 valveInfo.positionNumber);
 
     const QString dateFolder =
         QDate::currentDate().toString(QStringLiteral("dd_MM_yyyy"));

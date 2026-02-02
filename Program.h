@@ -10,9 +10,9 @@
 #include <QTimer>
 
 #include "./Src/Mpi/Mpi.h"
-#include "OtherTestSettings.h"
-#include "StepTestSettings.h"
-#include "CyclicTestSettings.h"
+#include "./Src/Ui/TestSettings/OtherTestSettings.h"
+#include "./Src/Ui/TestSettings/StepTestSettings.h"
+#include "./Src/Ui/TestSettings/CyclicTestSettings.h"
 
 #include "Registry.h"
 #include "./Src/Telemetry/TelemetryStore.h"
@@ -24,7 +24,7 @@
 #include "./Src/Tests/CyclicTestsRegulatory.h"
 #include "./Src/Tests/CyclicTestsShutoff.h"
 
-#include "SelectTests.h"
+#include "./Src/Ui/Setup/SelectTests.h"
 
 struct RealtimeState
 {

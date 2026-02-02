@@ -75,6 +75,9 @@ public:
     void saveToStream(QDataStream &stream) const;
     void loadFromStream(QDataStream &dataStream);
     void setPointsVisible(quint8 seriesN, bool visible);
+    QVector<MySeries*>& series();
+    void setSeriesMarkersOnly(quint8 seriesN, bool on);
+
 public slots:
     void useTimeaxis(bool);
     void addAxis(QString);

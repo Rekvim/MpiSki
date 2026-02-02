@@ -2,8 +2,7 @@
 #define CYCLICTESTS_H
 
 #include "MainTest.h"
-#include "CyclicTestSettings.h"
-
+#include "./Src/Ui/TestSettings/CyclicTestSettings.h"
 #include <QVector>
 #include <QPointF>
 #include <QString>

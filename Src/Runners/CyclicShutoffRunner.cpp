@@ -15,7 +15,7 @@ RunnerConfig CyclicShutoffRunner::buildConfig()
     const auto& p = m_params;
     if (p.testType != p.Type::Shutoff) return {};
 
-    const bool normalOpen = (m_reg.getValveInfo()->safePosition != 0);
+    const bool normalOpen = (m_reg.valveInfo().safePosition != 0);
     const auto rawCycle = makeRawValues(p.offSeqValues, m_mpi, normalOpen);
     if (rawCycle.isEmpty() || p.shutoff_numCycles <= 0) return {};
 

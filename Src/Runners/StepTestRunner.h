@@ -4,7 +4,7 @@
 #pragma once
 #include "BaseRunner.h"
 #include "./Src/Tests/StepTest.h"
-#include "./StepTestSettings.h"
+#include "./Src/Ui/TestSettings/StepTestSettings.h"
 
 class StepTestRunner : public BaseRunner {
     Q_OBJECT

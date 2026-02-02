@@ -3,7 +3,7 @@
 
 #pragma once
 #include "BaseRunner.h"
-#include "OtherTestSettings.h"
+#include "./Src/Ui/TestSettings/OtherTestSettings.h"
 
 class OptionResolutionRunner : public BaseRunner {
     Q_OBJECT

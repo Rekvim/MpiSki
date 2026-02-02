@@ -18,7 +18,15 @@ include(./QXlsx.pri)
 INCLUDEPATH += $$PWD/Src/CustomChart
 
 SOURCES += \
-    CyclicTestSettings.cpp \
+    main.cpp \
+    Src/Ui/Setup/ObjectWindow.cpp \
+    Src/Ui/Setup/ValveWindow.cpp \
+    Src/Ui/Setup/SelectTests.cpp \
+    Src/Ui/MainWindow/MainWindow.cpp \
+    Src/Ui/TestSettings/CyclicTestSettings.cpp \
+    Src/Ui/TestSettings/OtherTestSettings.cpp \
+    Src/Ui/TestSettings/StepTestSettings.cpp \
+    Src/Ui/TestSettings/MainTestSettings.cpp \
     Src/CustomChart/MyChart.cpp \
     Src/CustomChart/MySeries.cpp \
     Src/LabeledSlider/LabeledSlider.cpp \
@@ -53,27 +61,23 @@ SOURCES += \
     Src/Uart/UartMessage.cpp \
     Src/Uart/UartReader.cpp \
     Src/ValidatorFactory/ValidatorFactory.cpp \
-    main.cpp \
-    MainWindow.cpp \
-    MainTestSettings.cpp \
-    ObjectWindow.cpp \
-    OtherTestSettings.cpp \
     Program.cpp \
     Registry.cpp \
-    SelectTests.cpp \
-    Sensor.cpp \
-    StepTestSettings.cpp \
-    ValveWindow.cpp
+    Sensor.cpp
 
 HEADERS += \
-    CyclicTestSettings.h \
-    MainWindow.h \
-    MainTestSettings.h \
-    ObjectWindow.h \
-    OtherTestSettings.h \
+    Src/Ui/Setup/ObjectWindow.h \
+    Src/Ui/Setup/ValveWindow.h \
+    Src/Ui/Setup/SelectTests.h \
+    Src/Ui/TestSettings/AbstractTestSettings.h \
+    Src/Ui/TestSettings/CyclicTestSettings.h \
+    Src/Ui/TestSettings/ITestSettings.h \
+    Src/Ui/TestSettings/OtherTestSettings.h \
+    Src/Ui/TestSettings/StepTestSettings.h \
+    Src/Ui/TestSettings/MainTestSettings.h \
+    Src/Ui/MainWindow/MainWindow.h \
     Program.h \
     Registry.h \
-    SelectTests.h \
     Sensor.h \
     Src/CustomChart/MyChart.h \
     Src/CustomChart/MySeries.h \
@@ -111,19 +115,17 @@ HEADERS += \
     Src/Uart/UartMessage.h \
     Src/Uart/UartReader.h \
     Src/ValidatorFactory/RegexPatterns.h \
-    Src/ValidatorFactory/ValidatorFactory.h \
-    StepTestSettings.h \
-    ValveWindow.h \
+    Src/ValidatorFactory/ValidatorFactory.h
 
 FORMS += \
-    CyclicTestSettings.ui \
-    MainTestSettings.ui \
-    MainWindow.ui \
-    ObjectWindow.ui \
-    OtherTestSettings.ui \
-    SelectTests.ui \
-    StepTestSettings.ui \
-    ValveWindow.ui
+    Src/Ui/Setup/ObjectWindow.ui \
+    Src/Ui/Setup/SelectTests.ui \
+    Src/Ui/Setup/ValveWindow.ui \
+    Src/Ui/MainWindow/MainWindow.ui \
+    Src/Ui/TestSettings/CyclicTestSettings.ui \
+    Src/Ui/TestSettings/MainTestSettings.ui \
+    Src/Ui/TestSettings/OtherTestSettings.ui \
+    Src/Ui/TestSettings/StepTestSettings.ui
 
 
 # Default rules for deployment.

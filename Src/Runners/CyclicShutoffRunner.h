@@ -3,8 +3,8 @@
 
 #pragma once
 #include "BaseRunner.h"
-#include "./CyclicTestSettings.h"
 #include "./Src/Tests/CyclicTestsShutoff.h"
+#include "./Src/Ui/TestSettings/CyclicTestSettings.h"
 
 class CyclicShutoffRunner final : public BaseRunner {
     Q_OBJECT

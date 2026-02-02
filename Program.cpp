@@ -192,8 +192,12 @@ void Program::updateSensors()
     emit setText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
 
     QVector<Point> points;
-    qreal percent = calcPercent(m_mpi.dac()->value(),
-                                m_registry->getValveInfo()->safePosition != 0);
+
+    const auto& v = m_registry->valveInfo();
+    qreal percent = calcPercent(
+        m_mpi.dac()->value(),
+        v.safePosition != 0
+        );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_initTime;
 
@@ -247,7 +251,6 @@ void Program::initialization()
     m_timerSensors->stop();
     m_timerDI->stop();
     emit setButtonInitEnabled(false);
-    emit setSensorNumber(0);
 
     if (!connectAndInitDevice()) {
         emit setButtonInitEnabled(true);
@@ -259,8 +262,8 @@ void Program::initialization()
         return;
     }
 
-    ValveInfo *valveInfo = m_registry->getValveInfo();
-    bool normalClosed = (valveInfo->safePosition == 0);
+    const auto& valveInfo = m_registry->valveInfo();
+    bool normalClosed = (valveInfo.safePosition == 0);
 
     // Измерение начального и конечного положения соленоида
     if (m_patternType == SelectTests::Pattern_B_SACVT ||
@@ -455,11 +458,12 @@ void Program::measureEndPositionShutoff(bool normalClosed)
 
 void Program::calculateAndApplyCoefficients()
 {
-    ValveInfo *valveInfo = m_registry->getValveInfo();
+    const auto& valveInfo = m_registry->valveInfo();
+
     qreal coeff = 1.0;
 
-    if (valveInfo->strokeMovement != 0) {
-        coeff = qRadiansToDegrees(2.0 / valveInfo->diameterPulley);
+    if (valveInfo.strokeMovement != 0) {
+        coeff = qRadiansToDegrees(2.0 / valveInfo.diameterPulley);
         m_mpi[0]->setUnit("°");
     }
 
@@ -491,6 +495,7 @@ void Program::finalizeInitialization()
 
     emit setSensorNumber(m_mpi.sensorCount());
     emit setButtonInitEnabled(true);
+
     m_timerSensors->start();
 }
 
@@ -555,8 +560,8 @@ static bool rangeOverlap(double valueLow, double valueHigh,
 void Program::updateCrossingStatus()
 {
     auto &ts = m_telemetryStore;
-    const ValveInfo *valveInfo = m_registry->getValveInfo();
-    const CrossingLimits &limits = valveInfo->crossingLimits;
+    const auto& valveInfo = m_registry->valveInfo();
+    const auto& limits = valveInfo.crossingLimits;
     using State = CrossingStatus::State;
 
     // --- friction ---
@@ -573,7 +578,7 @@ void Program::updateCrossingStatus()
     // --- range / stroke : сравниваем реальный ход с (recomend ± %) ---
     if (limits.rangeEnabled) {
         bool ok = false;
-        const double recStroke = toDouble(valveInfo->strokValve, &ok);
+        const double recStroke = toDouble(valveInfo.strokValve, &ok);
         if (ok) {
             const double d = std::abs(recStroke) * (limits.rangeUpperLimit / 100.0); // rangeUpperLimit как %
             const double lo = recStroke - d;
@@ -593,7 +598,7 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.dynamicError =
             inRange(ts.mainTestRecord.dynamicErrorReal,
                     0.0,
-                    valveInfo->dinamicErrorRecomend)
+                    valveInfo.dinamicErrorRecomend)
                 ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.dynamicError = State::Unknown;
@@ -601,28 +606,27 @@ void Program::updateCrossingStatus()
 
     // --- spring : два диапазона, проверяем каждое число отдельно ---
     if (limits.springEnabled) {
-        const auto r = parseRange2(valveInfo->driveRecomendRange); // "low–high"
-        if (r) {
-            double recLow  = r->first;
-            double recHigh = r->second;
-            if (recLow > recHigh) std::swap(recLow, recHigh);
+        double recLow  = valveInfo.driveRangeLow;
+        double recHigh = valveInfo.driveRangeHigh;
 
-            const double lowD = std::abs(recLow)  * (limits.springLowerLimit / 100.0); // springLowerLimit как %
-            const double highD = std::abs(recHigh) * (limits.springUpperLimit / 100.0); // springUpperLimit как %
+        if (recLow > recHigh)
+            std::swap(recLow, recHigh);
 
-            const double lowLo = recLow  - lowD;
-            const double lowHi = recLow  + lowD;
+        const double lowD  = std::abs(recLow) * (limits.springLowerLimit / 100.0);
+        const double highD = std::abs(recHigh) * (limits.springUpperLimit / 100.0);
 
-            const double highLo = recHigh - highD;
-            const double highHi = recHigh + highD;
+        const double lowLo = recLow - lowD;
+        const double lowHi = recLow + lowD;
 
-            const bool okLow = inRange(ts.mainTestRecord.springLow,  lowLo,  lowHi);
-            const bool okHigh = inRange(ts.mainTestRecord.springHigh, highLo, highHi);
+        const double highLo = recHigh - highD;
+        const double highHi = recHigh + highD;
 
-            ts.crossingStatus.spring = (okLow && okHigh) ? State::Ok : State::Fail;
-        } else {
-            ts.crossingStatus.spring = State::Unknown;
-        }
+        const bool okLow  = inRange(ts.mainTestRecord.springLow,  lowLo,  lowHi);
+        const bool okHigh = inRange(ts.mainTestRecord.springHigh, highLo, highHi);
+
+        ts.crossingStatus.spring = (okLow && okHigh)
+                                       ? State::Ok
+                                       : State::Fail;
     } else {
         ts.crossingStatus.spring = State::Unknown;
     }
@@ -642,9 +646,8 @@ void Program::updateCrossingStatus()
 
 void Program::results_mainTest(const MainTest::TestResults &results)
 {
-    ValveInfo *valveInfo = m_registry->getValveInfo();
-
-    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+    const auto& valveInfo = m_registry->valveInfo();
+    qreal k = 5 * M_PI * valveInfo.driveDiameter * valveInfo.driveDiameter / 4;
 
     auto &s = m_telemetryStore.mainTestRecord;
 
@@ -676,8 +679,11 @@ void Program::updateCharts_mainTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.dac()->value(),
-                                m_registry->getValveInfo()->safePosition != 0);
+    const auto& v = m_registry->valveInfo();
+    qreal percent = calcPercent(
+        m_mpi.dac()->value(),
+        v.safePosition != 0
+    );
 
     qreal task = m_mpi[0]->valueFromPercent(percent);
     qreal X = m_mpi.dac()->value();
@@ -699,9 +705,9 @@ void Program::addFriction(const QVector<QPointF> &points)
 {
     QVector<Point> chartPoints;
 
-    ValveInfo *valveInfo = m_registry->getValveInfo();
+    auto& valveInfo = m_registry->valveInfo();
 
-    qreal k = 5 * M_PI * valveInfo->driveDiameter * valveInfo->driveDiameter / 4;
+    qreal k = 5 * M_PI * valveInfo.driveDiameter * valveInfo.driveDiameter / 4;
 
     for (QPointF point : points) {
         chartPoints.push_back({0, point.x(), point.y() * k});
@@ -740,8 +746,11 @@ void Program::updateCharts_strokeTest()
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.dac()->value(),
-                                m_registry->getValveInfo()->safePosition != 0);
+    const auto& v = m_registry->valveInfo();
+    qreal percent = calcPercent(
+        m_mpi.dac()->value(),
+        v.safePosition != 0
+        );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
@@ -755,8 +764,11 @@ void Program::updateCharts_CyclicTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.dac()->value(),
-                                m_registry->getValveInfo()->safePosition != 0);
+    const auto& v = m_registry->valveInfo();
+    qreal percent = calcPercent(
+        m_mpi.dac()->value(),
+        v.safePosition != 0
+        );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 
@@ -1074,8 +1086,11 @@ void Program::updateCharts_optionTest(Charts chart)
 {
     QVector<Point> points;
 
-    qreal percent = calcPercent(m_mpi.dac()->value(),
-                                m_registry->getValveInfo()->safePosition != 0);
+    const auto& v = m_registry->valveInfo();
+    qreal percent = calcPercent(
+        m_mpi.dac()->value(),
+        v.safePosition != 0
+    );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
 

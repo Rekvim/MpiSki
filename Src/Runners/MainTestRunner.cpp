@@ -1,6 +1,6 @@
 #include "MainTestRunner.h"
 #include "./Src/Tests/MainTest.h"
-#include "./MainTestSettings.h"
+#include "./Src/Ui/TestSettings/MainTestSettings.h"
 #include "./Program.h"
 
 RunnerConfig MainTestRunner::buildConfig() {
