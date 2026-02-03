@@ -53,7 +53,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -680,7 +680,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>Статус устройства:</string>
+                <string>Статус устройства</string>
                </property>
               </widget>
              </item>
@@ -744,7 +744,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>Инициализация устройства:</string>
+                <string>Инициализация устройства</string>
                </property>
               </widget>
              </item>
@@ -866,7 +866,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>Начальное положение датчика линейных перемещений:</string>
+                <string>Начальное положение датчика линейных перемещений</string>
                </property>
               </widget>
              </item>
@@ -927,7 +927,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>Конечное положение датчика линейных перемещений:</string>
+                <string>Конечное положение датчика линейных перемещений</string>
                </property>
               </widget>
              </item>
@@ -1680,7 +1680,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Сила трения, H</string>
+                    <string>Сила трения, N</string>
                    </property>
                   </widget>
                  </item>
@@ -3213,7 +3213,7 @@ Border-radius: 10px;
         <item>
          <widget class="QTabWidget" name="tabWidget_optionalTests">
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -3462,7 +3462,7 @@ Border-radius: 10px;
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>11</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="title">
@@ -4902,7 +4902,7 @@ Border-radius: 10px;
                 </property>
                 <property name="text">
                  <string>Заданый диапазон пружин
-Привода, barр</string>
+Привода, bar</string>
                 </property>
                </widget>
               </item>
@@ -5086,7 +5086,7 @@ Border-radius: 10px;
                 </property>
                 <property name="text">
                  <string>Ход штока, mm
-Ход вала, град</string>
+Ход вала, °</string>
                 </property>
                </widget>
               </item>

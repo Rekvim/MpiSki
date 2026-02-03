@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>584</width>
-    <height>611</height>
+    <height>618</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -306,11 +306,6 @@
                 <pointsize>10</pointsize>
                </font>
               </property>
-              <item>
-               <property name="text">
-                <string>10</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>
@@ -505,7 +500,7 @@
               </font>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Время удержания&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Время удержания&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -584,11 +579,6 @@
               <property name="editTriggers">
                <set>QAbstractItemView::EditTrigger::CurrentChanged|QAbstractItemView::EditTrigger::DoubleClicked|QAbstractItemView::EditTrigger::EditKeyPressed</set>
               </property>
-              <item>
-               <property name="text">
-                <string>0-100-0</string>
-               </property>
-              </item>
              </widget>
             </item>
            </layout>
@@ -629,11 +619,6 @@
                 <pointsize>10</pointsize>
                </font>
               </property>
-              <item>
-               <property name="text">
-                <string>10</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>
