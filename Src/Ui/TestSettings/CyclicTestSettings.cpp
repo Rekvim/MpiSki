@@ -57,13 +57,11 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // 1. Заполняем стандартные регулирующие пресеты
     fillDefaultRegulatoryPresets();
+    fillDefaultShutOffPresets();
 
-    // 2. Привязываем кнопки add/edit/remove
     bindRegulatoryPresetEditor();
 
-    // 3. Общие кнопки
     connect(ui->pushButton_cancel, &QPushButton::clicked,
             this, &QDialog::reject);
 
@@ -71,29 +69,58 @@ CyclicTestSettings::CyclicTestSettings(QWidget *parent)
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CyclicTestSettings::onTestSelectionChanged);
 
-    // 4. Ограничение времени
     clampTime(ui->timeEdit_retentionTimeRegulatory, kMinHold, kMaxHold);
-    clampTime(ui->timeEdit_retentionTimeShutOff,   kMinHold, kMaxHold);
+    clampTime(ui->timeEdit_retentionTimeShutOff, kMinHold, kMaxHold);
 
     onTestSelectionChanged();
 }
 
-CyclicTestSettings::~CyclicTestSettings()
-{
-    delete ui;
-}
-
 void CyclicTestSettings::fillDefaultRegulatoryPresets()
 {
-    static const QStringList presets = {
+    static const QStringList presetsRange = {
         "0-25-50-75-100-75-50-25-0",
         "0-50-100-50-0",
         "0-100-0"
     };
 
     ui->listWidget_testRangeRegulatory->clear();
-    ui->listWidget_testRangeRegulatory->addItems(presets);
+    ui->listWidget_testRangeRegulatory->addItems(presetsRange);
     ui->listWidget_testRangeRegulatory->setCurrentRow(0);
+
+    static const QStringList presetsdelay = {
+        "10",
+        "30",
+        "60"
+    };
+
+    ui->listWidget_delayTimeRegulatory->clear();
+    ui->listWidget_delayTimeRegulatory->addItems(presetsRange);
+    ui->listWidget_delayTimeRegulatory->setCurrentRow(0);
+
+    ui->lineEdit_numberCyclesRegulatory->setText("10");
+}
+
+void CyclicTestSettings::fillDefaultShutOffPresets()
+{
+    static const QStringList presetsRange = {
+        "0-100-0"
+    };
+
+    ui->listWidget_delayTimeShutOff->clear();
+    ui->listWidget_delayTimeShutOff->addItems(presetsRange);
+    ui->listWidget_delayTimeShutOff->setCurrentRow(0);
+
+    static const QStringList presetsdelay = {
+        "10",
+        "30",
+        "60"
+    };
+
+    ui->listWidget_delayTimeShutOff->clear();
+    ui->listWidget_delayTimeShutOff->addItems(presetsRange);
+    ui->listWidget_delayTimeShutOff->setCurrentRow(0);
+
+    ui->lineEdit_numberCyclesShutOff->setText("10");
 }
 
 void CyclicTestSettings::bindRegulatoryPresetEditor()
@@ -140,7 +167,6 @@ static bool parseSequence(const QString& src,
 {
     const QString s = src.trimmed();
 
-    // ВАЖНО: инвертируем условие
     if (!RegexPatterns::floatSequence().match(s).hasMatch()) {
         error = QStringLiteral(
             "Формат: X или X-Y, где X и Y — числа (можно с точкой)."
@@ -175,8 +201,6 @@ static bool parseSequence(const QString& src,
 
     return true;
 }
-
-
 
 // --- Регулирующий
 void CyclicTestSettings::on_pushButton_addRangeRegulatory_clicked()

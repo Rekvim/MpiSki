@@ -2,11 +2,11 @@
 #include <QTranslator>
 #include <QDebug>
 
-#include "MainWindow.h"
-#include "SelectTests.h"
-#include "ObjectWindow.h"
+#include "./Src/Ui/MainWindow/MainWindow.h"
+#include "./Src/Ui/Setup/SelectTests.h"
+#include "./Src/Ui/Setup/ObjectWindow.h"
 #include "Registry.h"
-#include "ValveWindow.h"
+#include "./Src/Ui/Setup/ValveWindow.h"
 
 
 int main(int argc, char *argv[])
@@ -14,7 +14,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     qRegisterMetaType<MainTestSettings::TestParameters>("MainTestSettings::TestParameters");
-    qRegisterMetaType<MainTestSettings::TestParameters*>("MainTestSettings::TestParameters*");
     qRegisterMetaType<TelemetryStore>("TelemetryStore");
 
     QTranslator qtTranslator;
@@ -47,6 +46,5 @@ int main(int argc, char *argv[])
     mainWindow.setRegistry(&registry);
     mainWindow.show();
     QTimer::singleShot(0, &mainWindow, [&]{ mainWindow.showMaximized(); });
-    qDebug() << "topLevelWidgets:" << QApplication::topLevelWidgets();
     return a.exec();
 }

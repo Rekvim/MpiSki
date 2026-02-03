@@ -20,7 +20,7 @@ class CyclicTestSettings : public AbstractTestSettings
     Q_OBJECT
 public:
     explicit CyclicTestSettings(QWidget* parent = nullptr);
-    ~CyclicTestSettings();
+    ~CyclicTestSettings() = default;
 
     void applyPattern(SelectTests::PatternType pattern) override;
     void applyValveInfo(const ValveInfo& info) override;
@@ -70,6 +70,8 @@ private:
 
     // === helpers ===
     void fillDefaultRegulatoryPresets();
+    void fillDefaultShutOffPresets();
+
     void bindRegulatoryPresetEditor();
     static QString reverseSequenceString(const QString& s);
 

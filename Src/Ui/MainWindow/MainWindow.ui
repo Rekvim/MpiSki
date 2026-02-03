@@ -53,7 +53,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1158,6 +1158,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
                </property>
@@ -1203,6 +1206,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1298,7 +1304,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>2</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -1382,6 +1388,21 @@
                    <string>Отображение кривых</string>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_12">
+                   <property name="spacing">
+                    <number>10</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>10</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>10</number>
+                   </property>
                    <item>
                     <widget class="QCheckBox" name="checkBox_showCurve_task">
                      <property name="text">
@@ -3192,7 +3213,7 @@ Border-radius: 10px;
         <item>
          <widget class="QTabWidget" name="tabWidget_optionalTests">
           <property name="currentIndex">
-           <number>1</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -3696,7 +3717,7 @@ Border-radius: 10px;
         <item row="0" column="0">
          <widget class="QTabWidget" name="tabWidget_reportGeneration">
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_info">
            <attribute name="title">
@@ -4827,7 +4848,7 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="text">
-                 <string>Время обратного хода, сек</string>
+                 <string>Время обратного хода, s</string>
                 </property>
                </widget>
               </item>
@@ -4881,7 +4902,7 @@ Border-radius: 10px;
                 </property>
                 <property name="text">
                  <string>Заданый диапазон пружин
-Привода, bar</string>
+Привода, barр</string>
                 </property>
                </widget>
               </item>
@@ -5064,7 +5085,7 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="text">
-                 <string>Ход штока, мм
+                 <string>Ход штока, mm
 Ход вала, град</string>
                 </property>
                </widget>
@@ -5325,7 +5346,7 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="text">
-                 <string>Время прямого хода, сек</string>
+                 <string>Время прямого хода, s</string>
                 </property>
                </widget>
               </item>

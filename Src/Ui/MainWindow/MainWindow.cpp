@@ -174,6 +174,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_reportSaver = new ReportSaver(this);
 
+
     ui->checkBox_switch_3_0->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_switch_0_3->setAttribute(Qt::WA_TransparentForMouseEvents);
 
@@ -1114,7 +1115,7 @@ void MainWindow::setButtonInitEnabled(bool enable)
 void MainWindow::addPoints(Charts chart, const QVector<Point> &points)
 {
     for (const auto& point : points)
-        m_charts[chart]->addPoint(point.series_num, point.X, point.Y);
+        m_charts[chart]->addPoint(point.seriesNum, point.X, point.Y);
 }
 
 void MainWindow::clearPoints(Charts chart)

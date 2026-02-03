@@ -20,7 +20,6 @@
 
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/MainTest.h"
-#include "./Src/Tests/CyclicTests.h"
 #include "./Src/Tests/CyclicTestsRegulatory.h"
 #include "./Src/Tests/CyclicTestsShutoff.h"
 
@@ -68,7 +67,7 @@ enum class Charts {
 
 struct Point
 {
-    quint8 series_num;
+    quint8 seriesNum;
     qreal X;
     qreal Y;
 };
@@ -120,7 +119,7 @@ signals:
     void releaseBlock();
 
     void mainTestFinished();
-    void getParameters_mainTest(MainTestSettings::TestParameters& parameters);
+    void getParameters_mainTest(MainTestSettings::TestParameters &parameters);
     void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
     void getParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
     void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
@@ -231,11 +230,11 @@ public slots:
     void results_strokeTest(const quint64 forwardTime, const  quint64 backwardTime);
     void results_stepTest(const QVector<StepTest::TestResult> &results, const quint32 T_value);
 
-    void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results);
-    void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results);
+    void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults &results);
+    void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults &results);
 
-    void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
-                                     const CyclicTestsShutoff::TestResults& shutoffResults);
+    void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults &regulatoryResults,
+                                     const CyclicTestsShutoff::TestResults &shutoffResults);
 
     void setInitDOStates(const QVector<bool> &states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }

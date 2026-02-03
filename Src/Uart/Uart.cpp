@@ -15,8 +15,7 @@ Uart::Uart(QObject *parent)
     m_serialPort->setStopBits(QSerialPort::OneStop);
     m_serialPort->setFlowControl(QSerialPort::NoFlowControl);
 
-    // НЕ ставь 1 — это путь к потере байтов
-    m_serialPort->setReadBufferSize(0); // unlimited (или 4096)
+    m_serialPort->setReadBufferSize(0);
 
     connect(m_serialPort, &QSerialPort::errorOccurred,
             this, [this](QSerialPort::SerialPortError e) {
@@ -24,7 +23,6 @@ Uart::Uart(QObject *parent)
 
                 qWarning() << "[UART] error:" << e << m_serialPort->errorString();
 
-                // Фатальные — закрываем порт, чтобы не спамить WriteError бесконечно
                 if (e == QSerialPort::ResourceError ||
                     e == QSerialPort::DeviceNotFoundError ||
                     e == QSerialPort::PermissionError ||
@@ -58,7 +56,6 @@ void Uart::open(const QString &portName)
         return;
     }
 
-    // На старте вычистить мусор
     m_serialPort->clear(QSerialPort::AllDirections);
 
     emit portOpened(portName);
@@ -74,7 +71,6 @@ void Uart::close()
     emit portClosed();
 }
 
-// читает 1 полный фрейм по (START, LEN)
 static bool readOneFrame(QSerialPort* sp, QByteArray& out, int totalTimeoutMs)
 {
     out.clear();
@@ -90,10 +86,8 @@ static bool readOneFrame(QSerialPort* sp, QByteArray& out, int totalTimeoutMs)
 
         buf += sp->readAll();
 
-        // найти старт
         int s = buf.indexOf(char(START));
         if (s < 0) {
-            // мусор, держим последние 2 байта на случай обрывка
             if (buf.size() > 2) buf = buf.right(2);
             continue;
         }
@@ -101,8 +95,8 @@ static bool readOneFrame(QSerialPort* sp, QByteArray& out, int totalTimeoutMs)
 
         if (buf.size() < 2) continue;
 
-        const quint8 len = quint8(buf[1]);             // LEN = data+cmd
-        const int frameSize = int(len) + 4;            // AA + LEN + (len bytes) + CRC(2)
+        const quint8 len = quint8(buf[1]);
+        const int frameSize = int(len) + 4;
 
         if (buf.size() < frameSize) continue;
 
@@ -118,12 +112,10 @@ void Uart::writeAndRead(const QByteArray &dataToWrite, QByteArray &readData)
     readData.clear();
 
     if (!m_serialPort->isOpen()) {
-        // чтобы сверху не делал “пустые повторы”, это реальная проблема
         qWarning() << "[UART] writeAndRead while port is closed";
         return;
     }
 
-    // вычистить входящий буфер перед запросом
     m_serialPort->clear(QSerialPort::Input);
 
     const qint64 written = m_serialPort->write(dataToWrite);
@@ -134,14 +126,12 @@ void Uart::writeAndRead(const QByteArray &dataToWrite, QByteArray &readData)
         return;
     }
 
-    if (!m_serialPort->waitForBytesWritten(100)) { // 10мс слишком мало
+    if (!m_serialPort->waitForBytesWritten(100)) {
         qWarning() << "[UART] waitForBytesWritten timeout:" << m_serialPort->errorString();
         return;
     }
 
-    // читаем 1 полный фрейм
     if (!readOneFrame(m_serialPort, readData, 500)) {
-        // просто нет ответа (или таймаут)
         return;
     }
 }
