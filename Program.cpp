@@ -12,7 +12,6 @@
 #include "./Src/Runners/CyclicShutoffRunner.h"
 #include <QRegularExpression>
 #include <QLocale>
-#include <optional>
 #include <utility>
 
 namespace {
@@ -26,28 +25,6 @@ double toDouble(QString s, bool* okOut = nullptr)
     if (okOut) *okOut = ok;
     return v;
 }
-
-std::optional<QPair<double,double>> parseRange2(const QString& s)
-{
-    // достаём 2 числа из "1–2", "1-2", "1 .. 2", "1 2"
-    static const QRegularExpression re(R"(([+-]?\d+(?:[.,]\d+)?))");
-    auto it = re.globalMatch(s);
-
-    double a = 0.0, b = 0.0;
-    int n = 0;
-    while (it.hasNext() && n < 2) {
-        const auto m = it.next();
-        bool ok = false;
-        const double v = toDouble(m.captured(1), &ok);
-        if (!ok) continue;
-        if (n == 0) a = v; else b = v;
-        ++n;
-    }
-
-    if (n == 2) return QPair<double,double>(a, b);
-    return std::nullopt;
-}
-
 } // namespace
 
 
@@ -544,17 +521,6 @@ static bool inRange(double value, double lower, double upper)
     if (lower > upper)
         std::swap(lower, upper);
     return value >= lower && value <= upper;
-}
-
-static bool rangeOverlap(double valueLow, double valueHigh,
-                         double limitLow, double limitHigh)
-{
-    if (limitLow > limitHigh)
-        std::swap(limitLow, limitHigh);
-    if (valueLow > valueHigh)
-        std::swap(valueLow, valueHigh);
-
-    return (valueLow >= limitLow && valueHigh <= limitHigh);
 }
 
 void Program::updateCrossingStatus()
