@@ -212,8 +212,8 @@ void ReportBuilder_C_CVT::buildReport(
         quint16 row = 55;
         for (auto &sr : telemetryStore.stepResults) {
             cell(report, sheet_2, row, 3, QString("%1->%2").arg(sr.from).arg(sr.to));
-            cell(report, sheet_2, row, 4, QTime(0,0).addMSecs(sr.T_value).toString("m:ss.zzz"));
-            cell(report, sheet_2, row, 5, QString("%1").arg(sr.overshoot, 0, 'f', 2));
+            cell(report, sheet_2, row, 5, QTime(0,0).addMSecs(sr.T_value).toString("m:ss.zzz"));
+            cell(report, sheet_2, row, 7, QString("%1").arg(sr.overshoot, 0, 'f', 2));
             ++row;
         }
     }

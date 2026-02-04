@@ -52,6 +52,12 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_2">
+     <property name="font">
+      <font>
+       <family>HoloLens MDL2 Assets</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>Значения для тестирования</string>
      </property>
@@ -109,6 +115,12 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
+     <property name="font">
+      <font>
+       <family>HoloLens MDL2 Assets</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>Шаги тестирования</string>
      </property>

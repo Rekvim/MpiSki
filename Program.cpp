@@ -29,7 +29,6 @@ double toDouble(QString s, bool* okOut = nullptr)
 
 std::optional<QPair<double,double>> parseRange2(const QString& s)
 {
-    // достаём 2 числа из "1–2", "1-2", "1 .. 2", "1 2"
     static const QRegularExpression re(R"(([+-]?\d+(?:[.,]\d+)?))");
     auto it = re.globalMatch(s);
 

@@ -53,7 +53,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -1251,6 +1251,9 @@
             <property name="text">
              <string>Сохранить</string>
             </property>
+            <property name="shortcut">
+             <string>.</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -1304,7 +1307,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>3</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -3213,7 +3216,7 @@ Border-radius: 10px;
         <item>
          <widget class="QTabWidget" name="tabWidget_optionalTests">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -3385,6 +3388,9 @@ Border-radius: 10px;
            <widget class="QPushButton" name="pushButton_optionalTests_save">
             <property name="text">
              <string>Сохранить</string>
+            </property>
+            <property name="shortcut">
+             <string>.</string>
             </property>
            </widget>
           </item>
