@@ -77,6 +77,19 @@ ValveWindow::ValveWindow(QWidget *parent)
         });
     };
 
+    auto updateManufacturerUi = [this]() {
+        const bool manual =
+            (ui->comboBox_manufacturer->currentText() == kManualInput);
+        ui->lineEdit_manufacturer->setEnabled(manual);
+        if (!manual)
+            ui->lineEdit_manufacturer->clear();
+    };
+
+    connect(ui->comboBox_manufacturer, &QComboBox::currentTextChanged,
+            this, updateManufacturerUi);
+
+    updateManufacturerUi();
+
     bindTab(1, ui->tab_data);
     bindTab(2, ui->tab_passFail);
 
@@ -201,10 +214,26 @@ void ValveWindow::saveValveInfo()
 
 void ValveWindow::readFromUi(ValveInfo& v)
 {
-    // if (ui->comboBox_positionNumber->currentText() == kManualInput)
-    //     v = m_registry->getValveInfo(ui->lineEdit_positionNumber->text());
+    const QString posFromCombo =
+        ui->comboBox_positionNumber->currentText().trimmed();
 
-    v.manufacturer = ui->lineEdit_manufacturer->text();
+    if (posFromCombo == kManualInput) {
+        v.positionNumber =
+            ui->lineEdit_positionNumber->text().trimmed();
+    } else {
+        v.positionNumber = posFromCombo;
+    }
+
+    const QString manufFromCombo =
+        ui->comboBox_manufacturer->currentText().trimmed();
+
+    if (manufFromCombo == kManualInput) {
+        v.manufacturer =
+            ui->lineEdit_manufacturer->text().trimmed();
+    } else {
+        v.manufacturer = manufFromCombo;
+    }
+
     v.valveModel = ui->lineEdit_valveModel->text();
     v.serialNumber = ui->lineEdit_serialNumber->text();
 
@@ -282,7 +311,13 @@ void ValveWindow::loadToUi(const ValveInfo& v)
     ui->lineEdit_positionNumber->setEnabled(manual);
     ui->lineEdit_positionNumber->setText(v.positionNumber);
 
-    ui->lineEdit_manufacturer->setText(v.manufacturer);
+    if (ui->comboBox_manufacturer->findText(v.manufacturer) >= 0) {
+        ui->comboBox_manufacturer->setCurrentText(v.manufacturer);
+        ui->lineEdit_manufacturer->clear();
+    } else {
+        ui->comboBox_manufacturer->setCurrentText(kManualInput);
+        ui->lineEdit_manufacturer->setText(v.manufacturer);
+    }
 
     ui->lineEdit_valveModel->setText(v.valveModel);
     ui->lineEdit_serialNumber->setText(v.serialNumber);
@@ -385,11 +420,17 @@ void ValveWindow::on_pushButton_netWindow_clicked()
         return;
     }
 
-    if ((ui->lineEdit_manufacturer->text().isEmpty()) || (ui->lineEdit_valveModel->text().isEmpty())
-        || (ui->lineEdit_serialNumber->text().isEmpty()) || (ui->lineEdit_DN->text().isEmpty())
-        || (ui->lineEdit_PN->text().isEmpty()) || (ui->lineEdit_strokValve->text().isEmpty())
-        || (ui->lineEdit_positionNumber->text().isEmpty()) || (ui->lineEdit_valveModel->text().isEmpty())
-        || (ui->lineEdit_driveRange->text().isEmpty())) {
+    const QString manuf =
+        (ui->comboBox_manufacturer->currentText() == kManualInput)
+            ? ui->lineEdit_manufacturer->text()
+            : ui->comboBox_manufacturer->currentText();
+
+    if (manuf.isEmpty() || ui->lineEdit_valveModel->text().isEmpty()
+        || ui->lineEdit_serialNumber->text().isEmpty()
+        || ui->lineEdit_DN->text().isEmpty()
+        || ui->lineEdit_PN->text().isEmpty()
+        || ui->lineEdit_strokValve->text().isEmpty()
+        || ui->lineEdit_driveRange->text().isEmpty()) {
 
         QMessageBox::StandardButton button
             = QMessageBox::question(this,

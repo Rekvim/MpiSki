@@ -63,7 +63,9 @@ private slots:
     void addPoints(Charts chart, const QVector<Point> &points);
     void clearPoints(Charts chart);
 
-    void promptSaveCharts();
+    void promptSaveChartsAfterTest();
+
+
     void showDots(bool visible);
     void duplicateMainChartsSeries();
 
@@ -146,7 +148,7 @@ private:
     void lockTabsForPreInit();
     void updateAvailableTabs();
     void applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo);
-
+    QVector<Charts> chartsForCurrentTest() const;
     Registry *m_registry = nullptr;
 
     ReportSaver *m_reportSaver = nullptr;

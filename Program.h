@@ -148,11 +148,21 @@ private:
             emit clearPoints(static_cast<Charts>(chart));
         });
 
-        connect(r.get(), &AbstractTestRunner::requestSetDAC, this, &Program::setDacRaw);
-        connect(this, &Program::releaseBlock, r.get(), &AbstractTestRunner::releaseBlock);
-        connect(r.get(), &AbstractTestRunner::totalTestTimeMs, this, &Program::totalTestTimeMs);
-        connect(r.get(), &AbstractTestRunner::endTest, this, &Program::endTest);
-        connect(this, &Program::stopTheTest, r.get(), &AbstractTestRunner::stop);
+        connect(r.get(), &AbstractTestRunner::requestSetDAC,
+                this, &Program::setDacRaw);
+
+        connect(this, &Program::releaseBlock,
+                r.get(), &AbstractTestRunner::releaseBlock);
+
+        connect(r.get(), &AbstractTestRunner::totalTestTimeMs,
+                this, &Program::totalTestTimeMs);
+
+        connect(r.get(), &AbstractTestRunner::endTest,
+                this, &Program::endTest);
+
+        connect(this, &Program::stopTheTest,
+                r.get(), &AbstractTestRunner::stop);
+
         emit setButtonInitEnabled(false);
         m_isTestRunning = true;
         emit setTaskControlsEnabled(false);

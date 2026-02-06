@@ -233,8 +233,7 @@ void ReportBuilder_C_CVT::buildReport(
     cell(report, sheet_3, 7, 13, valveInfo.manufacturer);
     cell(report, sheet_3, 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
     cell(report, sheet_3, 9, 13, valveInfo.positionerModel);
-    cell(report, sheet_3, 10, 13, QString("%1")
-                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
+    cell(report, sheet_3, 10, 13, QString("%1").arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
     cell(report, sheet_3, 11, 13, otherParams.safePosition);
     cell(report, sheet_3, 12, 13, valveInfo.driveModel);
     cell(report, sheet_3, 13, 13, otherParams.strokeMovement);

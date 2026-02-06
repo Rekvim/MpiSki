@@ -187,9 +187,7 @@ void Program::updateSensors()
 void Program::endTest()
 {
     m_isTestRunning = false;
-
     emit setTaskControlsEnabled(true);
-
     emit setButtonInitEnabled(true);
 
     emit setTask(m_mpi.dac()->value());

@@ -1,6 +1,5 @@
 #include "./Src/Runners/BaseRunner.h"
 #include "./Src/Tests/Test.h"
-#include "./Src/Runners/AbstractTestRunner.h"
 #include "./Src/Mpi/Mpi.h"
 #include "./Registry.h"
 

@@ -80,7 +80,10 @@ MainWindow::MainWindow(QWidget *parent)
         auto* sc = new QShortcut(QKeySequence(QString::number(key)), this);
         sc->setContext(Qt::ApplicationShortcut);
         connect(sc, &QShortcut::activated, this, [=] {
-            ui->tabWidget->setCurrentWidget(tab);
+            const int idx = ui->tabWidget->indexOf(tab);
+            if (idx >= 0 && ui->tabWidget->isTabEnabled(idx)) {
+                ui->tabWidget->setCurrentIndex(idx);
+            }
         });
     };
 
@@ -250,8 +253,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::runMainTest,
             m_program, &Program::startMainTest);
 
-    connect(m_program, &Program::mainTestFinished,
-            this, &MainWindow::promptSaveCharts);
+    // connect(m_program, &Program::mainTestFinished,
+    //         this, &MainWindow::promptSaveCharts);
 
     connect(this, &MainWindow::runStrokeTest,
             m_program, &Program::startStrokeTest);
@@ -467,11 +470,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::lockTabsForPreInit()
 {
-    // ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget->setTabEnabled(1, false);
-    // ui->tabWidget->setTabEnabled(2, false);
-    // ui->tabWidget->setTabEnabled(3, false);
-    // ui->tabWidget->setTabEnabled(4, false);
+    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
+    ui->tabWidget->setTabEnabled(1, false);
+    ui->tabWidget->setTabEnabled(2, false);
+    ui->tabWidget->setTabEnabled(3, false);
+    ui->tabWidget->setTabEnabled(4, false);
 }
 
 QTabWidget* MainWindow::currentInnerTabWidget() const
@@ -1363,6 +1366,8 @@ void MainWindow::endTest()
         ui->label_cyclicTest_sequenceValue->clear();
         ui->label_cyclicTest_completedCyclesValue->clear();
     }
+
+    promptSaveChartsAfterTest();
 }
 
 void MainWindow::on_pushButton_mainTest_start_clicked()
@@ -1390,24 +1395,60 @@ void MainWindow::on_pushButton_mainTest_save_clicked()
     }
 }
 
-void MainWindow::promptSaveCharts()
+void MainWindow::promptSaveChartsAfterTest()
 {
-    if (m_isUserCanceled )
+    if (m_isUserCanceled)
+        return;
+
+    const auto charts = chartsForCurrentTest();
+    if (charts.isEmpty())
         return;
 
     auto answer = QMessageBox::question(
         this,
         tr("Сохранение результатов"),
-        tr("Тест MainTest завершён.\nСохранитаь графики Task, Pressure и Friction?"),
+        tr("Тест завершён.\nСохранить графики?"),
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::Yes
-        );
+    );
 
-    if (answer == QMessageBox::Yes) {
-        saveChart(Charts::Task);
-        saveChart(Charts::Pressure);
-        saveChart(Charts::Friction);
+    if (answer != QMessageBox::Yes)
+        return;
+
+    for (Charts c : charts)
+        saveChart(c);
+}
+
+QVector<Charts> MainWindow::chartsForCurrentTest() const
+{
+    QWidget* top = ui->tabWidget->currentWidget();
+
+    if (top == ui->tab_strokeTest) {
+        return { Charts::Stroke };
     }
+
+    if (top == ui->tab_mainTests) {
+        return { Charts::Task, Charts::Pressure, Charts::Friction };
+    }
+
+    if (top == ui->tab_optionalTests) {
+        QWidget* w = ui->tabWidget_optionalTests->currentWidget();
+
+        if (w == ui->tab_optionalTests_response)
+            return { Charts::Response };
+
+        if (w == ui->tab_optionalTests_resolution)
+            return { Charts::Resolution };
+
+        if (w == ui->tab_optionalTests_step)
+            return { Charts::Step };
+    }
+
+    if (top == ui->tab_cyclicTests) {
+        return { Charts::Cyclic };
+    }
+
+    return {};
 }
 
 void MainWindow::on_pushButton_strokeTest_start_clicked()
