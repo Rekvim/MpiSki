@@ -217,7 +217,7 @@ void ReportBuilder_C_CVT::buildReport(
     }
 
     // Страница: Отчет ЦТ; Блок: Дата
-    cell(report, m_sheetStepReactionTest, 76, 12, otherParams.date);
+    cell(report, m_sheetStepReactionTest, 75, 12, otherParams.date);
 
     // Страница: Отчет; Блок: Данные по объекту
     cell(report, m_sheetTechnicalInspection, 1, 9, valveInfo.positionNumber);

@@ -303,7 +303,7 @@ void ReportBuilder_C_SACVT::buildReport(
         ++row;
     }
 
-    cell(report, m_sheetStepReactionTest, 78, 12, otherParams.date);
+    cell(report, m_sheetStepReactionTest, 75, 12, otherParams.date);
 
     // Страница: Отчет; Блок: Данные по объекту
     cell(report, m_sheetTechnicalInspection, 4, 4, objectInfo.object);
