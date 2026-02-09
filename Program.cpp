@@ -695,6 +695,11 @@ void Program::startStrokeTest() {
     startRunner(std::move(r));
 }
 
+void Program::receivedPoints_strokeTest(QVector<QVector<QPointF>> &points)
+{
+    emit getPoints_strokeTest(points, Charts::Stroke);
+}
+
 void Program::results_strokeTest(const quint64 forwardTime, const quint64 backwardTime)
 {
     QString forwardText = QTime(0, 0).addMSecs(forwardTime).toString("mm:ss.zzz");

@@ -98,6 +98,7 @@ private slots:
     void startTest();
     void endTest();
 
+    void onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
     void onMainTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
     void onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
     void onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);

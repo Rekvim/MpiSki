@@ -15,6 +15,8 @@ public:
     explicit StrokeTest(QObject *parent = nullptr);
     void Process() override;
 signals:
+    void GetPoints(QVector<QVector<QPointF>> &points);
+
     void SetStartTime();
     void Results(quint64 forwardTime, quint64 backwardTime);
 };

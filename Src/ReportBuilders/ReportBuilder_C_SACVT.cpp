@@ -18,6 +18,10 @@ void ReportBuilder_C_SACVT::buildReport(
     QString sheet_2 = "Результат теста шаговой реакции";
     QString sheet_3 = "Отчет";
 
+    cell(report, sheet_1, 1, 9, valveInfo.positionNumber);
+    cell(report, sheet_2, 1, 9, valveInfo.positionNumber);
+    cell(report, sheet_3, 1, 9, valveInfo.positionNumber);
+
     // Лист: Отчет ЦТ; Страница: 1; Блок: Данные по объекту
     cell(report, sheet_1, 4, 4, objectInfo.object);
     cell(report, sheet_1, 5, 4, objectInfo.manufactory);
@@ -349,7 +353,11 @@ void ReportBuilder_C_SACVT::buildReport(
             .arg(telemetryStore.mainTestRecord.springLow, 0, 'f', 2)
             .arg(telemetryStore.mainTestRecord.springHigh, 0, 'f', 2)
     );
-    cell(report, sheet_3, 28, 8, QString("%1–%2").arg(valveInfo.driveRangeLow, valveInfo.driveRangeHigh));
+    cell(report, sheet_3, 28, 8,
+        QString("%1–%2")
+            .arg(valveInfo.driveRangeLow, 0, 'f', 2)
+            .arg(valveInfo.driveRangeHigh, 0, 'f', 2)
+    );
     cell(report, sheet_3, 28, 11, resultOk(telemetryStore.crossingStatus.spring));
 
     cell(report, sheet_3, 30, 5,

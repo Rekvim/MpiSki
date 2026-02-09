@@ -16,6 +16,8 @@ void ReportBuilder_B_SACVT::buildReport(
 {
     QString sheet_1 = "Отчет ЦТ";
 
+    cell(report, sheet_1, 1, 9, valveInfo.positionNumber);
+
     // Лист 1; Страница: Отчет ЦТ; Блок: Данные по объекту
     cell(report, sheet_1, 4, 4, objectInfo.object);
     cell(report, sheet_1, 5, 4, objectInfo.manufactory);

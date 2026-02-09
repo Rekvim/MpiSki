@@ -1146,6 +1146,17 @@ void MainWindow::duplicateMainChartsSeries()
     m_charts[Charts::Pressure]->duplicateChartSeries(0);
 }
 
+void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
+{
+    points.clear();
+
+    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
+    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[chart]->getPoints(0);
+
+    points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+    points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
+}
+
 void MainWindow::onMainTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
@@ -1699,6 +1710,10 @@ void MainWindow::initCharts()
             this, [&](int state) {
         m_charts[Charts::Pressure]->visible(1, state != 0);
     });
+
+    connect(m_program, &Program::getPoints_strokeTest,
+            this, &MainWindow::onStrokeTestPointsRequested,
+            Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::getPoints_mainTest,
             this, &MainWindow::onMainTestPointsRequested,

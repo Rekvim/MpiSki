@@ -105,6 +105,7 @@ signals:
     void setDiCheckboxesChecked(quint8 status);
     void getPoints(QVector<QVector<QPointF>> &points, Charts chart);
 
+    void getPoints_strokeTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
@@ -252,6 +253,7 @@ public slots:
     void addRegression(const QVector<QPointF> &points);
     void addFriction(const QVector<QPointF> &points);
 
+    void receivedPoints_strokeTest(QVector<QVector<QPointF>> &points);
     void receivedPoints_mainTest(QVector<QVector<QPointF>> &points);
     void receivedPoints_stepTest(QVector<QVector<QPointF>> &points);
     void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points);
@@ -267,7 +269,6 @@ public slots:
     void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }
     void forwardGetParameters_responseTest(OtherTestSettings::TestParameters &p) { emit getParameters_responseTest(p); }
     void forwardGetParameters_resolutionTest(OtherTestSettings::TestParameters &p) { emit getParameters_resolutionTest(p); }
-
 
     void endTest();
     void terminateTest();

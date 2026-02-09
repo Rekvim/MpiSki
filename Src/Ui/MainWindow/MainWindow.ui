@@ -53,7 +53,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -3472,7 +3472,7 @@ Border-radius: 10px;
              </font>
             </property>
             <property name="title">
-             <string>Диапозон испытаний</string>
+             <string>Диапазон испытаний</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_10">
              <property name="spacing">

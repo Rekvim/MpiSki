@@ -14,6 +14,7 @@ void ReportBuilder_C_SOVT::buildReport(
     const QImage& imageChartStep
     )
 {
+    cell(report, "Отчет ЦТ", 1, 9, valveInfo.positionNumber);
 
     // Лист 1; Страница: Отчет ЦТ; Блок: Данные по объекту
     cell(report, "Отчет ЦТ", 4, 4, objectInfo.object);
