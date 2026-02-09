@@ -1259,7 +1259,6 @@ void MainWindow::onResponseTestParametersRequested(OtherTestSettings::TestParame
     }
 }
 
-
 static QString seqToString(const QVector<qreal>& seq)
 {
     QStringList parts;

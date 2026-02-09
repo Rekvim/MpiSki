@@ -26,6 +26,10 @@ public:
     virtual QString templatePath() const = 0;
 
 protected:
+    QString m_sheetStepReactionTest = "ТШР";
+    QString m_sheetTechnicalInspection = "ОТ";
+    QString m_sheetCyclicTests = "ЦТ";
+
     QString resultOk(CrossingStatus::State state) const {
         using State = CrossingStatus::State;
         switch (state) {
@@ -39,8 +43,8 @@ protected:
     QString resultLimit(CrossingStatus::State state) const {
         using State = CrossingStatus::State;
         switch (state) {
-        case State::Ok:      return "не превышает";
-        case State::Fail:    return "превышает";
+        case State::Ok: return "не превышает";
+        case State::Fail: return "превышает";
         case State::Unknown: return "не определено";
         }
         return {};

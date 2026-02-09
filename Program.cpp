@@ -10,12 +10,12 @@
 #include "./Src/Runners/OptionResolutionRunner.h"
 #include "./Src/Runners/CyclicRegulatoryRunner.h"
 #include "./Src/Runners/CyclicShutoffRunner.h"
+
 #include <QRegularExpression>
 #include <QLocale>
 #include <utility>
 
 namespace {
-
 double toDouble(QString s, bool* okOut = nullptr)
 {
     s = s.trimmed();

@@ -14,34 +14,32 @@ void ReportBuilder_B_CVT::buildReport(
     const QImage& imageChartStep
     )
 {
-    QString sheet_1 = "Отчет ЦТ";
-
-    cell(report, sheet_1, 1, 9, valveInfo.positionNumber);
+    cell(report, m_sheetTechnicalInspection, 1, 9, valveInfo.positionNumber);
 
     // Страница: Отчет ЦТ; Блок: Данные по объекту
-    cell(report, sheet_1, 4, 4, objectInfo.object);
-    cell(report, sheet_1, 5, 4, objectInfo.manufactory);
-    cell(report, sheet_1, 6, 4, objectInfo.department);
+    cell(report, m_sheetTechnicalInspection, 4, 4, objectInfo.object);
+    cell(report, m_sheetTechnicalInspection, 5, 4, objectInfo.manufactory);
+    cell(report, m_sheetTechnicalInspection, 6, 4, objectInfo.department);
 
     // Страница:Отчет ЦТ; Блок: Краткая спецификация на клапан
-    cell(report, sheet_1, 4, 13, valveInfo.positionNumber);
-    cell(report, sheet_1, 5, 13, valveInfo.serialNumber);
-    cell(report, sheet_1, 6, 13, valveInfo.valveModel);
-    cell(report, sheet_1, 7, 13, valveInfo.manufacturer);
-    cell(report, sheet_1, 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
-    cell(report, sheet_1, 9, 13, valveInfo.positionerModel);
-    cell(report, sheet_1, 10, 13, QString("%1").arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
-    cell(report, sheet_1, 11, 13, otherParams.safePosition);
-    cell(report, sheet_1, 12, 13, valveInfo.driveModel);
-    cell(report, sheet_1, 13, 13, otherParams.strokeMovement);
-    cell(report, sheet_1, 14, 13, valveInfo.materialStuffingBoxSeal);
+    cell(report, m_sheetTechnicalInspection, 4, 13, valveInfo.positionNumber);
+    cell(report, m_sheetTechnicalInspection, 5, 13, valveInfo.serialNumber);
+    cell(report, m_sheetTechnicalInspection, 6, 13, valveInfo.valveModel);
+    cell(report, m_sheetTechnicalInspection, 7, 13, valveInfo.manufacturer);
+    cell(report, m_sheetTechnicalInspection, 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
+    cell(report, m_sheetTechnicalInspection, 9, 13, valveInfo.positionerModel);
+    cell(report, m_sheetTechnicalInspection, 10, 13, QString("%1").arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
+    cell(report, m_sheetTechnicalInspection, 11, 13, otherParams.safePosition);
+    cell(report, m_sheetTechnicalInspection, 12, 13, valveInfo.driveModel);
+    cell(report, m_sheetTechnicalInspection, 13, 13, otherParams.strokeMovement);
+    cell(report, m_sheetTechnicalInspection, 14, 13, valveInfo.materialStuffingBoxSeal);
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    cell(report, sheet_1, 19, 8, telemetryStore.strokeTestRecord.timeForwardMs);
-    cell(report, sheet_1, 21, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, sheet_1, 23, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
-    cell(report, sheet_1, 25, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
-    cell(report, sheet_1, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory).toString("mm:ss.zzz"));
+    cell(report, m_sheetTechnicalInspection, 19, 8, telemetryStore.strokeTestRecord.timeForwardMs);
+    cell(report, m_sheetTechnicalInspection, 21, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
+    cell(report, m_sheetTechnicalInspection, 23, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
+    cell(report, m_sheetTechnicalInspection, 25, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
+    cell(report, m_sheetTechnicalInspection, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory).toString("mm:ss.zzz"));
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
@@ -107,83 +105,83 @@ void ReportBuilder_B_CVT::buildReport(
 
             // Процент
             cell(report,
-                sheet_1, row, 2,
+                m_sheetTechnicalInspection, row, 2,
                 QString::number(a.rangePercent)
             );
 
             // Прямой ход (максимум)
             if (a.maxFwdCycle >= 0) {
                 cell(report,
-                    sheet_1, row, 8,
+                    m_sheetTechnicalInspection, row, 8,
                     QString("%1")
                         .arg(a.maxFwdVal,   0, 'f', 2)
                 );
                 cell(report,
-                    sheet_1, row, 11,
+                    m_sheetTechnicalInspection, row, 11,
                     QString("%1")
                         .arg(a.maxFwdCycle + 1)
                 );
             } else {
                 // нет данных
-                cell(report, sheet_1, row, 8, QString());
-                cell(report, sheet_1, row, 11, QString());
+                cell(report, m_sheetTechnicalInspection, row, 8, QString());
+                cell(report, m_sheetTechnicalInspection, row, 11, QString());
             }
 
             // Обратный ход (минимум)
             if (a.minRevCycle >= 0) {
                 cell(report,
-                    sheet_1, row, 12,
+                    m_sheetTechnicalInspection, row, 12,
                     QString("%1")
                         .arg(a.minRevVal, 0, 'f', 2)
                 );
                 cell(report,
-                    sheet_1, row, 15,
+                    m_sheetTechnicalInspection, row, 15,
                     QString("%1")
                         .arg(a.minRevCycle + 1)
                 );
             } else {
-                cell(report,  sheet_1, row, 12, QString());
-                cell(report,  sheet_1, row, 15, QString());
+                cell(report,  m_sheetTechnicalInspection, row, 12, QString());
+                cell(report,  m_sheetTechnicalInspection, row, 15, QString());
             }
         }
     }
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
-    cell(report, sheet_1, 56, 4, objectInfo.FIO);
+    cell(report, m_sheetTechnicalInspection, 56, 4, objectInfo.FIO);
 
     // Страница: Отчет ЦТ; Блок: Дата
-    cell(report, sheet_1, 60, 12, otherParams.date);
+    cell(report, m_sheetTechnicalInspection, 60, 12, otherParams.date);
 
     // Страница: Отчет ЦТ; Блок: Данные по объекту
-    cell(report, sheet_1, 65, 4, objectInfo.object);
-    cell(report, sheet_1, 66, 4, objectInfo.manufactory);
-    cell(report, sheet_1, 67, 4, objectInfo.department);
+    cell(report, m_sheetTechnicalInspection, 65, 4, objectInfo.object);
+    cell(report, m_sheetTechnicalInspection, 66, 4, objectInfo.manufactory);
+    cell(report, m_sheetTechnicalInspection, 67, 4, objectInfo.department);
 
     // Страница:Отчет ЦТ; Блок: Краткая спецификация на клапан
-    cell(report, sheet_1, 65, 13, valveInfo.positionNumber);
-    cell(report, sheet_1, 66, 13, valveInfo.serialNumber);
-    cell(report, sheet_1, 67, 13, valveInfo.valveModel);
-    cell(report, sheet_1, 68, 13, valveInfo.manufacturer);
-    cell(report, sheet_1, 69, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
-    cell(report, sheet_1, 70, 13, valveInfo.positionerModel);
-    cell(report, sheet_1, 71, 13, QString("%1")
+    cell(report, m_sheetTechnicalInspection, 65, 13, valveInfo.positionNumber);
+    cell(report, m_sheetTechnicalInspection, 66, 13, valveInfo.serialNumber);
+    cell(report, m_sheetTechnicalInspection, 67, 13, valveInfo.valveModel);
+    cell(report, m_sheetTechnicalInspection, 68, 13, valveInfo.manufacturer);
+    cell(report, m_sheetTechnicalInspection, 69, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
+    cell(report, m_sheetTechnicalInspection, 70, 13, valveInfo.positionerModel);
+    cell(report, m_sheetTechnicalInspection, 71, 13, QString("%1")
                                                 .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
-    cell(report, sheet_1, 72, 13, otherParams.safePosition);
-    cell(report, sheet_1, 73, 13, valveInfo.driveModel);
-    cell(report, sheet_1, 74, 13, otherParams.strokeMovement);
-    cell(report, sheet_1, 75, 13, valveInfo.materialStuffingBoxSeal);
+    cell(report, m_sheetTechnicalInspection, 72, 13, otherParams.safePosition);
+    cell(report, m_sheetTechnicalInspection, 73, 13, valveInfo.driveModel);
+    cell(report, m_sheetTechnicalInspection, 74, 13, otherParams.strokeMovement);
+    cell(report, m_sheetTechnicalInspection, 75, 13, valveInfo.materialStuffingBoxSeal);
 
     // Страница:Отчет ЦТ; Блок: Результат испытаний позиционера
-    cell(report, sheet_1, 80, 8, telemetryStore.strokeTestRecord.timeForwardMs);
-    cell(report, sheet_1, 82, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, sheet_1, 84, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
-    cell(report, sheet_1, 86, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
-    cell(report, sheet_1, 88, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory).toString("mm:ss.zzz"));
+    cell(report, m_sheetTechnicalInspection, 80, 8, telemetryStore.strokeTestRecord.timeForwardMs);
+    cell(report, m_sheetTechnicalInspection, 82, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
+    cell(report, m_sheetTechnicalInspection, 84, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
+    cell(report, m_sheetTechnicalInspection, 86, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
+    cell(report, m_sheetTechnicalInspection, 88, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory).toString("mm:ss.zzz"));
 
     // Страница: Отчет ЦТ; Блок: Исполнитель
-    cell(report, sheet_1, 117, 4, objectInfo.FIO);
+    cell(report, m_sheetTechnicalInspection, 117, 4, objectInfo.FIO);
     // Страница: Отчет ЦТ; Блок: Дата
-    cell(report, sheet_1, 121, 12, otherParams.date);
+    cell(report, m_sheetTechnicalInspection, 121, 12, otherParams.date);
 
     report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
     report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});

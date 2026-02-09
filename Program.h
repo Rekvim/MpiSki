@@ -44,7 +44,6 @@ struct RealtimeState
 Q_DECLARE_METATYPE(RealtimeState)
 
 enum class TextObjects {
-
     LineEdit_linearSensor,
     LineEdit_linearSensorPercent,
     LineEdit_pressureSensor_1,
