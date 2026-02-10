@@ -380,9 +380,14 @@ void ValveWindow::loadToUi(const ValveInfo& v)
 
 void ValveWindow::positionChanged(const QString &position)
 {
+    if (position == kManualInput) {
+        ui->lineEdit_positionNumber->clear();
+        ui->lineEdit_positionNumber->setEnabled(true);
+        return;
+    }
 
     if (m_registry->loadValveInfo(position)) {
-        m_local = m_registry->valveInfo();   // 💡 КОПИЯ
+        m_local = m_registry->valveInfo();
         loadToUi(m_local);
     }
 }

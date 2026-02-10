@@ -43,7 +43,8 @@ struct RealtimeState
 };
 Q_DECLARE_METATYPE(RealtimeState)
 
-enum class TextObjects {
+enum class TextObjects
+{
     LineEdit_linearSensor,
     LineEdit_linearSensorPercent,
     LineEdit_pressureSensor_1,
@@ -52,7 +53,8 @@ enum class TextObjects {
     LineEdit_feedback_4_20mA,
 };
 
-enum class Charts {
+enum class Charts
+{
     Task,
     Pressure,
     Friction,
@@ -82,7 +84,7 @@ public:
     quint8 getDOStatus() { return m_mpi.digitalOutputs(); }
 
 signals:
-    void realtimeUpdated(const RealtimeState& s);
+    void realtimeUpdated(const RealtimeState &s);
     void telemetryUpdated(const TelemetryStore &store);
 
     void errorOccured(const QString&);
@@ -109,7 +111,7 @@ signals:
     void getPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart);
     void getPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
 
-    void addPoints(Charts chart, const QVector<Point>& points);
+    void addPoints(Charts chart, const QVector<Point> &points);
     void clearPoints(Charts chart);
 
     void stopTheTest();
@@ -191,7 +193,7 @@ private:
 
 
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
-    QString seqToString(const QVector<quint16>& seq);
+    QString seqToString(const QVector<quint16> &seq);
 
     Registry *m_registry;
 

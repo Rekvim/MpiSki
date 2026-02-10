@@ -3,6 +3,7 @@
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
+
 #include "./Src/Runners/MainTestRunner.h"
 #include "./Src/Runners/StepTestRunner.h"
 #include "./Src/Runners/StrokeTestRunner.h"
@@ -27,7 +28,6 @@ double toDouble(QString s, bool* okOut = nullptr)
 }
 } // namespace
 
-
 Program::Program(QObject *parent)
     : QObject{parent}
 {
@@ -40,8 +40,6 @@ Program::Program(QObject *parent)
 
     connect(m_timerSensors, &QTimer::timeout,
             this, &Program::updateSensors);
-
-    m_isTestRunning = false;
 
     m_timerDI = new QTimer(this);
     m_timerDI->setInterval(1000);
@@ -528,7 +526,6 @@ void Program::updateCrossingStatus()
     const auto& limits = valveInfo.crossingLimits;
     using State = CrossingStatus::State;
 
-    // --- friction ---
     if (limits.frictionEnabled) {
         ts.crossingStatus.frictionPercent =
             inRange(ts.mainTestRecord.frictionPercent,
@@ -539,7 +536,6 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.frictionPercent = State::Unknown;
     }
 
-    // --- range / stroke : сравниваем реальный ход с (recomend ± %) ---
     if (limits.rangeEnabled) {
         bool ok = false;
         const double recStroke = toDouble(valveInfo.strokValve, &ok);
@@ -557,7 +553,6 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.range = State::Unknown;
     }
 
-    // --- dynamicError (оставил как абсолютный лимит: 0..recomend) ---
     if (limits.dynamicErrorEnabled) {
         ts.crossingStatus.dynamicError =
             inRange(ts.mainTestRecord.dynamicErrorReal,
@@ -568,7 +563,6 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.dynamicError = State::Unknown;
     }
 
-    // --- spring : два диапазона, проверяем каждое число отдельно ---
     if (limits.springEnabled) {
         double recLow  = valveInfo.driveRangeLow;
         double recHigh = valveInfo.driveRangeHigh;
@@ -596,9 +590,6 @@ void Program::updateCrossingStatus()
     }
 
     // --- linearCharacteristic ---
-    // Сейчас у тебя всегда Ok, это подозрительно.
-    // Если у тебя есть лимит (например 0..limits.linearCharacteristicLowerLimit),
-    // то сравнивай реальную ошибку:
     if (limits.linearCharacteristicEnabled) {
         ts.crossingStatus.linearCharacteristic =
             inRange(ts.mainTestRecord.linearityError, 0.0, limits.linearCharacteristicLowerLimit)

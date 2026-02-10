@@ -306,9 +306,9 @@ void ReportBuilder_C_CVT::buildReport(
     cell(report, m_sheetTechnicalInspection, 153, 12, otherParams.date);
 
     report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
-    report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
-    report.validation.push_back({"=Заключение!$C$1:$C$3", "E44"});
-    report.validation.push_back({"=Заключение!$E$1:$E$4", "E46"});
-    report.validation.push_back({"=Заключение!$D$1:$D$5", "E48"});
-    report.validation.push_back({"=Заключение!$F$3", "E50"});
+    report.validation.push_back({"=Заключение!$B$1:$B$4", "E36"});
+    report.validation.push_back({"=Заключение!$C$1:$C$3", "E38"});
+    report.validation.push_back({"=Заключение!$E$1:$E$4", "E40"});
+    report.validation.push_back({"=Заключение!$D$1:$D$5", "E42"});
+    report.validation.push_back({"=Заключение!$F$3", "E44"});
 }
