@@ -298,7 +298,7 @@ void ReportBuilder_C_CVT::buildReport(
     cell(report, m_sheetTechnicalInspection, 68, 4, objectInfo.FIO);
 
     // Страница: Отчет; Блок: Диагностические графики
-    image(report, m_sheetTechnicalInspection,  78, 1, imageChartTask);
+    image(report, m_sheetTechnicalInspection, 78, 1, imageChartTask);
     image(report, m_sheetTechnicalInspection, 103, 1, imageChartPressure);
     image(report, m_sheetTechnicalInspection, 128, 1, imageChartFriction);
 
