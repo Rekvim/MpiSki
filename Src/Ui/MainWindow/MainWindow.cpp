@@ -80,9 +80,9 @@ MainWindow::MainWindow(QWidget *parent)
         auto* sc = new QShortcut(QKeySequence(QString::number(key)), this);
         sc->setContext(Qt::ApplicationShortcut);
         connect(sc, &QShortcut::activated, this, [=] {
-            const int idx = ui->tabWidget->indexOf(tab);
-            if (idx >= 0 && ui->tabWidget->isTabEnabled(idx)) {
-                ui->tabWidget->setCurrentIndex(idx);
+            const int idx = ui->tabWidget_main->indexOf(tab);
+            if (idx >= 0 && ui->tabWidget_main->isTabEnabled(idx)) {
+                ui->tabWidget_main->setCurrentIndex(idx);
             }
         });
     };
@@ -159,7 +159,7 @@ MainWindow::MainWindow(QWidget *parent)
         });
     }
 
-    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget_main->setCurrentIndex(0);
 
     lockTabsForPreInit();
 
@@ -448,7 +448,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget_optionalTests->setCurrentIndex(0);
     ui->tabWidget_reportGeneration->setCurrentIndex(0);
 
-    connect(ui->tabWidget, &QTabWidget::currentChanged,
+    connect(ui->tabWidget_main, &QTabWidget::currentChanged,
             this, [this](int) {
                 ui->tabWidget_mainTests->setCurrentIndex(0);
                 ui->tabWidget_optionalTests->setCurrentIndex(0);
@@ -470,16 +470,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::lockTabsForPreInit()
 {
-    ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget->setTabEnabled(1, false);
-    ui->tabWidget->setTabEnabled(2, false);
-    ui->tabWidget->setTabEnabled(3, false);
-    ui->tabWidget->setTabEnabled(4, false);
+    ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
+    ui->tabWidget_main->setTabEnabled(1, false);
+    ui->tabWidget_main->setTabEnabled(2, false);
+    ui->tabWidget_main->setTabEnabled(3, false);
+    ui->tabWidget_main->setTabEnabled(4, false);
 }
 
 QTabWidget* MainWindow::currentInnerTabWidget() const
 {
-    QWidget* top = ui->tabWidget->currentWidget();
+    QWidget* top = ui->tabWidget_main->currentWidget();
 
     if (top == ui->tab_mainTests)
         return ui->tabWidget_mainTests;
@@ -854,7 +854,7 @@ void MainWindow::setTaskControlsEnabled(bool enabled)
 
 void MainWindow::triggerPrimaryAction()
 {
-    QWidget* top = ui->tabWidget->currentWidget();
+    QWidget* top = ui->tabWidget_main->currentWidget();
 
     if (top == ui->tab_manual)
         ui->pushButton_init->click();
@@ -1033,39 +1033,39 @@ void MainWindow::displayDependingPattern() {
     switch (m_patternType) {
     case SelectTests::Pattern_B_CVT:
         ui->groupBox_DO->setVisible(false);
-        ui->tabWidget->setTabEnabled(1, true);
-        ui->tabWidget->setTabEnabled(2, false);
-        ui->tabWidget->setTabEnabled(3, false);
-        ui->tabWidget->setTabEnabled(4, true);
+        ui->tabWidget_main->setTabEnabled(1, true);
+        ui->tabWidget_main->setTabEnabled(2, false);
+        ui->tabWidget_main->setTabEnabled(3, false);
+        ui->tabWidget_main->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_B_SACVT:
         ui->groupBox_DO->setEnabled(true);
-        ui->tabWidget->setTabEnabled(1, true);
-        ui->tabWidget->setTabEnabled(2, false);
-        ui->tabWidget->setTabEnabled(3, false);
-        ui->tabWidget->setTabEnabled(4, true);
+        ui->tabWidget_main->setTabEnabled(1, true);
+        ui->tabWidget_main->setTabEnabled(2, false);
+        ui->tabWidget_main->setTabEnabled(3, false);
+        ui->tabWidget_main->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_C_CVT:
         ui->groupBox_DO->setVisible(false);
-        ui->tabWidget->setTabEnabled(1, true);
-        ui->tabWidget->setTabEnabled(2, true);
-        ui->tabWidget->setTabEnabled(3, true);
-        ui->tabWidget->setTabEnabled(4, true);
+        ui->tabWidget_main->setTabEnabled(1, true);
+        ui->tabWidget_main->setTabEnabled(2, true);
+        ui->tabWidget_main->setTabEnabled(3, true);
+        ui->tabWidget_main->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_C_SACVT:
         ui->groupBox_DO->setEnabled(true);
-        ui->tabWidget->setTabEnabled(1, true);
-        ui->tabWidget->setTabEnabled(2, true);
-        ui->tabWidget->setTabEnabled(3, true);
-        ui->tabWidget->setTabEnabled(4, true);
+        ui->tabWidget_main->setTabEnabled(1, true);
+        ui->tabWidget_main->setTabEnabled(2, true);
+        ui->tabWidget_main->setTabEnabled(3, true);
+        ui->tabWidget_main->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_C_SOVT:
         ui->groupBox_SettingCurrentSignal->setVisible(false);
         ui->groupBox_DO->setEnabled(true);
-        ui->tabWidget->setTabEnabled(1, true);
-        ui->tabWidget->setTabEnabled(2, false);
-        ui->tabWidget->setTabEnabled(3, false);
-        ui->tabWidget->setTabEnabled(4, true);
+        ui->tabWidget_main->setTabEnabled(1, true);
+        ui->tabWidget_main->setTabEnabled(2, false);
+        ui->tabWidget_main->setTabEnabled(3, false);
+        ui->tabWidget_main->setTabEnabled(4, true);
         break;
     default:
         break;
@@ -1431,7 +1431,7 @@ void MainWindow::promptSaveChartsAfterTest()
 
 QVector<Charts> MainWindow::chartsForCurrentTest() const
 {
-    QWidget* top = ui->tabWidget->currentWidget();
+    QWidget* top = ui->tabWidget_main->currentWidget();
 
     if (top == ui->tab_strokeTest) {
         return { Charts::Stroke };
