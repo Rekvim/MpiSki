@@ -66,6 +66,12 @@ SOURCES += \
     Sensor.cpp
 
 HEADERS += \
+    Src/ReportBuilders/ReportBlocks/IReportBlock.h \
+    Src/ReportBuilders/ReportBlocks/ObjectInfoBlock.h \
+    Src/ReportBuilders/ReportBlocks/StepReactionLayout.h \
+    Src/ReportBuilders/ReportBlocks/StrokeSummaryBlock.h \
+    Src/ReportBuilders/ReportBlocks/ValveSpecBlock.h \
+    Src/ReportBuilders/ReportWriter.h \
     Src/Ui/Setup/ObjectWindow.h \
     Src/Ui/Setup/ValveWindow.h \
     Src/Ui/Setup/SelectTests.h \

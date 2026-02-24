@@ -140,6 +140,8 @@ void ValveWindow::applyPatternVisibility()
     switch (m_patternType) {
     case SelectTests::Pattern_B_CVT:
         ui->widget_positionSensorModel->setVisible(false);
+        ui->widget_solenoidValveModel->setVisible(false);
+        ui->widget_limitSwitchModel->setVisible(false);
         break;
     case SelectTests::Pattern_C_CVT:
         ui->widget_positionSensorModel->setVisible(false);

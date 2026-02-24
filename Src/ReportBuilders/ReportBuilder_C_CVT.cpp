@@ -1,4 +1,9 @@
 #include "ReportBuilder_C_CVT.h"
+#include "ReportWriter.h"
+#include "ReportBlocks/ObjectInfoBlock.h"
+#include "ReportBlocks/ValveSpecBlock.h"
+#include "ReportBlocks/StrokeSummaryBlock.h"
+#include "Src/ReportBuilders/ReportBlocks/StepReactionLayout.h"
 
 ReportBuilder_C_CVT::ReportBuilder_C_CVT() {}
 
@@ -14,34 +19,26 @@ void ReportBuilder_C_CVT::buildReport(
     const QImage& imageChartStep
     )
 {
+    ReportWriter writer(report);
+
+    ReportContext ctx{
+        telemetryStore,
+        objectInfo,
+        valveInfo,
+        otherParams,
+        imageChartTask,
+        imageChartPressure,
+        imageChartFriction,
+        imageChartStep
+    };
+
     // Лист: Отчет ЦТ; Страница: 1; Блок: Данные по объекту
-    cell(report, m_sheetCyclicTests, 1, 9, valveInfo.positionNumber);
-    cell(report, m_sheetCyclicTests, 4, 4, objectInfo.object);
-    cell(report, m_sheetCyclicTests, 5, 4, objectInfo.manufactory);
-    cell(report, m_sheetCyclicTests, 6, 4, objectInfo.department);
+    writer.cell(m_sheetCyclicTests, 1, 9, ctx.valve.positionNumber);
 
-    // Лист: Отчет ЦТ; Страница: 1; Блок: Краткая спецификация на клапан
-    cell(report, m_sheetCyclicTests, 4, 13, valveInfo.positionNumber);
-    cell(report, m_sheetCyclicTests, 5, 13, valveInfo.serialNumber);
-    cell(report, m_sheetCyclicTests, 6, 13, valveInfo.valveModel);
-    cell(report, m_sheetCyclicTests, 7, 13, valveInfo.manufacturer);
-    cell(report, m_sheetCyclicTests, 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
-    cell(report, m_sheetCyclicTests, 9, 13, valveInfo.positionerModel);
-    cell(report, m_sheetCyclicTests, 10, 13, QString("%1").arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
-    cell(report, m_sheetCyclicTests, 11, 13, otherParams.safePosition);
-    cell(report, m_sheetCyclicTests, 12, 13, valveInfo.driveModel);
-    cell(report, m_sheetCyclicTests, 13, 13, otherParams.strokeMovement);
-    cell(report, m_sheetCyclicTests, 14, 13, valveInfo.materialStuffingBoxSeal);
+    ObjectInfoBlock({m_sheetCyclicTests, 4, 4 }).build(writer, ctx);
+    ValveSpecBlock({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
+    StrokeSummaryBlock({m_sheetCyclicTests, 19, 8, 2}).build(writer, ctx);
 
-    // Лист: Отчет ЦТ; Страница: 1; Блок: Результат испытаний позиционера
-    cell(report, m_sheetCyclicTests, 19, 8, telemetryStore.strokeTestRecord.timeForwardMs);
-    cell(report, m_sheetCyclicTests, 21, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, m_sheetCyclicTests, 23, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
-    cell(report, m_sheetCyclicTests, 25, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
-    cell(report, m_sheetCyclicTests, 27, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory)
-                                                     .toString("mm:ss.zzz"));
-
-    // Лист: Отчет ЦТ; Страница: 1; Блок: Циклические испытания позиционера
     {
         const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
 
@@ -143,100 +140,39 @@ void ReportBuilder_C_CVT::buildReport(
         }
     }
 
-    // Лист: Отчет ЦТ; Страница: 1; Блок: Исполнитель
-    cell(report, m_sheetCyclicTests, 56, 4, objectInfo.FIO);
-    cell(report, m_sheetCyclicTests, 60, 12, otherParams.date);
+    writer.cell(m_sheetCyclicTests, 56, 4, objectInfo.FIO);
+    writer.cell(m_sheetCyclicTests, 60, 12, otherParams.date);
 
-    // Лист: Отчет ЦТ; Страница: 2; Блок: Данные по объекту
-    cell(report, m_sheetCyclicTests, 65, 4, objectInfo.object);
-    cell(report, m_sheetCyclicTests, 66, 4, objectInfo.manufactory);
-    cell(report, m_sheetCyclicTests, 67, 4, objectInfo.department);
+    ObjectInfoBlock({m_sheetCyclicTests, 65, 4}).build(writer, ctx);
+    ValveSpecBlock({m_sheetCyclicTests, 65, 13, true, false}).build(writer, ctx);
+    StrokeSummaryBlock({m_sheetCyclicTests, 80, 8, 2}).build(writer, ctx);
 
-    // Лист: Отчет ЦТ; Страница: 2; Блок: Краткая спецификация на клапан
-    cell(report, m_sheetCyclicTests, 65, 13, valveInfo.positionNumber);
-    cell(report, m_sheetCyclicTests, 66, 13, valveInfo.serialNumber);
-    cell(report, m_sheetCyclicTests, 67, 13, valveInfo.valveModel);
-    cell(report, m_sheetCyclicTests, 68, 13, valveInfo.manufacturer);
-    cell(report, m_sheetCyclicTests, 69, 13, QString("%1 / %2")
-                                               .arg(valveInfo.DN)
-                                               .arg(valveInfo.PN));
-    cell(report, m_sheetCyclicTests, 70, 13, valveInfo.positionerModel);
-    cell(report, m_sheetCyclicTests, 71, 13, QString("%1")
-                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
-    cell(report, m_sheetCyclicTests, 72, 13, otherParams.safePosition);
-    cell(report, m_sheetCyclicTests, 73, 13, valveInfo.driveModel);
-    cell(report, m_sheetCyclicTests, 74, 13, otherParams.strokeMovement);
-    cell(report, m_sheetCyclicTests, 75, 13, valveInfo.materialStuffingBoxSeal);
+    writer.cell(m_sheetCyclicTests, 117, 4, objectInfo.FIO);
+    writer.cell(m_sheetCyclicTests, 121, 12, otherParams.date);
 
-    // Лист: Отчет ЦТ; Страница: 2; Блок: Результат испытаний позиционера
-    cell(report, m_sheetCyclicTests, 80, 8, telemetryStore.strokeTestRecord.timeForwardMs);
-    cell(report, m_sheetCyclicTests, 82, 8, telemetryStore.strokeTestRecord.timeBackwardMs);
-    cell(report, m_sheetCyclicTests, 84, 8, QString::number(telemetryStore.cyclicTestRecord.numCyclesRegulatory));
-    cell(report, m_sheetCyclicTests, 86, 8, telemetryStore.cyclicTestRecord.sequenceRegulatory);
-    cell(report, m_sheetCyclicTests, 88, 8, QTime(0,0).addSecs(telemetryStore.cyclicTestRecord.totalTimeSecRegulatory)
-                                               .toString("mm:ss.zzz"));
+    //
+    // Лист: Результат теста шаговой реакции;
+    //
 
+    writer.cell(m_sheetStepReactionTest, 1, 9, valveInfo.positionNumber);
 
-    // Лист: Отчет ЦТ; Страница: 2; Блок: Исполнитель
-    cell(report, m_sheetCyclicTests, 117, 4, objectInfo.FIO);
-    // Лист: Отчет ЦТ; Страница: 2; Блок: Дата
-    cell(report, m_sheetCyclicTests, 121, 12, otherParams.date);
+    ObjectInfoBlock({m_sheetStepReactionTest, 4, 4}).build(writer, ctx);
+    ValveSpecBlock({m_sheetStepReactionTest, 4, 13, true, false}).build(writer, ctx);
+    StepReactionBlock({m_sheetStepReactionTest,
+                       18,
+                       2,
+                       55
+                      }).build(writer, ctx);
 
-    // Лист: Результат теста шаговой реакции; Страница: 2; Блок: Данные по объекту
-    cell(report, m_sheetStepReactionTest, 1, 9, valveInfo.positionNumber);
-    cell(report, m_sheetStepReactionTest, 4, 4, objectInfo.object);
-    cell(report, m_sheetStepReactionTest, 5, 4, objectInfo.manufactory);
-    cell(report, m_sheetStepReactionTest, 6, 4, objectInfo.department);
+    writer.cell(m_sheetStepReactionTest, 75, 12, otherParams.date);
 
-    // Страница:Результат теста шаговой реакции; Блок: Краткая спецификация на клапан
-    cell(report, m_sheetStepReactionTest, 4, 13, valveInfo.positionNumber);
-    cell(report, m_sheetStepReactionTest, 5, 13, valveInfo.serialNumber);
-    cell(report, m_sheetStepReactionTest, 6, 13, valveInfo.valveModel);
-    cell(report, m_sheetStepReactionTest, 7, 13, valveInfo.manufacturer);
-    cell(report, m_sheetStepReactionTest, 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
-    cell(report, m_sheetStepReactionTest, 9, 13, valveInfo.positionerModel);
-    cell(report, m_sheetStepReactionTest, 10, 13, QString("%1")
-                                                .arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
-    cell(report, m_sheetStepReactionTest, 11, 13, otherParams.safePosition);
-    cell(report, m_sheetStepReactionTest, 12, 13, valveInfo.driveModel);
-    cell(report, m_sheetStepReactionTest, 13, 13, otherParams.strokeMovement);
-    cell(report, m_sheetStepReactionTest, 14, 13, valveInfo.materialStuffingBoxSeal);
-
-    // Страница: Результат теста шаговой реакции; Блок: График теста шаговой реакции
-    report.images.push_back({m_sheetStepReactionTest, 18, 2, imageChartStep});
-
-    // Страница: Результат теста шаговой реакции; Блок: Результат теста шаговой реакции
-    {
-        quint16 row = 55;
-        for (auto &sr : telemetryStore.stepResults) {
-            cell(report, m_sheetStepReactionTest, row, 3, QString("%1->%2").arg(sr.from).arg(sr.to));
-            cell(report, m_sheetStepReactionTest, row, 5, QTime(0,0).addMSecs(sr.T_value).toString("m:ss.zzz"));
-            cell(report, m_sheetStepReactionTest, row, 7, QString("%1").arg(sr.overshoot, 0, 'f', 2));
-            ++row;
-        }
-    }
-
-    // Страница: Отчет ЦТ; Блок: Дата
-    cell(report, m_sheetStepReactionTest, 75, 12, otherParams.date);
-
+    //
     // Страница: Отчет; Блок: Данные по объекту
-    cell(report, m_sheetTechnicalInspection, 1, 9, valveInfo.positionNumber);
-    cell(report, m_sheetTechnicalInspection, 4, 4, objectInfo.object);
-    cell(report, m_sheetTechnicalInspection, 5, 4, objectInfo.manufactory);
-    cell(report, m_sheetTechnicalInspection, 6, 4, objectInfo.department);
+    //
 
-    // Страница:Отчет; Блок: Краткая спецификация на клапан
-    cell(report, m_sheetTechnicalInspection, 4, 13, valveInfo.positionNumber);
-    cell(report, m_sheetTechnicalInspection, 5, 13, valveInfo.serialNumber);
-    cell(report, m_sheetTechnicalInspection, 6, 13, valveInfo.valveModel);
-    cell(report, m_sheetTechnicalInspection, 7, 13, valveInfo.manufacturer);
-    cell(report, m_sheetTechnicalInspection, 8, 13, QString("%1 / %2").arg(valveInfo.DN, valveInfo.PN));
-    cell(report, m_sheetTechnicalInspection, 9, 13, valveInfo.positionerModel);
-    cell(report, m_sheetTechnicalInspection, 10, 13, QString("%1").arg(telemetryStore.supplyRecord.pressure_bar, 0, 'f', 2));
-    cell(report, m_sheetTechnicalInspection, 11, 13, otherParams.safePosition);
-    cell(report, m_sheetTechnicalInspection, 12, 13, valveInfo.driveModel);
-    cell(report, m_sheetTechnicalInspection, 13, 13, otherParams.strokeMovement);
-    cell(report, m_sheetTechnicalInspection, 14, 13, valveInfo.materialStuffingBoxSeal);
+    writer.cell(m_sheetTechnicalInspection, 1, 9, valveInfo.positionNumber);
+    ObjectInfoBlock({m_sheetTechnicalInspection, 4, 4}).build(writer, ctx);
+    ValveSpecBlock({m_sheetTechnicalInspection, 4, 13, true, false}).build(writer, ctx);
 
     // Страница: Отчет; Блок: Результат испытаний
     cell(report, m_sheetTechnicalInspection, 20, 5,
@@ -294,21 +230,21 @@ void ReportBuilder_C_CVT::buildReport(
     );
 
     // Дата и Исполнитель
-    cell(report, m_sheetTechnicalInspection, 60, 12, otherParams.date);
-    cell(report, m_sheetTechnicalInspection, 68, 4, objectInfo.FIO);
+    writer.cell(m_sheetTechnicalInspection, 60, 12, otherParams.date);
+    writer.cell(m_sheetTechnicalInspection, 68, 4, objectInfo.FIO);
 
     // Страница: Отчет; Блок: Диагностические графики
-    image(report, m_sheetTechnicalInspection, 78, 1, imageChartTask);
-    image(report, m_sheetTechnicalInspection, 103, 1, imageChartPressure);
-    image(report, m_sheetTechnicalInspection, 128, 1, imageChartFriction);
+    writer.image(m_sheetTechnicalInspection, 78, 1, imageChartTask);
+    writer.image(m_sheetTechnicalInspection, 103, 1, imageChartPressure);
+    writer.image(m_sheetTechnicalInspection, 128, 1, imageChartFriction);
 
     // Страница: Отчет; Блок: Дата
-    cell(report, m_sheetTechnicalInspection, 153, 12, otherParams.date);
+    writer.cell( m_sheetTechnicalInspection, 153, 12, otherParams.date);
 
-    report.validation.push_back({"=ЗИП!$A$1:$A$37", "J50:J59"});
-    report.validation.push_back({"=Заключение!$B$1:$B$4", "E36"});
-    report.validation.push_back({"=Заключение!$C$1:$C$3", "E38"});
-    report.validation.push_back({"=Заключение!$E$1:$E$4", "E40"});
-    report.validation.push_back({"=Заключение!$D$1:$D$5", "E42"});
-    report.validation.push_back({"=Заключение!$F$3", "E44"});
+    writer.validation("=ЗИП!$A$1:$A$37", "J50:J59");
+    writer.validation("=Заключение!$B$1:$B$4", "E36");
+    writer.validation("=Заключение!$C$1:$C$3", "E38");
+    writer.validation("=Заключение!$E$1:$E$4", "E40");
+    writer.validation("=Заключение!$D$1:$D$5", "E42");
+    writer.validation("=Заключение!$F$3", "E44");
 }

@@ -8,6 +8,17 @@
 
 #include <QWidget>
 
+struct ReportContext {
+    const TelemetryStore& telemetry;
+    const ObjectInfo& object;
+    const ValveInfo& valve;
+    const OtherParameters& params;
+    const QImage& chartTask;
+    const QImage& chartPressure;
+    const QImage& chartFriction;
+    const QImage& chartStep;
+};
+
 class ReportBuilder {
 public:
     virtual ~ReportBuilder() = default;
