@@ -1,7 +1,5 @@
-#ifndef MYSERIES_H
-#define MYSERIES_H
-
 #pragma once
+
 #include <QObject>
 #include <QLineSeries>
 
@@ -21,5 +19,3 @@ public:
 private:
     bool m_markersOnly = false;
 };
-
-#endif // MYSERIES_H

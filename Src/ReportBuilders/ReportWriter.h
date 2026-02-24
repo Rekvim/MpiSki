@@ -1,5 +1,4 @@
-#ifndef REPORTWRITER_H
-#define REPORTWRITER_H
+#pragma once
 
 #include "ReportSaver.h"
 
@@ -33,5 +32,3 @@ public:
 private:
     ReportSaver::Report& m_report;
 };
-
-#endif // REPORTWRITER_H

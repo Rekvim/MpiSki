@@ -1,7 +1,5 @@
-#ifndef LABELEDSLIDER_H
-#define LABELEDSLIDER_H
-
 #pragma once
+
 #include <QSlider>
 #include <QMap>
 
@@ -16,7 +14,7 @@ public:
     void setTickLength(int px);
     void setTickGap(int px);
 
-    void setLabelPointSize(int pt);     // ✅ размер шрифта подписей
+    void setLabelPointSize(int pt);
     int  labelPointSize() const { return m_labelPointSize; }
 
     QSize sizeHint() const override;
@@ -27,7 +25,7 @@ protected:
     bool event(QEvent* e) override;
 
 private:
-    QFont labelFont() const;            // ✅ единый шрифт подписей
+    QFont labelFont() const;
     int labelsMaxTextWidth() const;
     int leftAreaWidth() const;
     void updateWidthConstraints();
@@ -38,7 +36,5 @@ private:
     int m_labelOffset    = 6;
     int m_tickLen        = 10;
     int m_tickGap        = 4;
-    int m_labelPointSize = 10;          // ✅ по умолчанию 10
+    int m_labelPointSize = 10;
 };
-
-#endif // LABELEDSLIDER_H

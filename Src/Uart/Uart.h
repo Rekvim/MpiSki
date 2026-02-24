@@ -1,7 +1,5 @@
-#ifndef UART_H
-#define UART_H
-
 #pragma once
+
 #include <QByteArray>
 #include <QObject>
 #include <QSerialPort>
@@ -25,5 +23,3 @@ signals:
     void portClosed();
     void errorOccurred(QSerialPort::SerialPortError error);
 };
-
-#endif // UART_H

@@ -2,11 +2,11 @@
 #include "./Src/CustomChart/MyChart.h"
 #include "ui_MainWindow.h"
 
-#include "Src/ReportBuilders/ReportBuilder_B_CVT.h"
-#include "Src/ReportBuilders/ReportBuilder_B_SACVT.h"
-#include "Src/ReportBuilders/ReportBuilder_C_CVT.h"
-#include "Src/ReportBuilders/ReportBuilder_C_SACVT.h"
-#include "Src/ReportBuilders/ReportBuilder_C_SOVT.h"
+#include "Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h"
+#include "Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h"
+#include "Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.h"
+#include "Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.h"
+#include "Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.h"
 #include "./Src/Ui/TestSettings/AbstractTestSettings.h"
 
 namespace {

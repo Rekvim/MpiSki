@@ -1,7 +1,5 @@
-#ifndef MPI_H
-#define MPI_H
-
 #pragma once
+
 #include <QObject>
 #include <QDebug>
 #include <QEventLoop>
@@ -81,5 +79,3 @@ private:
 
     void sleep(quint16 msecs);
 };
-
-#endif // MPI_H

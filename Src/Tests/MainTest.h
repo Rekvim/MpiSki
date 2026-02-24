@@ -1,12 +1,7 @@
-#ifndef MAINTEST_H
-#define MAINTEST_H
-
 #pragma once
-#include <QEventLoop>
+
 #include <QObject>
 #include <QPointF>
-#include <QTimer>
-#include <QDateTime>
 
 #include "Test.h"
 #include "./Src/Ui/TestSettings/MainTestSettings.h"
@@ -86,5 +81,3 @@ signals:
     void ShowDots(bool visible);
     void ClearGraph();
 };
-
-#endif // MAINTEST_H

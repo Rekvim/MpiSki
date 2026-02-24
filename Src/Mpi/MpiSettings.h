@@ -1,7 +1,5 @@
-#ifndef MPISETTINGS_H
-#define MPISETTINGS_H
-
 #pragma once
+
 #include <QObject>
 #include <QApplication>
 #include <QSettings>
@@ -36,5 +34,3 @@ private:
 signals:
 
 };
-
-#endif // MPISETTINGS_H

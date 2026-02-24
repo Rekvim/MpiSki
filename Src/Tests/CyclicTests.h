@@ -1,5 +1,4 @@
-#ifndef CYCLICTESTS_H
-#define CYCLICTESTS_H
+#pragma once
 
 #include "MainTest.h"
 #include "./Src/Ui/TestSettings/CyclicTestSettings.h"
@@ -76,5 +75,3 @@ private:
     QVector<quint16> m_doOnCounts;
     QVector<quint16> m_doOffCounts;
 };
-
-#endif // CYCLICTESTS_H

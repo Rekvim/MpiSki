@@ -1,7 +1,5 @@
-#ifndef STEPTESTSETTINGS_H
-#define STEPTESTSETTINGS_H
-
 #pragma once
+
 #include <QDialog>
 #include "qdatetime.h"
 #include "AbstractTestSettings.h"
@@ -46,5 +44,3 @@ protected:
     QVector<qreal>& sequence() override;
     QListWidget* sequenceListWidget() override;
 };
-
-#endif // STEPTESTSETTINGS_H

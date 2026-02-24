@@ -1,4 +1,5 @@
 #pragma once
+
 #include "IReportBlock.h"
 
 struct ValveSpecLayout {

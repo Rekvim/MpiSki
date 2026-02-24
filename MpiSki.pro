@@ -18,6 +18,7 @@ include(./QXlsx.pri)
 INCLUDEPATH += $$PWD/Src/CustomChart
 
 SOURCES += \
+    Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
     main.cpp \
     Src/Ui/Setup/ObjectWindow.cpp \
     Src/Ui/Setup/ValveWindow.cpp \
@@ -32,11 +33,11 @@ SOURCES += \
     Src/LabeledSlider/LabeledSlider.cpp \
     Src/Mpi/Mpi.cpp \
     Src/Mpi/MpiSettings.cpp \
-    Src/ReportBuilders/ReportBuilder_B_CVT.cpp \
-    Src/ReportBuilders/ReportBuilder_B_SACVT.cpp \
-    Src/ReportBuilders/ReportBuilder_C_CVT.cpp \
-    Src/ReportBuilders/ReportBuilder_C_SACVT.cpp \
-    Src/ReportBuilders/ReportBuilder_C_SOVT.cpp \
+    Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.cpp \
+    Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.cpp \
+    Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.cpp \
+    Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.cpp \
+    Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.cpp \
     Src/ReportBuilders/ReportSaver.cpp \
     Src/Runners/BaseRunner.cpp \
     Src/Runners/CyclicRegulatoryRunner.cpp \
@@ -66,10 +67,13 @@ SOURCES += \
     Sensor.cpp
 
 HEADERS += \
+    Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
+    Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
     Src/ReportBuilders/ReportBlocks/IReportBlock.h \
     Src/ReportBuilders/ReportBlocks/ObjectInfoBlock.h \
-    Src/ReportBuilders/ReportBlocks/StepReactionLayout.h \
-    Src/ReportBuilders/ReportBlocks/StrokeSummaryBlock.h \
+    Src/ReportBuilders/ReportBlocks/SolenoidDetailsBlock.h \
+    Src/ReportBuilders/ReportBlocks/StepReactionBlock.h \
+    Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.h \
     Src/ReportBuilders/ReportBlocks/ValveSpecBlock.h \
     Src/ReportBuilders/ReportWriter.h \
     Src/Ui/Setup/ObjectWindow.h \
@@ -91,11 +95,11 @@ HEADERS += \
     Src/Mpi/Mpi.h \
     Src/Mpi/MpiSettings.h \
     Src/ReportBuilders/ReportBuilder.h \
-    Src/ReportBuilders/ReportBuilder_B_CVT.h \
-    Src/ReportBuilders/ReportBuilder_B_SACVT.h \
-    Src/ReportBuilders/ReportBuilder_C_CVT.h \
-    Src/ReportBuilders/ReportBuilder_C_SACVT.h \
-    Src/ReportBuilders/ReportBuilder_C_SOVT.h \
+    Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h \
+    Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h \
+    Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.h \
+    Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.h \
+    Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.h \
     Src/ReportBuilders/ReportSaver.h \
     Src/Runners/AbstractTestRunner.h \
     Src/Runners/BaseRunner.h \

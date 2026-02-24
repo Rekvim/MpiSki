@@ -1,12 +1,6 @@
-#ifndef OPTIONTEST_H
-#define OPTIONTEST_H
-
 #pragma once
-#include <QEventLoop>
+
 #include <QObject>
-#include <QPointF>
-#include <QTimer>
-#include <QDateTime>
 
 #include "Test.h"
 
@@ -32,5 +26,3 @@ private:
 signals:
     void SetStartTime();
 };
-
-#endif // OPTIONTEST_H

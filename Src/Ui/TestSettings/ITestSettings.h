@@ -1,5 +1,4 @@
-#ifndef ITESTSETTINGS_H
-#define ITESTSETTINGS_H
+#pragma once
 
 struct ValveInfo;
 
@@ -14,4 +13,3 @@ public:
     virtual void applyPattern(SelectTests::PatternType pattern) {}
 };
 
-#endif // ITESTSETTINGS_H

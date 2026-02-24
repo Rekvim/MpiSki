@@ -1,7 +1,5 @@
-#ifndef VALVE_WINDOW_H
-#define VALVE_WINDOW_H
-
 #pragma once
+
 #include <QDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -54,5 +52,3 @@ private slots:
     void on_pushButton_netWindow_clicked();
     void on_pushButton_clear_clicked();
 };
-
-#endif // VALVE_WINDOW_H

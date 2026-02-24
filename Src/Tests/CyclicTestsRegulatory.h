@@ -1,8 +1,5 @@
-#ifndef CYCLICTESTSREGULATORY_H
-#define CYCLICTESTSREGULATORY_H
-
+#pragma once
 #include "MainTest.h"
-#include "./Src/Ui/Setup/SelectTests.h"
 
 #include <QVector>
 #include <QPointF>
@@ -39,5 +36,3 @@ private:
 
     const bool m_endTestAfterProcess;
 };
-
-#endif // CYCLICTESTSREGULATORY_H

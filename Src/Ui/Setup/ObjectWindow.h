@@ -1,7 +1,5 @@
-#ifndef OBJECT_WINDOW_H
-#define OBJECT_WINDOW_H
-
 #pragma once
+
 #include <QDialog>
 #include <QMessageBox>
 #include <QScreen>
@@ -29,5 +27,3 @@ private:
 private slots:
     void ButtonClick();
 };
-
-#endif // OBJECT_WINDOW_H

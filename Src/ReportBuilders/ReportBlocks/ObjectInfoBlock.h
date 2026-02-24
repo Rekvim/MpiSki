@@ -16,14 +16,9 @@ public:
     void build(ReportWriter& writer,
                const ReportContext& ctx) override
     {
-        writer.cell(m_layout.sheet, m_layout.rowStart + 0, m_layout.column,
-                    ctx.object.object);
-
-        writer.cell(m_layout.sheet, m_layout.rowStart + 1, m_layout.column,
-                    ctx.object.manufactory);
-
-        writer.cell(m_layout.sheet, m_layout.rowStart + 2, m_layout.column,
-                    ctx.object.department);
+        writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.object);
+        writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.manufactory);
+        writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.department);
     }
 
 private:

@@ -1,7 +1,5 @@
-#ifndef CYCLICTESTPOSITIONER_H
-#define CYCLICTESTPOSITIONER_H
-
 #pragma once
+
 #include <QEventLoop>
 #include <QObject>
 #include <QPointF>
@@ -23,5 +21,3 @@ signals:
     void UpdateCyclicTred();
     void SetStartTime();
 };
-
-#endif // CYCLICTESTPOSITIONER_H

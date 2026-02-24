@@ -1,6 +1,3 @@
-#ifndef CYCLICTESTSETTINGS_H
-#define CYCLICTESTSETTINGS_H
-
 #pragma once
 
 #include <QDialog>
@@ -88,5 +85,3 @@ protected:
         return nullptr;
     }
 };
-
-#endif // CYCLICTESTSETTINGS_H

@@ -1,7 +1,5 @@
-#ifndef UARTMESSAGE_H
-#define UARTMESSAGE_H
-
 #pragma once
+
 #include <QByteArray>
 
 static constexpr char startbyte = 0xAA;
@@ -46,5 +44,3 @@ private:
     QByteArray m_data;
     QByteArray m_crc;
 };
-
-#endif // UARTMESSAGE_H

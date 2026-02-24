@@ -1,13 +1,10 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
 #pragma once
+
 #include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QPointF>
 #include <QThread>
-#include <QDateTime>
 #include <QDebug>
 #include <QPlainTextEdit>
 #include <QElapsedTimer>
@@ -203,4 +200,3 @@ private:
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 };
-#endif // MAINWINDOW_H

@@ -1,7 +1,5 @@
-#ifndef OTHERTESTSETTINGS_H
-#define OTHERTESTSETTINGS_H
-
 #pragma once
+
 #include <QInputDialog>
 #include <QDialog>
 #include <QListWidget>
@@ -45,5 +43,3 @@ protected:
     QVector<qreal>& sequence() override;
     QListWidget* sequenceListWidget() override;
 };
-
-#endif // OTHERTESTSETTINGS_H

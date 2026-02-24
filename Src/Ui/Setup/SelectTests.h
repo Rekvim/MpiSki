@@ -1,7 +1,5 @@
-#ifndef SELECTTESTS_H
-#define SELECTTESTS_H
-
 #pragma once
+
 #include <QDialog>
 #include <QCheckBox>
 #include <QDebug>
@@ -75,5 +73,3 @@ private:
     PatternType detectCurrentPattern() const;
     bool m_suppressDebugOutput = false;
 };
-
-#endif // SELECTTESTS_H

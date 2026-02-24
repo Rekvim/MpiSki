@@ -1,7 +1,5 @@
-#ifndef PROGRAM_H
-#define PROGRAM_H
-
 #pragma once
+
 #include <QColor>
 #include <QObject>
 #include <QPointF>
@@ -278,5 +276,3 @@ public slots:
     void button_DO(quint8 DO_num, bool state);
     void checkbox_autoInit(int state);
 };
-
-#endif // PROGRAM_H

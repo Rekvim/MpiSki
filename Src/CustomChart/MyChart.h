@@ -1,7 +1,5 @@
-#ifndef MYCHART_H
-#define MYCHART_H
-
 #pragma once
+
 #include <QObject>
 #include <QtCharts>
 #include "./Src/CustomChart/MySeries.h"
@@ -97,5 +95,3 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void leaveEvent(QEvent *event) override;
 };
-
-#endif // MYCHART_H
