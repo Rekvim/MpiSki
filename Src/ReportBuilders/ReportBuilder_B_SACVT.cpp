@@ -273,11 +273,4 @@ void ReportBuilder_B_SACVT::buildReport(
     cell(report, m_sheetTechnicalInspection, 181, 4, objectInfo.FIO);
     // Страница: Отчет ЦТ; Блок: Дата
     cell(report, m_sheetTechnicalInspection, 185, 12, otherParams.date);
-
-    report.validation.push_back({"=ЗИП!$A$1:$A$37", "J56:J65"});
-    report.validation.push_back({"=Заключение!$B$1:$B$4", "E42"});
-    report.validation.push_back({"=Заключение!$C$1:$C$3", "E44"});
-    report.validation.push_back({"=Заключение!$E$1:$E$4", "E46"});
-    report.validation.push_back({"=Заключение!$D$1:$D$5", "E48"});
-    report.validation.push_back({"=Заключение!$F$3", "E50"});
 }
