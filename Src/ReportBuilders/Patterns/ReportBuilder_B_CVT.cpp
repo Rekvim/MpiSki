@@ -37,11 +37,7 @@ void ReportBuilder_B_CVT::buildReport(
 
     ObjectInfoBlock({m_sheetCyclicTests, 4, 4 }).build(writer, ctx);
     ValveSpecBlock({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
-    CyclicSummaryBlock({m_sheetCyclicTests,
-                           19,
-                           8,
-                           2
-                       }, CyclicMode::Regulatory).build(writer, ctx);
+    CyclicSummaryBlock({m_sheetCyclicTests, 19, 8, 2}, CyclicMode::Regulatory).build(writer, ctx);
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     // {
@@ -148,10 +144,7 @@ void ReportBuilder_B_CVT::buildReport(
     //     }
     // }
 
-    CyclicRangesBlock({m_sheetCyclicTests,
-                              33,
-                              2
-                             }).build(writer, ctx);
+    CyclicRangesBlock({m_sheetCyclicTests, 33, 2}).build(writer, ctx);
 
     writer.cell(m_sheetCyclicTests, 56, 4, ctx.object.FIO);
     writer.cell(m_sheetCyclicTests, 60, 12, ctx.params.date);
@@ -159,11 +152,7 @@ void ReportBuilder_B_CVT::buildReport(
     // Страница 2
     ObjectInfoBlock({m_sheetCyclicTests, 65, 4}).build(writer, ctx);
     ValveSpecBlock({m_sheetCyclicTests, 65, 13, false, false}).build(writer, ctx);
-    CyclicSummaryBlock({m_sheetCyclicTests,
-                           80,
-                           8,
-                           2
-                       }, CyclicMode::Regulatory).build(writer, ctx);
+    CyclicSummaryBlock({m_sheetCyclicTests, 80, 8, 2 }, CyclicMode::Regulatory).build(writer, ctx);
 
     writer.cell(m_sheetCyclicTests, 117, 4, ctx.object.FIO);
     writer.cell(m_sheetCyclicTests, 121, 12, ctx.params.date);
