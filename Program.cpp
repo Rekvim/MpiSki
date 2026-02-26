@@ -26,7 +26,9 @@ double toDouble(QString s, bool* okOut = nullptr)
     if (okOut) *okOut = ok;
     return v;
 }
-} // namespace
+}
+
+constexpr quint8 VersionFlag = 0x40;
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -47,10 +49,6 @@ Program::Program(QObject *parent)
         quint8 DI = m_mpi.digitalInputs();
         emit setDiCheckboxesChecked(DI);
     });
-
-    // connect(&m_mpi, &MPI::errorOccured,
-    //         this, &Program::errorOccured,
-    //         Qt::QueuedConnection);
 }
 
 void Program::setRegistry(Registry *registry)
@@ -243,7 +241,7 @@ void Program::initialization()
         m_patternType == SelectTests::Pattern_C_SACVT ||
         m_patternType == SelectTests::Pattern_C_SOVT) {
 
-        if ((m_mpi.version() & 0x40) != 0) {
+        if ((m_mpi.version() & VersionFlag) != 0) {
             emit setDoButtonsChecked(m_mpi.digitalOutputs());
             m_timerDI->start();
         } else {
@@ -327,7 +325,7 @@ bool Program::detectAndReportSensors()
 void Program::waitForDacCycle()
 {
     QTimer timer(this);
-    connect(&timer, &QTimer::timeout, this, [&] {
+    connect(&timer, &QTimer::timeout, this, [this] {
         if (!m_shouldWaitForButton || m_isDacStopRequested)
             m_dacEventLoop->quit();
     });
@@ -749,12 +747,14 @@ void Program::updateCharts_CyclicTest(Charts chart)
             if (nowClosed && !lastClosed) {
                 ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
                 diPts.push_back({2, qreal(time), 0.0});
-            } if (!nowClosed && lastClosed) {
+            } else if (!nowClosed && lastClosed) {
                 diPts.push_back({2, qreal(time), 0.0});
-            } if (nowOpen && !lastOpen) {
+            }
+
+            if (nowOpen && !lastOpen) {
                 ++m_telemetryStore.cyclicTestRecord.switch0to3Count;
                 diPts.push_back({3, qreal(time), 100.0});
-            } if (!nowOpen && lastOpen) {
+            } else if (!nowOpen && lastOpen) {
                 diPts.push_back({3, qreal(time), 100.0});
             }
 
@@ -994,7 +994,7 @@ void Program::startOptionalTest(quint8 testNum)
     case 0: {
         auto r = std::make_unique<OptionResponseRunner>(m_mpi, *m_registry, this);
         connect(r.get(), &OptionResponseRunner::getParameters_responseTest,
-                this, [&](OtherTestSettings::TestParameters& p){
+                this, [this](OtherTestSettings::TestParameters& p){
                     emit getParameters_responseTest(p);
                 });
         startRunner(std::move(r));
@@ -1003,7 +1003,7 @@ void Program::startOptionalTest(quint8 testNum)
     case 1: {
         auto r = std::make_unique<OptionResolutionRunner>(m_mpi, *m_registry, this);
         connect(r.get(), &OptionResolutionRunner::getParameters_resolutionTest,
-                this, [&](OtherTestSettings::TestParameters& p){
+                this, [this](OtherTestSettings::TestParameters& p){
                     emit getParameters_resolutionTest(p);
                 });
         startRunner(std::move(r));
