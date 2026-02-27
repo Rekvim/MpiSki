@@ -10,8 +10,8 @@ struct RegulatoryDeviationLayout {
 
 class CyclicRangesBlock : public IReportBlock {
 public:
-    explicit CyclicRangesBlock(RegulatoryDeviationLayout l)
-        : m(l) {}
+    explicit CyclicRangesBlock(RegulatoryDeviationLayout layout)
+        : m_layout(std::move(layout)) {}
 
     void build(ReportWriter& w,
                const ReportContext& ctx) override
@@ -19,13 +19,13 @@ public:
         const auto& ranges =
             ctx.telemetry.cyclicTestRecord.ranges;
 
-        quint16 row = m.rowStart;
+        quint16 row = m_layout.rowStart;
 
         for (int i = 0; i < ranges.size() && i < 10; ++i) {
 
             const auto& r = ranges[i];
 
-            w.cell(m.sheet, row, 2,
+            w.cell(m_layout.sheet, row, 2,
                    QString::number(r.rangePercent));
 
             if (r.maxForwardCycle >= 0) {
@@ -42,10 +42,10 @@ public:
                        QString::number(r.maxReverseCycle + 1));
             }
 
-            row += m.rowStep;
+            row += m_layout.rowStep;
         }
     }
 
 private:
-    RegulatoryDeviationLayout m;
+    RegulatoryDeviationLayout m_layout;
 };

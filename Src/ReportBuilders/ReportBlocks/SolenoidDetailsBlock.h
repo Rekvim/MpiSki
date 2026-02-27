@@ -17,16 +17,16 @@ struct SolenoidDetailsLayout {
 
 class SolenoidDetailsBlock : public IReportBlock {
 public:
-    explicit SolenoidDetailsBlock(SolenoidDetailsLayout l)
-        : m(l) {}
+    explicit SolenoidDetailsBlock(SolenoidDetailsLayout layout)
+        : m_layout(std::move(layout)) {}
 
     void build(ReportWriter& w,
                const ReportContext& ctx) override {
         {
             const auto& cyclic = ctx.telemetry.cyclicTestRecord;
 
-            w.cell(m.sheet, m.rowBase, m.colCount, cyclic.numCyclesShutoff);
-            w.cell(m.sheet, m.rowBase + m.rowStep, m.colCount, cyclic.numCyclesShutoff);
+            w.cell(m_layout.sheet, m_layout.rowBase, m_layout.colCount, cyclic.numCyclesShutoff);
+            w.cell(m_layout.sheet, m_layout.rowBase + m_layout.rowStep, m_layout.colCount, cyclic.numCyclesShutoff);
 
             const auto& ons  = cyclic.doOnCounts;
             const auto& offs = cyclic.doOffCounts;
@@ -35,22 +35,22 @@ public:
                 if (ons[i] == 0 && offs.value(i, 0) == 0)
                     continue;
 
-                quint16 row = m.rowBase + quint16(i) * m.rowStep;
+                quint16 row = m_layout.rowBase + quint16(i) * m_layout.rowStep;
 
-                w.cell(m.sheet, row, m.colOn,  ons[i]);
-                w.cell(m.sheet, row, m.colOff, offs.value(i, 0));
+                w.cell(m_layout.sheet, row, m_layout.colOn,  ons[i]);
+                w.cell(m_layout.sheet, row, m_layout.colOff, offs.value(i, 0));
             }
 
-            w.cell(m.sheet, m.rowSwitch1, m.colCount, cyclic.numCyclesShutoff);
-            w.cell(m.sheet, m.rowSwitch1, m.colOn, cyclic.switch3to0Count);
-            w.cell(m.sheet, m.rowSwitch1, m.colOff, cyclic.switch0to3Count);
+            w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colCount, cyclic.numCyclesShutoff);
+            w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colOn, cyclic.switch3to0Count);
+            w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colOff, cyclic.switch0to3Count);
 
-            w.cell(m.sheet, m.rowSwitch2, m.colCount, cyclic.numCyclesShutoff);
-            w.cell(m.sheet, m.rowSwitch2, m.colOn, cyclic.switch0to3Count);
-            w.cell(m.sheet, m.rowSwitch2, m.colOff, cyclic.switch3to0Count);
+            w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colCount, cyclic.numCyclesShutoff);
+            w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colOn, cyclic.switch0to3Count);
+            w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colOff, cyclic.switch3to0Count);
         }
     }
 
 private:
-    SolenoidDetailsLayout m;
+    SolenoidDetailsLayout m_layout;
 };
