@@ -18,7 +18,7 @@ class CyclicSummaryBlock : public IReportBlock {
 public:
     CyclicSummaryBlock(CyclicSummaryLayout layout,
                        CyclicMode mode)
-        : m_layout(layout), m_mode(mode) {}
+        : m_layout(std::move(layout)), m_mode(mode) {}
 
     void build(ReportWriter& writer,
                const ReportContext& ctx) override
