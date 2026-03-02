@@ -444,6 +444,11 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->label_cyclicTest_completedCyclesValue->setText(QString::number(remaining));
             });
 
+    connect(m_program, &Program::testActuallyStarted,
+            this, [this]() {
+                setTestState(TestState::Running);
+            });
+
     ui->tabWidget_mainTests->setCurrentIndex(0);
     ui->tabWidget_optionalTests->setCurrentIndex(0);
     ui->tabWidget_reportGeneration->setCurrentIndex(0);
@@ -1356,28 +1361,53 @@ void MainWindow::getDirectory(const QString &currentPath, QString &result)
 
 void MainWindow::startTest()
 {
-    m_isTestRunning = true;
-    ui->statusbar->showMessage(tr("Тест в процессе"));
+    setTestState(TestState::Starting);
 }
 
 void MainWindow::endTest()
 {
-    m_isTestRunning = false;
+    const TestState prevState = m_testState;
 
-    ui->statusbar->showMessage(tr("Тест завершён"));
-
-    if (m_durationTimer) {
+    if (m_durationTimer)
         m_durationTimer->stop();
-    }
 
-    if (m_isUserCanceled ) {
-        ui->label_cyclicTest_totalTimeValue->clear();
-        ui->label_cyclicTest_specifiedCyclesValue->clear();
-        ui->label_cyclicTest_sequenceValue->clear();
-        ui->label_cyclicTest_completedCyclesValue->clear();
+    if (prevState == TestState::Running) {
+        setTestState(TestState::Finished);
+        promptSaveChartsAfterTest();
     }
+    else if (prevState == TestState::Canceled) {
+        setTestState(TestState::Idle);
+    }
+    else {
+        setTestState(TestState::Idle);
+    }
+}
 
-    promptSaveChartsAfterTest();
+void MainWindow::setTestState(TestState state)
+{
+    m_testState = state;
+
+    switch (state) {
+    case TestState::Idle:
+        ui->statusbar->showMessage(tr("Готов к запуску теста"));
+        break;
+
+    case TestState::Starting:
+        ui->statusbar->showMessage(tr("Настройка параметров теста..."));
+        break;
+
+    case TestState::Running:
+        ui->statusbar->showMessage(tr("Тест в процессе"));
+        break;
+
+    case TestState::Finished:
+        ui->statusbar->showMessage(tr("Тест завершён"));
+        break;
+
+    case TestState::Canceled:
+        ui->statusbar->showMessage(tr("Тест отменён пользователем"));
+        break;
+    }
 }
 
 void MainWindow::on_pushButton_mainTest_start_clicked()
@@ -1385,13 +1415,11 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
     if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
         == QMessageBox::Yes) {
-            m_isUserCanceled = true;
+            setTestState(TestState::Canceled);
             emit stopTest();
         }
     } else {
-        m_isUserCanceled = false;
         emit runMainTest();
-        startTest();
     }
 }
 void MainWindow::on_pushButton_mainTest_save_clicked()
@@ -1466,6 +1494,7 @@ void MainWindow::on_pushButton_strokeTest_start_clicked()
     if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
+            setTestState(TestState::Canceled);
             emit stopTest();
         }
     } else {
@@ -1506,13 +1535,11 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
     if (m_isTestRunning ) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
-            m_isUserCanceled = true;
+            setTestState(TestState::Canceled);
             emit stopTest();
         }
         return;
     } else {
-        m_isUserCanceled = false;
-
         m_cyclicTestSettings->applyPattern(m_patternType);
 
         emit runCyclicTest();

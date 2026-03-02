@@ -16,7 +16,7 @@ static QString formatMs(quint64 ms)
         .arg(seconds, 2, 10, QChar('0'))
         .arg(millis,  3, 10, QChar('0'));
 }
-// ================== helper для читаемого вывода точки ==================
+
 static QString pointStr(const QVector<QPointF>& pts, int idx)
 {
     if (idx < 0 || idx >= pts.size()) {
@@ -31,14 +31,13 @@ static QString pointStr(const QVector<QPointF>& pts, int idx)
         .arg(pts[idx].y(), 0, 'f', 2);
 }
 
-// ======================================================================
-
 StrokeTest::StrokeTest(QObject *parent)
     : Test(parent)
 {}
 
 void StrokeTest::Process()
 {
+    emit started();
     setDacBlocked(0, 10000, true);
 
     if (m_terminate) {
@@ -49,7 +48,6 @@ void StrokeTest::Process()
     emit SetStartTime();
     m_graphTimer->start(50);
 
-    // Даём графику накопиться
     Sleep(5000);
 
     if (m_terminate) {
@@ -57,7 +55,6 @@ void StrokeTest::Process()
         return;
     }
 
-    // Прямой ход
     setDacBlocked(0xFFFF, 0, true, true);
 
     if (m_terminate) {
@@ -68,9 +65,7 @@ void StrokeTest::Process()
     setDacBlocked(0, 0, true, true);
     m_graphTimer->stop();
 
-    // ==========================================================
     // Получаем точки графика
-    // ==========================================================
     QVector<QVector<QPointF>> allPoints;
     emit GetPoints(allPoints);
 
@@ -83,9 +78,7 @@ void StrokeTest::Process()
 
     const auto& points = allPoints[0];
 
-    // ==========================================================
     // Поиск min / max
-    // ==========================================================
     double minY = points[0].y();
     double maxY = points[0].y();
 
@@ -97,9 +90,7 @@ void StrokeTest::Process()
     const double zeroThreshold = minY + (maxY - minY) * 0.0050;
     const double maxThreshold  = maxY - (maxY - minY) * 0.0050;
 
-    // ==========================================================
     // Поиск характерных точек
-    // ==========================================================
     int forwardStart = 0;
     int forwardEnd    = 0;
     int backwardStart = 0;
@@ -157,9 +148,6 @@ void StrokeTest::Process()
         }
     }
 
-    // ==========================================================
-    // ЧЕЛОВЕЧЕСКИЙ ВЫВОД
-    // ==========================================================
     qDebug().noquote()
         << "\n========== STROKE TEST ANALYSIS ==========\n"
         << "Total points:" << points.size()
@@ -182,9 +170,7 @@ void StrokeTest::Process()
         << "\nEnd (return to zero):"
         << "\n  " << pointStr(points, backwardEnd);
 
-    // ==========================================================
     // Время движения
-    // ==========================================================
     quint64 forwardTime  = 0;
     quint64 backwardTime = 0;
 

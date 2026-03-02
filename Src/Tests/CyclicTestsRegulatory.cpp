@@ -7,6 +7,7 @@ CyclicTestsRegulatory::CyclicTestsRegulatory(QObject* parent, bool endTestAfterP
 
 void CyclicTestsRegulatory::Process()
 {
+    emit started();
     emit SetStartTime();
     emit ClearGraph();
 
@@ -25,7 +26,7 @@ void CyclicTestsRegulatory::Process()
             const int prevPct = (i == 0 ? seq.last() : seq.at(i - 1));
             const bool forward = (pct > prevPct);
 
-            emit setDacBlocked(dacRaw, m_task.holdMsecs + m_task.delayMsecs);
+            setDacBlocked(dacRaw, m_task.holdMsecs + m_task.delayMsecs);
             if (m_terminate) break;
 
             emit StepMeasured(cycle, i, forward);
@@ -41,7 +42,7 @@ void CyclicTestsRegulatory::Process()
     QVector<QVector<QPointF>> pts;
     emit GetPoints(pts);
 
-    TestResults r;
+    TestResults r{};
 
     emit Results(r);
 

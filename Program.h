@@ -89,6 +89,9 @@ signals:
 
     void cyclicCycleCompleted(int completedCycles);
 
+    void testActuallyStarted();
+    void testStarted();
+
     void setText(const TextObjects object, const QString &text);
     void setTextColor(const TextObjects object, const QColor color);
     void setTask(qreal task);
@@ -147,6 +150,8 @@ private:
         connect(r.get(), &AbstractTestRunner::requestClearChart, this, [this](int chart){
             emit clearPoints(static_cast<Charts>(chart));
         });
+        connect(r.get(), &AbstractTestRunner::testActuallyStarted,
+                this, &Program::testActuallyStarted);
 
         connect(r.get(), &AbstractTestRunner::requestSetDAC,
                 this, &Program::setDacRaw);
@@ -164,10 +169,10 @@ private:
                 r.get(), &AbstractTestRunner::stop);
 
         emit setButtonInitEnabled(false);
-        m_isTestRunning = true;
         emit setTaskControlsEnabled(false);
 
         m_activeRunner = std::move(r);
+        emit testStarted();
         m_activeRunner->start();
     }
 

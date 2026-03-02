@@ -16,6 +16,7 @@ static inline bool bit(quint8 mask, int b)
 
 void CyclicTestsShutoff::Process()
 {
+    emit started();
     emit ClearGraph();
     emit SetStartTime();
     m_graphTimer->start(100);

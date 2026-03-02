@@ -29,16 +29,16 @@ public:
                    QString::number(r.rangePercent));
 
             if (r.maxForwardCycle >= 0) {
-                w.cell(m.sheet, row, 8,
+                w.cell(m_layout.sheet, row, 8,
                        QString::number(r.maxForwardValue, 'f', 2));
-                w.cell(m.sheet, row, 11,
+                w.cell(m_layout.sheet, row, 11,
                        QString::number(r.maxForwardCycle + 1));
             }
 
             if (r.maxReverseCycle >= 0) {
-                w.cell(m.sheet, row, 12,
+                w.cell(m_layout.sheet, row, 12,
                        QString::number(r.maxReverseValue, 'f', 2));
-                w.cell(m.sheet, row, 15,
+                w.cell(m_layout.sheet, row, 15,
                        QString::number(r.maxReverseCycle + 1));
             }
 

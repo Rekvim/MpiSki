@@ -476,33 +476,12 @@ bool Program::isInitialized() const {
 
 void Program::startMainTest()
 {
-    auto runner = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
+    auto r = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
 
-    connect(runner.get(), &AbstractTestRunner::requestSetDAC,
-            this, &Program::setDacRaw);
-
-    connect(this, &Program::releaseBlock,
-            runner.get(), &AbstractTestRunner::releaseBlock);
-
-    connect(runner.get(), &MainTestRunner::getParameters_mainTest,
+    connect(r.get(), &MainTestRunner::getParameters_mainTest,
             this, &Program::forwardGetParameters_mainTest);
 
-    connect(runner.get(), &AbstractTestRunner::totalTestTimeMs,
-            this, &Program::totalTestTimeMs);
-
-    connect(runner.get(), &AbstractTestRunner::endTest,
-            this, &Program::endTest);
-
-    connect(this, &Program::stopTheTest,
-            runner.get(), &AbstractTestRunner::stop);
-
-    emit setButtonInitEnabled(false);
-    emit setTaskControlsEnabled(false);
-
-    m_isTestRunning = true;
-
-    m_activeRunner = std::move(runner);
-    m_activeRunner->start();
+    startRunner(std::move(r));
 }
 
 void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)

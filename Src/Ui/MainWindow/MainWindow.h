@@ -19,6 +19,14 @@
 namespace Ui { class MainWindow; }
 // QT_END_NAMESPACE
 
+enum class TestState {
+    Idle, // ничего не происходит
+    Starting, // подготовка, диалог параметров
+    Running, // тест выполняется
+    Finished, // успешно завершён
+    Canceled // отменён пользователем
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -142,6 +150,10 @@ private:
     bool m_isUserCanceled = false;
     bool m_isTestRunning = false;
     bool m_isInitialized = false;
+
+    void setTestState(TestState state);
+    TestState m_testState = TestState::Idle;
+
 
     void lockTabsForPreInit();
     void updateAvailableTabs();

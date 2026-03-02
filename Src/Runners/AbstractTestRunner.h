@@ -22,8 +22,7 @@ signals:
     void requestClearChart(int chartIndex);
     void totalTestTimeMs(quint64);
     void endTest();
-
-    // Унифицированные события для UI
+    void testActuallyStarted();
     void addPoints(int chart, const QVector<struct QPoint>&);
     void clearPoints(int chart);
 
