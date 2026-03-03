@@ -34,6 +34,6 @@ public:
 
 protected:
     QString m_sheetStepReactionTest = "ТШР";
-    QString m_sheetTechnicalInspection = "ОТ";
+    QString m_sheetTechnicalInspection = "ТО";
     QString m_sheetCyclicTests = "ЦТ";
 };

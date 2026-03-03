@@ -810,6 +810,11 @@
               <string>ПП</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>i/p преобразователь</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>
@@ -1543,7 +1548,12 @@
             </item>
             <item>
              <property name="text">
-              <string>Поршневой</string>
+              <string>Поршневой одностороннего</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Поршневой двойного действия</string>
              </property>
             </item>
            </widget>
