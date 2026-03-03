@@ -34,6 +34,9 @@ private:
     void readFromUi(ValveInfo& v);
     void loadToUi(const ValveInfo& v);
 
+    void onDriveTypeChanged(int index);
+    bool isDriveDD() const;
+
     const QString kManualInput = tr("Ручной ввод");
     QList<QString> m_diameter = {QStringLiteral("50.0"), QStringLiteral("86.0"), QStringLiteral("108.0"), QStringLiteral("125.0")};
 

@@ -37,9 +37,13 @@ void TechnicalResultsBlock::build(ReportWriter& w,
     const quint16 r5 = r0 + 12; // friction force
 
     // dynamic error
-    w.cell(m.sheet, r0, m.colFact, f2(t.mainTestRecord.dynamicErrorReal));
-    w.cell(m.sheet, r0, m.colNorm, f2(v.dinamicErrorRecomend));
-    w.cell(m.sheet, r0, m.colResult, resultOk(t.crossingStatus.dynamicError));
+    if (v.dinamicErrorRecomend == "Без позиционера") {
+        w.cell(m.sheet, r0, m.colResult, v.dinamicErrorRecomend);
+    } else {
+        w.cell(m.sheet, r0, m.colFact, f2(t.mainTestRecord.dynamicErrorReal));
+        w.cell(m.sheet, r0, m.colNorm, v.dinamicErrorRecomend);
+        w.cell(m.sheet, r0, m.colResult, resultOk(t.crossingStatus.dynamicError));
+    }
 
     // stroke
     w.cell(m.sheet, r1, m.colFact, f2(t.valveStrokeRecord.real));
@@ -47,13 +51,18 @@ void TechnicalResultsBlock::build(ReportWriter& w,
     w.cell(m.sheet, r1, m.colResult, resultOk(t.crossingStatus.range));
 
     // spring
-    w.cell(m.sheet, r2, m.colFact,
-           QString("%1–%2").arg(f2(t.mainTestRecord.springLow),
-                                f2(t.mainTestRecord.springHigh)));
-    w.cell(m.sheet, r2, m.colNorm,
-           QString("%1–%2").arg(f2(v.driveRangeLow),
-                                f2(v.driveRangeHigh)));
-    w.cell(m.sheet, r2, m.colResult, resultOk(t.crossingStatus.spring));
+    const bool driveDD2 = (v.driveType == 2);
+    if (driveDD2) {
+        w.cell(m.sheet, r2, m.colResult, "Привод ДД");
+    } else {
+        w.cell(m.sheet, r2, m.colFact,
+               QString("%1–%2").arg(f2(t.mainTestRecord.springLow),
+                                    f2(t.mainTestRecord.springHigh)));
+        w.cell(m.sheet, r2, m.colNorm,
+               QString("%1–%2").arg(f2(v.driveRangeLow),
+                                    f2(v.driveRangeHigh)));
+        w.cell(m.sheet, r2, m.colResult, resultOk(t.crossingStatus.spring));
+    }
 
     // pressure limits
     w.cell(m.sheet, r3, m.colFact,

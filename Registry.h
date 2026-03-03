@@ -42,7 +42,7 @@ struct ValveInfo
     QString PN = "";
     QString positionerModel = "";
     QString positionerType = "";
-    qreal dinamicErrorRecomend = 0.0;
+    QString dinamicErrorRecomend = "";
 
     QString solenoidValveModel = "";
     QString limitSwitchModel = "";

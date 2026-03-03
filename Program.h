@@ -39,6 +39,7 @@ struct RealtimeState
     quint8 diMask = 0;
     quint8 doMask = 0;
 };
+
 Q_DECLARE_METATYPE(RealtimeState)
 
 enum class TextObjects
@@ -80,6 +81,8 @@ public:
     bool isInitialized() const;
     quint8 getDIStatus() { return m_mpi.digitalInputs(); }
     quint8 getDOStatus() { return m_mpi.digitalOutputs(); }
+
+    const Registry* registry() const { return m_registry; }
 
 signals:
     void realtimeUpdated(const RealtimeState &s);

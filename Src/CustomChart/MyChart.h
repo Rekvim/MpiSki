@@ -1,5 +1,7 @@
-#pragma once
+#ifndef MYCHART_H
+#define MYCHART_H
 
+#pragma once
 #include <QObject>
 #include <QtCharts>
 #include "./Src/CustomChart/MySeries.h"
@@ -10,8 +12,8 @@ class MyChart : public QChartView
 
 public:
     MyChart(QWidget *parent = nullptr);
+    ~MyChart()  = default;
 
-    ~MyChart();
     QString getname() const;
     void setName(QString name);
     void setMaxRange(qreal value);
@@ -37,12 +39,15 @@ public slots:
 private:
     QTimer m_axisTimer;
     QElapsedTimer m_markerTimer;
+    QString m_xMarkerFormat = QStringLiteral("%1");
+    QList<QString> m_yMarkerFormats;
+
 
     bool m_axesDirty = false;
     bool m_pendingPointAdded = false;
 
-    void updateAxes();               // new
-    bool allowMarkerUpdate();  // new
+    void updateAxes();
+    bool allowMarkerUpdate();
 
     QString m_name;
     const qreal m_minR = 0.1;
@@ -95,3 +100,5 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void leaveEvent(QEvent *event) override;
 };
+
+#endif // MYCHART_H

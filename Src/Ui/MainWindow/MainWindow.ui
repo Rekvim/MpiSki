@@ -1060,6 +1060,13 @@
              </item>
             </layout>
            </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_back">
+             <property name="text">
+              <string>Назад</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -1664,7 +1671,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Разница давлений, bar</string>
+                    <string>Разница давлений, бар</string>
                    </property>
                   </widget>
                  </item>
@@ -1683,7 +1690,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Сила трения, N</string>
+                    <string>Сила трения, Н</string>
                    </property>
                   </widget>
                  </item>
@@ -1830,7 +1837,7 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>0.000 mA</string>
+                    <string>0.000 мА</string>
                    </property>
                   </widget>
                  </item>
@@ -1875,7 +1882,7 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>0.000 mA</string>
+                    <string>0.000 мА</string>
                    </property>
                   </widget>
                  </item>
@@ -1942,7 +1949,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Ход клапана, mm</string>
+                    <string>Ход клапана, мм</string>
                    </property>
                   </widget>
                  </item>
@@ -1955,7 +1962,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Нижний предел диапазона регулирования, bar</string>
+                    <string>Нижний предел диапазона регулирования, бар</string>
                    </property>
                   </widget>
                  </item>
@@ -1968,7 +1975,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Верхний предел диапазона регулирования, bar</string>
+                    <string>Верхний предел диапазона регулирования, бар</string>
                    </property>
                   </widget>
                  </item>
@@ -4363,7 +4370,7 @@ Border-radius: 10px;
                       </size>
                      </property>
                      <property name="text">
-                      <string>Давление питания, bar</string>
+                      <string>Давление питания, бар</string>
                      </property>
                     </widget>
                    </item>
@@ -4376,7 +4383,7 @@ Border-radius: 10px;
                       </sizepolicy>
                      </property>
                      <property name="readOnly">
-                      <bool>true</bool>
+                      <bool>false</bool>
                      </property>
                      <property name="clearButtonEnabled">
                       <bool>false</bool>
@@ -4854,7 +4861,7 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="text">
-                 <string>Время обратного хода, s</string>
+                 <string>Время обратного хода, сек</string>
                 </property>
                </widget>
               </item>
@@ -4881,7 +4888,7 @@ Border-radius: 10px;
                 </property>
                 <property name="text">
                  <string>Нижнее/верхнее значение
-давления в приводе, bar</string>
+давления в приводе, бар</string>
                 </property>
                </widget>
               </item>
@@ -4908,7 +4915,7 @@ Border-radius: 10px;
                 </property>
                 <property name="text">
                  <string>Заданый диапазон пружин
-Привода, bar</string>
+Привода, бар</string>
                 </property>
                </widget>
               </item>
@@ -4927,10 +4934,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -4949,10 +4956,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -4971,13 +4978,13 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="text">
                  <string>0.2–1.0</string>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -4996,10 +5003,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5018,10 +5025,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5040,10 +5047,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5062,10 +5069,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5091,8 +5098,8 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="text">
-                 <string>Ход штока, mm
-Ход вала, °</string>
+                 <string>Ход штока, мм
+Ход вала, град</string>
                 </property>
                </widget>
               </item>
@@ -5111,10 +5118,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5133,10 +5140,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5155,10 +5162,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5185,7 +5192,7 @@ Border-radius: 10px;
                 </property>
                 <property name="text">
                  <string>Диапазон i/p
-преобразователя, bar</string>
+преобразователя, бар</string>
                 </property>
                </widget>
               </item>
@@ -5273,7 +5280,7 @@ Border-radius: 10px;
                  <number>2</number>
                 </property>
                 <property name="text">
-                 <string>Трение, среднее значение, N</string>
+                 <string>Трение, среднее значение, Н</string>
                 </property>
                </widget>
               </item>
@@ -5292,10 +5299,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5352,7 +5359,7 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="text">
-                 <string>Время прямого хода, s</string>
+                 <string>Время прямого хода, сек</string>
                 </property>
                </widget>
               </item>
@@ -5371,10 +5378,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -5393,10 +5400,10 @@ Border-radius: 10px;
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::NoFocus</enum>
+                 <enum>Qt::FocusPolicy::StrongFocus</enum>
                 </property>
                 <property name="readOnly">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>

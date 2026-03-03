@@ -123,6 +123,11 @@ ValveWindow::ValveWindow(QWidget *parent)
     connect(ui->comboBox_positionerType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &ValveWindow::onPositionerTypeChanged);
 
+    connect(ui->comboBox_driveType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &ValveWindow::onDriveTypeChanged);
+
+    onDriveTypeChanged(ui->comboBox_driveType->currentIndex());
+
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
 
     ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
@@ -133,6 +138,24 @@ void ValveWindow::setPatternType(SelectTests::PatternType pattern)
 {
     m_patternType = pattern;
     applyPatternVisibility();
+}
+
+bool ValveWindow::isDriveDD() const
+{
+    return ui->comboBox_driveType->currentText().trimmed()
+    == tr("Поршневой двойного действия");
+}
+
+void ValveWindow::onDriveTypeChanged(int)
+{
+    if (isDriveDD()) {
+        ui->lineEdit_driveRange->setEnabled(false);
+        ui->lineEdit_driveRange->setText(tr("Привод ДД"));
+    } else {
+        if (ui->lineEdit_driveRange->text().trimmed() == tr("Привод ДД"))
+            ui->lineEdit_driveRange->clear();
+        ui->lineEdit_driveRange->setEnabled(true);
+    }
 }
 
 void ValveWindow::applyPatternVisibility()
@@ -172,10 +195,19 @@ void ValveWindow::onPositionerTypeChanged(quint8 index)
     if (selected == tr("Интеллектуальный ЭПП")) {
         ui->comboBox_dinamicError->addItem(QStringLiteral("1.5"));
         ui->comboBox_dinamicError->setCurrentIndex(0);
+        ui->checkBox_crossingLimits_dinamicError->setEnabled(true);
     }
     else if (selected == tr("ЭПП") || selected == tr("ПП")) {
         ui->comboBox_dinamicError->addItem(QStringLiteral("2.5"));
         ui->comboBox_dinamicError->setCurrentIndex(0);
+        ui->checkBox_crossingLimits_dinamicError->setEnabled(true);
+    }
+    else if (selected == tr("i/p преобразователь")) {
+        ui->comboBox_dinamicError->addItem(QStringLiteral("Без позиционера"));
+        ui->comboBox_dinamicError->setCurrentIndex(0);
+
+        ui->checkBox_crossingLimits_dinamicError->setEnabled(false);
+        ui->checkBox_crossingLimits_dinamicError->setChecked(false);
     }
 }
 
@@ -248,7 +280,7 @@ void ValveWindow::readFromUi(ValveInfo& v)
                                       ? ui->comboBox_positionerType->currentText()
                                       : "";
 
-    v.dinamicErrorRecomend = ui->comboBox_dinamicError->currentText().toDouble();
+    v.dinamicErrorRecomend = ui->comboBox_dinamicError->currentText();
 
     v.solenoidValveModel = ui->lineEdit_solenoidValveModel->text();
     v.limitSwitchModel = ui->lineEdit_limitSwitchModel->text();
@@ -260,10 +292,17 @@ void ValveWindow::readFromUi(ValveInfo& v)
     v.safePosition = ui->comboBox_safePosition->currentIndex();
     v.driveType = ui->comboBox_driveType->currentIndex();
 
-    auto r = parseRange2(ui->lineEdit_driveRange->text());
-    if (r) {
-        v.driveRangeLow = r->first;
-        v.driveRangeHigh = r->second;
+    const QString driveRangeText = ui->lineEdit_driveRange->text().trimmed();
+
+    if (isDriveDD() || driveRangeText == tr("Привод ДД")) {
+        v.driveRangeLow = 0.0;
+        v.driveRangeHigh = 0.0;
+    } else {
+        auto r = parseRange2(driveRangeText);
+        if (r) {
+            v.driveRangeLow = r->first;
+            v.driveRangeHigh = r->second;
+        }
     }
 
     v.driveDiameter = ui->lineEdit_driveDiameter->text().toDouble();

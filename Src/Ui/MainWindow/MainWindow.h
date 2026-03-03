@@ -141,6 +141,8 @@ private slots:
     void on_pushButton_signal_16mA_clicked();
     void on_pushButton_signal_20mA_clicked();
 
+    void on_pushButton_back_clicked();
+
 private:
     Ui::MainWindow *ui;
     TelemetryStore m_telemetryStore;
@@ -150,10 +152,16 @@ private:
     bool m_isUserCanceled = false;
     bool m_isTestRunning = false;
     bool m_isInitialized = false;
+    bool m_chartsInitialized = false;
 
     void setTestState(TestState state);
     TestState m_testState = TestState::Idle;
 
+    void collectRegistryOverrides(
+        ObjectInfo& objectInfo,
+        ValveInfo& valveInfo,
+        OtherParameters& otherParameters);
+    void collectReportOverrides();
 
     void lockTabsForPreInit();
     void updateAvailableTabs();
