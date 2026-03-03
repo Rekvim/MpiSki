@@ -87,14 +87,14 @@ void CyclicTestSettings::fillDefaultRegulatoryPresets()
     ui->listWidget_testRangeRegulatory->addItems(presetsRange);
     ui->listWidget_testRangeRegulatory->setCurrentRow(0);
 
-    static const QStringList presetsdelay = {
+    static const QStringList presetsDelay = {
         "10",
         "30",
         "60"
     };
 
     ui->listWidget_delayTimeRegulatory->clear();
-    ui->listWidget_delayTimeRegulatory->addItems(presetsRange);
+    ui->listWidget_delayTimeRegulatory->addItems(presetsDelay);
     ui->listWidget_delayTimeRegulatory->setCurrentRow(0);
 
     ui->lineEdit_numberCyclesRegulatory->setText("10");
@@ -110,14 +110,14 @@ void CyclicTestSettings::fillDefaultShutOffPresets()
     ui->listWidget_delayTimeShutOff->addItems(presetsRange);
     ui->listWidget_delayTimeShutOff->setCurrentRow(0);
 
-    static const QStringList presetsdelay = {
+    static const QStringList presetsDelay = {
         "10",
         "30",
         "60"
     };
 
     ui->listWidget_delayTimeShutOff->clear();
-    ui->listWidget_delayTimeShutOff->addItems(presetsRange);
+    ui->listWidget_delayTimeShutOff->addItems(presetsDelay);
     ui->listWidget_delayTimeShutOff->setCurrentRow(0);
 
     ui->lineEdit_numberCyclesShutOff->setText("10");
@@ -141,7 +141,20 @@ void CyclicTestSettings::bindRegulatoryPresetEditor()
 QString CyclicTestSettings::reverseSequenceString(const QString& s)
 {
     QStringList parts = s.split('-', Qt::SkipEmptyParts);
-    std::reverse(parts.begin(), parts.end());
+
+    for (QString& part : parts) {
+        bool ok = false;
+        const double v = part.trimmed().toDouble(&ok);
+        if (!ok) return s;
+        const double inv = 100.0 - v;
+
+        // аккуратно форматируем числа
+        if (qFuzzyCompare(inv + 1.0, std::round(inv) + 1.0))
+            part = QString::number(static_cast<int>(std::round(inv)));
+        else
+            part = QString::number(inv, 'g', 12);
+    }
+
     return parts.join('-');
 }
 

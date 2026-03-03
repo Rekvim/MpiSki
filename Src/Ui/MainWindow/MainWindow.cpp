@@ -173,7 +173,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_testSettings = {
         m_stepTestSettings,
         m_responseTestSettings,
-        m_resolutionTestSettings
+        m_resolutionTestSettings,
+        m_cyclicTestSettings
     };
 
     m_reportSaver = new ReportSaver(this);
@@ -733,7 +734,7 @@ void MainWindow::updateMainTestUI(const TelemetryStore& t)
             .arg(t.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
         );
     ui->label_dynamicErrorMean->setText(
-        QString("%1 mA")
+        QString("%1 мА")
             .arg(t.mainTestRecord.dynamicError_mean, 0, 'f', 3)
         );
     ui->label_dynamicErrorMaxPercent->setText(
@@ -742,7 +743,7 @@ void MainWindow::updateMainTestUI(const TelemetryStore& t)
         );
 
     ui->label_dynamicErrorMax->setText(
-        QString("%1 mA")
+        QString("%1 мА")
             .arg(t.mainTestRecord.dynamicError_max, 0, 'f', 3)
         );
     ui->lineEdit_resultsTable_dynamicErrorReal->setText(
@@ -751,11 +752,11 @@ void MainWindow::updateMainTestUI(const TelemetryStore& t)
         );
 
     ui->label_dynamicErrorMax->setText(
-        QString("%1 bar")
+        QString("%1 бар")
             .arg(t.mainTestRecord.lowLimitPressure, 0, 'f', 2)
         );
     ui->label_dynamicErrorMax->setText(
-        QString("%1 bar")
+        QString("%1 бар")
             .arg(t.mainTestRecord.highLimitPressure, 0, 'f', 2)
         );
 
@@ -848,13 +849,14 @@ void MainWindow::on_pushButton_signal_20mA_clicked()
 {
     ui->doubleSpinBox_task->setValue(20.0);
 }
-
+// !!!
 void MainWindow::setTaskControlsEnabled(bool enabled)
 {
     ui->verticalSlider_task->setEnabled(enabled);
     ui->doubleSpinBox_task->setEnabled(enabled);
     ui->groupBox_DO->setEnabled(enabled);
     ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
+    ui->pushButton_back->setEnabled(enabled);
 }
 
 void MainWindow::triggerPrimaryAction()
@@ -1422,7 +1424,8 @@ void MainWindow::setTestState(TestState state)
 
 void MainWindow::on_pushButton_mainTest_start_clicked()
 {
-    if (m_isTestRunning ) {
+    if (m_testState == TestState::Running ||
+        m_testState == TestState::Starting) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
         == QMessageBox::Yes) {
             setTestState(TestState::Canceled);
@@ -1430,6 +1433,7 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
         }
     } else {
         emit runMainTest();
+        startTest();
     }
 }
 void MainWindow::on_pushButton_mainTest_save_clicked()
@@ -1445,9 +1449,6 @@ void MainWindow::on_pushButton_mainTest_save_clicked()
 
 void MainWindow::promptSaveChartsAfterTest()
 {
-    if (m_isUserCanceled)
-        return;
-
     const auto charts = chartsForCurrentTest();
     if (charts.isEmpty())
         return;
@@ -1458,7 +1459,7 @@ void MainWindow::promptSaveChartsAfterTest()
         tr("Тест завершён.\nСохранить графики?"),
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::Yes
-    );
+        );
 
     if (answer != QMessageBox::Yes)
         return;
@@ -1501,7 +1502,8 @@ QVector<Charts> MainWindow::chartsForCurrentTest() const
 
 void MainWindow::on_pushButton_strokeTest_start_clicked()
 {
-    if (m_isTestRunning ) {
+    if (m_testState == TestState::Running ||
+        m_testState == TestState::Starting) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             setTestState(TestState::Canceled);
@@ -1519,7 +1521,8 @@ void MainWindow::on_pushButton_strokeTest_save_clicked()
 
 void MainWindow::on_pushButton_optionalTests_start_clicked()
 {
-    if (m_isTestRunning ) {
+    if (m_testState == TestState::Running ||
+        m_testState == TestState::Starting) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             emit stopTest();
@@ -1542,7 +1545,8 @@ void MainWindow::on_pushButton_optionalTests_save_clicked()
 
 void MainWindow::on_pushButton_cyclicTest_start_clicked()
 {
-    if (m_isTestRunning ) {
+    if (m_testState == TestState::Running ||
+        m_testState == TestState::Starting) {
         if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
             setTestState(TestState::Canceled);
