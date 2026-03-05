@@ -1960,6 +1960,10 @@ void MainWindow::collectReportOverrides()
     m_telemetryStore.strokeTestRecord.timeForwardMs =
         ui->lineEdit_resultsTable_strokeTest_forwardTime->text();
 
+    // SupplyRecord
+    m_telemetryStore.supplyRecord.pressure_bar =
+        QString(ui->lineEdit_supplyPressure->text()).toDouble();
+
     m_telemetryStore.strokeTestRecord.timeBackwardMs =
         ui->lineEdit_resultsTable_strokeTest_backwardTime->text();
 }
@@ -2028,6 +2032,9 @@ void MainWindow::on_pushButton_report_generate_clicked()
                                m_registry->valveInfo(),
                                m_registry->otherParameters(),
                                m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
+
+    qDebug() << "Forward:" << m_telemetryStore.strokeTestRecord.timeForwardMs;
+    qDebug() << "Backward:" << m_telemetryStore.strokeTestRecord.timeBackwardMs;
 
     qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 

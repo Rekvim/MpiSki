@@ -155,16 +155,38 @@ void ReportBuilder_C_CVT::buildReport(
     writer.cell(m_sheetCyclicTests, 60, 12, ctx.params.date);
 
     // Страница: 2;
-    ObjectInfoBlock({m_sheetCyclicTests, 65, 4}).build(writer, ctx);
-    ValveSpecBlock({m_sheetCyclicTests, 65, 13, true, false}).build(writer, ctx);
+    ObjectInfoBlock({m_sheetCyclicTests, 66, 4}).build(writer, ctx);
+    ValveSpecBlock({m_sheetCyclicTests, 66, 13, true, false}).build(writer, ctx);
     CyclicSummaryBlock({m_sheetCyclicTests,
-                           80,
+                           81,
                            8,
                            2
                        }, CyclicMode::Regulatory).build(writer, ctx);
 
-    writer.cell(m_sheetCyclicTests, 117, 4, ctx.object.FIO);
-    writer.cell(m_sheetCyclicTests, 121, 12, ctx.params.date);
+    writer.cell(m_sheetCyclicTests, 118, 4, ctx.object.FIO);
+    writer.cell(m_sheetCyclicTests, 122, 12, ctx.params.date);
+
+    // Страница: 1;
+    writer.cell(m_sheetTechnicalInspection, 1, 9, valveInfo.positionNumber);
+    ObjectInfoBlock({m_sheetTechnicalInspection, 5, 4}).build(writer, ctx);
+    ValveSpecBlock({m_sheetTechnicalInspection, 5, 13, true, false}).build(writer, ctx);
+
+    TechnicalResultsBlock({m_sheetTechnicalInspection,
+                              26, // rowStart
+                              5, // colFact
+                              8, // colNorm
+                              11, // colResult
+                              48 // rowStrokeTime
+                          }).build(writer, ctx);
+
+    writer.cell(m_sheetTechnicalInspection, 62, 12, ctx.params.date);
+    writer.cell(m_sheetTechnicalInspection, 70, 4, ctx.object.FIO);
+
+    writer.image(m_sheetTechnicalInspection, 80, 1, imageChartTask);
+    writer.image(m_sheetTechnicalInspection, 108, 1, imageChartPressure);
+    writer.image(m_sheetTechnicalInspection, 136, 1, imageChartFriction);
+
+    writer.cell( m_sheetTechnicalInspection, 153, 12, ctx.params.date);
 
     // Страница: 1;
     writer.cell(m_sheetStepReactionTest, 1, 9, valveInfo.positionNumber);
@@ -179,29 +201,7 @@ void ReportBuilder_C_CVT::buildReport(
                           10   // secondBaseCol
                       }).build(writer, ctx);
 
-    writer.cell(m_sheetStepReactionTest, 75, 12, ctx.params.date);
-
-    // Страница: 1;
-    writer.cell(m_sheetTechnicalInspection, 1, 9, valveInfo.positionNumber);
-    ObjectInfoBlock({m_sheetTechnicalInspection, 4, 4}).build(writer, ctx);
-    ValveSpecBlock({m_sheetTechnicalInspection, 4, 13, true, false}).build(writer, ctx);
-
-    TechnicalResultsBlock({m_sheetTechnicalInspection,
-                              20, // rowStart
-                              5, // colFact
-                              8, // colNorm
-                              11, // colResult
-                              46 // rowStrokeTime
-                          }).build(writer, ctx);
-
-    writer.cell(m_sheetTechnicalInspection, 60, 12, ctx.params.date);
-    writer.cell(m_sheetTechnicalInspection, 68, 4, ctx.object.FIO);
-
-    writer.image(m_sheetTechnicalInspection, 78, 1, imageChartTask);
-    writer.image(m_sheetTechnicalInspection, 103, 1, imageChartPressure);
-    writer.image(m_sheetTechnicalInspection, 128, 1, imageChartFriction);
-
-    writer.cell( m_sheetTechnicalInspection, 153, 12, ctx.params.date);
+    writer.cell(m_sheetStepReactionTest, 67, 12, ctx.params.date);
 
     writer.validation("=ЗИП!$A$1:$A$37", "J50:J59");
     writer.validation("=Заключение!$B$1:$B$4", "E36");

@@ -49,6 +49,9 @@ Program::Program(QObject *parent)
         quint8 DI = m_mpi.digitalInputs();
         emit setDiCheckboxesChecked(DI);
     });
+
+    qDebug() << "Program Forward:" << m_telemetryStore.strokeTestRecord.timeForwardMs;
+
 }
 
 void Program::setRegistry(Registry *registry)
@@ -176,6 +179,7 @@ void Program::updateSensors()
 
     points.push_back({0, qreal(time), percent});
     points.push_back({1, qreal(time), m_mpi[0]->percent()});
+
 
     emit addPoints(Charts::Trend, points);
 }

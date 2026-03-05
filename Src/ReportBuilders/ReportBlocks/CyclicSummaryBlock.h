@@ -14,7 +14,8 @@ struct CyclicSummaryLayout {
     quint16 rowStep;
 };
 
-class CyclicSummaryBlock : public IReportBlock {
+class
+    CyclicSummaryBlock : public IReportBlock {
 public:
     CyclicSummaryBlock(CyclicSummaryLayout layout,
                        CyclicMode mode)

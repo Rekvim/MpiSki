@@ -30,11 +30,11 @@ void TechnicalResultsBlock::build(ReportWriter& w,
     const auto& v = ctx.valve;
 
     const quint16 r0 = m.rowStart; // dynamic error
-    const quint16 r1 = r0 + 4; // stroke
-    const quint16 r2 = r0 + 6; // spring
-    const quint16 r3 = r0 + 8; // pressure
-    const quint16 r4 = r0 + 10; // friction %
-    const quint16 r5 = r0 + 12; // friction force
+    const quint16 r1 = r0 + 2; // stroke
+    const quint16 r2 = r0 + 4; // spring
+    const quint16 r3 = r0 + 6; // pressure
+    const quint16 r4 = r0 + 8; // friction %
+    const quint16 r5 = r0 + 10; // friction force
 
     // dynamic error
     if (v.dinamicErrorRecomend == "Без позиционера") {

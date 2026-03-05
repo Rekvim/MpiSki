@@ -52,6 +52,6 @@ void ReportBuilder_C_SOVT::buildReport(
                              46 // rowSwitch2
                          }).build(writer, ctx);
 
-    writer.cell(m_sheetCyclicTests, 56, 4, ctx.object.FIO);
-    writer.cell(m_sheetCyclicTests, 60, 12, ctx.params.date);
+    writer.cell(m_sheetCyclicTests, 53, 4, ctx.object.FIO);
+    writer.cell(m_sheetCyclicTests, 57, 12, ctx.params.date);
 }

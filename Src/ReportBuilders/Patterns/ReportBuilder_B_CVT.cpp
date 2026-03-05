@@ -39,7 +39,6 @@ void ReportBuilder_B_CVT::buildReport(
     ValveSpecBlock({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
     CyclicSummaryBlock({m_sheetCyclicTests, 19, 8, 2}, CyclicMode::Regulatory).build(writer, ctx);
 
-    // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
         const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
 
@@ -103,43 +102,43 @@ void ReportBuilder_B_CVT::buildReport(
 
             // Процент
             writer.cell(
-                m_sheetTechnicalInspection, row, 2,
+                m_sheetCyclicTests, row, 2,
                 QString::number(a.rangePercent)
             );
 
             // Прямой ход (максимум)
             if (a.maxFwdCycle >= 0) {
                 writer.cell(
-                    m_sheetTechnicalInspection, row, 8,
+                    m_sheetCyclicTests, row, 8,
                     QString("%1")
                         .arg(a.maxFwdVal,   0, 'f', 2)
                 );
                 writer.cell(
-                    m_sheetTechnicalInspection, row, 11,
+                    m_sheetCyclicTests, row, 11,
                     QString("%1")
                         .arg(a.maxFwdCycle + 1)
                 );
             } else {
                 // нет данных
-                writer.cell(m_sheetTechnicalInspection, row, 8, QString());
-                writer.cell(m_sheetTechnicalInspection, row, 11, QString());
+                writer.cell(m_sheetCyclicTests, row, 8, QString());
+                writer.cell(m_sheetCyclicTests, row, 11, QString());
             }
 
             // Обратный ход (минимум)
             if (a.minRevCycle >= 0) {
                 writer.cell(
-                    m_sheetTechnicalInspection, row, 12,
+                    m_sheetCyclicTests, row, 12,
                     QString("%1")
                         .arg(a.minRevVal, 0, 'f', 2)
                 );
                 writer.cell(
-                    m_sheetTechnicalInspection, row, 15,
+                    m_sheetCyclicTests, row, 15,
                     QString("%1")
                         .arg(a.minRevCycle + 1)
                 );
             } else {
-                writer.cell(m_sheetTechnicalInspection, row, 12, QString());
-                writer.cell(m_sheetTechnicalInspection, row, 15, QString());
+                writer.cell(m_sheetCyclicTests, row, 12, QString());
+                writer.cell(m_sheetCyclicTests, row, 15, QString());
             }
         }
     }
@@ -150,10 +149,10 @@ void ReportBuilder_B_CVT::buildReport(
     writer.cell(m_sheetCyclicTests, 60, 12, ctx.params.date);
 
     // Страница 2
-    ObjectInfoBlock({m_sheetCyclicTests, 65, 4}).build(writer, ctx);
-    ValveSpecBlock({m_sheetCyclicTests, 65, 13, false, false}).build(writer, ctx);
-    CyclicSummaryBlock({m_sheetCyclicTests, 80, 8, 2 }, CyclicMode::Regulatory).build(writer, ctx);
+    ObjectInfoBlock({m_sheetCyclicTests, 66, 4}).build(writer, ctx);
+    ValveSpecBlock({m_sheetCyclicTests, 66, 13, false, false}).build(writer, ctx);
+    CyclicSummaryBlock({m_sheetCyclicTests, 81, 8, 2 }, CyclicMode::Regulatory).build(writer, ctx);
 
-    writer.cell(m_sheetCyclicTests, 117, 4, ctx.object.FIO);
-    writer.cell(m_sheetCyclicTests, 121, 12, ctx.params.date);
+    writer.cell(m_sheetCyclicTests, 118, 4, ctx.object.FIO);
+    writer.cell(m_sheetCyclicTests, 122, 12, ctx.params.date);
 }

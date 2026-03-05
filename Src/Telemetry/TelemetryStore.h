@@ -35,31 +35,25 @@ struct RangeDeviationRecord {
 };
 
 struct CyclicTestRecord {
-    QString sequenceRegulatory = "0-25-50-75-100";
-    QString sequenceShutoff = "0-100";
+    QString sequenceRegulatory = "";
+    QString sequenceShutoff = "";
 
-    quint16 numCyclesRegulatory = 5;
-    quint16 numCyclesShutoff = 10;
+    quint16 numCyclesRegulatory = 0;
+    quint16 numCyclesShutoff = 0;
 
-    double totalTimeSecRegulatory = 150.0;
-    double totalTimeSecShutoff = 180.0;
+    double totalTimeSecRegulatory = 0.0;
+    double totalTimeSecShutoff = 0.0;
 
-    QVector<RangeDeviationRecord> ranges = {
-        { 0,   1.8,  2,  -1.2, 4 },
-        { 25, 26.5,  1,  23.7, 3 },
-        { 50, 51.3,  3,  48.9, 2 },
-        { 75, 76.2,  4,  73.5, 1 },
-        { 100,101.1, 2,  98.6, 4 }
-    };
-    int switch3to0Count = 8;
-    int switch0to3Count = 8;
+    QVector<RangeDeviationRecord> ranges = {};
+    int switch3to0Count = 0;
+    int switch0to3Count = 0;
 
-    QVector<quint16> doOnCounts = {8, 8, 0, 0};
-    QVector<quint16> doOffCounts = {8, 8, 0, 0};
+    QVector<quint16> doOnCounts = {};
+    QVector<quint16> doOffCounts = {};
 
-    int pos_0to3_hits = 8;
+    int pos_0to3_hits = 0;
     int pos_0to3_errors = 0;
-    int pos_3to0_hits = 8;
+    int pos_3to0_hits = 0;
     int pos_3to0_errors = 0;
 };
 
