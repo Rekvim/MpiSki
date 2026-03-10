@@ -477,11 +477,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::lockTabsForPreInit()
 {
-    ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget_main->setTabEnabled(1, false);
-    ui->tabWidget_main->setTabEnabled(2, false);
-    ui->tabWidget_main->setTabEnabled(3, false);
-    ui->tabWidget_main->setTabEnabled(4, false);
+    // ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
+    // ui->tabWidget_main->setTabEnabled(1, false);
+    // ui->tabWidget_main->setTabEnabled(2, false);
+    // ui->tabWidget_main->setTabEnabled(3, false);
+    // ui->tabWidget_main->setTabEnabled(4, false);
 }
 
 QTabWidget* MainWindow::currentInnerTabWidget() const
@@ -1772,9 +1772,12 @@ void MainWindow::saveChart(Charts chart)
 
     if (chart == Charts::Task) {
         backup = hideTaskAuxSeries();
-    }
-    else if (chart == Charts::Pressure) {
+    } else if (chart == Charts::Pressure) {
         backup = hidePressureAuxSeries();
+    }
+
+    if (m_reportSaver && m_charts.contains(chart) && m_charts[chart]) {
+        m_reportSaver->saveImage(m_charts[chart]);
     }
 
     QPixmap pix = m_charts[chart]->grab();
@@ -1782,7 +1785,6 @@ void MainWindow::saveChart(Charts chart)
     if (backup.has_value())
         restoreSeries(chart, *backup);
 
-    // дальше всё как у тебя
     QImage img = pix.toImage();
 
     switch (chart) {
@@ -1798,8 +1800,14 @@ void MainWindow::saveChart(Charts chart)
         ui->label_imageChartFriction->setPixmap(pix);
         m_imageChartFriction = img;
         break;
+    case Charts::Response:
+        break;
+    case Charts::Resolution:
+        break;
     case Charts::Step:
         m_imageChartStep = img;
+        break;
+    case Charts::Trend:
         break;
     default:
         break;
