@@ -3,6 +3,7 @@
 #include <QDate>
 #include <QObject>
 #include <QSettings>
+#include <QColor>
 
 struct CrossingLimits {
 
@@ -21,6 +22,14 @@ struct CrossingLimits {
 
     double springLowerLimit = 0.0;
     double springUpperLimit = 0.0;
+};
+
+struct SensorColors
+{
+    QString linear;
+    QString pressure1;
+    QString pressure2;
+    QString pressure3;
 };
 
 struct ObjectInfo
@@ -100,6 +109,9 @@ public:
     QStringList positions();
     QString lastPosition();
 
+    SensorColors& sensorColors();
+    const SensorColors& sensorColors() const;
+
     bool checkObject(const QString &object);
     bool checkManufactory(const QString &manufactory);
     bool checkDepartment(const QString &department);
@@ -109,5 +121,6 @@ private:
     QSettings m_settings;
     ObjectInfo m_objectInfo;
     ValveInfo m_valveInfo;
+    SensorColors m_sensorColors;
     OtherParameters m_otherParameters;
 };

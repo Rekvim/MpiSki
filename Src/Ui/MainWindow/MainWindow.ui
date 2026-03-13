@@ -1314,7 +1314,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">

@@ -9,6 +9,18 @@ void Registry::loadObjectInfo()
     m_objectInfo.manufactory = m_settings.value("manufactory").toString();
     m_objectInfo.department = m_settings.value("department").toString();
     m_objectInfo.FIO = m_settings.value("FIO").toString();
+
+    m_sensorColors.linear =
+        m_settings.value("colors/linear", "#ff0000").toString();
+
+    m_sensorColors.pressure1 =
+        m_settings.value("colors/pressure1", "#2A689F").toString();
+
+    m_sensorColors.pressure2 =
+        m_settings.value("colors/pressure2", "#457448").toString();
+
+    m_sensorColors.pressure3 =
+        m_settings.value("colors/pressure3", "#D3BB2A").toString();
 }
 
 ObjectInfo& Registry::objectInfo()
@@ -169,6 +181,11 @@ void Registry::saveValveInfo()
     m_settings.setValue("crossing_springUpperLimit",
                         m_valveInfo.crossingLimits.springUpperLimit);
 
+    m_settings.setValue("colors/linear", m_sensorColors.linear);
+    m_settings.setValue("colors/pressure1", m_sensorColors.pressure1);
+    m_settings.setValue("colors/pressure2", m_sensorColors.pressure2);
+    m_settings.setValue("colors/pressure3", m_sensorColors.pressure3);
+
     m_settings.endGroup();
     m_settings.endGroup();
     m_settings.endGroup();
@@ -198,6 +215,15 @@ const OtherParameters& Registry::otherParameters() const
     return m_otherParameters;
 }
 
+SensorColors& Registry::sensorColors()
+{
+    return m_sensorColors;
+}
+
+const SensorColors& Registry::sensorColors() const
+{
+    return m_sensorColors;
+}
 
 bool Registry::checkObject(const QString &object)
 {

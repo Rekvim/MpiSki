@@ -480,11 +480,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::lockTabsForPreInit()
 {
-    ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget_main->setTabEnabled(1, false);
-    ui->tabWidget_main->setTabEnabled(2, false);
-    ui->tabWidget_main->setTabEnabled(3, false);
-    ui->tabWidget_main->setTabEnabled(4, false);
+    // ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
+    // ui->tabWidget_main->setTabEnabled(1, false);
+    // ui->tabWidget_main->setTabEnabled(2, false);
+    // ui->tabWidget_main->setTabEnabled(3, false);
+    // ui->tabWidget_main->setTabEnabled(4, false);
 }
 
 QTabWidget* MainWindow::currentInnerTabWidget() const
@@ -1629,21 +1629,31 @@ void MainWindow::initCharts()
         isRotaryStroke ? QStringLiteral("%.2f deg")
                        : QStringLiteral("%.2f mm");
 
+    const auto& colors = m_registry->sensorColors();
+
+    QColor linearColor(colors.linear);
+    QColor pressure1Color(colors.pressure1);
+    QColor pressure2Color(colors.pressure2);
+    QColor pressure3Color(colors.pressure3);
+
     m_charts[Charts::Task] = ui->Chart_task;
     m_charts[Charts::Task]->setName(QStringLiteral("Task"));
     m_charts[Charts::Task]->useTimeaxis(false);
     m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f bar"));
     m_charts[Charts::Task]->addAxis(strokeAxisFormat);
     m_charts[Charts::Task]->addSeries(1, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(42, 104, 159));
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), QColor::fromRgb(69, 116, 72));
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), QColor::fromRgb(211, 187, 42));
+    m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), linearColor);
+    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), pressure1Color);
+    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), pressure2Color);
+    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), pressure3Color);
+    // m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(42, 104, 159));
+    // m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), QColor::fromRgb(69, 116, 72));
+    // m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), QColor::fromRgb(211, 187, 42));
 
     m_charts[Charts::Friction] = ui->Chart_friction;
     m_charts[Charts::Friction]->setName(QStringLiteral("Friction"));
     m_charts[Charts::Friction]->addAxis(QStringLiteral("%.2f H"));
-    m_charts[Charts::Friction]->addSeries(0, tr("Трение от перемещения"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Friction]->addSeries(0, tr("Трение от перемещения"), linearColor);
     m_charts[Charts::Friction]->setLabelXformat(strokeAxisFormat);
 
     m_charts[Charts::Pressure] = ui->Chart_pressure;
@@ -1651,7 +1661,8 @@ void MainWindow::initCharts()
     m_charts[Charts::Pressure]->useTimeaxis(false);
     m_charts[Charts::Pressure]->setLabelXformat(QStringLiteral("%.2f bar"));
     m_charts[Charts::Pressure]->addAxis(strokeAxisFormat);
-    m_charts[Charts::Pressure]->addSeries(0, tr("Перемещение от давления"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Pressure]->addSeries(0, tr("Перемещение от давления"), linearColor);
+    //m_charts[Charts::Pressure]->addSeries(0, tr("Перемещение от давления"), QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Pressure]->addSeries(0, tr("Линейная регрессия"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Pressure]->visible(1, false);
 
@@ -1661,7 +1672,8 @@ void MainWindow::initCharts()
     m_charts[Charts::Resolution]->useTimeaxis(true);
     m_charts[Charts::Resolution]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Resolution]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Resolution]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Resolution]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
+    //m_charts[Charts::Resolution]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
 
 
     m_charts[Charts::Response] = ui->Chart_response;
@@ -1669,7 +1681,8 @@ void MainWindow::initCharts()
     m_charts[Charts::Response]->useTimeaxis(true);
     m_charts[Charts::Response]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Response]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Response]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Response]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
+    //m_charts[Charts::Response]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
 
 
     m_charts[Charts::Stroke] = ui->Chart_stroke;
@@ -1677,7 +1690,7 @@ void MainWindow::initCharts()
     m_charts[Charts::Stroke]->useTimeaxis(true);
     m_charts[Charts::Stroke]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Stroke]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Stroke]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Stroke]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
 
 
     m_charts[Charts::Step] = ui->Chart_step;
@@ -1685,7 +1698,8 @@ void MainWindow::initCharts()
     m_charts[Charts::Step]->useTimeaxis(true);
     m_charts[Charts::Step]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Step]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Step]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Step]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
+    // m_charts[Charts::Step]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
 
 
     m_charts[Charts::Trend] = ui->Chart_trend;
@@ -1693,7 +1707,8 @@ void MainWindow::initCharts()
     m_charts[Charts::Trend]->addAxis(QStringLiteral("%.2f%%"));
 
     m_charts[Charts::Trend]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Trend]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Trend]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
+    //m_charts[Charts::Trend]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Trend]->setMaxRange(60000);
 
     m_charts[Charts::Cyclic] = ui->Chart_cyclicTests;
@@ -1701,7 +1716,8 @@ void MainWindow::initCharts()
     m_charts[Charts::Cyclic]->useTimeaxis(true);
     m_charts[Charts::Cyclic]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Cyclic]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
+    m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
+    // m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Cyclic]->setMaxRange(180000);
 
     if (m_patternType == SelectTests::Pattern_C_SOVT ||
