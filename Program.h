@@ -95,6 +95,8 @@ signals:
     void testActuallyStarted();
     void testStarted();
 
+    void setSensorsMask(quint8 adcMask);
+
     void setText(const TextObjects object, const QString &text);
     void setTextColor(const TextObjects object, const QColor color);
     void setTask(qreal task);

@@ -55,6 +55,7 @@ signals:
     void setDo(quint8 doIndex, bool state);
 
 private slots:
+    void setSensorsMask(quint8 mask);
     void appendLog(const QString& text);
 
     void onTelemetryUpdated(const TelemetryStore &telemetry);

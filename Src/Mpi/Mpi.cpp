@@ -159,6 +159,14 @@ quint8 Mpi::digitalInputs()
     return DI;
 }
 
+Sensor* Mpi::sensorByAdc(quint8 adc) const
+{
+    if (adc >= m_sensorByAdc.size())
+        return nullptr;
+
+    return m_sensorByAdc[adc];
+}
+
 bool Mpi::initialize()
 {
     emit requestSetAdcPolling(false, kDefaultAdcPollingMs);
@@ -187,26 +195,66 @@ bool Mpi::initialize()
     quint8 channelMask = 0;
 
     for (const auto& a : std::as_const(adc)) {
-        if ((a & 0xFFF) > 0x050) {
+        if ((a & 0xFFF) <= 0x050)
+            continue;
 
-            quint8 adcNum = a >> kAdcShift;
+        const quint8 adcNum = a >> kAdcShift;
+        channelMask |= quint8(1u << adcNum);
 
-            channelMask |= quint8(1u << adcNum);
+        Sensor *sensor = new Sensor(this);
+        m_sensorByAdc[adcNum] = sensor;
+        m_sensors.push_back(sensor);
 
-            Sensor *sensor = new Sensor(this);
-            m_sensorByAdc[adcNum] = sensor;
+        const qreal adcCur = mpiSettings.GetAdc(adcNum);
 
-            const qreal adcCur = mpiSettings.GetAdc(adcNum);
-
-            const auto sensorSettings = mpiSettings.GetSensor(sensorNum);
-            qreal k = ((sensorSettings.max - sensorSettings.min) * adcCur) / (16 * 0xFFF);
-            qreal b = (5 * sensorSettings.min - sensorSettings.max) / 4;
+        switch (adcNum) {
+        case 0: {
+            const auto s = mpiSettings.GetSensor(0); // Linear
+            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
+            const qreal b = (5.0 * s.min - s.max) / 4.0;
+            sensor->setCoefficients(k, b);
+            sensor->setUnit("мм");
+            break;
+        }
+        case 1: {
+            const auto s = mpiSettings.GetSensor(1); // Pressure1
+            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
+            const qreal b = (5.0 * s.min - s.max) / 4.0;
+            sensor->setCoefficients(k, b);
+            sensor->setUnit("bar");
+            break;
+        }
+        case 2: {
+            const auto s = mpiSettings.GetSensor(2); // Pressure2
+            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
+            const qreal b = (5.0 * s.min - s.max) / 4.0;
+            sensor->setCoefficients(k, b);
+            sensor->setUnit("bar");
+            break;
+        }
+        case 3: {
+            const auto s = mpiSettings.GetSensor(3); // Pressure3
+            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
+            const qreal b = (5.0 * s.min - s.max) / 4.0;
+            sensor->setCoefficients(k, b);
+            sensor->setUnit("bar");
+            break;
+        }
+        case 4: {
+            const qreal k = adcCur / 4095.0;
+            const qreal b = 0.0;
 
             sensor->setCoefficients(k, b);
-
-            sensor->setUnit((sensorNum++ == 0) ? "мм" : "bar");
-            m_sensors.push_back(sensor);
+            sensor->setUnit("mA");
+            break;
         }
+        default:
+            sensor->setCoefficients(1.0, 0.0);
+            sensor->setUnit("");
+            break;
+        }
+
+        ++sensorNum;
     }
 
     if (sensorNum == 0) {

@@ -49,9 +49,6 @@ Program::Program(QObject *parent)
         quint8 DI = m_mpi.digitalInputs();
         emit setDiCheckboxesChecked(DI);
     });
-
-    qDebug() << "Program Forward:" << m_telemetryStore.strokeTestRecord.timeForwardMs;
-
 }
 
 void Program::setRegistry(Registry *registry)
@@ -142,30 +139,29 @@ void Program::setTimeStart()
 
 void Program::updateSensors()
 {
-    for (quint8 i = 0; i < m_mpi.sensorCount(); ++i) {
-        switch (i) {
-        case 0:
-            emit setText(TextObjects::LineEdit_linearSensor, m_mpi[i]->formattedValue());
-            emit setText(TextObjects::LineEdit_linearSensorPercent, m_mpi[i]->percentFormatted());
-            break;
-        case 1:
-            emit setText(TextObjects::LineEdit_pressureSensor_1, m_mpi[i]->formattedValue());
-            break;
-        case 2:
-            emit setText(TextObjects::LineEdit_pressureSensor_2, m_mpi[i]->formattedValue());
-            break;
-        case 3:
-            emit setText(TextObjects::LineEdit_pressureSensor_3, m_mpi[i]->formattedValue());
-            break;
-        }
+    for (quint8 adc = 0; adc < 6; ++adc) {
+        Sensor* s = m_mpi.sensorByAdc(adc);
+        if (!s) continue;
     }
     if (m_isTestRunning)
         emit setTask(m_mpi.dac()->value());
 
-    Sensor *feedbackSensor = m_mpi.dac();
+    if (auto s = m_mpi.sensorByAdc(0)) {
+        emit setText(TextObjects::LineEdit_linearSensor, s->formattedValue());
+        emit setText(TextObjects::LineEdit_linearSensorPercent, s->percentFormatted());
+    }
 
-    QString fbValue = feedbackSensor->formattedValue();
-    emit setText(TextObjects::LineEdit_feedback_4_20mA, fbValue);
+    if (auto s = m_mpi.sensorByAdc(1))
+        emit setText(TextObjects::LineEdit_pressureSensor_1, s->formattedValue());
+
+    if (auto s = m_mpi.sensorByAdc(2))
+        emit setText(TextObjects::LineEdit_pressureSensor_2, s->formattedValue());
+
+    if (auto s = m_mpi.sensorByAdc(3))
+        emit setText(TextObjects::LineEdit_pressureSensor_3, s->formattedValue());
+
+    if (auto s = m_mpi.sensorByAdc(4))
+        emit setText(TextObjects::LineEdit_feedback_4_20mA, s->formattedValue());
 
     QVector<Point> points;
 
@@ -468,6 +464,13 @@ void Program::finalizeInitialization()
     emit clearPoints(Charts::Trend);
     m_initTime = QDateTime::currentMSecsSinceEpoch();
 
+    quint8 mask = 0;
+    for (quint8 adc = 0; adc < 6; ++adc) {
+        if (m_mpi.sensorByAdc(adc))
+            mask |= (1 << adc);
+    }
+
+    emit setSensorsMask(mask);
     emit setSensorNumber(m_mpi.sensorCount());
     emit setButtonInitEnabled(true);
 
@@ -616,25 +619,45 @@ void Program::updateCharts_mainTest()
     QVector<Point> points;
 
     const auto& v = m_registry->valveInfo();
-    qreal percent = calcPercent(
+    const qreal percent = calcPercent(
         m_mpi.dac()->value(),
         v.safePosition != 0
-    );
+        );
 
-    qreal task = m_mpi[0]->valueFromPercent(percent);
-    qreal X = m_mpi.dac()->value();
-    points.push_back({0, X, task});
+    const qreal X = m_mpi.dac()->value();
 
-    for (quint8 i = 0; i < m_mpi.sensorCount(); ++i) {
-        points.push_back({static_cast<quint8>(i + 1), X, m_mpi[i]->value()});
+    if (auto* linear = m_mpi.sensorByAdc(0)) {
+        const qreal task = linear->valueFromPercent(percent);
+
+        // series 0 = задание
+        points.push_back({0, X, task});
+
+        // series 1 = линейный датчик
+        points.push_back({1, X, linear->value()});
     }
+
+    // series 2 = давление 1 (adc1)
+    if (auto* p1 = m_mpi.sensorByAdc(1))
+        points.push_back({2, X, p1->value()});
+
+    // series 3 = давление 2 (adc2)
+    if (auto* p2 = m_mpi.sensorByAdc(2))
+        points.push_back({3, X, p2->value()});
+
+    // series 4 = давление 3 (adc3)
+    if (auto* p3 = m_mpi.sensorByAdc(3))
+        points.push_back({4, X, p3->value()});
 
     emit addPoints(Charts::Task, points);
 
-    points.clear();
-    points.push_back({0, m_mpi[1]->value(), m_mpi[0]->value()});
-
-    emit addPoints(Charts::Pressure, points);
+    // График "Перемещение от давления" строим только если есть linear + pressure1
+    if (auto* linear = m_mpi.sensorByAdc(0)) {
+        if (auto* p1 = m_mpi.sensorByAdc(1)) {
+            QVector<Point> pressurePoints;
+            pressurePoints.push_back({0, p1->value(), linear->value()});
+            emit addPoints(Charts::Pressure, pressurePoints);
+        }
+    }
 }
 
 void Program::addFriction(const QVector<QPointF> &points)

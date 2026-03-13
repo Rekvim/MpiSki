@@ -1,5 +1,6 @@
 #include "ObjectWindow.h"
 #include "ui_ObjectWindow.h"
+#include <QDesktopServices>
 
 ObjectWindow::ObjectWindow(QWidget *parent)
     : QDialog(parent)
@@ -20,7 +21,8 @@ ObjectWindow::ObjectWindow(QWidget *parent)
     ui->lineEdit_manufactory->setValidator(validator);
     ui->lineEdit_department->setValidator(validator);
 
-    connect(ui->pushButton, &QPushButton::clicked, this, &ObjectWindow::ButtonClick);
+    connect(ui->pushButton, &QPushButton::clicked,
+            this, &ObjectWindow::ButtonClick);
 }
 
 void ObjectWindow::LoadFromReg(Registry *registry)

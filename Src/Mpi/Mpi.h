@@ -27,7 +27,6 @@ public:
 
     void setDacRaw(quint16 value);
     void setDacValue(qreal value);
-
     quint16 dacMin();
     quint16 dacMax();
 
@@ -36,6 +35,7 @@ public:
     Sensor* operator[](quint8 n);
 
     Sensor* dac() const;
+    Sensor* sensorByAdc(quint8 adc) const;
 
     void setDiscreteOutput(quint8 index, bool state);
 
@@ -65,6 +65,7 @@ signals:
 
 private:
     std::array<Sensor*, 6> m_sensorByAdc { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+
 
     UartReader *m_uartReader;
     QThread *m_uartThread;

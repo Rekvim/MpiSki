@@ -132,6 +132,75 @@ ValveWindow::ValveWindow(QWidget *parent)
 
     ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
     diameterChanged(m_diameter[0]);
+
+    loadLinearRange();
+
+    ui->lineEdit_linearMin->setValidator(
+        ValidatorFactory::create(ValidatorFactory::Type::DigitsDot, this));
+
+    ui->lineEdit_linearMax->setValidator(
+        ValidatorFactory::create(ValidatorFactory::Type::DigitsDot, this));
+
+    connect(ui->comboBox_materialStuffingBoxSeal, &QComboBox::currentTextChanged,
+            this, [this](const QString&) {
+                applyFrictionLimitsFromStuffingBoxSeal();
+            });
+}
+
+void ValveWindow::applyFrictionLimitsFromStuffingBoxSeal()
+{
+    const QString seal = ui->comboBox_materialStuffingBoxSeal->currentText().trimmed();
+
+    double lo = 0.0;
+    double hi = 0.0;
+    bool known = true;
+
+    if (seal == "PTFE") {
+        lo = 1.0;
+        hi = 9.0;
+    } else if (seal == "Graphite") {
+        lo = 8.0;
+        hi = 15.0;
+    } else {
+        known = false;
+    }
+
+    if (!known)
+        return;
+
+    ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit
+        ->setText(QString::number(lo, 'f', 2));
+
+    ui->lineEdit_crossingLimits_coefficientFriction_upperLimit
+        ->setText(QString::number(hi, 'f', 2));
+}
+
+void ValveWindow::loadLinearRange()
+{
+    QString path = QCoreApplication::applicationDirPath() + "/settings.ini";
+
+    QSettings settings(path, QSettings::IniFormat);
+
+    double min = settings.value("Sensors/Linear/min", 0).toDouble();
+    double max = settings.value("Sensors/Linear/max", 50).toDouble();
+
+    ui->lineEdit_linearMin->setText(QString::number(min));
+    ui->lineEdit_linearMax->setText(QString::number(max));
+}
+
+void ValveWindow::saveLinearRange()
+{
+    QString path = QCoreApplication::applicationDirPath() + "/settings.ini";
+
+    QSettings settings(path, QSettings::IniFormat);
+
+    settings.setValue(
+        "Sensors/Linear/min",
+        ui->lineEdit_linearMin->text().toDouble());
+
+    settings.setValue(
+        "Sensors/Linear/max",
+        ui->lineEdit_linearMax->text().toDouble());
 }
 
 void ValveWindow::setPatternType(SelectTests::PatternType pattern)
@@ -459,6 +528,18 @@ void ValveWindow::diameterChanged(const QString &text)
 
 void ValveWindow::on_pushButton_netWindow_clicked()
 {
+    saveLinearRange();
+
+    double min = ui->lineEdit_linearMin->text().toDouble();
+    double max = ui->lineEdit_linearMax->text().toDouble();
+
+    if (min >= max) {
+        QMessageBox::warning(this,
+                             tr("Ошибка"),
+                             tr("Минимальное значение должно быть меньше максимального"));
+        return;
+    }
+
     if (ui->lineEdit_positionNumber->text().isEmpty()) {
         QMessageBox::warning(this, 
             tr("Ошибка"),

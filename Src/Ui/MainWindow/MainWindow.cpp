@@ -310,6 +310,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::setSensorNumber,
             this, &MainWindow::setSensorsNumber);
 
+    connect(m_program, &Program::setSensorsMask,
+            this, &MainWindow::setSensorsMask);
+
     connect(m_program, &Program::setButtonInitEnabled,
             this, &MainWindow::setButtonInitEnabled);
 
@@ -477,11 +480,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::lockTabsForPreInit()
 {
-    // ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget_main->setTabEnabled(1, false);
-    // ui->tabWidget_main->setTabEnabled(2, false);
-    // ui->tabWidget_main->setTabEnabled(3, false);
-    // ui->tabWidget_main->setTabEnabled(4, false);
+    ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
+    ui->tabWidget_main->setTabEnabled(1, false);
+    ui->tabWidget_main->setTabEnabled(2, false);
+    ui->tabWidget_main->setTabEnabled(3, false);
+    ui->tabWidget_main->setTabEnabled(4, false);
 }
 
 QTabWidget* MainWindow::currentInnerTabWidget() const
@@ -1091,7 +1094,7 @@ void MainWindow::displayDependingPattern() {
 
 void MainWindow::setSensorsNumber(quint8 sensorCount)
 {
-    bool hasSensors = (sensorCount > 0);
+    const bool hasSensors = (sensorCount > 0);
 
     if (hasSensors) {
         m_isInitialized = true;
@@ -1110,22 +1113,6 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
     ui->verticalSlider_task->setEnabled(hasSensors);
 
     displayDependingPattern();
-
-    if (hasSensors) {
-        ui->checkBox_showCurve_task->setVisible(sensorCount > 1);
-        ui->checkBox_showCurve_moving->setVisible(sensorCount > 1);
-        ui->checkBox_showCurve_pressure_1->setVisible(sensorCount > 1);
-        ui->checkBox_showCurve_pressure_2->setVisible(sensorCount > 2);
-        ui->checkBox_showCurve_pressure_3->setVisible(sensorCount > 3);
-
-        ui->checkBox_showCurve_task->setCheckState(sensorCount > 1 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_moving->setCheckState(sensorCount > 1 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_pressure_1->setCheckState(sensorCount > 1 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_pressure_2->setCheckState(sensorCount > 2 ? Qt::Checked : Qt::Unchecked);
-        ui->checkBox_showCurve_pressure_3->setCheckState(sensorCount > 3 ? Qt::Checked : Qt::Unchecked);
-
-        syncTaskChartSeriesVisibility(sensorCount);
-    }
 }
 void MainWindow::setButtonInitEnabled(bool enable)
 {
@@ -1592,17 +1579,45 @@ void MainWindow::setDiCheckboxesChecked(quint8 bitmask)
     ui->checkBox_switch_0_3->setChecked((bitmask & (1 << 1)) != 0);
 }
 
-void MainWindow::syncTaskChartSeriesVisibility(quint8 sensorCount)
+void MainWindow::setSensorsMask(quint8 mask)
+{
+    const bool hasLinear = mask & (1 << 0);
+    const bool hasP1     = mask & (1 << 1);
+    const bool hasP2     = mask & (1 << 2);
+    const bool hasP3     = mask & (1 << 3);
+
+    ui->checkBox_showCurve_task->setVisible(hasLinear);
+    ui->checkBox_showCurve_moving->setVisible(hasLinear);
+
+    ui->checkBox_showCurve_pressure_1->setVisible(hasP1);
+    ui->checkBox_showCurve_pressure_2->setVisible(hasP2);
+    ui->checkBox_showCurve_pressure_3->setVisible(hasP3);
+
+    ui->checkBox_showCurve_task->setChecked(hasLinear);
+    ui->checkBox_showCurve_moving->setChecked(hasLinear);
+    ui->checkBox_showCurve_pressure_1->setChecked(hasP1);
+    ui->checkBox_showCurve_pressure_2->setChecked(hasP2);
+    ui->checkBox_showCurve_pressure_3->setChecked(hasP3);
+
+    syncTaskChartSeriesVisibility(mask);
+}
+
+void MainWindow::syncTaskChartSeriesVisibility(quint8 mask)
 {
     auto *ch = m_charts.value(Charts::Task, nullptr);
     if (!ch) return;
 
-    ch->visible(0, sensorCount > 1 && ui->checkBox_showCurve_task->isChecked());
-    ch->visible(1, sensorCount > 1 && ui->checkBox_showCurve_moving->isChecked());
+    const bool hasLinear = mask & (1 << 0);
+    const bool hasP1     = mask & (1 << 1);
+    const bool hasP2     = mask & (1 << 2);
+    const bool hasP3     = mask & (1 << 3);
 
-    ch->visible(2, sensorCount > 1 && ui->checkBox_showCurve_pressure_1->isChecked());
-    ch->visible(3, sensorCount > 2 && ui->checkBox_showCurve_pressure_2->isChecked());
-    ch->visible(4, sensorCount > 3 && ui->checkBox_showCurve_pressure_3->isChecked());
+    ch->visible(0, hasLinear && ui->checkBox_showCurve_task->isChecked());
+    ch->visible(1, hasLinear && ui->checkBox_showCurve_moving->isChecked());
+
+    ch->visible(2, hasP1 && ui->checkBox_showCurve_pressure_1->isChecked());
+    ch->visible(3, hasP2 && ui->checkBox_showCurve_pressure_2->isChecked());
+    ch->visible(4, hasP3 && ui->checkBox_showCurve_pressure_3->isChecked());
 }
 
 void MainWindow::initCharts()
@@ -1611,13 +1626,13 @@ void MainWindow::initCharts()
     bool isRotaryStroke = (valveInfo.strokeMovement != 0);
 
     const QString strokeAxisFormat =
-        isRotaryStroke ? QStringLiteral("%1 град")
-                       : QStringLiteral("%1 мм");
+        isRotaryStroke ? QStringLiteral("%.2f deg")
+                       : QStringLiteral("%.2f mm");
 
     m_charts[Charts::Task] = ui->Chart_task;
     m_charts[Charts::Task]->setName(QStringLiteral("Task"));
     m_charts[Charts::Task]->useTimeaxis(false);
-    m_charts[Charts::Task]->addAxis(QStringLiteral("%1 бар"));
+    m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f bar"));
     m_charts[Charts::Task]->addAxis(strokeAxisFormat);
     m_charts[Charts::Task]->addSeries(1, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
@@ -1627,23 +1642,24 @@ void MainWindow::initCharts()
 
     m_charts[Charts::Friction] = ui->Chart_friction;
     m_charts[Charts::Friction]->setName(QStringLiteral("Friction"));
-    m_charts[Charts::Friction]->addAxis(QStringLiteral("%1 Н"));
+    m_charts[Charts::Friction]->addAxis(QStringLiteral("%.2f H"));
     m_charts[Charts::Friction]->addSeries(0, tr("Трение от перемещения"), QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Friction]->setLabelXformat(strokeAxisFormat);
 
     m_charts[Charts::Pressure] = ui->Chart_pressure;
     m_charts[Charts::Pressure]->setName(QStringLiteral("Pressure"));
     m_charts[Charts::Pressure]->useTimeaxis(false);
-    m_charts[Charts::Pressure]->setLabelXformat(QStringLiteral("%1 бар"));
+    m_charts[Charts::Pressure]->setLabelXformat(QStringLiteral("%.2f bar"));
     m_charts[Charts::Pressure]->addAxis(strokeAxisFormat);
     m_charts[Charts::Pressure]->addSeries(0, tr("Перемещение от давления"), QColor::fromRgb(255, 0, 0));
     m_charts[Charts::Pressure]->addSeries(0, tr("Линейная регрессия"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Pressure]->visible(1, false);
 
+
     m_charts[Charts::Resolution] = ui->Chart_resolution;
     m_charts[Charts::Resolution]->setName(QStringLiteral("Resolution"));
     m_charts[Charts::Resolution]->useTimeaxis(true);
-    m_charts[Charts::Resolution]->addAxis(QStringLiteral("%1%"));
+    m_charts[Charts::Resolution]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Resolution]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Resolution]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
 
@@ -1651,7 +1667,7 @@ void MainWindow::initCharts()
     m_charts[Charts::Response] = ui->Chart_response;
     m_charts[Charts::Response]->setName(QStringLiteral("Response"));
     m_charts[Charts::Response]->useTimeaxis(true);
-    m_charts[Charts::Response]->addAxis(QStringLiteral("%1%"));
+    m_charts[Charts::Response]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Response]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Response]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
 
@@ -1659,7 +1675,7 @@ void MainWindow::initCharts()
     m_charts[Charts::Stroke] = ui->Chart_stroke;
     m_charts[Charts::Stroke]->setName(QStringLiteral("Stroke"));
     m_charts[Charts::Stroke]->useTimeaxis(true);
-    m_charts[Charts::Stroke]->addAxis(QStringLiteral("%1%"));
+    m_charts[Charts::Stroke]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Stroke]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Stroke]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
 
@@ -1667,14 +1683,14 @@ void MainWindow::initCharts()
     m_charts[Charts::Step] = ui->Chart_step;
     m_charts[Charts::Step]->setName(QStringLiteral("Step"));
     m_charts[Charts::Step]->useTimeaxis(true);
-    m_charts[Charts::Step]->addAxis(QStringLiteral("%1%"));
+    m_charts[Charts::Step]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Step]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Step]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
 
 
     m_charts[Charts::Trend] = ui->Chart_trend;
     m_charts[Charts::Trend]->useTimeaxis(true);
-    m_charts[Charts::Trend]->addAxis(QStringLiteral("%1%"));
+    m_charts[Charts::Trend]->addAxis(QStringLiteral("%.2f%%"));
 
     m_charts[Charts::Trend]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Trend]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
@@ -1683,10 +1699,10 @@ void MainWindow::initCharts()
     m_charts[Charts::Cyclic] = ui->Chart_cyclicTests;
     m_charts[Charts::Cyclic]->setName(QStringLiteral("Cyclic"));
     m_charts[Charts::Cyclic]->useTimeaxis(true);
-    m_charts[Charts::Cyclic]->addAxis(QStringLiteral("%1%"));
+    m_charts[Charts::Cyclic]->addAxis(QStringLiteral("%.2f%%"));
     m_charts[Charts::Cyclic]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-    // m_charts[Charts::Cyclic]->setMaxRange(80000);
+    m_charts[Charts::Cyclic]->setMaxRange(180000);
 
     if (m_patternType == SelectTests::Pattern_C_SOVT ||
         m_patternType == SelectTests::Pattern_B_SACVT ||
@@ -1721,33 +1737,33 @@ void MainWindow::initCharts()
 
     connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-        m_charts[Charts::Task]->visible(0, state != 0);
-    });
+                m_charts[Charts::Task]->visible(0, state != 0);
+            });
 
     connect(ui->checkBox_showCurve_moving, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-        m_charts[Charts::Task]->visible(1, state != 0);
-    });
+                m_charts[Charts::Task]->visible(1, state != 0);
+            });
 
     connect(ui->checkBox_showCurve_pressure_1, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-        m_charts[Charts::Task]->visible(2, state != 0);
-    });
+                m_charts[Charts::Task]->visible(2, state != 0);
+            });
 
     connect(ui->checkBox_showCurve_pressure_2, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-        m_charts[Charts::Task]->visible(3, state != 0);
-    });
+                m_charts[Charts::Task]->visible(3, state != 0);
+            });
 
     connect(ui->checkBox_showCurve_pressure_3, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-        m_charts[Charts::Task]->visible(4, state != 0);
-    });
+                m_charts[Charts::Task]->visible(4, state != 0);
+            });
 
     connect(ui->checkBox_regression, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-        m_charts[Charts::Pressure]->visible(1, state != 0);
-    });
+                m_charts[Charts::Pressure]->visible(1, state != 0);
+            });
 
     connect(m_program, &Program::getPoints_strokeTest,
             this, &MainWindow::onStrokeTestPointsRequested,
