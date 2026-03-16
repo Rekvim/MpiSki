@@ -10,6 +10,9 @@ void Registry::loadObjectInfo()
     m_objectInfo.department = m_settings.value("department").toString();
     m_objectInfo.FIO = m_settings.value("FIO").toString();
 
+    m_sensorColors.task =
+        m_settings.value("colors/task", "#000000").toString();
+
     m_sensorColors.linear =
         m_settings.value("colors/linear", "#ff0000").toString();
 
@@ -181,10 +184,7 @@ void Registry::saveValveInfo()
     m_settings.setValue("crossing_springUpperLimit",
                         m_valveInfo.crossingLimits.springUpperLimit);
 
-    m_settings.setValue("colors/linear", m_sensorColors.linear);
-    m_settings.setValue("colors/pressure1", m_sensorColors.pressure1);
-    m_settings.setValue("colors/pressure2", m_sensorColors.pressure2);
-    m_settings.setValue("colors/pressure3", m_sensorColors.pressure3);
+
 
     m_settings.endGroup();
     m_settings.endGroup();

@@ -41,10 +41,6 @@ private:
     void loadLinearRange();
     void saveLinearRange();
 
-    void chooseColor(QString& storage);
-    void updateColorButtons();
-
-
     const QString kManualInput = tr("Ручной ввод");
     QList<QString> m_diameter = {QStringLiteral("50.0"), QStringLiteral("86.0"), QStringLiteral("108.0"), QStringLiteral("125.0")};
 

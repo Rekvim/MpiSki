@@ -26,6 +26,7 @@ struct CrossingLimits {
 
 struct SensorColors
 {
+    QString task;
     QString linear;
     QString pressure1;
     QString pressure2;

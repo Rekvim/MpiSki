@@ -9,7 +9,6 @@
 #include <QColorDialog>
 
 namespace {
-
 double toDouble(QString s, bool* okOut = nullptr)
 {
     s = s.trimmed();
@@ -146,37 +145,6 @@ ValveWindow::ValveWindow(QWidget *parent)
             this, [this](const QString&) {
                 applyFrictionLimitsFromStuffingBoxSeal();
             });
-}
-
-void ValveWindow::chooseColor(QString& storage)
-{
-    QColor initial(storage);
-
-    QColor color = QColorDialog::getColor(initial, this);
-
-    if (!color.isValid())
-        return;
-
-    storage = color.name();
-
-    updateColorButtons();
-}
-
-void ValveWindow::updateColorButtons()
-{
-    const auto& c = m_registry->sensorColors();
-
-    ui->widget_linearColor->setStyleSheet(
-        QString("background-color:%1").arg(c.linear));
-
-    ui->widget_pressure1Color->setStyleSheet(
-        QString("background-color:%1").arg(c.pressure1));
-
-    ui->widget_pressure2Color->setStyleSheet(
-        QString("background-color:%1").arg(c.pressure2));
-
-    ui->widget_pressure3Color->setStyleSheet(
-        QString("background-color:%1").arg(c.pressure3));
 }
 
 void ValveWindow::applyFrictionLimitsFromStuffingBoxSeal()
@@ -318,8 +286,6 @@ void ValveWindow::setRegistry(Registry *registry)
 
     m_registry->loadObjectInfo();
 
-    updateColorButtons();
-
     ui->comboBox_positionNumber->clear();
     ui->comboBox_positionNumber->addItems(m_registry->positions());
     ui->comboBox_positionNumber->addItem(kManualInput);
@@ -339,28 +305,6 @@ void ValveWindow::setRegistry(Registry *registry)
 
     connect(ui->comboBox_positionNumber, &QComboBox::currentTextChanged,
         this, &ValveWindow::positionChanged);
-
-    auto& colors = m_registry->sensorColors();
-
-    connect(ui->pushButton_linearColor, &QPushButton::clicked, this, [this]{
-        auto& colors = m_registry->sensorColors();
-        chooseColor(colors.linear);
-    });
-
-    connect(ui->pushButton_pressure1Color, &QPushButton::clicked, this, [this]{
-        auto& colors = m_registry->sensorColors();
-        chooseColor(colors.pressure1);
-    });
-
-    connect(ui->pushButton_pressure2Color, &QPushButton::clicked, this, [this]{
-        auto& colors = m_registry->sensorColors();
-        chooseColor(colors.pressure2);
-    });
-
-    connect(ui->pushButton_pressure3Color, &QPushButton::clicked, this, [this]{
-        auto& colors = m_registry->sensorColors();
-        chooseColor(colors.pressure3);
-    });
 }
 
 void ValveWindow::saveValveInfo()
