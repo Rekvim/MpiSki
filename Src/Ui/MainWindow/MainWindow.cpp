@@ -1582,9 +1582,9 @@ void MainWindow::setDiCheckboxesChecked(quint8 bitmask)
 void MainWindow::setSensorsMask(quint8 mask)
 {
     const bool hasLinear = mask & (1 << 0);
-    const bool hasP1     = mask & (1 << 1);
-    const bool hasP2     = mask & (1 << 2);
-    const bool hasP3     = mask & (1 << 3);
+    const bool hasP1 = mask & (1 << 1);
+    const bool hasP2 = mask & (1 << 2);
+    const bool hasP3 = mask & (1 << 3);
 
     ui->checkBox_showCurve_task->setVisible(hasLinear);
     ui->checkBox_showCurve_moving->setVisible(hasLinear);
@@ -1608,9 +1608,9 @@ void MainWindow::syncTaskChartSeriesVisibility(quint8 mask)
     if (!ch) return;
 
     const bool hasLinear = mask & (1 << 0);
-    const bool hasP1     = mask & (1 << 1);
-    const bool hasP2     = mask & (1 << 2);
-    const bool hasP3     = mask & (1 << 3);
+    const bool hasP1 = mask & (1 << 1);
+    const bool hasP2 = mask & (1 << 2);
+    const bool hasP3 = mask & (1 << 3);
 
     ch->visible(0, hasLinear && ui->checkBox_showCurve_task->isChecked());
     ch->visible(1, hasLinear && ui->checkBox_showCurve_moving->isChecked());
@@ -1652,7 +1652,7 @@ void MainWindow::initCharts()
 
     m_charts[Charts::Friction] = ui->Chart_friction;
     m_charts[Charts::Friction]->setName(QStringLiteral("Friction"));
-    m_charts[Charts::Friction]->addAxis(QStringLiteral("%.2f H"));
+    m_charts[Charts::Friction]->addAxis(QStringLiteral("%.2f N"));
     m_charts[Charts::Friction]->addSeries(0, tr("Трение от перемещения"), linearColor);
     m_charts[Charts::Friction]->setLabelXformat(strokeAxisFormat);
 
@@ -1718,7 +1718,7 @@ void MainWindow::initCharts()
     m_charts[Charts::Cyclic]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
     m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
     // m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Cyclic]->setMaxRange(180000);
+    m_charts[Charts::Cyclic]->setMaxRange(240000);
 
     if (m_patternType == SelectTests::Pattern_C_SOVT ||
         m_patternType == SelectTests::Pattern_B_SACVT ||
