@@ -9,7 +9,6 @@ constexpr quint16 kDacMaxRaw = (1u << 16) - 1;
 // ADC word packing: [adcIndex:4 bits][raw:12 bits]
 constexpr quint8  kAdcShift = 12; // raw занимает младшие 12 бит, индекс в старших
 constexpr quint16 kAdcRawMask = 0x0FFF; // маска для выделения 12-бит raw
-
 // Каналы
 constexpr quint8  kAll6Channels = 0x3F; // включить 6 каналов
 
@@ -207,51 +206,27 @@ bool Mpi::initialize()
 
         const qreal adcCur = mpiSettings.GetAdc(adcNum);
 
-        switch (adcNum) {
-        case 0: {
-            const auto s = mpiSettings.GetSensor(0); // Linear
-            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
+        constexpr qreal kAdcScale = 16.0 * kAdcRawMask;
+
+        if (adcNum <= 3)
+        {
+            const auto s = mpiSettings.GetSensor(adcNum);
+
+            const qreal k = ((s.max - s.min) * adcCur) / kAdcScale;
             const qreal b = (5.0 * s.min - s.max) / 4.0;
-            sensor->setCoefficients(k, b);
-            sensor->setUnit("мм");
-            break;
-        }
-        case 1: {
-            const auto s = mpiSettings.GetSensor(1); // Pressure1
-            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
-            const qreal b = (5.0 * s.min - s.max) / 4.0;
-            sensor->setCoefficients(k, b);
-            sensor->setUnit("bar");
-            break;
-        }
-        case 2: {
-            const auto s = mpiSettings.GetSensor(2); // Pressure2
-            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
-            const qreal b = (5.0 * s.min - s.max) / 4.0;
-            sensor->setCoefficients(k, b);
-            sensor->setUnit("bar");
-            break;
-        }
-        case 3: {
-            const auto s = mpiSettings.GetSensor(3); // Pressure3
-            const qreal k = ((s.max - s.min) * adcCur) / (16.0 * 0x0FFF);
-            const qreal b = (5.0 * s.min - s.max) / 4.0;
-            sensor->setCoefficients(k, b);
-            sensor->setUnit("bar");
-            break;
-        }
-        case 4: {
-            const qreal k = adcCur / 4095.0;
-            const qreal b = 0.0;
 
             sensor->setCoefficients(k, b);
-            sensor->setUnit("mA");
-            break;
+            sensor->setUnit(adcNum == 0 ? "мм" : "bar");
         }
-        default:
+        else if (adcNum == 4)
+        {
+            sensor->setCoefficients(adcCur / kAdcRawMask, 0.0);
+            sensor->setUnit("mA");
+        }
+        else
+        {
             sensor->setCoefficients(1.0, 0.0);
             sensor->setUnit("");
-            break;
         }
 
         ++sensorNum;
