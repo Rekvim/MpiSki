@@ -19,9 +19,13 @@ INCLUDEPATH += $$PWD/Src/CustomChart
 
 SOURCES += \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
+    Src/Storage/AppSettings.cpp \
+    Src/Ui/Setup/ValveWindow/Logic.cpp \
+    Src/Ui/Setup/ValveWindow/Mapper.cpp \
+    Src/Utils/Number.cpp \
     main.cpp \
     Src/Ui/Setup/ObjectWindow.cpp \
-    Src/Ui/Setup/ValveWindow.cpp \
+    Src/Ui/Setup/ValveWindow/ValveWindow.cpp \
     Src/Ui/Setup/SelectTests.cpp \
     Src/Ui/MainWindow/MainWindow.cpp \
     Src/Ui/TestSettings/CyclicTestSettings.cpp \
@@ -63,7 +67,7 @@ SOURCES += \
     Src/Uart/UartReader.cpp \
     Src/ValidatorFactory/ValidatorFactory.cpp \
     Program.cpp \
-    Registry.cpp \
+    Src/Storage/Registry.cpp \
     Sensor.cpp
 
 HEADERS += \
@@ -76,9 +80,14 @@ HEADERS += \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.h \
     Src/ReportBuilders/ReportBlocks/ValveSpecBlock.h \
     Src/ReportBuilders/ReportWriter.h \
+    Src/Storage/AppSettings.h \
+    Src/Storage/SettingsGroup.h \
     Src/Ui/Setup/ObjectWindow.h \
-    Src/Ui/Setup/ValveWindow.h \
+    Src/Ui/Setup/ValveWindow/Logic.h \
+    Src/Ui/Setup/ValveWindow/ValveEnums.h \
+    Src/Ui/Setup/ValveWindow/ValveWindow.h \
     Src/Ui/Setup/SelectTests.h \
+    Src/Ui/Setup/ValveWindow/Mapper.h \
     Src/Ui/TestSettings/AbstractTestSettings.h \
     Src/Ui/TestSettings/CyclicTestSettings.h \
     Src/Ui/TestSettings/ITestSettings.h \
@@ -87,7 +96,7 @@ HEADERS += \
     Src/Ui/TestSettings/MainTestSettings.h \
     Src/Ui/MainWindow/MainWindow.h \
     Program.h \
-    Registry.h \
+    Src/Storage/Registry.h \
     Sensor.h \
     Src/CustomChart/MyChart.h \
     Src/CustomChart/MySeries.h \
@@ -124,13 +133,14 @@ HEADERS += \
     Src/Uart/Uart.h \
     Src/Uart/UartMessage.h \
     Src/Uart/UartReader.h \
+    Src/Utils/Number.h \
     Src/ValidatorFactory/RegexPatterns.h \
     Src/ValidatorFactory/ValidatorFactory.h
 
 FORMS += \
     Src/Ui/Setup/ObjectWindow.ui \
     Src/Ui/Setup/SelectTests.ui \
-    Src/Ui/Setup/ValveWindow.ui \
+    Src/Ui/Setup/ValveWindow/ValveWindow.ui \
     Src/Ui/MainWindow/MainWindow.ui \
     Src/Ui/TestSettings/CyclicTestSettings.ui \
     Src/Ui/TestSettings/MainTestSettings.ui \

@@ -39,7 +39,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_data">
       <property name="sizePolicy">
@@ -1287,7 +1287,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_strokValve">
+           <widget class="QLineEdit" name="lineEdit_valveStroke">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -2222,7 +2222,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_lowerLimit">
+                <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_lower">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2264,7 +2264,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_upperLimit">
+                <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_upper">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2368,7 +2368,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit">
+                <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2460,7 +2460,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit">
+                <widget class="QLineEdit" name="lineEdit_crossingLimits_valveStroke">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2552,7 +2552,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_lowerLimit">
+                <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_lower">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2594,7 +2594,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_upperLimit">
+                <widget class="QLineEdit" name="lineEdit_crossingLimits_spring_upper">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>

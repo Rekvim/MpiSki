@@ -10,7 +10,7 @@ RunnerConfig StrokeTestRunner::buildConfig()
     const auto& valveInfo = owner->registry()->valveInfo();
 
     StrokeTest::Config cfg;
-    cfg.normalClosed = (valveInfo.safePosition == 0);
+    cfg.normalClosed = (valveInfo.safePosition == SafePosition::NormallyClosed);
 
     worker->setConfig(cfg);
 

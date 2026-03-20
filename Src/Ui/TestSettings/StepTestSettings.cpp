@@ -1,6 +1,7 @@
 #include <QInputDialog>
 #include "StepTestSettings.h"
 #include "ui_StepTestSettings.h"
+#include "./Src/Ui/Setup/ValveWindow/ValveEnums.h"
 
 StepTestSettings::StepTestSettings(QWidget* parent)
     : AbstractTestSettings(parent)
@@ -52,7 +53,7 @@ StepTestSettings::TestParameters StepTestSettings::getParameters()
 
 void StepTestSettings::applyValveInfo(const ValveInfo& info)
 {
-    if (info.safePosition != 0)
+    if (info.safePosition == SafePosition::NormallyOpen)
         reverseSequence();
 }
 

@@ -24,7 +24,7 @@ RunnerConfig CyclicRegulatoryRunner::buildConfig()
         return {};
     }
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition != 0);
+    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
     const auto raw = makeRawValues(p.regSeqValues, m_mpi, normalOpen);
 
     CyclicTestsRegulatory::Task task;

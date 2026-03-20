@@ -168,7 +168,7 @@ void Program::updateSensors()
     const auto& v = m_registry->valveInfo();
     qreal percent = calcPercent(
         m_mpi.dac()->value(),
-        v.safePosition != 0
+        v.safePosition == SafePosition::NormallyOpen
         );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_initTime;
@@ -234,7 +234,7 @@ void Program::initialization()
     }
 
     const auto& valveInfo = m_registry->valveInfo();
-    bool normalClosed = (valveInfo.safePosition == 0);
+    bool normalClosed = (valveInfo.safePosition == SafePosition::NormallyOpen);
 
     // Измерение начального и конечного положения соленоида
     if (m_patternType == SelectTests::Pattern_B_SACVT ||
@@ -433,7 +433,7 @@ void Program::calculateAndApplyCoefficients()
 
     qreal coeff = 1.0;
 
-    if (valveInfo.strokeMovement != 0) {
+    if (valveInfo.strokeMovement == StrokeMovement::Rotary) {
         coeff = qRadiansToDegrees(2.0 / valveInfo.diameterPulley);
         m_mpi[0]->setUnit("°");
     }
@@ -513,28 +513,28 @@ void Program::updateCrossingStatus()
     if (limits.frictionEnabled) {
         ts.crossingStatus.frictionPercent =
             inRange(ts.mainTestRecord.frictionPercent,
-                    limits.frictionCoefLowerLimit,
-                    limits.frictionCoefUpperLimit)
+                    limits.frictionCoefLower,
+                    limits.frictionCoefUpper)
                 ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.frictionPercent = State::Unknown;
     }
 
-    if (limits.rangeEnabled) {
+    if (limits.valveStrokeEnabled) {
         bool ok = false;
-        const double recStroke = toDouble(valveInfo.strokValve, &ok);
+        const double recStroke = toDouble(valveInfo.valveStroke, &ok);
         if (ok) {
-            const double d = std::abs(recStroke) * (limits.rangeUpperLimit / 100.0); // rangeUpperLimit как %
+            const double d = std::abs(recStroke) * (limits.valveStroke / 100.0); // rangeUpperLimit как %
             const double lo = recStroke - d;
             const double hi = recStroke + d;
 
-            ts.crossingStatus.range =
+            ts.crossingStatus.valveStroke =
                 inRange(ts.valveStrokeRecord.real, lo, hi) ? State::Ok : State::Fail;
         } else {
-            ts.crossingStatus.range = State::Unknown;
+            ts.crossingStatus.valveStroke = State::Unknown;
         }
     } else {
-        ts.crossingStatus.range = State::Unknown;
+        ts.crossingStatus.valveStroke = State::Unknown;
     }
 
     if (limits.dynamicErrorEnabled) {
@@ -554,8 +554,8 @@ void Program::updateCrossingStatus()
         if (recLow > recHigh)
             std::swap(recLow, recHigh);
 
-        const double lowD  = std::abs(recLow) * (limits.springLowerLimit / 100.0);
-        const double highD = std::abs(recHigh) * (limits.springUpperLimit / 100.0);
+        const double lowD  = std::abs(recLow) * (limits.springLower / 100.0);
+        const double highD = std::abs(recHigh) * (limits.springUpper / 100.0);
 
         const double lowLo = recLow - lowD;
         const double lowHi = recLow + lowD;
@@ -576,7 +576,7 @@ void Program::updateCrossingStatus()
     // --- linearCharacteristic ---
     if (limits.linearCharacteristicEnabled) {
         ts.crossingStatus.linearCharacteristic =
-            inRange(ts.mainTestRecord.linearityError, 0.0, limits.linearCharacteristicLowerLimit)
+            inRange(ts.mainTestRecord.linearityError, 0.0, limits.linearCharacteristic)
                 ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.linearCharacteristic = State::Unknown;
@@ -621,7 +621,7 @@ void Program::updateCharts_mainTest()
     const auto& v = m_registry->valveInfo();
     const qreal percent = calcPercent(
         m_mpi.dac()->value(),
-        v.safePosition != 0
+        v.safePosition == SafePosition::NormallyOpen
         );
 
     const qreal X = m_mpi.dac()->value();
@@ -713,7 +713,7 @@ void Program::updateCharts_strokeTest()
     const auto& v = m_registry->valveInfo();
     qreal percent = calcPercent(
         m_mpi.dac()->value(),
-        v.safePosition != 0
+        v.safePosition == SafePosition::NormallyOpen
         );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
@@ -731,7 +731,7 @@ void Program::updateCharts_CyclicTest(Charts chart)
     const auto& v = m_registry->valveInfo();
     qreal percent = calcPercent(
         m_mpi.dac()->value(),
-        v.safePosition != 0
+        v.safePosition == SafePosition::NormallyOpen
         );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;
@@ -1055,7 +1055,7 @@ void Program::updateCharts_optionTest(Charts chart)
     const auto& v = m_registry->valveInfo();
     qreal percent = calcPercent(
         m_mpi.dac()->value(),
-        v.safePosition != 0
+        v.safePosition == SafePosition::NormallyOpen
     );
 
     quint64 time = QDateTime::currentMSecsSinceEpoch() - m_startTime;

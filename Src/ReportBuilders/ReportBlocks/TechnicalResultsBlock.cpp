@@ -1,4 +1,6 @@
 #include "TechnicalResultsBlock.h"
+#include "./Src/Ui/Setup/ValveWindow/ValveEnums.h"
+
 
 static QString f2(qreal v) { return QString::number(v, 'f', 2); }
 static QString f3(qreal v) { return QString::number(v, 'f', 3); }
@@ -47,11 +49,11 @@ void TechnicalResultsBlock::build(ReportWriter& w,
 
     // stroke
     w.cell(m.sheet, r1, m.colFact, f2(t.valveStrokeRecord.real));
-    w.cell(m.sheet, r1, m.colNorm, v.strokValve);
-    w.cell(m.sheet, r1, m.colResult, resultOk(t.crossingStatus.range));
+    w.cell(m.sheet, r1, m.colNorm, v.valveStroke);
+    w.cell(m.sheet, r1, m.colResult, resultOk(t.crossingStatus.valveStroke));
 
     // spring
-    const bool driveDD2 = (v.driveType == 2);
+    const bool driveDD2 = (v.driveType == DriveType::DoubleActing);
     if (driveDD2) {
         w.cell(m.sheet, r2, m.colResult, "Привод ДД");
     } else {

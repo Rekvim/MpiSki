@@ -2,7 +2,7 @@
 
 #include "ReportSaver.h"
 #include "./Src/Telemetry/TelemetryStore.h"
-#include "./Registry.h"
+#include "./Src/Storage/Registry.h"
 
 struct ReportContext {
     const TelemetryStore& telemetry;

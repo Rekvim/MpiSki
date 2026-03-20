@@ -1,6 +1,6 @@
 #include "OptionResponseRunner.h"
 #include "./Program.h"
-#include "./Registry.h"
+#include "./Src/Storage/Registry.h"
 #include "./Src/Tests/OptionTest.h"
 
 RunnerConfig OptionResponseRunner::buildConfig()
@@ -14,7 +14,7 @@ RunnerConfig OptionResponseRunner::buildConfig()
     OptionTest::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition != 0);
+    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
 
     task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
 

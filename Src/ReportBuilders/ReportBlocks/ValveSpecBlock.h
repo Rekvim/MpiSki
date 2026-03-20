@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IReportBlock.h"
-
+#include "./Src/Ui/Setup/ValveWindow/ValveEnums.h"
 struct ValveSpecLayout {
     QString sheet;
     quint16 rowStart;
@@ -43,7 +43,7 @@ public:
         writer.cell(m_layout.sheet, row++, m_layout.column, valve.driveModel);
         writer.cell(m_layout.sheet, row++, m_layout.column, params.strokeMovement);
         writer.cell(m_layout.sheet, row++, m_layout.column,
-                    valve.materialStuffingBoxSeal);
+                        ValveEnums::StuffingBoxSealToString(valve.materialStuffingBoxSeal));
     }
 
 private:

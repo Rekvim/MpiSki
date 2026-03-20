@@ -100,7 +100,7 @@ void MainTest::Process()
     emit AddFriction(frictionPoints);
 
 
-    double y_mean = (regressionLimits.maxY + regressionLimits.minY) / 2.0;
+    qreal y_mean = (regressionLimits.maxY + regressionLimits.minY) / 2.0;
 
     testResults.pressureDiff = qAbs((y_mean - regressionForward.b) / regressionForward.k
                                       - (y_mean - regressionBackward.b) / regressionBackward.k);
@@ -110,7 +110,7 @@ void MainTest::Process()
     testResults.dynamicErrorMean = mean / 2;
     testResults.dynamicErrorMax = max;
 
-    double range = qAbs((regressionLimits.minY - regressionForward.b) / regressionForward.k
+    qreal range = qAbs((regressionLimits.minY - regressionForward.b) / regressionForward.k
                        - (regressionLimits.maxY - regressionForward.b) / regressionForward.k);
 
     testResults.friction = 50.0 * testResults.pressureDiff / range;

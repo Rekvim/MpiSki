@@ -12,7 +12,7 @@
 #include "./Src/Ui/TestSettings/StepTestSettings.h"
 #include "./Src/Ui/TestSettings/CyclicTestSettings.h"
 
-#include "Registry.h"
+#include "./Src/Storage/Registry.h"
 #include "./Src/Telemetry/TelemetryStore.h"
 #include "./Src/Runners/AbstractTestRunner.h"
 

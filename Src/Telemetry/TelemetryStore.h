@@ -4,8 +4,6 @@
 #include <QString>
 #include <QColor>
 
-#include <QMetaType>
-
 struct InitState {
     QString deviceStatusText = "";
     QColor deviceStatusColor = QColor();
@@ -70,34 +68,33 @@ struct CrossingStatus {
     };
 
     State frictionPercent = State::Unknown;
-    State range = State::Unknown;
+    State valveStroke = State::Unknown;
     State dynamicError = State::Unknown;
     State spring = State::Unknown;
     State linearCharacteristic = State::Unknown;
 };
 
-
 struct MainTestRecord {
-    double dynamicError_mean = 0.0;
-    double dynamicError_meanPercent = 0.0; // %
+    qreal dynamicError_mean = 0.0;
+    qreal dynamicError_meanPercent = 0.0; // %
 
-    double dynamicError_max = 0.0;   // %
-    double dynamicError_maxPercent = 0.0;   // %
+    qreal dynamicError_max = 0.0;   // %
+    qreal dynamicError_maxPercent = 0.0;   // %
 
-    double dynamicErrorReal = 0.0;   // %
+    qreal dynamicErrorReal = 0.0;   // %
 
-    double lowLimitPressure = 0.0;  // бар
-    double highLimitPressure = 0.0;  // бар
+    qreal lowLimitPressure = 0.0;  // бар
+    qreal highLimitPressure = 0.0;  // бар
 
-    double springLow = 0.0;  // Н
-    double springHigh = 0.0;  // Н
+    qreal springLow = 0.0;  // Н
+    qreal springHigh = 0.0;  // Н
 
-    double pressureDifference = 0.0;  // бар
-    double frictionForce = 0.0;  //
-    double frictionPercent = 0.0;  // %
+    qreal pressureDifference = 0.0;  // бар
+    qreal frictionForce = 0.0;  //
+    qreal frictionPercent = 0.0;  // %
 
-    double linearityError = 0.0;
-    double linearity = 0.0;
+    qreal linearityError = 0.0;
+    qreal linearity = 0.0;
 };
 
 struct ValveStrokeRecord {

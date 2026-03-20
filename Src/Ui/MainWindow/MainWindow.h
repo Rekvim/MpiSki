@@ -11,7 +11,7 @@
 
 #include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
-#include "Registry.h"
+#include "./Src/Storage/Registry.h"
 #include "./Src/Telemetry/TelemetryStore.h"
 #include "./Src/Ui/TestSettings/AbstractTestSettings.h"
 
@@ -20,11 +20,11 @@ namespace Ui { class MainWindow; }
 // QT_END_NAMESPACE
 
 enum class TestState {
-    Idle, // ничего не происходит
-    Starting, // подготовка, диалог параметров
-    Running, // тест выполняется
-    Finished, // успешно завершён
-    Canceled // отменён пользователем
+    Idle,
+    Starting,
+    Running,
+    Finished,
+    Canceled
 };
 
 class MainWindow : public QMainWindow

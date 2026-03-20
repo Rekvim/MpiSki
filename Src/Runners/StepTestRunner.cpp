@@ -1,6 +1,6 @@
 #include "StepTestRunner.h"
 #include "./Program.h"
-#include "./Registry.h"
+#include "./Src/Storage/Registry.h"
 
 static QVector<quint16> buildSequence(const StepTestSettings::TestParameters& p,
                                       Mpi& mpi, bool normalOpen)
@@ -36,7 +36,7 @@ RunnerConfig StepTestRunner::buildConfig() {
     StepTest::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition != 0);
+    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
     task.value = buildSequence(p, m_mpi, normalOpen);
     worker->SetTask(task);
     worker->Set_T_value(p.testValue);

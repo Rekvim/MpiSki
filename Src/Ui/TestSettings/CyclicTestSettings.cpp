@@ -160,7 +160,7 @@ QString CyclicTestSettings::reverseSequenceString(const QString& s)
 
 void CyclicTestSettings::applyValveInfo(const ValveInfo& info)
 {
-    if (info.safePosition == 0)
+    if (info.safePosition == SafePosition::NormallyOpen)
         return;
 
     for (int i = 0; i < ui->listWidget_testRangeRegulatory->count(); ++i) {

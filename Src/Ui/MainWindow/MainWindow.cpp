@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "./Src/CustomChart/MyChart.h"
 #include "ui_MainWindow.h"
-#include "../Setup/ValveWindow.h"
+#include "../Setup/ValveWindow/ValveWindow.h"
 
 #include "Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h"
 #include "Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h"
@@ -591,13 +591,13 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
 {
     const CrossingLimits& limits = valveInfo.crossingLimits;
 
-    if (limits.rangeEnabled) {
+    if (limits.valveStrokeEnabled) {
         bool ok = false;
-        const double stroke = toDouble(valveInfo.strokValve, &ok);
+        const double stroke = toDouble(valveInfo.valveStroke, &ok);
         if (ok) {
             setPlusMinusPercent(ui->lineEdit_crossingLimits_range_lowerLimit,
                                 ui->lineEdit_crossingLimits_range_upperLimit,
-                                stroke, limits.rangeUpperLimit);
+                                stroke, limits.valveStroke);
         }
     }
 
@@ -616,8 +616,8 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
             std::swap(low, high);
 
         // Допуски ВОКРУГ каждого числа отдельно (как было у тебя)
-        const double lowDelta = low * (limits.springLowerLimit / 100.0);
-        const double highDelta = high * (limits.springUpperLimit / 100.0);
+        const double lowDelta = low * (limits.springLower / 100.0);
+        const double highDelta = high * (limits.springUpper / 100.0);
 
         double lowLo = low - lowDelta;
         double lowHi = low + lowDelta;
@@ -653,7 +653,7 @@ void MainWindow::updateCrossingIndicators()
     setIndicatorByState(ui->widget_crossingLimits_linearCharacteristic_limitStatusIndicator,
                         cs.linearCharacteristic);
     setIndicatorByState(ui->widget_crossingLimits_range_limitStatusIndicator,
-                        cs.range);
+                        cs.valveStroke);
     setIndicatorByState(ui->widget_crossingLimits_spring_limitStatusIndicator,
                         cs.spring);
     setIndicatorByState(ui->widget_crossingLimits_dynamicError_limitStatusIndicator,
@@ -938,21 +938,20 @@ void MainWindow::setRegistry(Registry *registry)
     ui->lineEdit_strokeMovement->setText(otherParameters.strokeMovement);
     ui->lineEdit_safePosition->setText(otherParameters.safePosition);
     ui->lineEdit_resultsTable_dynamicErrorRecomend->setText(valveInfo.dinamicErrorRecomend);
-    ui->lineEdit_materialStuffingBoxSeal->setText(valveInfo.materialStuffingBoxSeal);
+    ui->lineEdit_materialStuffingBoxSeal->setText(ValveEnums::StuffingBoxSealToString(valveInfo.materialStuffingBoxSeal));
 
     const bool anyCrossingEnabled =
         limits.frictionEnabled
         || limits.linearCharacteristicEnabled
-        || limits.rangeEnabled
+        || limits.valveStrokeEnabled
         || limits.springEnabled
         || limits.dynamicErrorEnabled;
 
     ui->groupBox_crossingLimits->setVisible(anyCrossingEnabled);
 
-    ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo.strokValve);
+    ui->lineEdit_resultsTable_strokeRecomend->setText(valveInfo.valveStroke);
 
-    const bool driveDD = (valveInfo.driveType == 2);
-    if (driveDD) {
+    if (valveInfo.driveType == DriveType::DoubleActing) {
         ui->lineEdit_resultsTable_driveRangeRecomend->setText(tr("Привод ДД"));
         ui->lineEdit_resultsTable_driveRangeReal->setText(tr("Привод ДД"));
     } else {
@@ -965,21 +964,21 @@ void MainWindow::setRegistry(Registry *registry)
 
     ui->widget_crossingLimits_frictionForce->setVisible(limits.frictionEnabled);
     ui->widget_crossingLimits_linearCharacteristic->setVisible(limits.linearCharacteristicEnabled);
-    ui->widget_crossingLimits_range->setVisible(limits.rangeEnabled);
+    ui->widget_crossingLimits_range->setVisible(limits.valveStrokeEnabled);
     ui->widget_crossingLimits_spring->setVisible(limits.springEnabled);
     ui->widget_crossingLimits_dynamicError->setVisible(limits.dynamicErrorEnabled);
 
     if (limits.frictionEnabled) {
         ui->lineEdit_crossingLimits_coefficientFriction_lowerLimit->setText(
-            QString::number(limits.frictionCoefLowerLimit, 'f', 2));
+            QString::number(limits.frictionCoefLower, 'f', 2));
         ui->lineEdit_crossingLimits_coefficientFriction_upperLimit->setText(
-            QString::number(limits.frictionCoefUpperLimit, 'f', 2));
+            QString::number(limits.frictionCoefUpper, 'f', 2));
     }
 
     if (limits.linearCharacteristicEnabled) {
         ui->lineEdit_crossingLimits_linearCharacteristic_lowerLimit->setText(QStringLiteral("0"));
         ui->lineEdit_crossingLimits_linearCharacteristic_upperLimit->setText(
-            QString::number(limits.linearCharacteristicLowerLimit, 'f', 2));
+            QString::number(limits.linearCharacteristic, 'f', 2));
     }
 
     applyCrossingLimitsFromRecommend(valveInfo);
@@ -1623,7 +1622,7 @@ void MainWindow::syncTaskChartSeriesVisibility(quint8 mask)
 void MainWindow::initCharts()
 {
     auto& valveInfo = m_registry->valveInfo();
-    bool isRotaryStroke = (valveInfo.strokeMovement != 0);
+    bool isRotaryStroke = (valveInfo.strokeMovement == StrokeMovement::Rotary);
 
     const QString strokeAxisFormat =
         isRotaryStroke ? QStringLiteral("%.2f deg")
@@ -2039,7 +2038,7 @@ void MainWindow::collectRegistryOverrides(
               valveInfo.driveRangeHigh);
 
     valveInfo.dinamicErrorRecomend = ui->lineEdit_resultsTable_dynamicErrorRecomend->text();
-    valveInfo.strokValve = ui->lineEdit_resultsTable_strokeRecomend->text();
+    valveInfo.valveStroke = ui->lineEdit_resultsTable_strokeRecomend->text();
 }
 
 void MainWindow::on_pushButton_report_generate_clicked()

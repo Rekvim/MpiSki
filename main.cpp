@@ -5,8 +5,8 @@
 #include "./Src/Ui/MainWindow/MainWindow.h"
 #include "./Src/Ui/Setup/SelectTests.h"
 #include "./Src/Ui/Setup/ObjectWindow.h"
-#include "Registry.h"
-#include "./Src/Ui/Setup/ValveWindow.h"
+#include "./Src/Storage/Registry.h"
+#include "./Src/Ui/Setup/ValveWindow/ValveWindow.h"
 
 
 int main(int argc, char *argv[])

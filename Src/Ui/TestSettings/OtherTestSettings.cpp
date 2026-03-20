@@ -69,7 +69,7 @@ OtherTestSettings::~OtherTestSettings()
 
 void OtherTestSettings::applyValveInfo(const ValveInfo& info)
 {
-    if (info.safePosition != 0)
+    if (info.safePosition == SafePosition::NormallyOpen)
         reverseSequence();
 }
 
