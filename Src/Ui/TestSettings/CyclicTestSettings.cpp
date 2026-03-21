@@ -1,7 +1,7 @@
 #include "CyclicTestSettings.h"
 #include "ui_CyclicTestSettings.h"
 #include "./Src/ValidatorFactory/RegexPatterns.h"
-#include "Registry.h"
+#include "./Src/Storage/Registry.h"
 #include <QMessageBox>
 
 void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)

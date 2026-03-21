@@ -234,7 +234,7 @@ void Program::initialization()
     }
 
     const auto& valveInfo = m_registry->valveInfo();
-    bool normalClosed = (valveInfo.safePosition == SafePosition::NormallyOpen);
+    bool normalClosed = (valveInfo.safePosition == SafePosition::NormallyClosed);
 
     // Измерение начального и конечного положения соленоида
     if (m_patternType == SelectTests::Pattern_B_SACVT ||
@@ -1065,6 +1065,7 @@ void Program::updateCharts_optionTest(Charts chart)
 
     emit addPoints(chart, points);
 }
+
 
 void Program::button_set_position()
 {

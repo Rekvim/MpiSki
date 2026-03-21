@@ -1,6 +1,6 @@
 #include "OtherTestSettings.h"
 #include "ui_OtherTestSettings.h"
-#include "Registry.h"
+#include "./Src/Storage/Registry.h"
 
 OtherTestSettings::OtherTestSettings(QWidget* parent)
     : AbstractTestSettings(parent)

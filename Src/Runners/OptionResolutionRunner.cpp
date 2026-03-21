@@ -33,9 +33,16 @@ RunnerConfig OptionResolutionRunner::buildConfig()
              ++it_s)
         {
             const qreal stepValue = 16.0 * (*it_s) / 100.0;
-            const qreal stepCurrent = baseCurrent + stepValue;
 
-            task.value.push_back(m_mpi.dac()->rawFromValue(stepCurrent));
+            // вверх
+            const qreal stepUpCurrent = baseCurrent + stepValue;
+            task.value.push_back(m_mpi.dac()->rawFromValue(stepUpCurrent));
+
+            task.value.push_back(baseRaw);\
+
+                // вниз
+                const qreal stepDownCurrent = baseCurrent - stepValue;
+            task.value.push_back(m_mpi.dac()->rawFromValue(stepDownCurrent));
 
             task.value.push_back(baseRaw);
         }
