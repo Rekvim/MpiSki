@@ -16,7 +16,7 @@ QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalO
 
 RunnerConfig CyclicRegulatoryRunner::buildConfig()
 {
-    const auto& p = m_params;
+    auto p = m_params;
 
     if (p.testType != p.Type::Regulatory &&
         p.testType != p.Type::Combined)

@@ -39,7 +39,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_data">
       <property name="sizePolicy">
@@ -173,6 +173,9 @@
               <family>Segoe UI</family>
               <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
            </widget>
           </item>
@@ -310,6 +313,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -395,6 +401,9 @@
               <family>Segoe UI</family>
               <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
            </widget>
           </item>
@@ -482,6 +491,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -567,6 +579,9 @@
               <family>Segoe UI</family>
               <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
            </widget>
           </item>
@@ -654,6 +669,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -739,6 +757,9 @@
               <family>Segoe UI</family>
               <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
            </widget>
           </item>
@@ -952,6 +973,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -1038,6 +1062,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -1123,6 +1150,9 @@
               <family>Segoe UI</family>
               <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
            </widget>
           </item>
@@ -1306,6 +1336,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -1391,6 +1424,9 @@
               <family>Segoe UI</family>
               <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
            </widget>
           </item>
@@ -1675,6 +1711,9 @@
               <pointsize>16</pointsize>
              </font>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
+            </property>
            </widget>
           </item>
          </layout>
@@ -1754,6 +1793,9 @@
               <family>Segoe UI</family>
               <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
            </widget>
           </item>
@@ -2246,6 +2288,9 @@
                    <pointsize>20</pointsize>
                   </font>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                 </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
                  </property>
@@ -2287,6 +2332,9 @@
                   <font>
                    <pointsize>20</pointsize>
                   </font>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::FocusPolicy::ClickFocus</enum>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2392,6 +2440,9 @@
                    <pointsize>20</pointsize>
                   </font>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                 </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
                  </property>
@@ -2483,6 +2534,9 @@
                   <font>
                    <pointsize>20</pointsize>
                   </font>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::FocusPolicy::ClickFocus</enum>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2576,6 +2630,9 @@
                    <pointsize>20</pointsize>
                   </font>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                 </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
                  </property>
@@ -2617,6 +2674,9 @@
                   <font>
                    <pointsize>20</pointsize>
                   </font>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::FocusPolicy::ClickFocus</enum>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2834,6 +2894,9 @@
                 <pointsize>20</pointsize>
                </font>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::FocusPolicy::ClickFocus</enum>
+              </property>
               <property name="alignment">
                <set>Qt::AlignmentFlag::AlignCenter</set>
               </property>
@@ -2875,6 +2938,9 @@
                <font>
                 <pointsize>20</pointsize>
                </font>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::FocusPolicy::ClickFocus</enum>
               </property>
               <property name="alignment">
                <set>Qt::AlignmentFlag::AlignCenter</set>

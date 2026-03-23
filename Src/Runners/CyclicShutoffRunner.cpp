@@ -25,15 +25,14 @@ RunnerConfig CyclicShutoffRunner::buildConfig()
     task.cycles = p.shutoff_numCycles;
     task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
 
-    // values = шаблон одного цикла
     task.values = rawCycle;
 
     auto* worker = new CyclicTestsShutoff;
     worker->SetTask(task);
 
     const quint64 stepsPerCycle = static_cast<quint64>(rawCycle.size());
-    const quint64 totalSteps    = stepsPerCycle * static_cast<quint64>(task.cycles);
-    const quint64 totalMs       = totalSteps * static_cast<quint64>(task.delayMsecs + task.holdMsecs);
+    const quint64 totalSteps = stepsPerCycle * static_cast<quint64>(task.cycles);
+    const quint64 totalMs = totalSteps * static_cast<quint64>(task.delayMsecs + task.holdMsecs);
 
     RunnerConfig cfg;
     cfg.worker = worker;

@@ -3,6 +3,9 @@
 #include "ui_MainWindow.h"
 #include "../Setup/ValveWindow/ValveWindow.h"
 
+#include "Src/Utils/Shortcuts/TabBinder.h"
+#include "Src/Utils/Number.h"
+
 #include "Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h"
 #include "Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h"
 #include "Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.h"
@@ -11,65 +14,27 @@
 #include "./Src/Ui/TestSettings/AbstractTestSettings.h"
 
 namespace {
-static QString formatRange(double lo, double hi, int prec = 2)
+static QString formatRange(double lo, double hi)
 {
     if (lo > hi) std::swap(lo, hi);
     return QString("%1–%2")
-        .arg(lo, 0, 'f', prec)
-        .arg(hi, 0, 'f', prec);
+        .arg(lo, 0, 'f', 2)
+        .arg(hi, 0, 'f', 2);
 }
 
-double toDouble(QString s, bool* okOut = nullptr)
+void setNum(QLineEdit* le, double v)
 {
-    s = s.trimmed();
-    s.replace(',', '.');
-    bool ok = false;
-    const double v = QLocale::c().toDouble(s, &ok);
-    if (okOut) *okOut = ok;
-    return v;
-}
-
-void setNum(QLineEdit* le, double v, int prec = 2)
-{
-    le->setText(QString::number(v, 'f', prec));
-}
-
-std::optional<QPair<double,double>> parseRange2(const QString& s)
-{
-    static const QRegularExpression re(R"(([+-]?\d+(?:[.,]\d+)?))");
-    auto it = re.globalMatch(s);
-
-    double a = 0.0, b = 0.0;
-    int n = 0;
-    while (it.hasNext() && n < 2) {
-        const auto m = it.next();
-        bool ok = false;
-        const double v = toDouble(m.captured(1), &ok);
-        if (!ok) continue;
-        if (n == 0) a = v; else b = v;
-        ++n;
-    }
-    if (n == 2) return QPair<double,double>(a, b);
-    return std::nullopt;
+    le->setText(QString::number(v, 'f', 2));
 }
 
 void setPlusMinusPercent(QLineEdit* loLe, QLineEdit* hiLe,
-                         double base, double pct, int prec = 2)
+                         double base, double pct)
 {
     const double d = std::abs(base) * (pct / 100.0);
-    setNum(loLe, base - d, prec);
-    setNum(hiLe, base + d, prec);
+    setNum(loLe, base - d);
+    setNum(hiLe, base + d);
 }
 } // namespace
-
-
-static void switchTab(QTabWidget* tw, int dir)
-{
-    if (!tw) return;
-    int i = tw->currentIndex();
-    int n = tw->count();
-    tw->setCurrentIndex((i + dir + n) % n);
-}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -77,84 +42,30 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    auto bindTab = [&](int key, QWidget* tab) {
-        auto* sc = new QShortcut(QKeySequence(QString::number(key)), this);
-        sc->setContext(Qt::ApplicationShortcut);
-        connect(sc, &QShortcut::activated, this, [=] {
-            const int idx = ui->tabWidget_main->indexOf(tab);
-            if (idx >= 0 && ui->tabWidget_main->isTabEnabled(idx)) {
-                ui->tabWidget_main->setCurrentIndex(idx);
-            }
-        });
-    };
+    m_mapper = std::make_unique<TelemetryUiMapper>(ui);
+    m_chartManager = std::make_unique<ChartManager>(this);
+    m_crossingIndicators = std::make_unique<CrossingIndicatorsPresenter>(ui);
 
-    bindTab(1, ui->tab_manual);
-    bindTab(2, ui->tab_strokeTest);
-    bindTab(3, ui->tab_mainTests);
-    bindTab(4, ui->tab_optionalTests);
-    bindTab(5, ui->tab_cyclicTests);
-    bindTab(6, ui->tab_reportGeneration);
+    QHash<QWidget*, QTabWidget*> innerTabs;
 
-    auto* left = new QShortcut(QKeySequence(Qt::Key_Left), this);
-    left->setContext(Qt::ApplicationShortcut);
-    connect(left, &QShortcut::activated, this, [&] {
-        if (auto* tw = currentInnerTabWidget())
-            switchTab(tw, -1);
-    });
+    innerTabs[ui->tab_mainTests] = ui->tabWidget_mainTests;
+    innerTabs[ui->tab_optionalTests] = ui->tabWidget_optionalTests;
+    innerTabs[ui->tab_reportGeneration] = ui->tabWidget_reportGeneration;
 
-    auto* right = new QShortcut(QKeySequence(Qt::Key_Right), this);
-    right->setContext(Qt::ApplicationShortcut);
-    connect(right, &QShortcut::activated, this, [&] {
-        if (auto* tw = currentInnerTabWidget())
-            switchTab(tw, +1);
-    });
+    TabBinder::bindNumbers(this, ui->tabWidget_main);
 
-    new QShortcut(QKeySequence(Qt::Key_Home), this, [&] {
-        if (auto* tw = currentInnerTabWidget())
-            tw->setCurrentIndex(0);
-    });
+    TabBinder::bindArrowNavigation(
+        this,
+        ui->tabWidget_main,
+        innerTabs
+        );
 
-    new QShortcut(QKeySequence(Qt::Key_End), this, [&] {
-        if (auto* tw = currentInnerTabWidget())
-            tw->setCurrentIndex(tw->count() - 1);
-    });
-
-    auto* enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
-    enter->setContext(Qt::ApplicationShortcut);
-
-    connect(enter, &QShortcut::activated, this,
-            &MainWindow::triggerPrimaryAction);
-
-    QMap<int, QString> labels;
-
-    labels[3000] = "3 мА";
-    labels[4000] = "0% – 4 мА";
-    labels[5000] = "5 мА";
-    labels[6000] = "6 мА";
-    labels[7000] = "7 мА";
-    labels[8000] = "25% – 8 мА";
-    labels[9000] = "9 мА";
-    labels[10000] = "10 мА";
-    labels[11000] = "11 мА";
-    labels[12000] = "50% – 12 мА";
-    labels[13000] = "13 мА";
-    labels[14000] = "14 мА";
-    labels[15000] = "15 мА";
-    labels[16000] = "75% – 16 мА";
-    labels[17000] = "17 мА";
-    labels[18000] = "18 мА";
-    labels[19000] = "19 мА";
-    labels[20000] = "100% – 20 мА";
-    labels[21000] = "21 мА";
+    setupPrimaryActions();
+    setupShortcuts();
 
     auto* s = qobject_cast<LabeledSlider*>(ui->verticalSlider_task);
 
     if (s) {
-        s->setTickLabels(labels);
-        s->setTickGap(6);
-        s->setTickLength(10);
-        s->setLabelOffset(8);
-
         QTimer::singleShot(0, s, [s]{
             s->setFixedWidth(s->sizeHint().width());
         });
@@ -193,6 +104,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_program = new Program;
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
+
+    m_testController = new TestController(this);
+    m_testController->setProgram(m_program);
 
     // kоговое окно
     // logOutput = new QPlainTextEdit(this);
@@ -249,26 +163,17 @@ MainWindow::MainWindow(QWidget *parent)
                 });
     }
 
-    connect(this, &MainWindow::runCyclicTest,
-            m_program, &Program::startCyclicTest);
-
-    connect(this, &MainWindow::runMainTest,
-            m_program, &Program::startMainTest);
-
     // connect(m_program, &Program::mainTestFinished,
     //         this, &MainWindow::promptSaveCharts);
-
-    connect(this, &MainWindow::runStrokeTest,
-            m_program, &Program::startStrokeTest);
-
-    connect(this, &MainWindow::runOptionalTest,
-            m_program, &Program::startOptionalTest);
 
     connect(this, &MainWindow::stopTest,
             m_program, &Program::terminateTest);
 
     connect(m_program, &Program::stopTheTest,
             this, &MainWindow::endTest);
+
+    connect(this, &MainWindow::stopTest,
+            m_testController, &TestController::stop);
 
     connect(m_program, &Program::setText,
             this, &MainWindow::setText);
@@ -321,26 +226,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_program, &Program::setStepResults,
             this, &MainWindow::setStepTestResults);
-
-    connect(m_program, &Program::getParameters_mainTest,
-            this, &MainWindow::onMainTestParametersRequested,
-            Qt::BlockingQueuedConnection);
-
-    connect(m_program, &Program::getParameters_stepTest,
-            this, &MainWindow::onStepTestParametersRequested,
-            Qt::BlockingQueuedConnection);
-
-    connect(m_program, &Program::getParameters_resolutionTest,
-            this, &MainWindow::onResolutionTestParametersRequested,
-            Qt::BlockingQueuedConnection);
-
-    connect(m_program, &Program::getParameters_responseTest,
-            this, &MainWindow::onResponseTestParametersRequested,
-            Qt::BlockingQueuedConnection);
-
-    connect(m_program, &Program::getParameters_cyclicTest,
-            this, &MainWindow::onCyclicTestParametersRequested,
-            Qt::BlockingQueuedConnection);
 
     connect(m_program, &Program::question,
             this, &MainWindow::askQuestion,
@@ -443,16 +328,30 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::testFinished,
             this, &MainWindow::endTest);
 
+    connect(m_testController, &TestController::testFinished,
+            this, &MainWindow::endTest);
+
+    connect(m_program, &Program::testFinished,
+            m_testController,  &TestController::finish);
+
+    // connect(m_program, &Program::testFinished,
+    //         m_testController, &TestController::stop);
+
+
+
     connect(m_program, &Program::cyclicCycleCompleted,
             this, [this](int completed){
                 int remaining = completed;
                 ui->label_cyclicTest_completedCyclesValue->setText(QString::number(remaining));
             });
 
-    connect(m_program, &Program::testActuallyStarted,
-            this, [this]() {
-                setTestState(TestState::Running);
-            });
+    // connect(m_program, &Program::testActuallyStarted,
+    //         this, [this]() {
+    //             setTestState(TestState::Running);
+    //         });
+
+    connect(m_testController, &TestController::stateChanged,
+            this, &MainWindow::setTestState);
 
     ui->tabWidget_mainTests->setCurrentIndex(0);
     ui->tabWidget_optionalTests->setCurrentIndex(0);
@@ -487,22 +386,6 @@ void MainWindow::lockTabsForPreInit()
     // ui->tabWidget_main->setTabEnabled(4, false);
 }
 
-QTabWidget* MainWindow::currentInnerTabWidget() const
-{
-    QWidget* top = ui->tabWidget_main->currentWidget();
-
-    if (top == ui->tab_mainTests)
-        return ui->tabWidget_mainTests;
-
-    if (top == ui->tab_optionalTests)
-        return ui->tabWidget_optionalTests;
-
-    if (top == ui->tab_reportGeneration)
-        return ui->tabWidget_reportGeneration;
-
-    return nullptr;
-}
-
 void MainWindow::updateAvailableTabs()
 {
     displayDependingPattern();
@@ -523,6 +406,68 @@ static QString formatHMS(quint64 ms)
         .arg(h, 2, 10, QChar('0'))
         .arg(m, 2, 10, QChar('0'))
         .arg(s, 2, 10, QChar('0'));
+}
+
+void MainWindow::setupShortcuts()
+{
+    auto* enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    enter->setContext(Qt::ApplicationShortcut);
+
+    connect(enter, &QShortcut::activated,
+            this, [this] {
+                m_tabActionRouter.triggerPrimary(
+                    ui->tabWidget_main->currentWidget());
+            });
+
+    auto* shiftEnter =
+        new QShortcut(QKeySequence(Qt::SHIFT | Qt::Key_Return), this);
+
+    shiftEnter->setContext(Qt::ApplicationShortcut);
+
+    connect(shiftEnter, &QShortcut::activated,
+            this, [this] {
+                m_tabActionRouter.triggerSecondary(
+                    ui->tabWidget_main->currentWidget());
+            });
+}
+
+void MainWindow::setupPrimaryActions()
+{
+    m_tabActionRouter.bindPrimary(
+        ui->tab_manual,
+        ui->pushButton_init);
+
+    m_tabActionRouter.bindPrimary(
+        ui->tab_manual,
+        ui->pushButton_strokeTest_start);
+
+    m_tabActionRouter.bindPrimary(
+        ui->tab_strokeTest,
+        ui->pushButton_strokeTest_start);
+
+    m_tabActionRouter.bindPrimary(
+        ui->tab_strokeTest,
+        ui->pushButton_mainTest_start);
+
+    m_tabActionRouter.bindPrimary(
+        ui->tab_mainTests,
+        ui->pushButton_optionalTests_start);
+
+    m_tabActionRouter.bindPrimary(
+        ui->tab_optionalTests,
+        ui->pushButton_optionalTests_start);
+
+    m_tabActionRouter.bindPrimary(
+        ui->tab_cyclicTests,
+        ui->pushButton_cyclicTest_start);
+
+    m_tabActionRouter.bindPrimary(
+        ui->tab_reportGeneration,
+        ui->pushButton_report_generate);
+
+    m_tabActionRouter.bindSecondary(
+        ui->tab_reportGeneration,
+        ui->pushButton_report_open);
 }
 
 void MainWindow::onCountdownTimeout()
@@ -556,44 +501,13 @@ void MainWindow::onTotalTestTimeMs(quint64 totalMs)
     onCountdownTimeout();
 }
 
-static void setIndicatorColor(QWidget* widget, const QString& color, const QString& border) {
-    widget->setStyleSheet(QString(
-                              "background: %1;"
-                              "border: 4px solid %2;"
-                              "border-radius: 10px;"
-                              ).arg(color, border));
-}
-
-static void setIndicatorByState(QWidget* widget, CrossingStatus::State state)
-{
-    using State = CrossingStatus::State;
-
-    switch (state) {
-    case State::Unknown:
-        setIndicatorColor(widget,
-                          QLatin1String("#A0A0A0"),
-                          QLatin1String("#505050"));
-        break;
-    case State::Ok:
-        setIndicatorColor(widget,
-                          QLatin1String("#4E8448"),
-                          QLatin1String("#16362B"));
-        break;
-    case State::Fail:
-        setIndicatorColor(widget,
-                          QLatin1String("#B80F0F"),
-                          QLatin1String("#510000"));
-        break;
-    }
-}
-
 void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
 {
     const CrossingLimits& limits = valveInfo.crossingLimits;
 
     if (limits.valveStrokeEnabled) {
         bool ok = false;
-        const double stroke = toDouble(valveInfo.valveStroke, &ok);
+        const double stroke = NumberUtils::toDouble(valveInfo.valveStroke, &ok);
         if (ok) {
             setPlusMinusPercent(ui->lineEdit_crossingLimits_range_lowerLimit,
                                 ui->lineEdit_crossingLimits_range_upperLimit,
@@ -637,194 +551,22 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
         ui->lineEdit_crossingLimits_spring_upperLimit->setText(formatRange(highLo, highHi));
     }
 
-
     if (limits.dynamicErrorEnabled) {
         ui->lineEdit_crossingLimits_dynamicError_lowerLimit->setText(QStringLiteral("0"));
         ui->lineEdit_crossingLimits_dynamicError_upperLimit->setText(valveInfo.dinamicErrorRecomend);
     }
 }
 
-void MainWindow::updateCrossingIndicators()
-{
-    const auto &cs = m_telemetryStore.crossingStatus;
-
-    setIndicatorByState(ui->widget_crossingLimits_coefficientFriction_limitStatusIndicator,
-                        cs.frictionPercent);
-    setIndicatorByState(ui->widget_crossingLimits_linearCharacteristic_limitStatusIndicator,
-                        cs.linearCharacteristic);
-    setIndicatorByState(ui->widget_crossingLimits_range_limitStatusIndicator,
-                        cs.valveStroke);
-    setIndicatorByState(ui->widget_crossingLimits_spring_limitStatusIndicator,
-                        cs.spring);
-    setIndicatorByState(ui->widget_crossingLimits_dynamicError_limitStatusIndicator,
-                        cs.dynamicError);
-}
-
 void MainWindow::onTelemetryUpdated(const TelemetryStore &t) {
-
     m_telemetryStore = t;
+    m_mapper->updateInit(t.init);
 
-    updateInitUI(t.init);
-    updateMainTestUI(t);
-    updateStrokeTestUI(t.strokeTestRecord);
-    // updateCyclicTestUI(t.cyclicTestRecord);
-    updateCrossingUI(t);
+    m_mapper->updateMainTest(t);
+    m_mapper->updateCrossing(t);
+    m_crossingIndicators->update(m_telemetryStore.crossingStatus);
 
-    // StrokeTest
-
-    // CyclicTestResults
-    // ui->label_cyclicTest_sequenceValue->setText(TS.cyclicTestRecord.sequence);
-    // ui->label_cyclicTest_specifiedCyclesValue->setText(
-    //     QString::number(TS.cyclicTestRecord.cycles));
-
-    // qint64 millis = qint64(TS.cyclicTestRecord.totalTimeSec * 1000.0);
-    // QTime tC(0, 0);
-    // tC = tC.addMSecs(millis);
-    // ui->label_cyclicTest_totalTimeValue->setText(
-    //     tC.toString("hh:mm:ss.zzz"));
-
-
+    m_mapper->updateStrokeTest(t.strokeTestRecord);
 }
-
-void MainWindow::updateInitUI(const InitState& init)
-{
-    ui->label_deviceStatusValue->setText(init.deviceStatusText);
-    ui->label_deviceStatusValue->setStyleSheet(
-        "color:" + init.deviceStatusColor.name(QColor::HexRgb));
-
-    ui->label_deviceInitValue->setText(init.initStatusText);
-    ui->label_deviceInitValue->setStyleSheet(
-        "color:" + init.initStatusColor.name(QColor::HexRgb));
-
-    ui->label_connectedSensorsNumber->setText(init.connectedSensorsText);
-    ui->label_connectedSensorsNumber->setStyleSheet(
-        "color:" + init.connectedSensorsColor.name(QColor::HexRgb));
-
-    ui->label_startingPositionValue->setText(init.startingPositionText);
-    ui->label_startingPositionValue->setStyleSheet(
-        "color:" + init.startingPositionColor.name(QColor::HexRgb));
-
-    ui->label_finalPositionValue->setText(init.finalPositionText);
-    ui->label_finalPositionValue->setStyleSheet(
-        "color:" + init.finalPositionColor.name(QColor::HexRgb));
-}
-
-void MainWindow::updateMainTestUI(const TelemetryStore& t)
-{
-    ui->label_pressureDifferenceValue->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.pressureDifference, 0, 'f', 3)
-        );
-    ui->label_frictionForceValue->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.frictionForce, 0, 'f', 3)
-        );
-    ui->label_frictionPercentValue->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.frictionPercent, 0, 'f', 2)
-        );
-    ui->lineEdit_resultsTable_frictionForceValue->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.frictionForce, 0, 'f', 3)
-        );
-    ui->lineEdit_resultsTable_frictionPercentValue->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.frictionPercent, 0, 'f', 2)
-        );
-
-    ui->label_dynamicErrorMeanPercent->setText(
-        QString("%1 %")
-            .arg(t.mainTestRecord.dynamicError_meanPercent, 0, 'f', 2)
-        );
-    ui->label_dynamicErrorMean->setText(
-        QString("%1 мА")
-            .arg(t.mainTestRecord.dynamicError_mean, 0, 'f', 3)
-        );
-    ui->label_dynamicErrorMaxPercent->setText(
-        QString("%1 %")
-            .arg(t.mainTestRecord.dynamicError_maxPercent, 0, 'f', 2)
-        );
-
-    ui->label_dynamicErrorMax->setText(
-        QString("%1 мА")
-            .arg(t.mainTestRecord.dynamicError_max, 0, 'f', 3)
-        );
-    ui->lineEdit_resultsTable_dynamicErrorReal->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.dynamicErrorReal, 0, 'f', 2)
-        );
-
-    ui->label_dynamicErrorMax->setText(
-        QString("%1 бар")
-            .arg(t.mainTestRecord.lowLimitPressure, 0, 'f', 2)
-        );
-    ui->label_dynamicErrorMax->setText(
-        QString("%1 бар")
-            .arg(t.mainTestRecord.highLimitPressure, 0, 'f', 2)
-        );
-
-    ui->label_valveStroke_range->setText(
-        QString("%1")
-            .arg(t.valveStrokeRecord.range)
-        );
-
-    // StrokeRecord
-    ui->lineEdit_resultsTable_strokeReal->setText(
-        QString("%1").arg(t.valveStrokeRecord.real, 0, 'f', 2));
-
-    ui->label_lowLimitValue->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.lowLimitPressure)
-        );
-    ui->label_highLimitValue->setText(
-        QString("%1")
-            .arg(t.mainTestRecord.highLimitPressure)
-        );
-
-    ui->lineEdit_resultsTable_rangePressure->setText(
-        QString("%1–%2")
-            .arg(t.mainTestRecord.lowLimitPressure, 0, 'f', 2)
-            .arg(t.mainTestRecord.highLimitPressure, 0, 'f', 2)
-        );
-
-    ui->lineEdit_resultsTable_driveRangeReal->setText(
-        QString("%1–%2")
-            .arg(t.mainTestRecord.springLow, 0, 'f', 2)
-            .arg(t.mainTestRecord.springHigh, 0, 'f', 2)
-        );
-}
-
-void MainWindow::updateStrokeTestUI(const StrokeTestRecord& r)
-{
-    ui->lineEdit_strokeTest_forwardTime->setText(r.timeForwardMs);
-    ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(r.timeForwardMs);
-
-    ui->lineEdit_strokeTest_backwardTime->setText(r.timeBackwardMs);
-    ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(r.timeBackwardMs);
-}
-
-void MainWindow::updateCrossingUI(const TelemetryStore& t)
-{
-    ui->lineEdit_crossingLimits_dynamicError_value->setText(
-        QString::number(t.mainTestRecord.dynamicErrorReal, 'f', 2));
-
-    ui->lineEdit_crossingLimits_linearCharacteristic_value->setText(
-        QString::number(t.mainTestRecord.linearityError, 'f', 2));
-
-    ui->lineEdit_crossingLimits_range_value->setText(
-        QString::number(t.valveStrokeRecord.real, 'f', 2));
-
-    ui->lineEdit_crossingLimits_spring_value->setText(
-        QString("%1–%2")
-            .arg(t.mainTestRecord.springLow, 0, 'f', 2)
-            .arg(t.mainTestRecord.springHigh, 0, 'f', 2));
-
-    ui->lineEdit_crossingLimits_coefficientFriction_value->setText(
-        QString::number(t.mainTestRecord.frictionPercent, 'f', 2));
-
-    updateCrossingIndicators();
-}
-
 
 void MainWindow::appendLog(const QString& text) {
     const QString stamp = QDateTime::currentDateTime()
@@ -860,29 +602,6 @@ void MainWindow::setTaskControlsEnabled(bool enabled)
     ui->groupBox_DO->setEnabled(enabled);
     ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
     ui->pushButton_back->setEnabled(enabled);
-}
-
-void MainWindow::triggerPrimaryAction()
-{
-    QWidget* top = ui->tabWidget_main->currentWidget();
-
-    if (top == ui->tab_manual)
-        ui->pushButton_init->click();
-
-    if (top == ui->tab_strokeTest)
-        ui->pushButton_strokeTest_start->click();
-
-    else if (top == ui->tab_mainTests)
-        ui->pushButton_mainTest_start->click();
-
-    else if (top == ui->tab_optionalTests)
-        ui->pushButton_optionalTests_start->click();
-
-    else if (top == ui->tab_cyclicTests)
-        ui->pushButton_cyclicTest_start->click();
-
-    else if (top == ui->tab_reportGeneration)
-        ui->pushButton_report_generate->click();
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -1118,43 +837,12 @@ void MainWindow::setButtonInitEnabled(bool enable)
     ui->pushButton_init->setEnabled(enable);
 }
 
-void MainWindow::addPoints(Charts chart, const QVector<Point> &points)
-{
-    for (const auto& point : points)
-        m_charts[chart]->addPoint(point.seriesNum, point.X, point.Y);
-}
-
-void MainWindow::clearPoints(Charts chart)
-{
-    m_charts[chart]->clear();
-}
-
-void MainWindow::setChartVisible(Charts chart, quint16 series, bool visible)
-{
-    m_charts[chart]->visible(series, visible);
-}
-
-void MainWindow::showDots(bool visible)
-{
-    m_charts[Charts::Task]->showDots(visible);
-    m_charts[Charts::Pressure]->showDots(visible);
-}
-
-void MainWindow::duplicateMainChartsSeries()
-{
-    m_charts[Charts::Task]->duplicateChartSeries(1);
-    m_charts[Charts::Task]->duplicateChartSeries(2);
-    m_charts[Charts::Task]->duplicateChartSeries(3);
-    m_charts[Charts::Task]->duplicateChartSeries(4);
-    m_charts[Charts::Pressure]->duplicateChartSeries(0);
-}
-
 void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
 {
     points.clear();
 
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[chart]->getPoints(0);
+    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
+    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_chartManager->getPoints(chart, 0);
 
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
@@ -1164,8 +852,8 @@ void MainWindow::onMainTestPointsRequested(QVector<QVector<QPointF>> &points, Ch
 {
     points.clear();
 
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_charts[Charts::Pressure]->getPoints(0);
+    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
+    QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_chartManager->getPoints(Charts::Pressure, 0);
 
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
@@ -1176,14 +864,12 @@ void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Ch
 {
     points.clear();
 
-    if (chart == Charts::Step) {
-        QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
-        QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[chart]->getPoints(0);
+    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
+    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_chartManager->getPoints(chart, 0);
 
-        points.clear();
-        points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-        points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
-    }
+    points.clear();
+    points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
+    points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
 void MainWindow::onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
 {
@@ -1193,15 +879,15 @@ void MainWindow::onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, 
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
 
-        QPair<QList<QPointF>, QList<QPointF>> opened = m_charts[chart]->getPoints(3);
-        QPair<QList<QPointF>, QList<QPointF>> closed = m_charts[chart]->getPoints(2);
+        QPair<QList<QPointF>, QList<QPointF>> opened = m_chartManager->getPoints(chart, 3);
+        QPair<QList<QPointF>, QList<QPointF>> closed = m_chartManager->getPoints(chart, 2);
 
         points.push_back({opened.first.begin(), opened.first.end()});
         points.push_back({closed.first.begin(), closed.first.end()});
     }
 
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_charts[chart]->getPoints(1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_charts[chart]->getPoints(0);
+    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
+    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_chartManager->getPoints(chart, 0);
 
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
@@ -1211,55 +897,6 @@ void MainWindow::setRegressionEnabled(bool enabled)
 {
     ui->checkBox_regression->setEnabled(enabled);
     ui->checkBox_regression->setCheckState(enabled ? Qt::Checked : Qt::Unchecked);
-}
-
-void MainWindow::onMainTestParametersRequested(MainTestSettings::TestParameters &parameters)
-{
-    if (m_mainTestSettings->exec() == QDialog::Accepted) {
-        parameters = m_mainTestSettings->getParameters();
-    } else {
-        parameters.delay = 0;
-    }
-}
-
-void MainWindow::onStepTestParametersRequested(StepTestSettings::TestParameters &parameters)
-{
-    parameters.points.clear();
-
-    if (m_stepTestSettings->exec() == QDialog::Accepted) {
-        parameters = m_stepTestSettings->getParameters();
-        return;
-    } else {
-        parameters = {};
-        return;
-    }
-}
-
-void MainWindow::onResolutionTestParametersRequested(OtherTestSettings::TestParameters &parameters)
-{
-    parameters.points.clear();
-
-    if (m_resolutionTestSettings->exec() == QDialog::Accepted) {
-        parameters = m_resolutionTestSettings->getParameters();
-        return;
-    } else {
-        parameters = {};
-        return;
-    }
-}
-
-void MainWindow::onResponseTestParametersRequested(OtherTestSettings::TestParameters &parameters)
-{
-    parameters.points.clear();
-
-    if (m_responseTestSettings->exec() == QDialog::Accepted) {
-        parameters = m_responseTestSettings->getParameters();
-        return;
-
-    } else {
-        parameters = {};
-        return;
-    }
 }
 
 static QString seqToString(const QVector<qreal>& seq)
@@ -1357,11 +994,6 @@ void MainWindow::getDirectory(const QString &currentPath, QString &result)
                                                currentPath);
 }
 
-void MainWindow::startTest()
-{
-    setTestState(TestState::Starting);
-}
-
 void MainWindow::endTest()
 {
     const TestState prevState = m_testState;
@@ -1408,19 +1040,36 @@ void MainWindow::setTestState(TestState state)
     }
 }
 
-void MainWindow::on_pushButton_mainTest_start_clicked()
+bool MainWindow::tryStartTest()
 {
     if (m_testState == TestState::Running ||
-        m_testState == TestState::Starting) {
-        if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
-        == QMessageBox::Yes) {
+        m_testState == TestState::Starting)
+    {
+        if (QMessageBox::question( this, tr("Внимание!"),
+                tr("Вы действительно хотите завершить тест?"))
+            == QMessageBox::Yes) {
+
             setTestState(TestState::Canceled);
             emit stopTest();
         }
-    } else {
-        emit runMainTest();
-        startTest();
+
+        return false;
     }
+
+    return true;
+}
+
+void MainWindow::on_pushButton_mainTest_start_clicked()
+{
+    if (!tryStartTest())
+        return;
+
+    if (m_mainTestSettings->exec() != QDialog::Accepted)
+        return;
+
+    auto params = m_mainTestSettings->getParameters();
+
+    m_testController->runMainTest(params);
 }
 void MainWindow::on_pushButton_mainTest_save_clicked()
 {
@@ -1440,8 +1089,7 @@ void MainWindow::promptSaveChartsAfterTest()
         return;
 
     auto answer = QMessageBox::question(
-        this,
-        tr("Сохранение результатов"),
+        this, tr("Сохранение результатов"),
         tr("Тест завершён.\nСохранить графики?"),
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::Yes
@@ -1488,17 +1136,10 @@ QVector<Charts> MainWindow::chartsForCurrentTest() const
 
 void MainWindow::on_pushButton_strokeTest_start_clicked()
 {
-    if (m_testState == TestState::Running ||
-        m_testState == TestState::Starting) {
-        if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
-            == QMessageBox::Yes) {
-            setTestState(TestState::Canceled);
-            emit stopTest();
-        }
-    } else {
-        emit runStrokeTest();
-        startTest();
-    }
+    if (!tryStartTest())
+        return;
+
+    m_testController->runStrokeTest();
 }
 void MainWindow::on_pushButton_strokeTest_save_clicked()
 {
@@ -1507,15 +1148,34 @@ void MainWindow::on_pushButton_strokeTest_save_clicked()
 
 void MainWindow::on_pushButton_optionalTests_start_clicked()
 {
-    if (m_testState == TestState::Running ||
-        m_testState == TestState::Starting) {
-        if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
-            == QMessageBox::Yes) {
-            emit stopTest();
-        }
-    } else {
-        emit runOptionalTest(ui->tabWidget_optionalTests->currentIndex());
-        startTest();
+    if (!tryStartTest())
+        return;
+
+    const int id = ui->tabWidget_optionalTests->currentIndex();
+
+    if (id == 0)
+    {
+        if (m_responseTestSettings->exec() != QDialog::Accepted)
+            return;
+
+        m_testController->runResponseTest(
+            m_responseTestSettings->getParameters());
+    }
+    else if (id == 1)
+    {
+        if (m_resolutionTestSettings->exec() != QDialog::Accepted)
+            return;
+
+        m_testController->runResolutionTest(
+            m_resolutionTestSettings->getParameters());
+    }
+    else if (id == 2)
+    {
+        if (m_stepTestSettings->exec() != QDialog::Accepted)
+            return;
+
+        m_testController->runStepTest(
+            m_stepTestSettings->getParameters());
     }
 }
 void MainWindow::on_pushButton_optionalTests_save_clicked()
@@ -1531,20 +1191,16 @@ void MainWindow::on_pushButton_optionalTests_save_clicked()
 
 void MainWindow::on_pushButton_cyclicTest_start_clicked()
 {
-    if (m_testState == TestState::Running ||
-        m_testState == TestState::Starting) {
-        if (QMessageBox::question(this, tr("Внимание!"), tr("Вы действительно хотите завершить тест?"))
-            == QMessageBox::Yes) {
-            setTestState(TestState::Canceled);
-            emit stopTest();
-        }
+    if (!tryStartTest())
         return;
-    } else {
-        m_cyclicTestSettings->applyPattern(m_patternType);
 
-        emit runCyclicTest();
-        startTest();
-    }
+    m_cyclicTestSettings->applyPattern(m_patternType);
+
+    if (m_cyclicTestSettings->exec() != QDialog::Accepted)
+        return;
+
+    m_testController->runCyclicTest(
+        m_cyclicTestSettings->getParameters());
 }
 
 void MainWindow::on_pushButton_cyclicTest_save_clicked()
@@ -1603,7 +1259,7 @@ void MainWindow::setSensorsMask(quint8 mask)
 
 void MainWindow::syncTaskChartSeriesVisibility(quint8 mask)
 {
-    auto *ch = m_charts.value(Charts::Task, nullptr);
+    auto *ch = m_chartManager->chart(Charts::Task);
     if (!ch) return;
 
     const bool hasLinear = mask & (1 << 0);
@@ -1630,154 +1286,107 @@ void MainWindow::initCharts()
 
     const auto& colors = m_registry->sensorColors();
 
-    QColor linearColor(colors.linear);
-    QColor pressure1Color(colors.pressure1);
-    QColor pressure2Color(colors.pressure2);
-    QColor pressure3Color(colors.pressure3);
+    m_chartManager->createTrendChart(
+        ui->Chart_trend,
+        colors.linear
+    );
+    m_chartManager->createStrokeChart(
+        ui->Chart_stroke,
+        colors.linear
+    );
+    m_chartManager->createTaskChart(
+        ui->Chart_task,
+        strokeAxisFormat,
+        colors.linear,
+        colors.pressure1,
+        colors.pressure2,
+        colors.pressure3
+    );
+    m_chartManager->createFrictionChart(
+        ui->Chart_friction,
+        strokeAxisFormat,
+        colors.linear
+    );
+    m_chartManager->createPressureChart(
+        ui->Chart_pressure,
+        strokeAxisFormat,
+        colors.linear
+    );
+    m_chartManager->createResponseChart(
+        ui->Chart_response,
+        colors.linear
+    );
+    m_chartManager->createResolutionChart(
+        ui->Chart_resolution,
+        colors.linear
+    );
+    m_chartManager->createStepChart(
+        ui->Chart_step,
+        colors.linear
+    );
 
-    m_charts[Charts::Task] = ui->Chart_task;
-    m_charts[Charts::Task]->setName(QStringLiteral("Task"));
-    m_charts[Charts::Task]->useTimeaxis(false);
-    m_charts[Charts::Task]->addAxis(QStringLiteral("%.2f bar"));
-    m_charts[Charts::Task]->addAxis(strokeAxisFormat);
-    m_charts[Charts::Task]->addSeries(1, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Task]->addSeries(1, tr("Датчик линейных перемещений"), linearColor);
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), pressure1Color);
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), pressure2Color);
-    m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), pressure3Color);
-    // m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 1"), QColor::fromRgb(42, 104, 159));
-    // m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 2"), QColor::fromRgb(69, 116, 72));
-    // m_charts[Charts::Task]->addSeries(0, tr("Датчик давления 3"), QColor::fromRgb(211, 187, 42));
-
-    m_charts[Charts::Friction] = ui->Chart_friction;
-    m_charts[Charts::Friction]->setName(QStringLiteral("Friction"));
-    m_charts[Charts::Friction]->addAxis(QStringLiteral("%.2f N"));
-    m_charts[Charts::Friction]->addSeries(0, tr("Трение от перемещения"), linearColor);
-    m_charts[Charts::Friction]->setLabelXformat(strokeAxisFormat);
-
-    m_charts[Charts::Pressure] = ui->Chart_pressure;
-    m_charts[Charts::Pressure]->setName(QStringLiteral("Pressure"));
-    m_charts[Charts::Pressure]->useTimeaxis(false);
-    m_charts[Charts::Pressure]->setLabelXformat(QStringLiteral("%.2f bar"));
-    m_charts[Charts::Pressure]->addAxis(strokeAxisFormat);
-    m_charts[Charts::Pressure]->addSeries(0, tr("Перемещение от давления"), linearColor);
-    //m_charts[Charts::Pressure]->addSeries(0, tr("Перемещение от давления"), QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Pressure]->addSeries(0, tr("Линейная регрессия"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Pressure]->visible(1, false);
-
-
-    m_charts[Charts::Resolution] = ui->Chart_resolution;
-    m_charts[Charts::Resolution]->setName(QStringLiteral("Resolution"));
-    m_charts[Charts::Resolution]->useTimeaxis(true);
-    m_charts[Charts::Resolution]->addAxis(QStringLiteral("%.2f%%"));
-    m_charts[Charts::Resolution]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Resolution]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
-    //m_charts[Charts::Resolution]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-
-
-    m_charts[Charts::Response] = ui->Chart_response;
-    m_charts[Charts::Response]->setName(QStringLiteral("Response"));
-    m_charts[Charts::Response]->useTimeaxis(true);
-    m_charts[Charts::Response]->addAxis(QStringLiteral("%.2f%%"));
-    m_charts[Charts::Response]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Response]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
-    //m_charts[Charts::Response]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-
-
-    m_charts[Charts::Stroke] = ui->Chart_stroke;
-    m_charts[Charts::Stroke]->setName(QStringLiteral("Stroke"));
-    m_charts[Charts::Stroke]->useTimeaxis(true);
-    m_charts[Charts::Stroke]->addAxis(QStringLiteral("%.2f%%"));
-    m_charts[Charts::Stroke]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Stroke]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
-
-
-    m_charts[Charts::Step] = ui->Chart_step;
-    m_charts[Charts::Step]->setName(QStringLiteral("Step"));
-    m_charts[Charts::Step]->useTimeaxis(true);
-    m_charts[Charts::Step]->addAxis(QStringLiteral("%.2f%%"));
-    m_charts[Charts::Step]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Step]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
-    // m_charts[Charts::Step]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-
-
-    m_charts[Charts::Trend] = ui->Chart_trend;
-    m_charts[Charts::Trend]->useTimeaxis(true);
-    m_charts[Charts::Trend]->addAxis(QStringLiteral("%.2f%%"));
-
-    m_charts[Charts::Trend]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Trend]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
-    //m_charts[Charts::Trend]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Trend]->setMaxRange(60000);
-
-    m_charts[Charts::Cyclic] = ui->Chart_cyclicTests;
-    m_charts[Charts::Cyclic]->setName(QStringLiteral("Cyclic"));
-    m_charts[Charts::Cyclic]->useTimeaxis(true);
-    m_charts[Charts::Cyclic]->addAxis(QStringLiteral("%.2f%%"));
-    m_charts[Charts::Cyclic]->addSeries(0, tr("Задание"), QColor::fromRgb(0, 0, 0));
-    m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), linearColor);
-    // m_charts[Charts::Cyclic]->addSeries(0, tr("Датчик линейных перемещений"), QColor::fromRgb(255, 0, 0));
-    m_charts[Charts::Cyclic]->setMaxRange(240000);
+    auto* cyclic = m_chartManager->createCyclicChart(
+        ui->Chart_cyclicTests,
+        colors.linear
+    );
 
     if (m_patternType == SelectTests::Pattern_C_SOVT ||
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
 
-        auto *cyclic = m_charts[Charts::Cyclic];
-
-        cyclic->addSeries(0, tr("Кв закрыто →"), QColor::fromRgb(200,200,0)); // series 2
-        cyclic->addSeries(0, tr("Кв открыто →"), QColor::fromRgb(0,200,0));   // series 3
+        cyclic->addSeries(0, tr("Кв закрыто →"), QColor(200,200,0));
+        cyclic->addSeries(0, tr("Кв открыто →"), QColor(0,200,0));
 
         cyclic->setSeriesMarkersOnly(2, true);
         cyclic->setSeriesMarkersOnly(3, true);
     }
 
     connect(m_program, &Program::addPoints,
-            this, &MainWindow::addPoints);
+            m_chartManager.get(), &ChartManager::addPoints);
 
     connect(m_program, &Program::clearPoints,
-            this, &MainWindow::clearPoints);
+            m_chartManager.get(), &ChartManager::clearPoints);
 
     connect(m_program, &Program::duplicateMainChartsSeries,
-            this, &MainWindow::duplicateMainChartsSeries);
+            m_chartManager.get(), &ChartManager::duplicateMainChartsSeries);
 
     connect(m_program, &Program::setVisible,
-            this, &MainWindow::setChartVisible);
+            m_chartManager.get(), &ChartManager::setVisible);
 
     connect(m_program, &Program::setRegressionEnable,
             this, &MainWindow::setRegressionEnabled);
 
     connect(m_program, &Program::showDots,
-            this, &MainWindow::showDots);
+            m_chartManager.get(), &ChartManager::showDots);
 
     connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_charts[Charts::Task]->visible(0, state != 0);
+                m_chartManager->chart(Charts::Task)->visible(0, state != 0);
             });
 
     connect(ui->checkBox_showCurve_moving, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_charts[Charts::Task]->visible(1, state != 0);
+                m_chartManager->chart(Charts::Task)->visible(1, state != 0);
             });
 
     connect(ui->checkBox_showCurve_pressure_1, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_charts[Charts::Task]->visible(2, state != 0);
+                m_chartManager->chart(Charts::Task)->visible(2, state != 0);
             });
 
     connect(ui->checkBox_showCurve_pressure_2, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_charts[Charts::Task]->visible(3, state != 0);
+                m_chartManager->chart(Charts::Task)->visible(3, state != 0);
             });
 
     connect(ui->checkBox_showCurve_pressure_3, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_charts[Charts::Task]->visible(4, state != 0);
+                m_chartManager->chart(Charts::Task)->visible(4, state != 0);
             });
 
     connect(ui->checkBox_regression, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_charts[Charts::Pressure]->visible(1, state != 0);
+                m_chartManager->chart(Charts::Pressure)->visible(1, state != 0);
             });
 
     connect(m_program, &Program::getPoints_strokeTest,
@@ -1807,11 +1416,15 @@ void MainWindow::saveChart(Charts chart)
         backup = hidePressureAuxSeries();
     }
 
-    if (m_reportSaver && m_charts.contains(chart) && m_charts[chart]) {
-        m_reportSaver->saveImage(m_charts[chart]);
+    MyChart* ch = m_chartManager->chart(chart);
+    if (!ch)
+        return;
+
+    if (m_reportSaver) {
+        m_reportSaver->saveImage(ch);
     }
 
-    QPixmap pix = m_charts[chart]->grab();
+    QPixmap pix = ch->grab();
 
     if (backup.has_value())
         restoreSeries(chart, *backup);
@@ -1823,23 +1436,21 @@ void MainWindow::saveChart(Charts chart)
         ui->label_imageChartTask->setPixmap(pix);
         m_imageChartTask = img;
         break;
+
     case Charts::Pressure:
         ui->label_imageChartPressure->setPixmap(pix);
         m_imageChartPressure = img;
         break;
+
     case Charts::Friction:
         ui->label_imageChartFriction->setPixmap(pix);
         m_imageChartFriction = img;
         break;
-    case Charts::Response:
-        break;
-    case Charts::Resolution:
-        break;
+
     case Charts::Step:
         m_imageChartStep = img;
         break;
-    case Charts::Trend:
-        break;
+
     default:
         break;
     }
@@ -1897,7 +1508,7 @@ MainWindow::SeriesVisibilityBackup MainWindow::hidePressureAuxSeries()
     // regression
     b.visible = { ui->checkBox_regression->isChecked() };
 
-    auto* ch = m_charts.value(Charts::Pressure, nullptr);
+    auto* ch = m_chartManager->chart(Charts::Pressure);
     if (!ch) return b;
 
     ch->visible(1, false);
@@ -1915,7 +1526,7 @@ MainWindow::SeriesVisibilityBackup MainWindow::hideTaskAuxSeries()
         ui->checkBox_showCurve_pressure_3->isChecked()
     };
 
-    auto* ch = m_charts.value(Charts::Task, nullptr);
+    auto* ch = m_chartManager->chart(Charts::Pressure);
     if (!ch) return b;
 
     ch->visible(2, false);
@@ -1927,7 +1538,7 @@ MainWindow::SeriesVisibilityBackup MainWindow::hideTaskAuxSeries()
 
 void MainWindow::restoreSeries(Charts chart, const SeriesVisibilityBackup& b)
 {
-    auto* ch = m_charts.value(chart, nullptr);
+    auto* ch = m_chartManager->chart(chart);
     if (!ch) return;
 
     if (chart == Charts::Task && b.visible.size() == 3) {
@@ -1946,7 +1557,7 @@ void MainWindow::collectReportOverrides()
     auto readDouble = [this](QLineEdit* le, double& target)
     {
         bool ok = false;
-        double v = toDouble(le->text(), &ok);
+        double v = NumberUtils::toDouble(le->text(), &ok);
         if (ok)
             target = v;
     };
@@ -1962,8 +1573,8 @@ void MainWindow::collectReportOverrides()
         if (parts.size() == 2) {
             bool ok1 = false;
             bool ok2 = false;
-            double v1 = toDouble(parts[0], &ok1);
-            double v2 = toDouble(parts[1], &ok2);
+            double v1 = NumberUtils::toDouble(parts[0], &ok1);
+            double v2 = NumberUtils::toDouble(parts[1], &ok2);
 
             if (ok1 && ok2) {
                 low = v1;
@@ -1973,7 +1584,6 @@ void MainWindow::collectReportOverrides()
     };
 
     // ===== MainTestRecord =====
-
     readDouble(ui->lineEdit_resultsTable_frictionForceValue,
                m_telemetryStore.mainTestRecord.frictionForce);
 
@@ -2023,8 +1633,8 @@ void MainWindow::collectRegistryOverrides(
         if (parts.size() == 2) {
             bool ok1 = false;
             bool ok2 = false;
-            double v1 = toDouble(parts[0], &ok1);
-            double v2 = toDouble(parts[1], &ok2);
+            double v1 = NumberUtils::toDouble(parts[0], &ok1);
+            double v2 = NumberUtils::toDouble(parts[1], &ok2);
 
             if (ok1 && ok2) {
                 low = v1;
@@ -2071,11 +1681,6 @@ void MainWindow::on_pushButton_report_generate_clicked()
                                m_registry->valveInfo(),
                                m_registry->otherParameters(),
                                m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
-
-    qDebug() << "Forward:" << m_telemetryStore.strokeTestRecord.timeForwardMs;
-    qDebug() << "Backward:" << m_telemetryStore.strokeTestRecord.timeBackwardMs;
-
-    qDebug() << "Путь к шаблону:" << reportBuilder->templatePath();
 
     bool saved = m_reportSaver->saveReport(report, reportBuilder->templatePath());
     ui->pushButton_report_open->setEnabled(saved);

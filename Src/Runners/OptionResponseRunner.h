@@ -1,22 +1,22 @@
-#ifndef OPTIONRESPONSERUNNER_H
-#define OPTIONRESPONSERUNNER_H
-
 #pragma once
+
 #include "BaseRunner.h"
 #include "./Src/Ui/TestSettings/OtherTestSettings.h"
 
-class OptionResponseRunner : public BaseRunner {
+class OptionResponseRunner : public BaseRunner
+{
     Q_OBJECT
 public:
-    using BaseRunner::BaseRunner;
-
-signals:
-    void getParameters_responseTest(OtherTestSettings::TestParameters&);
+    OptionResponseRunner(Mpi& mpi,
+                           Registry& reg,
+                           const OtherTestSettings::TestParameters& params,
+                           QObject* parent=nullptr)
+        : BaseRunner(mpi, reg, parent), m_params(params) {}
 
 protected:
     RunnerConfig buildConfig() override;
     void wireSpecificSignals(Test& t) override;
+
+private:
+    OtherTestSettings::TestParameters m_params;
 };
-
-
-#endif // OPTIONRESPONSERUNNER_H

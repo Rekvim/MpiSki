@@ -12,6 +12,9 @@
 #include "./Src/Ui/TestSettings/StepTestSettings.h"
 #include "./Src/Ui/TestSettings/CyclicTestSettings.h"
 
+#include "./Src/CustomChart/ChartManager.h"
+
+
 #include "./Src/Storage/Registry.h"
 #include "./Src/Telemetry/TelemetryStore.h"
 #include "./Src/Runners/AbstractTestRunner.h"
@@ -52,25 +55,7 @@ enum class TextObjects
     LineEdit_feedback_4_20mA,
 };
 
-enum class Charts
-{
-    Task,
-    Pressure,
-    Friction,
-    Response,
-    Resolution,
-    Stroke,
-    Step,
-    Trend,
-    Cyclic
-};
 
-struct Point
-{
-    quint8 seriesNum;
-    qreal X;
-    qreal Y;
-};
 
 class Program : public QObject
 {
@@ -271,9 +256,13 @@ public slots:
     void setTimeStart();
 
     void startStrokeTest();
-    void startMainTest();
+    void startMainTest(const MainTestSettings::TestParameters& params);
+    void startResponseTest(const OtherTestSettings::TestParameters& params);
+    void startResolutionTest(const OtherTestSettings::TestParameters& params);
+    void startStepTest(const StepTestSettings::TestParameters& params);
+    void startCyclicTest(const CyclicTestSettings::TestParameters& params);
+
     void startOptionalTest(quint8 testNum);
-    void startCyclicTest();
 
     void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }
     void forwardGetParameters_responseTest(OtherTestSettings::TestParameters &p) { emit getParameters_responseTest(p); }

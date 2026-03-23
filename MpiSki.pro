@@ -18,8 +18,12 @@ include(./QXlsx.pri)
 INCLUDEPATH += $$PWD/Src/CustomChart
 
 SOURCES += \
+    Src/CustomChart/ChartManager.cpp \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
     Src/Storage/AppSettings.cpp \
+    Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
+    Src/Ui/MainWindow/TelemetryUiMapper.cpp \
+    Src/Ui/MainWindow/TestController.cpp \
     Src/Ui/Setup/ValveWindow/Logic.cpp \
     Src/Ui/Setup/ValveWindow/Mapper.cpp \
     Src/Utils/Number.cpp \
@@ -71,6 +75,7 @@ SOURCES += \
     Sensor.cpp
 
 HEADERS += \
+    Src/CustomChart/ChartManager.h \
     Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
     Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
     Src/ReportBuilders/ReportBlocks/IReportBlock.h \
@@ -82,6 +87,9 @@ HEADERS += \
     Src/ReportBuilders/ReportWriter.h \
     Src/Storage/AppSettings.h \
     Src/Storage/SettingsGroup.h \
+    Src/Ui/MainWindow/CrossingIndicatorsPresenter.h \
+    Src/Ui/MainWindow/TelemetryUiMapper.h \
+    Src/Ui/MainWindow/TestController.h \
     Src/Ui/Setup/ObjectWindow.h \
     Src/Ui/Setup/ValveWindow/Logic.h \
     Src/Ui/Setup/ValveWindow/ValveEnums.h \
@@ -134,6 +142,8 @@ HEADERS += \
     Src/Uart/UartMessage.h \
     Src/Uart/UartReader.h \
     Src/Utils/Number.h \
+    Src/Utils/Shortcuts/TabActionRouter.h \
+    Src/Utils/Shortcuts/TabBinder.h \
     Src/ValidatorFactory/RegexPatterns.h \
     Src/ValidatorFactory/ValidatorFactory.h
 

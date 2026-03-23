@@ -4,8 +4,7 @@
 #include "./Program.h"
 
 RunnerConfig MainTestRunner::buildConfig() {
-    MainTestSettings::TestParameters p{};
-    emit getParameters_mainTest(p);
+    auto p = m_params;
     if (p.delay == 0) return {};
 
     const quint64 N = static_cast<quint64>(p.pointNumbers);

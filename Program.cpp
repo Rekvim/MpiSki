@@ -3,6 +3,7 @@
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
+#include "Src/Utils/Number.h"
 
 #include "./Src/Runners/MainTestRunner.h"
 #include "./Src/Runners/StepTestRunner.h"
@@ -15,18 +16,6 @@
 #include <QRegularExpression>
 #include <QLocale>
 #include <utility>
-
-namespace {
-double toDouble(QString s, bool* okOut = nullptr)
-{
-    s = s.trimmed();
-    s.replace(',', '.');
-    bool ok = false;
-    const double v = QLocale::c().toDouble(s, &ok);
-    if (okOut) *okOut = ok;
-    return v;
-}
-}
 
 constexpr quint8 VersionFlag = 0x40;
 
@@ -481,12 +470,14 @@ bool Program::isInitialized() const {
     return m_isInitialized;
 }
 
-void Program::startMainTest()
+void Program::startMainTest(const MainTestSettings::TestParameters& params)
 {
-    auto r = std::make_unique<MainTestRunner>(m_mpi, *m_registry, this);
-
-    connect(r.get(), &MainTestRunner::getParameters_mainTest,
-            this, &Program::forwardGetParameters_mainTest);
+    auto r = std::make_unique<MainTestRunner>(
+        m_mpi,
+        *m_registry,
+        params,
+        this
+    );
 
     startRunner(std::move(r));
 }
@@ -522,7 +513,7 @@ void Program::updateCrossingStatus()
 
     if (limits.valveStrokeEnabled) {
         bool ok = false;
-        const double recStroke = toDouble(valveInfo.valveStroke, &ok);
+        const double recStroke = NumberUtils::toDouble(valveInfo.valveStroke, &ok);
         if (ok) {
             const double d = std::abs(recStroke) * (limits.valveStroke / 100.0); // rangeUpperLimit как %
             const double lo = recStroke - d;
@@ -856,107 +847,100 @@ void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResul
     // emit telemetryUpdated(m_telemetryStore);
 }
 
-void Program::startCyclicTest()
+void Program::startCyclicTest(const CyclicTestSettings::TestParameters& params)
 {
-    CyclicTestSettings::TestParameters parameters{};
-    emit getParameters_cyclicTest(parameters);
-    qDebug() << "Program::runningCyclicTest testType =" << int(parameters.testType);
-
-    if (parameters.regSeqValues.isEmpty() && parameters.offSeqValues.isEmpty()) {
+    if (params.regSeqValues.isEmpty() && params.offSeqValues.isEmpty()) {
         emit testFinished();
         return;
     }
 
-    if (parameters.testType == CyclicTestSettings::TestParameters::Regulatory ||
-        parameters.testType == CyclicTestSettings::TestParameters::Combined) {
+    if (params.testType == CyclicTestSettings::TestParameters::Regulatory ||
+        params.testType == CyclicTestSettings::TestParameters::Combined) {
 
         auto& rec = m_telemetryStore.cyclicTestRecord;
 
         QStringList parts;
-        parts.reserve(parameters.regSeqValues.size());
+        parts.reserve(params.regSeqValues.size());
 
-        for (const quint16 v : std::as_const(parameters.regSeqValues))
+        for (const quint16 v : std::as_const(params.regSeqValues))
             parts << QString::number(v);
 
         rec.sequenceRegulatory = parts.join('-');
 
-        rec.numCyclesRegulatory = parameters.regulatory_numCycles;
+        rec.numCyclesRegulatory = params.regulatory_numCycles;
 
-        const quint64 stepsPerCycle = static_cast<quint64>(parameters.regSeqValues.size());
-        const quint64 totalSteps = stepsPerCycle * parameters.regulatory_numCycles;
+        const quint64 stepsPerCycle = static_cast<quint64>(params.regSeqValues.size());
+        const quint64 totalSteps = stepsPerCycle * params.regulatory_numCycles;
         const quint64 totalMs = totalSteps *
-                                (parameters.regulatory_delayMs + parameters.regulatory_holdMs);
-        rec.totalTimeSecRegulatory = totalMs / 1000.0; // перевели в секунды
+                                (params.regulatory_delayMs + params.regulatory_holdMs);
+        rec.totalTimeSecRegulatory = totalMs / 1000.0;
 
-        // 4) Диапазоны для onCyclicStepMeasured
         rec.ranges.clear();
-        rec.ranges.resize(parameters.regSeqValues.size());
+        rec.ranges.resize(params.regSeqValues.size());
 
-        for (int i = 0; i < parameters.regSeqValues.size(); ++i) {
+        for (int i = 0; i < params.regSeqValues.size(); ++i) {
             auto& r = rec.ranges[i];
-            r.rangePercent     = parameters.regSeqValues[i];
+            r.rangePercent     = params.regSeqValues[i];
 
-            // Прямой ход — будем искать максимум
             r.maxForwardValue  = std::numeric_limits<qreal>::lowest();
             r.maxForwardCycle  = -1;
 
-            // Обратный ход — будем искать минимум
             r.maxReverseValue  = std::numeric_limits<qreal>::max();
             r.maxReverseCycle  = -1;
         }
     }
 
-    if (parameters.testType == CyclicTestSettings::TestParameters::Shutoff) {
+    if (params.testType == CyclicTestSettings::TestParameters::Shutoff) {
 
         auto& rec = m_telemetryStore.cyclicTestRecord;
 
         QStringList parts;
-        parts.reserve(parameters.offSeqValues.size());
+        parts.reserve(params.offSeqValues.size());
 
-        for (const quint16 v : std::as_const(parameters.offSeqValues))
+        for (const quint16 v : std::as_const(params.offSeqValues))
             parts << QString::number(v);
 
         rec.sequenceShutoff = parts.join('-');
 
-        rec.numCyclesShutoff = parameters.shutoff_numCycles;
+        rec.numCyclesShutoff = params.shutoff_numCycles;
 
-        const quint64 stepsPerCycle = static_cast<quint64>(parameters.offSeqValues.size());
-        const quint64 totalSteps = stepsPerCycle * parameters.shutoff_numCycles;
+        const quint64 stepsPerCycle = static_cast<quint64>(params.offSeqValues.size());
+        const quint64 totalSteps = stepsPerCycle * params.shutoff_numCycles;
         const quint64 totalMs = totalSteps *
-                                (parameters.shutoff_delayMs + parameters.shutoff_holdMs);
-        rec.totalTimeSecShutoff = totalMs / 1000.0; // перевели в секунды
+                                (params.shutoff_delayMs + params.shutoff_holdMs);
+        rec.totalTimeSecShutoff = totalMs / 1000.0;
     }
 
-    switch (parameters.testType) {
+    switch (params.testType) {
     case CyclicTestSettings::TestParameters::Regulatory: {
-        auto r = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry, this);
-        r->setParameters(parameters);
+        auto r = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry, params, this);
+        // r->setParameters(params);
         startRunner(std::move(r));
         break;
     }
     case CyclicTestSettings::TestParameters::Shutoff: {
-        auto r = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, this);
-        r->setParameters(parameters);
+        auto r = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, params, this);
+        // r->setParameters(params);
         startRunner(std::move(r));
         break;
     }
     case CyclicTestSettings::TestParameters::Combined: {
-        const quint64 regSteps = quint64(parameters.regSeqValues.size()) * parameters.regulatory_numCycles;
-        const quint64 regMs = regSteps * (parameters.regulatory_delayMs + parameters.regulatory_holdMs)
-                              + parameters.regulatory_delayMs;
+        const quint64 regSteps = quint64(params.regSeqValues.size()) * params.regulatory_numCycles;
+        const quint64 regMs = regSteps * (params.regulatory_delayMs + params.regulatory_holdMs)
+                              + params.regulatory_delayMs;
 
-        const quint64 offSteps = quint64(parameters.offSeqValues.size()) * parameters.shutoff_numCycles;
-        const quint64 offMs = offSteps * (parameters.shutoff_delayMs + parameters.shutoff_holdMs)
-                              + parameters.shutoff_delayMs;
+        const quint64 offSteps = quint64(params.offSeqValues.size()) * params.shutoff_numCycles;
+        const quint64 offMs = offSteps * (params.shutoff_delayMs + params.shutoff_holdMs)
+                              + params.shutoff_delayMs;
 
         emit totalTestTimeMs(regMs + offMs);
 
-        auto reg = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry, this);
-        reg->setParameters(parameters);
+        auto reg = std::make_unique<CyclicRegulatoryRunner>(m_mpi, *m_registry,  params, this);
+        // reg->setParameters(params);
 
-        connect(this, &Program::testFinished, this, [this, parameters]() {
-            auto shut = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, this);
-            shut->setParameters(parameters);
+        connect(this, &Program::testFinished, this, [this, params]() {
+            auto shut = std::make_unique<CyclicShutoffRunner>(m_mpi, *m_registry, params, this);
+            // shut->setParameters(parameters);
             startRunner(std::move(shut));
         }, Qt::SingleShotConnection);
 
@@ -996,34 +980,22 @@ void Program::onCyclicStepMeasured(int cycle, int step, bool forward)
 
 void Program::startOptionalTest(quint8 testNum)
 {
-    switch (testNum) {
-    case 0: {
-        auto r = std::make_unique<OptionResponseRunner>(m_mpi, *m_registry, this);
-        connect(r.get(), &OptionResponseRunner::getParameters_responseTest,
-                this, [this](OtherTestSettings::TestParameters& p){
-                    emit getParameters_responseTest(p);
-                });
-        startRunner(std::move(r));
-        break;
-    }
-    case 1: {
-        auto r = std::make_unique<OptionResolutionRunner>(m_mpi, *m_registry, this);
-        connect(r.get(), &OptionResolutionRunner::getParameters_resolutionTest,
-                this, [this](OtherTestSettings::TestParameters& p){
-                    emit getParameters_resolutionTest(p);
-                });
-        startRunner(std::move(r));
-        break;
-    }
-    case 2: {
-        auto r = std::make_unique<StepTestRunner>(m_mpi, *m_registry, this);
-        startRunner(std::move(r));
-        break;
-    }
-    default:
-        emit stopTheTest();
-        break;
-    }
+
+}
+
+void Program::startResponseTest(const OtherTestSettings::TestParameters& params) {
+    auto r = std::make_unique<OptionResponseRunner>(m_mpi, *m_registry, params, this);
+
+    startRunner(std::move(r));
+}
+
+void Program::startResolutionTest(const OtherTestSettings::TestParameters& params) {
+    auto r = std::make_unique<OptionResolutionRunner>(m_mpi, *m_registry, params, this);
+    startRunner(std::move(r));
+}
+void Program::startStepTest(const StepTestSettings::TestParameters& params) {
+    auto r = std::make_unique<StepTestRunner>(m_mpi, *m_registry, params, this);
+    startRunner(std::move(r));
 }
 
 void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)

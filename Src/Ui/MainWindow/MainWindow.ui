@@ -5430,9 +5430,6 @@ Border-radius: 10px;
             <property name="text">
              <string>Открыть отчёт</string>
             </property>
-            <property name="shortcut">
-             <string>Shift+Return</string>
-            </property>
            </widget>
           </item>
          </layout>

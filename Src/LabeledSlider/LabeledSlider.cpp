@@ -10,6 +10,30 @@ LabeledSlider::LabeledSlider(QWidget* parent)
     : QSlider(parent)
 {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+    m_labels[3000] = "3 мА";
+    m_labels[4000] = "0% – 4 мА";
+    m_labels[5000] = "5 мА";
+    m_labels[6000] = "6 мА";
+    m_labels[7000] = "7 мА";
+    m_labels[8000] = "25% – 8 мА";
+    m_labels[9000] = "9 мА";
+    m_labels[10000] = "10 мА";
+    m_labels[11000] = "11 мА";
+    m_labels[12000] = "50% – 12 мА";
+    m_labels[13000] = "13 мА";
+    m_labels[14000] = "14 мА";
+    m_labels[15000] = "15 мА";
+    m_labels[16000] = "75% – 16 мА";
+    m_labels[17000] = "17 мА";
+    m_labels[18000] = "18 мА";
+    m_labels[19000] = "19 мА";
+    m_labels[20000] = "100% – 20 мА";
+    m_labels[21000] = "21 мА";
+
+    setTickGap(6);
+    setTickLength(10);
+    setLabelOffset(8);
 }
 
 void LabeledSlider::setTickLabels(const QMap<int, QString>& labels)

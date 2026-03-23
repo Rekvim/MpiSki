@@ -1,23 +1,22 @@
-#ifndef STEPTESTRUNNER_H
-#define STEPTESTRUNNER_H
-
 #pragma once
+
 #include "BaseRunner.h"
-#include "./Src/Tests/StepTest.h"
 #include "./Src/Ui/TestSettings/StepTestSettings.h"
 
-class StepTestRunner : public BaseRunner {
+class StepTestRunner : public BaseRunner
+{
     Q_OBJECT
 public:
-    using BaseRunner::BaseRunner;
-
-signals:
-    // void getParameters_stepTest(OtherTestSettings::TestParameters&);
+    StepTestRunner(Mpi& mpi,
+                   Registry& reg,
+                   const StepTestSettings::TestParameters& params,
+                   QObject* parent=nullptr)
+        : BaseRunner(mpi, reg, parent), m_params(params) {}
 
 protected:
     RunnerConfig buildConfig() override;
     void wireSpecificSignals(Test& t) override;
+
+private:
+    StepTestSettings::TestParameters m_params;
 };
-
-
-#endif // STEPTESTRUNNER_H

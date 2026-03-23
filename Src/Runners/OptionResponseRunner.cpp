@@ -5,8 +5,8 @@
 
 RunnerConfig OptionResponseRunner::buildConfig()
 {
-    OtherTestSettings::TestParameters p{};
-    emit getParameters_responseTest(p);
+    auto p = m_params;
+
     if (p.points.empty())
         return {};
 

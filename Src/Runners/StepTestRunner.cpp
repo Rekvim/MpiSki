@@ -22,7 +22,7 @@ static QVector<quint16> buildSequence(const StepTestSettings::TestParameters& p,
 }
 
 RunnerConfig StepTestRunner::buildConfig() {
-    StepTestSettings::TestParameters p{};
+    auto p = m_params;
     auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
     emit owner->getParameters_stepTest(p);
     if (p.points.empty()) return {};

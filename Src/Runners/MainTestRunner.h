@@ -1,7 +1,5 @@
-#ifndef MAINTESTRUNNER_H
-#define MAINTESTRUNNER_H
-
 #pragma once
+
 #include <QObject>
 #include "BaseRunner.h"
 #include "./Src/Ui/TestSettings/MainTestSettings.h"
@@ -9,14 +7,16 @@
 class MainTestRunner : public BaseRunner {
     Q_OBJECT
 public:
-    using BaseRunner::BaseRunner;
-
-signals:
-    void getParameters_mainTest(MainTestSettings::TestParameters&);
+    MainTestRunner(Mpi& mpi,
+                   Registry& reg,
+                   const MainTestSettings::TestParameters& params,
+                   QObject* parent=nullptr)
+    : BaseRunner(mpi, reg, parent), m_params(params) {}
 
 protected:
     RunnerConfig buildConfig() override;
     void wireSpecificSignals(Test& t) override;
-};
 
-#endif // MAINTESTRUNNER_H
+private:
+    MainTestSettings::TestParameters m_params;
+};

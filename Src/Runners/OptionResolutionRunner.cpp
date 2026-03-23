@@ -5,8 +5,8 @@
 
 RunnerConfig OptionResolutionRunner::buildConfig()
 {
-    OtherTestSettings::TestParameters p{};
-    emit getParameters_resolutionTest(p);
+    auto p = m_params;
+
     if (p.points.empty())
         return {};
 

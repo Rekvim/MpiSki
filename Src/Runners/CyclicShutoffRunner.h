@@ -1,21 +1,21 @@
-#ifndef CYCLICSHUTOFFRUNNER_H
-#define CYCLICSHUTOFFRUNNER_H
-
 #pragma once
+
 #include "BaseRunner.h"
-#include "./Src/Tests/CyclicTestsShutoff.h"
 #include "./Src/Ui/TestSettings/CyclicTestSettings.h"
 
-class CyclicShutoffRunner final : public BaseRunner {
+class CyclicShutoffRunner : public BaseRunner {
     Q_OBJECT
 public:
-    using BaseRunner::BaseRunner;
-    void setParameters(const CyclicTestSettings::TestParameters& p) { m_params = p; }
-private:
-    CyclicTestSettings::TestParameters m_params;
+    CyclicShutoffRunner(Mpi& mpi,
+                   Registry& reg,
+                   const CyclicTestSettings::TestParameters& params,
+                   QObject* parent=nullptr)
+        : BaseRunner(mpi, reg, parent), m_params(params) {}
+
 protected:
     RunnerConfig buildConfig() override;
-    void wireSpecificSignals(Test& base) override;
-};
+    void wireSpecificSignals(Test& t) override;
 
-#endif // CYCLICSHUTOFFRUNNER_H
+private:
+    CyclicTestSettings::TestParameters m_params;
+};

@@ -4,6 +4,7 @@
 
 #include "ui_ValveWindow.h"
 #include "./Src/ValidatorFactory/ValidatorFactory.h"
+#include "Src/Utils/Shortcuts/TabBinder.h"
 
 #include <QDebug>
 #include <QTimer>
@@ -101,9 +102,7 @@ void ValveWindow::bindTabShortcut(int key, QWidget* tab)
 
 void ValveWindow::setupTabs()
 {
-    ui->tabWidget->setCurrentIndex(0);
-    bindTabShortcut(1, ui->tab_data);
-    bindTabShortcut(2, ui->tab_passFail);
+    TabBinder::bindNumbers(this, ui->tabWidget);
 }
 
 void ValveWindow::setupValidators()

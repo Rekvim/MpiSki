@@ -106,9 +106,9 @@ void CyclicTestSettings::fillDefaultShutOffPresets()
         "0-100-0"
     };
 
-    ui->listWidget_delayTimeShutOff->clear();
-    ui->listWidget_delayTimeShutOff->addItems(presetsRange);
-    ui->listWidget_delayTimeShutOff->setCurrentRow(0);
+    ui->listWidget_testRangeShutOff->clear();
+    ui->listWidget_testRangeShutOff->addItems(presetsRange);
+    ui->listWidget_testRangeShutOff->setCurrentRow(0);
 
     static const QStringList presetsDelay = {
         "10",

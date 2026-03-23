@@ -1,13 +1,15 @@
 #include "./Src/Runners/BaseRunner.h"
 #include "./Src/Tests/Test.h"
 #include "./Src/Mpi/Mpi.h"
-#include "./Registry.h"
+#include "./Src/Storage/Registry.h"
 
 BaseRunner::BaseRunner(Mpi& mpi, Registry& reg, QObject* parent)
     : AbstractTestRunner(parent), m_mpi(mpi), m_reg(reg) {}
 
-BaseRunner::~BaseRunner() {
+BaseRunner::~BaseRunner()
+{
     if (m_thread) {
+        m_thread->requestInterruption();
         m_thread->quit();
         m_thread->wait();
     }
@@ -27,6 +29,12 @@ void BaseRunner::start() {
 
     m_thread = new QThread(this);
     m_worker->moveToThread(m_thread);
+
+    connect(m_thread, &QThread::finished,
+            this, [this]{
+                m_thread = nullptr;
+                m_worker = nullptr;
+            });
 
     connect(m_worker, &Test::started,
             this, &BaseRunner::testActuallyStarted);

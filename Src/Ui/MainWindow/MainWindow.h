@@ -9,23 +9,23 @@
 #include <QPlainTextEdit>
 #include <QElapsedTimer>
 
+#include "Src/Utils/Shortcuts/TabActionRouter.h"
+
+#include "Src/Ui/MainWindow/TelemetryUiMapper.h"
+#include "Src/Ui/MainWindow/CrossingIndicatorsPresenter.h"
+
 #include "./Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
 #include "./Src/Storage/Registry.h"
 #include "./Src/Telemetry/TelemetryStore.h"
 #include "./Src/Ui/TestSettings/AbstractTestSettings.h"
+#include "./Src/CustomChart/ChartManager.h"
+
+#include "TestController.h"
 
 // QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 // QT_END_NAMESPACE
-
-enum class TestState {
-    Idle,
-    Starting,
-    Running,
-    Finished,
-    Canceled
-};
 
 class MainWindow : public QMainWindow
 {
@@ -60,32 +60,16 @@ private slots:
 
     void onTelemetryUpdated(const TelemetryStore &telemetry);
 
-    void updateInitUI(const InitState& init);
-    void updateMainTestUI(const TelemetryStore& t);
-    void updateStrokeTestUI(const StrokeTestRecord& r);
-    // void updateCyclicTestUI(const CyclicTestRecord& r);
-    void updateCrossingUI(const TelemetryStore& t);
-
-    void addPoints(Charts chart, const QVector<Point> &points);
-    void clearPoints(Charts chart);
 
     void promptSaveChartsAfterTest();
 
-
-    void showDots(bool visible);
-    void duplicateMainChartsSeries();
-
     void getDirectory(const QString &currentPath, QString &result);
-
-
-    void updateCrossingIndicators();
 
     void setText(TextObjects object, const QString &text);
     void setTask(qreal task);
 
     void setStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
 
-    void setChartVisible(Charts chart, quint16 series, bool visible);
     void setSensorsNumber(quint8 sensorCount);
 
     void setButtonInitEnabled(bool enabled);
@@ -101,7 +85,6 @@ private slots:
 
     void askQuestion(const QString &title, const QString &text, bool &result);
 
-    void startTest();
     void endTest();
 
     void onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
@@ -109,10 +92,10 @@ private slots:
     void onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
     void onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
 
-    void onMainTestParametersRequested(MainTestSettings::TestParameters &parameters);
-    void onStepTestParametersRequested(StepTestSettings::TestParameters &parameters);
-    void onResolutionTestParametersRequested(OtherTestSettings::TestParameters &parameters);
-    void onResponseTestParametersRequested(OtherTestSettings::TestParameters &parameters);
+    // void onMainTestParametersRequested(MainTestSettings::TestParameters &parameters);
+    // void onStepTestParametersRequested(StepTestSettings::TestParameters &parameters);
+    // void onResolutionTestParametersRequested(OtherTestSettings::TestParameters &parameters);
+    // void onResponseTestParametersRequested(OtherTestSettings::TestParameters &parameters);
     void onCyclicTestParametersRequested(CyclicTestSettings::TestParameters &parameters);
 
     void on_pushButton_init_clicked();
@@ -146,14 +129,35 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    TabActionRouter m_tabActionRouter;
+    std::unique_ptr<TelemetryUiMapper> m_mapper;
+    std::unique_ptr<CrossingIndicatorsPresenter> m_crossingIndicators;
+    std::unique_ptr<ChartManager> m_chartManager;
+
+    Registry *m_registry = nullptr;
     TelemetryStore m_telemetryStore;
+
+    Program *m_program;
+    QThread *m_programThread;
+    TestController* m_testController = nullptr;
+
+    QTimer* m_durationTimer;
+    QElapsedTimer m_elapsedTimer;
+    quint64 m_totalTestMs;
+
+    ReportSaver::Report m_report;
+    ReportSaver *m_reportSaver = nullptr;
 
     QPlainTextEdit* m_logOutput = nullptr;
 
-    bool m_isUserCanceled = false;
-    bool m_isTestRunning = false;
     bool m_isInitialized = false;
     bool m_chartsInitialized = false;
+
+    bool tryStartTest();
+
+    void setupShortcuts();
+    void setupPrimaryActions();
 
     void setTestState(TestState state);
     TestState m_testState = TestState::Idle;
@@ -161,16 +165,15 @@ private:
     void collectRegistryOverrides(
         ObjectInfo& objectInfo,
         ValveInfo& valveInfo,
-        OtherParameters& otherParameters);
+        OtherParameters& otherParameters
+    );
+
     void collectReportOverrides();
 
     void lockTabsForPreInit();
     void updateAvailableTabs();
     void applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo);
     QVector<Charts> chartsForCurrentTest() const;
-    Registry *m_registry = nullptr;
-
-    ReportSaver *m_reportSaver = nullptr;
 
     struct SeriesVisibilityBackup {
         QVector<bool> visible;
@@ -180,24 +183,11 @@ private:
     SeriesVisibilityBackup hidePressureAuxSeries();
     void restoreSeries(Charts chart, const SeriesVisibilityBackup& b);
 
-
-    Program *m_program;
-    QThread *m_programThread;
-
-    QTimer* m_durationTimer;
-    QElapsedTimer m_elapsedTimer;
-
-    quint64 m_totalTestMs;
-
-    ReportSaver::Report m_report;
-
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
 
     QHash<TextObjects, QLineEdit *> m_lineEdits;
-    QHash<Charts, MyChart *> m_charts;
 
     QVector<AbstractTestSettings*> m_testSettings;
-
     MainTestSettings *m_mainTestSettings;
     StepTestSettings *m_stepTestSettings;
     OtherTestSettings *m_responseTestSettings;
@@ -211,8 +201,6 @@ private:
 
     void syncTaskChartSeriesVisibility(quint8 sensorCount);
     void displayDependingPattern();
-    void triggerPrimaryAction();
-    QTabWidget* currentInnerTabWidget() const;
 
     void initCharts();
     void saveChart(Charts chart);

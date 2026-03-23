@@ -1,7 +1,7 @@
 #include "ReportSaver.h"
 
 #include "./Src/CustomChart/MyChart.h"
-#include "Registry.h"
+#include "./Src/Storage/Registry.h"
 
 #include <QCoreApplication>
 #include <QDate>
