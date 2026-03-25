@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setupUiConnections();
+
     m_mapper = std::make_unique<TelemetryUiMapper>(ui);
     m_chartManager = std::make_unique<ChartManager>(this);
     m_crossingIndicators = std::make_unique<CrossingIndicatorsPresenter>(ui);
@@ -89,6 +91,9 @@ MainWindow::MainWindow(QWidget *parent)
     };
 
     m_reportSaver = new ReportSaver(this);
+    m_chartImages = new ChartImageService(
+        m_chartManager.get(),
+        m_reportSaver);
 
 
     ui->checkBox_switch_3_0->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -171,13 +176,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::setDo,
             m_program, &Program::button_DO);
 
-    for (int i = 0; i < 4; ++i) {
-        auto btn = findChild<QPushButton*>(QString("pushButton_DO%1").arg(i));
-        if (!btn) continue;
+    QPushButton* buttons[] = {
+        ui->pushButton_DO0,
+        ui->pushButton_DO1,
+        ui->pushButton_DO2,
+        ui->pushButton_DO3
+    };
 
-        connect(btn, &QPushButton::clicked,
-                this, [this, i](bool checked)
-                {
+    for (int i = 0; i < 4; ++i) {
+        connect(buttons[i], &QPushButton::clicked,
+                this, [this, i](bool checked) {
                     emit setDo(i, checked);
                 });
     }
@@ -370,6 +378,7 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->tabWidget_reportGeneration->setCurrentIndex(0);
             });
 
+    // bindImage
     auto bindImage = [&](QPushButton* btn, QLabel* label, QImage* img)
     {
         connect(btn, &QPushButton::clicked, this, [this, label, img]
@@ -401,6 +410,81 @@ MainWindow::~MainWindow()
     m_programThread->wait();
 
     delete ui;
+}
+
+void MainWindow::setupUiConnections()
+{
+    // ===== signal buttons =====
+
+    connect(ui->pushButton_signal_4mA,
+            &QPushButton::clicked,
+            this,
+            [this] { ui->doubleSpinBox_task->setValue(4.0); });
+
+    connect(ui->pushButton_signal_8mA,
+            &QPushButton::clicked,
+            this,
+            [this] { ui->doubleSpinBox_task->setValue(8.0); });
+
+    connect(ui->pushButton_signal_12mA,
+            &QPushButton::clicked,
+            this,
+            [this] { ui->doubleSpinBox_task->setValue(12.0); });
+
+    connect(ui->pushButton_signal_16mA,
+            &QPushButton::clicked,
+            this,
+            [this] { ui->doubleSpinBox_task->setValue(16.0); });
+
+    connect(ui->pushButton_signal_20mA,
+            &QPushButton::clicked,
+            this,
+            [this] { ui->doubleSpinBox_task->setValue(20.0); });
+
+
+    // ===== main test =====
+    connect(ui->pushButton_mainTest_start, &QPushButton::clicked,
+            this, &MainWindow::startMainTestClicked);
+
+    connect(ui->pushButton_mainTest_save, &QPushButton::clicked,
+            this, &MainWindow::saveMainTestChartClicked);
+
+    // ===== stroke test =====
+    connect(ui->pushButton_strokeTest_start, &QPushButton::clicked,
+            this, &MainWindow::startStrokeTestClicked);
+
+    connect(ui->pushButton_strokeTest_save, &QPushButton::clicked,
+            this, &MainWindow::saveStrokeChartClicked);
+
+
+    // ===== optional tests =====
+    connect(ui->pushButton_optionalTests_start, &QPushButton::clicked,
+            this, &MainWindow::startOptionalTestClicked);
+    connect(ui->pushButton_optionalTests_save, &QPushButton::clicked,
+            this, &MainWindow::saveOptionalTestChartClicked);
+
+    // ===== cyclic =====
+    connect(ui->pushButton_cyclicTest_start, &QPushButton::clicked,
+            this, &MainWindow::startCyclicTestClicked);
+
+    connect(ui->pushButton_cyclicTest_save, &QPushButton::clicked,
+            this, &MainWindow::saveCyclicChartClicked);
+
+    // ===== init =====
+    connect(ui->pushButton_init, &QPushButton::clicked,
+            this, &MainWindow::initClicked);
+
+    // ===== report =====
+    connect(ui->pushButton_report_generate, &QPushButton::clicked,
+            this, &MainWindow::generateReportClicked);
+
+    connect(ui->pushButton_report_open,
+            &QPushButton::clicked,
+            this, &MainWindow::openReportClicked);
+
+    // ===== navigation =====
+    connect(ui->pushButton_back, &QPushButton::clicked,
+            this, &MainWindow::backClicked);
 }
 
 void MainWindow::lockTabsForPreInit()
@@ -592,26 +676,6 @@ void MainWindow::appendLog(const QString& text) {
     m_logOutput->appendPlainText(stamp + text);
 }
 
-void MainWindow::on_pushButton_signal_4mA_clicked()
-{
-    ui->doubleSpinBox_task->setValue(4.0);
-}
-void MainWindow::on_pushButton_signal_8mA_clicked()
-{
-    ui->doubleSpinBox_task->setValue(8.0);
-}
-void MainWindow::on_pushButton_signal_12mA_clicked()
-{
-    ui->doubleSpinBox_task->setValue(12.0);
-}
-void MainWindow::on_pushButton_signal_16mA_clicked()
-{
-    ui->doubleSpinBox_task->setValue(16.0);
-}
-void MainWindow::on_pushButton_signal_20mA_clicked()
-{
-    ui->doubleSpinBox_task->setValue(20.0);
-}
 // !!!
 void MainWindow::setTaskControlsEnabled(bool enabled)
 {
@@ -832,9 +896,7 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 {
     const bool hasSensors = (sensorCount > 0);
 
-    if (hasSensors) {
-        m_isInitialized = true;
-    }
+    if (hasSensors) m_isInitialized = true;
 
     updateAvailableTabs();
 
@@ -1061,23 +1123,18 @@ void MainWindow::setTestState(TestState state)
 bool MainWindow::tryStartTest()
 {
     if (m_testState == TestState::Running ||
-        m_testState == TestState::Starting)
-    {
+        m_testState == TestState::Starting) {
         if (QMessageBox::question( this, tr("Внимание!"),
                 tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
 
             setTestState(TestState::Canceled);
             emit stopTest();
-        }
-
-        return false;
-    }
-
-    return true;
+        } return false;
+    } return true;
 }
 
-void MainWindow::on_pushButton_mainTest_start_clicked()
+void MainWindow::startMainTestClicked()
 {
     if (!tryStartTest())
         return;
@@ -1085,17 +1142,18 @@ void MainWindow::on_pushButton_mainTest_start_clicked()
     if (m_mainTestSettings->exec() != QDialog::Accepted)
         return;
 
-    auto params = m_mainTestSettings->getParameters();
+    const auto params = m_mainTestSettings->getParameters();
 
     m_testController->runMainTest(params);
 }
-void MainWindow::on_pushButton_mainTest_save_clicked()
+void MainWindow::saveMainTestChartClicked()
 {
-    if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_task) {
+    const auto *w = ui->tabWidget_mainTests->currentWidget();
+    if (w == ui->tab_mainTests_task) {
         saveChart(Charts::Task);
-    } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_pressure) {
+    } else if (w == ui->tab_mainTests_pressure) {
         saveChart(Charts::Pressure);
-    } else if (ui->tabWidget_mainTests->currentWidget() == ui->tab_mainTests_friction) {
+    } else if (w == ui->tab_mainTests_friction) {
         saveChart(Charts::Friction);
     }
 }
@@ -1152,19 +1210,19 @@ QVector<Charts> MainWindow::chartsForCurrentTest() const
     return {};
 }
 
-void MainWindow::on_pushButton_strokeTest_start_clicked()
+void MainWindow::startStrokeTestClicked()
 {
     if (!tryStartTest())
         return;
 
     m_testController->runStrokeTest();
 }
-void MainWindow::on_pushButton_strokeTest_save_clicked()
+void MainWindow::saveStrokeChartClicked()
 {
     saveChart(Charts::Stroke);
 }
 
-void MainWindow::on_pushButton_optionalTests_start_clicked()
+void MainWindow::startOptionalTestClicked()
 {
     if (!tryStartTest())
         return;
@@ -1193,18 +1251,20 @@ void MainWindow::on_pushButton_optionalTests_start_clicked()
             m_stepTestSettings->getParameters());
     }
 }
-void MainWindow::on_pushButton_optionalTests_save_clicked()
+void MainWindow::saveOptionalTestChartClicked()
 {
-    if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_response) {
+    const auto *w = ui->tabWidget_optionalTests->currentWidget();
+
+    if (w == ui->tab_optionalTests_response) {
         saveChart(Charts::Response);
-    } else if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_resolution) {
+    } else if (w == ui->tab_optionalTests_resolution) {
         saveChart(Charts::Resolution);
-    } else if (ui->tabWidget_optionalTests->currentWidget() == ui->tab_optionalTests_step) {
+    } else if (w == ui->tab_optionalTests_step) {
         saveChart(Charts::Step);
     }
 }
 
-void MainWindow::on_pushButton_cyclicTest_start_clicked()
+void MainWindow::startCyclicTestClicked()
 {
     if (!tryStartTest())
         return;
@@ -1218,7 +1278,7 @@ void MainWindow::on_pushButton_cyclicTest_start_clicked()
         m_cyclicTestSettings->getParameters());
 }
 
-void MainWindow::on_pushButton_cyclicTest_save_clicked()
+void MainWindow::saveCyclicChartClicked()
 {
     saveChart(Charts::Cyclic);
 }
@@ -1421,60 +1481,6 @@ void MainWindow::initCharts()
             Qt::QueuedConnection);
 }
 
-void MainWindow::saveChart(Charts chart)
-{
-    std::optional<SeriesVisibilityBackup> backup;
-
-    if (chart == Charts::Task) {
-        backup = hideTaskAuxSeries();
-    } else if (chart == Charts::Pressure) {
-        backup = hidePressureAuxSeries();
-    }
-
-    MyChart* ch = m_chartManager->chart(chart);
-    if (!ch)
-        return;
-
-    if (m_reportSaver) {
-        m_reportSaver->saveImage(ch);
-    }
-
-    QPixmap pix = ch->grab();
-
-    if (backup.has_value())
-        restoreSeries(chart, *backup);
-
-    QImage img = pix.toImage();
-
-    switch (chart) {
-    case Charts::Task:
-        ui->label_imageChartTask->setPixmap(pix);
-        m_imageChartTask = img;
-        break;
-
-    case Charts::Pressure:
-        ui->label_imageChartPressure->setPixmap(pix);
-        m_imageChartPressure = img;
-        break;
-
-    case Charts::Friction:
-        ui->label_imageChartFriction->setPixmap(pix);
-        m_imageChartFriction = img;
-        break;
-
-    case Charts::Step:
-        m_imageChartStep = img;
-        break;
-
-    default:
-        break;
-    }
-
-    ui->label_imageChartTask->setScaledContents(true);
-    ui->label_imageChartPressure->setScaledContents(true);
-    ui->label_imageChartFriction->setScaledContents(true);
-}
-
 void MainWindow::getImage(QLabel *label, QImage *image)
 {
     QString imgPath = QFileDialog::getOpenFileName(this,
@@ -1489,7 +1495,7 @@ void MainWindow::getImage(QLabel *label, QImage *image)
     }
 }
 
-void MainWindow::on_pushButton_init_clicked()
+void MainWindow::initClicked()
 {
     QVector<bool> states = {
         ui->pushButton_DO0->isChecked(),
@@ -1501,41 +1507,6 @@ void MainWindow::on_pushButton_init_clicked()
     emit doInitStatesSelected(states);
     emit initialized();
     emit patternChanged(m_patternType);
-}
-
-MainWindow::SeriesVisibilityBackup MainWindow::hidePressureAuxSeries()
-{
-    SeriesVisibilityBackup b;
-
-    // regression
-    b.visible = { ui->checkBox_regression->isChecked() };
-
-    auto* ch = m_chartManager->chart(Charts::Pressure);
-    if (!ch) return b;
-
-    ch->visible(1, false);
-    return b;
-}
-
-MainWindow::SeriesVisibilityBackup MainWindow::hideTaskAuxSeries()
-{
-    SeriesVisibilityBackup b;
-
-    // pressure 1..3
-    b.visible = {
-        ui->checkBox_showCurve_pressure_1->isChecked(),
-        ui->checkBox_showCurve_pressure_2->isChecked(),
-        ui->checkBox_showCurve_pressure_3->isChecked()
-    };
-
-    auto* ch = m_chartManager->chart(Charts::Task);
-    if (!ch) return b;
-
-    ch->visible(2, false);
-    ch->visible(3, false);
-    ch->visible(4, false);
-
-    return b;
 }
 
 void MainWindow::restoreSeries(Charts chart, const SeriesVisibilityBackup& b)
@@ -1554,10 +1525,38 @@ void MainWindow::restoreSeries(Charts chart, const SeriesVisibilityBackup& b)
     }
 }
 
+void MainWindow::saveChart(Charts chart)
+{
+    switch (chart) {
+    case Charts::Task:
+        m_chartImages->saveChart(
+            chart,
+            ui->label_imageChartTask,
+            m_imageChartTask);
+        break;
+    case Charts::Pressure:
+        m_chartImages->saveChart(
+            chart,
+            ui->label_imageChartPressure,
+            m_imageChartPressure);
+        break;
+    case Charts::Friction:
+        m_chartImages->saveChart(
+            chart,
+            ui->label_imageChartFriction,
+            m_imageChartFriction);
+        break;
+    case Charts::Step:
+        m_imageChartStep = m_chartImages->captureChart(chart);
+        break;
+    default:
+        m_chartImages->saveChart(chart);
+        break;
+    }
+}
+
 void MainWindow::collectReportOverrides()
 {
-
-
     // ===== MainTestRecord =====
     NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionForceValue,
                m_telemetryStore.mainTestRecord.frictionForce);
@@ -1605,7 +1604,7 @@ void MainWindow::collectRegistryOverrides(
     valveInfo.valveStroke = ui->lineEdit_resultsTable_strokeRecomend->text();
 }
 
-void MainWindow::on_pushButton_report_generate_clicked()
+void MainWindow::generateReportClicked()
 {
     std::unique_ptr<ReportBuilder> reportBuilder;
 
@@ -1639,17 +1638,16 @@ void MainWindow::on_pushButton_report_generate_clicked()
     bool saved = m_reportSaver->saveReport(report, reportBuilder->templatePath());
     ui->pushButton_report_open->setEnabled(saved);
 }
-void MainWindow::on_pushButton_report_open_clicked()
+void MainWindow::openReportClicked()
 {
     QDesktopServices::openUrl(
         QUrl::fromLocalFile(m_reportSaver->directory().filePath(QStringLiteral("report.xlsx"))));
 }
 
-void MainWindow::on_pushButton_back_clicked()
+void MainWindow::backClicked()
 {
     if (m_testState == TestState::Running ||
-        m_testState == TestState::Starting)
-    {
+        m_testState == TestState::Starting) {
         QMessageBox::warning(this,
                              tr("Внимание"),
                              tr("Нельзя вернуться во время выполнения теста"));
@@ -1663,7 +1661,6 @@ void MainWindow::on_pushButton_back_clicked()
     valveWindow.setPatternType(m_patternType);
 
     if (valveWindow.exec() == QDialog::Accepted) {
-
         setRegistry(m_registry);
     }
 

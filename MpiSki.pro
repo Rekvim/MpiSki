@@ -18,6 +18,7 @@ include(./QXlsx.pri)
 INCLUDEPATH += $$PWD/Src/CustomChart
 
 SOURCES += \
+    Src/CustomChart/ChartImageService.cpp \
     Src/CustomChart/ChartManager.cpp \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
     Src/Storage/AppSettings.cpp \
@@ -75,6 +76,7 @@ SOURCES += \
     Sensor.cpp
 
 HEADERS += \
+    Src/CustomChart/ChartImageService.h \
     Src/CustomChart/ChartManager.h \
     Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
     Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \

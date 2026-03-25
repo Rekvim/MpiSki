@@ -1,7 +1,5 @@
-#ifndef MAINTESTSETTINGS_H
-#define MAINTESTSETTINGS_H
-
 #pragma once
+
 #include <QDialog>
 #include <QMetaType>
 #include "AbstractTestSettings.h"
@@ -56,5 +54,3 @@ protected:
 };
 
 Q_DECLARE_METATYPE(MainTestSettings::TestParameters)
-
-#endif // MAINTESTSETTINGS_H

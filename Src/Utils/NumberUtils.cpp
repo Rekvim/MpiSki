@@ -16,7 +16,7 @@ NumberUtils::toDouble(QString s, bool* okOut)
     return v;
 }
 
-void readDouble (QLineEdit* le, double& target)
+void NumberUtils::readDouble (QLineEdit* le, double& target)
 {
     bool ok = false;
     double v = NumberUtils::toDouble(le->text(), &ok);
@@ -50,7 +50,7 @@ NumberUtils::parseRange(QString s)
     return QPair<double,double>(low, high);
 }
 
-void readRange(QLineEdit* le, double& low, double& high) {
+void NumberUtils::readRange(QLineEdit* le, double& low, double& high) {
     QString s = le->text().trimmed();
     s.replace(QChar(0x2013), '-');
     s.replace(QChar(0x2014), '-');

@@ -6,7 +6,7 @@
 #include <array>
 
 #include "AbstractTestSettings.h"
-#include "./Src/Ui/Setup/SelectTests.h"
+#include "Src/Ui/Setup/SelectTests.h"
 
 namespace Ui {
 class CyclicTestSettings;

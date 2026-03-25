@@ -14,12 +14,13 @@
 #include "Src/Ui/MainWindow/TelemetryUiMapper.h"
 #include "Src/Ui/MainWindow/CrossingIndicatorsPresenter.h"
 
-#include "./Src/ReportBuilders/ReportSaver.h"
+#include "Src/ReportBuilders/ReportSaver.h"
 #include "Program.h"
-#include "./Src/Storage/Registry.h"
-#include "./Src/Telemetry/TelemetryStore.h"
-#include "./Src/Ui/TestSettings/AbstractTestSettings.h"
-#include "./Src/CustomChart/ChartManager.h"
+#include "Src/Storage/Registry.h"
+#include "Src/Telemetry/TelemetryStore.h"
+#include "Src/Ui/TestSettings/AbstractTestSettings.h"
+#include "Src/CustomChart/ChartManager.h"
+#include "Src/CustomChart/ChartImageService.h"
 
 #include "TestController.h"
 
@@ -44,11 +45,6 @@ signals:
 
     void doInitStatesSelected(const QVector<bool> &states);
     void dacValueRequested(qreal value);
-
-    // void runMainTest();
-    // void runStrokeTest();
-    // void runCyclicTest();
-    // void runOptionalTest(quint8 testNum);
 
     void stopTest();
 
@@ -92,40 +88,22 @@ private slots:
     void onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
     void onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
 
-    // void onMainTestParametersRequested(MainTestSettings::TestParameters &parameters);
-    // void onStepTestParametersRequested(StepTestSettings::TestParameters &parameters);
-    // void onResolutionTestParametersRequested(OtherTestSettings::TestParameters &parameters);
-    // void onResponseTestParametersRequested(OtherTestSettings::TestParameters &parameters);
     void onCyclicTestParametersRequested(CyclicTestSettings::TestParameters &parameters);
 
-    void on_pushButton_init_clicked();
+    void setupUiConnections();
+    void startMainTestClicked();
+    void saveMainTestChartClicked();
+    void startStrokeTestClicked();
+    void saveStrokeChartClicked();
+    void startOptionalTestClicked();
+    void saveOptionalTestChartClicked();
+    void startCyclicTestClicked();
+    void saveCyclicChartClicked();
+    void initClicked();
+    void generateReportClicked();
+    void openReportClicked();
+    void backClicked();
 
-    void on_pushButton_report_generate_clicked();
-    void on_pushButton_report_open_clicked();
-
-    void on_pushButton_mainTest_start_clicked();
-    void on_pushButton_mainTest_save_clicked();
-
-    void on_pushButton_strokeTest_start_clicked();
-    void on_pushButton_strokeTest_save_clicked();
-
-    void on_pushButton_optionalTests_start_clicked();
-    void on_pushButton_optionalTests_save_clicked();
-
-    void on_pushButton_cyclicTest_start_clicked();
-    void on_pushButton_cyclicTest_save_clicked();
-
-    void on_pushButton_imageChartTask_clicked();
-    void on_pushButton_imageChartPressure_clicked();
-    void on_pushButton_imageChartFriction_clicked();
-
-    void on_pushButton_signal_4mA_clicked();
-    void on_pushButton_signal_8mA_clicked();
-    void on_pushButton_signal_12mA_clicked();
-    void on_pushButton_signal_16mA_clicked();
-    void on_pushButton_signal_20mA_clicked();
-
-    void on_pushButton_back_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -134,6 +112,7 @@ private:
     std::unique_ptr<TelemetryUiMapper> m_mapper;
     std::unique_ptr<CrossingIndicatorsPresenter> m_crossingIndicators;
     std::unique_ptr<ChartManager> m_chartManager;
+    ChartImageService* m_chartImages;
 
     Registry *m_registry = nullptr;
     TelemetryStore m_telemetryStore;
@@ -154,6 +133,7 @@ private:
     bool m_isInitialized = false;
     bool m_chartsInitialized = false;
 
+    void saveChart(Charts chart);
     bool tryStartTest();
 
     void setupShortcuts();
@@ -179,8 +159,7 @@ private:
         QVector<bool> visible;
     };
 
-    SeriesVisibilityBackup hideTaskAuxSeries();
-    SeriesVisibilityBackup hidePressureAuxSeries();
+
     void restoreSeries(Charts chart, const SeriesVisibilityBackup& b);
 
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
@@ -203,7 +182,7 @@ private:
     void displayDependingPattern();
 
     void initCharts();
-    void saveChart(Charts chart);
+
     void getImage(QLabel* label, QImage* image);
 
 protected:
