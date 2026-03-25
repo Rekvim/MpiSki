@@ -532,7 +532,7 @@ void Program::updateCrossingStatus()
         ts.crossingStatus.dynamicError =
             inRange(ts.mainTestRecord.dynamicErrorReal,
                     0.0,
-                                                 QString(valveInfo.dinamicErrorRecomend).toDouble())
+                    QString(valveInfo.dinamicErrorRecomend).toDouble())
                 ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.dynamicError = State::Unknown;

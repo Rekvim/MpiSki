@@ -38,6 +38,13 @@ signals:
     void testFinished();
     void stateChanged(TestState state);
 
+    void startMainRequested(const MainTestSettings::TestParameters& params);
+    void startStrokeRequested();
+    void startResponseRequested(const OtherTestSettings::TestParameters& params);
+    void startResolutionRequested(const OtherTestSettings::TestParameters& params);
+    void startStepRequested(const StepTestSettings::TestParameters& params);
+    void startCyclicRequested(const CyclicTestSettings::TestParameters& params);
+
 private:
     void run(std::function<void()> start);
     void setState(TestState s);

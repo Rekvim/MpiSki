@@ -22,42 +22,42 @@ void TestController::setState(TestState s)
 void TestController::runMainTest(const MainTestSettings::TestParameters& params)
 {
     run([this, params]{
-        emit m_program->startMainTest(params);
+        emit startMainRequested(params);
     });
 }
 
 void TestController::runStrokeTest()
 {
     run([this]{
-        emit m_program->startStrokeTest();
+        emit startStrokeRequested();
     });
 }
 
 void TestController::runResponseTest(const OtherTestSettings::TestParameters& params)
 {
     run([this, params]{
-        emit m_program->startResponseTest(params);
+        emit startResponseRequested(params);
     });
 }
 
 void TestController::runResolutionTest(const OtherTestSettings::TestParameters& params)
 {
     run([this, params]{
-        emit m_program->startResolutionTest(params);
+        emit startResolutionRequested(params);
     });
 }
 
 void TestController::runStepTest(const StepTestSettings::TestParameters& params)
 {
     run([this, params]{
-        emit m_program->startStepTest(params);
+        emit startStepRequested(params);
     });
 }
 
 void TestController::runCyclicTest(const CyclicTestSettings::TestParameters& params)
 {
     run([this, params]{
-        emit m_program->startCyclicTest(params);
+        emit startCyclicRequested(params);
     });
 }
 

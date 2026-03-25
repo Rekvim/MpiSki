@@ -157,10 +157,10 @@ QString CyclicTestSettings::reverseSequenceString(const QString& s)
 
     return parts.join('-');
 }
-
+\
 void CyclicTestSettings::applyValveInfo(const ValveInfo& info)
 {
-    if (info.safePosition == SafePosition::NormallyOpen)
+    if (info.safePosition == SafePosition::NormallyClosed)
         return;
 
     for (int i = 0; i < ui->listWidget_testRangeRegulatory->count(); ++i) {

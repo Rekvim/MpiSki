@@ -104,9 +104,28 @@ MainWindow::MainWindow(QWidget *parent)
     m_program = new Program;
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
+    m_programThread->start();
 
     m_testController = new TestController(this);
     m_testController->setProgram(m_program);
+
+    connect(m_testController, &TestController::startMainRequested,
+            m_program, &Program::startMainTest);
+
+    connect(m_testController, &TestController::startStrokeRequested,
+            m_program, &Program::startStrokeTest);
+
+    connect(m_testController, &TestController::startResponseRequested,
+            m_program, &Program::startResponseTest);
+
+    connect(m_testController, &TestController::startResolutionRequested,
+            m_program, &Program::startResolutionTest);
+
+    connect(m_testController, &TestController::startStepRequested,
+            m_program, &Program::startStepTest);
+
+    connect(m_testController, &TestController::startCyclicRequested,
+            m_program, &Program::startCyclicTest);
 
     // kоговое окно
     // logOutput = new QPlainTextEdit(this);
@@ -438,20 +457,12 @@ void MainWindow::setupPrimaryActions()
         ui->pushButton_init);
 
     m_tabActionRouter.bindPrimary(
-        ui->tab_manual,
-        ui->pushButton_strokeTest_start);
-
-    m_tabActionRouter.bindPrimary(
         ui->tab_strokeTest,
         ui->pushButton_strokeTest_start);
-
-    m_tabActionRouter.bindPrimary(
-        ui->tab_strokeTest,
-        ui->pushButton_mainTest_start);
 
     m_tabActionRouter.bindPrimary(
         ui->tab_mainTests,
-        ui->pushButton_optionalTests_start);
+        ui->pushButton_mainTest_start);
 
     m_tabActionRouter.bindPrimary(
         ui->tab_optionalTests,
@@ -1526,7 +1537,7 @@ MainWindow::SeriesVisibilityBackup MainWindow::hideTaskAuxSeries()
         ui->checkBox_showCurve_pressure_3->isChecked()
     };
 
-    auto* ch = m_chartManager->chart(Charts::Pressure);
+    auto* ch = m_chartManager->chart(Charts::Task);
     if (!ch) return b;
 
     ch->visible(2, false);

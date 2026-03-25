@@ -45,10 +45,10 @@ signals:
     void doInitStatesSelected(const QVector<bool> &states);
     void dacValueRequested(qreal value);
 
-    void runMainTest();
-    void runStrokeTest();
-    void runCyclicTest();
-    void runOptionalTest(quint8 testNum);
+    // void runMainTest();
+    // void runStrokeTest();
+    // void runCyclicTest();
+    // void runOptionalTest(quint8 testNum);
 
     void stopTest();
 
