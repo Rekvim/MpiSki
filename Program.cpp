@@ -3,7 +3,7 @@
 #include "./Src/Tests/StepTest.h"
 #include "./Src/Tests/StrokeTest.h"
 #include "./Src/Tests/MainTest.h"
-#include "Src/Utils/Number.h"
+#include "Src/Utils/NumberUtils.h"
 
 #include "./Src/Runners/MainTestRunner.h"
 #include "./Src/Runners/StepTestRunner.h"

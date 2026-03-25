@@ -4,7 +4,7 @@
 #include "../Setup/ValveWindow/ValveWindow.h"
 
 #include "Src/Utils/Shortcuts/TabBinder.h"
-#include "Src/Utils/Number.h"
+#include "Src/Utils/NumberUtils.h"
 
 #include "Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h"
 #include "Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h"
@@ -182,9 +182,6 @@ MainWindow::MainWindow(QWidget *parent)
                 });
     }
 
-    // connect(m_program, &Program::mainTestFinished,
-    //         this, &MainWindow::promptSaveCharts);
-
     connect(this, &MainWindow::stopTest,
             m_program, &Program::terminateTest);
 
@@ -353,21 +350,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::testFinished,
             m_testController,  &TestController::finish);
 
-    // connect(m_program, &Program::testFinished,
-    //         m_testController, &TestController::stop);
-
-
-
     connect(m_program, &Program::cyclicCycleCompleted,
             this, [this](int completed){
                 int remaining = completed;
                 ui->label_cyclicTest_completedCyclesValue->setText(QString::number(remaining));
             });
-
-    // connect(m_program, &Program::testActuallyStarted,
-    //         this, [this]() {
-    //             setTestState(TestState::Running);
-    //         });
 
     connect(m_testController, &TestController::stateChanged,
             this, &MainWindow::setTestState);
@@ -382,6 +369,26 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->tabWidget_optionalTests->setCurrentIndex(0);
                 ui->tabWidget_reportGeneration->setCurrentIndex(0);
             });
+
+    auto bindImage = [&](QPushButton* btn, QLabel* label, QImage* img)
+    {
+        connect(btn, &QPushButton::clicked, this, [this, label, img]
+                {
+                    getImage(label, img);
+                });
+    };
+
+    bindImage(ui->pushButton_imageChartTask,
+              ui->label_imageChartTask,
+              &m_imageChartTask);
+
+    bindImage(ui->pushButton_imageChartPressure,
+              ui->label_imageChartPressure,
+              &m_imageChartPressure);
+
+    bindImage(ui->pushButton_imageChartFriction,
+              ui->label_imageChartFriction,
+              &m_imageChartFriction);
 }
 
 MainWindow::~MainWindow()
@@ -1164,24 +1171,21 @@ void MainWindow::on_pushButton_optionalTests_start_clicked()
 
     const int id = ui->tabWidget_optionalTests->currentIndex();
 
-    if (id == 0)
-    {
+    if (id == 0) {
         if (m_responseTestSettings->exec() != QDialog::Accepted)
             return;
 
         m_testController->runResponseTest(
             m_responseTestSettings->getParameters());
     }
-    else if (id == 1)
-    {
+    else if (id == 1) {
         if (m_resolutionTestSettings->exec() != QDialog::Accepted)
             return;
 
         m_testController->runResolutionTest(
             m_resolutionTestSettings->getParameters());
     }
-    else if (id == 2)
-    {
+    else if (id == 2) {
         if (m_stepTestSettings->exec() != QDialog::Accepted)
             return;
 
@@ -1499,19 +1503,6 @@ void MainWindow::on_pushButton_init_clicked()
     emit patternChanged(m_patternType);
 }
 
-void MainWindow::on_pushButton_imageChartTask_clicked()
-{
-    getImage(ui->label_imageChartTask, &m_imageChartTask);
-}
-void MainWindow::on_pushButton_imageChartPressure_clicked()
-{
-    getImage(ui->label_imageChartPressure, &m_imageChartPressure);
-}
-void MainWindow::on_pushButton_imageChartFriction_clicked()
-{
-    getImage(ui->label_imageChartFriction, &m_imageChartFriction);
-}
-
 MainWindow::SeriesVisibilityBackup MainWindow::hidePressureAuxSeries()
 {
     SeriesVisibilityBackup b;
@@ -1565,55 +1556,28 @@ void MainWindow::restoreSeries(Charts chart, const SeriesVisibilityBackup& b)
 
 void MainWindow::collectReportOverrides()
 {
-    auto readDouble = [this](QLineEdit* le, double& target)
-    {
-        bool ok = false;
-        double v = NumberUtils::toDouble(le->text(), &ok);
-        if (ok)
-            target = v;
-    };
 
-    auto readRange = [this](QLineEdit* le, double& low, double& high)
-    {
-        QString s = le->text().trimmed();
-        s.replace(QChar(0x2013), '-');
-        s.replace(QChar(0x2014), '-');
-        s.replace(QChar(0x2212), '-');
-        QStringList parts = s.split('-', Qt::SkipEmptyParts);
-
-        if (parts.size() == 2) {
-            bool ok1 = false;
-            bool ok2 = false;
-            double v1 = NumberUtils::toDouble(parts[0], &ok1);
-            double v2 = NumberUtils::toDouble(parts[1], &ok2);
-
-            if (ok1 && ok2) {
-                low = v1;
-                high = v2;
-            }
-        }
-    };
 
     // ===== MainTestRecord =====
-    readDouble(ui->lineEdit_resultsTable_frictionForceValue,
+    NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionForceValue,
                m_telemetryStore.mainTestRecord.frictionForce);
 
-    readDouble(ui->lineEdit_resultsTable_frictionPercentValue,
+    NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionPercentValue,
                m_telemetryStore.mainTestRecord.frictionPercent);
 
-    readDouble(ui->lineEdit_resultsTable_dynamicErrorReal,
+    NumberUtils::readDouble(ui->lineEdit_resultsTable_dynamicErrorReal,
                m_telemetryStore.mainTestRecord.dynamicErrorReal);
 
-    readRange(ui->lineEdit_resultsTable_rangePressure,
+    NumberUtils::readRange(ui->lineEdit_resultsTable_rangePressure,
               m_telemetryStore.mainTestRecord.lowLimitPressure,
               m_telemetryStore.mainTestRecord.highLimitPressure);
 
-    readRange(ui->lineEdit_resultsTable_driveRangeReal,
+    NumberUtils::readRange(ui->lineEdit_resultsTable_driveRangeReal,
               m_telemetryStore.mainTestRecord.springLow,
               m_telemetryStore.mainTestRecord.springHigh);
 
     // ===== Stroke =====
-    readDouble(ui->lineEdit_resultsTable_strokeReal,
+    NumberUtils::readDouble(ui->lineEdit_resultsTable_strokeReal,
                m_telemetryStore.valveStrokeRecord.real);
 
     // ===== Stroke test =====
@@ -1633,28 +1597,7 @@ void MainWindow::collectRegistryOverrides(
     ValveInfo& valveInfo,
     OtherParameters& otherParameters)
 {
-    auto readRange = [this](QLineEdit* le, double& low, double& high)
-    {
-        QString s = le->text().trimmed();
-        s.replace(QChar(0x2013), '-');
-        s.replace(QChar(0x2014), '-');
-        s.replace(QChar(0x2212), '-');
-        QStringList parts = s.split('-', Qt::SkipEmptyParts);
-
-        if (parts.size() == 2) {
-            bool ok1 = false;
-            bool ok2 = false;
-            double v1 = NumberUtils::toDouble(parts[0], &ok1);
-            double v2 = NumberUtils::toDouble(parts[1], &ok2);
-
-            if (ok1 && ok2) {
-                low = v1;
-                high = v2;
-            }
-        }
-    };
-
-    readRange(ui->lineEdit_resultsTable_driveRangeRecomend,
+    NumberUtils::readRange(ui->lineEdit_resultsTable_driveRangeRecomend,
               valveInfo.driveRangeLow,
               valveInfo.driveRangeHigh);
 

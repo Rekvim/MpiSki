@@ -26,7 +26,7 @@ SOURCES += \
     Src/Ui/MainWindow/TestController.cpp \
     Src/Ui/Setup/ValveWindow/Logic.cpp \
     Src/Ui/Setup/ValveWindow/Mapper.cpp \
-    Src/Utils/Number.cpp \
+    Src/Utils/NumberUtils.cpp \
     main.cpp \
     Src/Ui/Setup/ObjectWindow.cpp \
     Src/Ui/Setup/ValveWindow/ValveWindow.cpp \
@@ -141,7 +141,7 @@ HEADERS += \
     Src/Uart/Uart.h \
     Src/Uart/UartMessage.h \
     Src/Uart/UartReader.h \
-    Src/Utils/Number.h \
+    Src/Utils/NumberUtils.h \
     Src/Utils/Shortcuts/TabActionRouter.h \
     Src/Utils/Shortcuts/TabBinder.h \
     Src/ValidatorFactory/RegexPatterns.h \
