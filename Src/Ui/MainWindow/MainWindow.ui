@@ -550,7 +550,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_SettingCurrentSignal">
+            <widget class="QGroupBox" name="groupBox_settingCurrentSignal">
              <property name="enabled">
               <bool>false</bool>
              </property>

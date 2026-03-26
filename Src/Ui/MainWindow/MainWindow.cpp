@@ -14,6 +14,19 @@
 #include "./Src/Ui/TestSettings/AbstractTestSettings.h"
 
 namespace {
+constexpr auto kArrowButtonStyle =
+    "QToolButton {"
+    "   background-color: transparent;"
+    "   border: none;"
+    "   padding: 0px;"
+    "   margin: 0px;"
+    "}"
+    "QToolButton:hover {"
+    "   background-color: transparent;"
+    "}"
+    "QToolButton:pressed {"
+    "   background-color: transparent;"
+    "}";
 static QString formatRange(double lo, double hi)
 {
     if (lo > hi) std::swap(lo, hi);
@@ -99,12 +112,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->checkBox_switch_3_0->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_switch_0_3->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    m_lineEdits[TextObjects::LineEdit_linearSensor] = ui->lineEdit_linearSensor;
-    m_lineEdits[TextObjects::LineEdit_linearSensorPercent] = ui->lineEdit_linearSensorPercent;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_1] = ui->lineEdit_pressureSensor_1;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_2] = ui->lineEdit_pressureSensor_2;
-    m_lineEdits[TextObjects::LineEdit_pressureSensor_3] = ui->lineEdit_pressureSensor_3;
-    m_lineEdits[TextObjects::LineEdit_feedback_4_20mA] = ui->lineEdit_feedback_4_20mA;
+    m_lineEdits = {
+        {TextObjects::LineEdit_linearSensor, ui->lineEdit_linearSensor},
+        {TextObjects::LineEdit_linearSensorPercent, ui->lineEdit_linearSensorPercent},
+        {TextObjects::LineEdit_pressureSensor_1, ui->lineEdit_pressureSensor_1},
+        {TextObjects::LineEdit_pressureSensor_2, ui->lineEdit_pressureSensor_2},
+        {TextObjects::LineEdit_pressureSensor_3, ui->lineEdit_pressureSensor_3},
+        {TextObjects::LineEdit_feedback_4_20mA, ui->lineEdit_feedback_4_20mA}
+    };
 
     m_program = new Program;
     m_programThread = new QThread(this);
@@ -213,7 +228,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->doubleSpinBox_task,
             qOverload<double>(&QDoubleSpinBox::valueChanged),
-            this,[&](double value) {
+            this, [this](double value) {
                 if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
                     if (ui->verticalSlider_task->isEnabled())
                         emit dacValueRequested(value);
@@ -222,7 +237,7 @@ MainWindow::MainWindow(QWidget *parent)
             });
 
     connect(ui->verticalSlider_task, &QSlider::valueChanged,
-            this, [&](int value) {
+            this, [this](int value) {
                 if (qRound(ui->doubleSpinBox_task->value() * 1000) != value) {
                     if (ui->doubleSpinBox_task->isEnabled())
                         emit dacValueRequested(value / 1000.0);
@@ -272,78 +287,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_stepResults->setHorizontalHeaderLabels({QLatin1String("T86"), tr("Перерегулирование")});
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
-    ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUp.png"));
-    ui->toolButton_arrowUp->setIconSize(ui->toolButton_arrowUp->size());
-    ui->toolButton_arrowUp->setFixedSize(100, 60);
-    ui->toolButton_arrowUp->setIconSize(QSize(90, 50));
-    ui->toolButton_arrowUp->setText(QString());
-    ui->toolButton_arrowUp->setAutoRepeat(true);
-    ui->toolButton_arrowUp->setAutoRepeatDelay(300);
-    ui->toolButton_arrowUp->setAutoRepeatInterval(100);
+    setupArrowButton(ui->toolButton_arrowUp,
+                     ":/Src/Img/arrowUp.png",
+                     ":/Src/Img/arrowUpHover.png",
+                     +0.05);
 
-    ui->toolButton_arrowUp->setStyleSheet(
-        "QToolButton {"
-        "   background-color: transparent;"
-        "   border: none;"
-        "   padding: 0px;"
-        "   margin: 0px;"
-        "}"
-        "QToolButton:hover {"
-        "   background-color: transparent;"
-        "}"
-        "QToolButton:pressed {"
-        "   background-color: transparent;"
-        "}"
-    );
-
-    connect(ui->toolButton_arrowUp, &QToolButton::clicked,
-            this, [this]() {
-                double cur = ui->doubleSpinBox_task->value();
-                double nxt = cur + 0.05;
-                if (nxt > ui->doubleSpinBox_task->maximum())
-                    nxt = ui->doubleSpinBox_task->maximum();
-                ui->doubleSpinBox_task->setValue(nxt);
-                if (ui->doubleSpinBox_task->isEnabled())
-                    emit dacValueRequested(nxt);
-            });
-    ui->toolButton_arrowUp->installEventFilter(this);
-
-    ui->toolButton_arrowDown->setIcon(QIcon(":/Src/Img/arrowDown.png"));
-    ui->toolButton_arrowDown->setIconSize(ui->toolButton_arrowDown->size());
-    ui->toolButton_arrowDown->setFixedSize(100, 60);
-    ui->toolButton_arrowDown->setIconSize(QSize(90, 50));
-    ui->toolButton_arrowDown->setText(QString());
-    ui->toolButton_arrowDown->setAutoRepeat(true);
-    ui->toolButton_arrowDown->setAutoRepeatDelay(300);
-    ui->toolButton_arrowDown->setAutoRepeatInterval(100);
-
-    ui->toolButton_arrowDown->setStyleSheet(
-        "QToolButton {"
-        "   background-color: transparent;"
-        "   border: none;"
-        "   padding: 0px;"
-        "   margin: 0px;"
-        "}"
-        "QToolButton:hover {"
-        "   background-color: transparent;"
-        "}"
-        "QToolButton:pressed {"
-        "   background-color: transparent;"
-        "}"
-        );
-
-    ui->toolButton_arrowDown->installEventFilter(this);
-
-    connect(ui->toolButton_arrowDown, &QToolButton::clicked,
-            this, [this]() {
-                double cur = ui->doubleSpinBox_task->value();
-                double nxt = cur - 0.05;
-                if (nxt < ui->doubleSpinBox_task->minimum())
-                    nxt = ui->doubleSpinBox_task->minimum();
-                ui->doubleSpinBox_task->setValue(nxt);
-                if (ui->doubleSpinBox_task->isEnabled())
-                    emit dacValueRequested(nxt);
-            });
+    setupArrowButton(ui->toolButton_arrowDown,
+                     ":/Src/Img/arrowDown.png",
+                     ":/Src/Img/arrowDownHover.png",
+                     -0.05);
 
     connect(m_program, &Program::telemetryUpdated,
             this, &MainWindow::onTelemetryUpdated,
@@ -379,7 +331,7 @@ MainWindow::MainWindow(QWidget *parent)
             });
 
     // bindImage
-    auto bindImage = [&](QPushButton* btn, QLabel* label, QImage* img)
+    auto bindImage = [this](QPushButton* btn, QLabel* label, QImage* img)
     {
         connect(btn, &QPushButton::clicked, this, [this, label, img]
                 {
@@ -412,35 +364,55 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setupArrowButton(QToolButton* button,
+                                  const QString& normalIcon,
+                                  const QString& hoverIcon,
+                                  double step)
+{
+    button->setProperty("normalIcon", normalIcon);
+    button->setProperty("hoverIcon", hoverIcon);
+    button->setProperty("step", step);
+
+    button->setIcon(QIcon(normalIcon));
+    button->setFixedSize(100, 60);
+    button->setIconSize(QSize(90, 50));
+    button->setText(QString());
+    button->setAutoRepeat(true);
+    button->setAutoRepeatDelay(300);
+    button->setAutoRepeatInterval(100);
+    button->setStyleSheet(QString::fromUtf8(kArrowButtonStyle));
+    button->installEventFilter(this);
+
+    connect(button, &QToolButton::clicked, this, [this, step]() {
+        auto* spin = ui->doubleSpinBox_task;
+        double next = spin->value() + step;
+        next = std::clamp(next, spin->minimum(), spin->maximum());
+        spin->setValue(next);
+    });
+}
+
 void MainWindow::setupUiConnections()
 {
     // ===== signal buttons =====
-
     connect(ui->pushButton_signal_4mA,
             &QPushButton::clicked,
-            this,
-            [this] { ui->doubleSpinBox_task->setValue(4.0); });
+            this, [this] { ui->doubleSpinBox_task->setValue(4.0); });
 
     connect(ui->pushButton_signal_8mA,
             &QPushButton::clicked,
-            this,
-            [this] { ui->doubleSpinBox_task->setValue(8.0); });
+            this, [this] { ui->doubleSpinBox_task->setValue(8.0); });
 
     connect(ui->pushButton_signal_12mA,
             &QPushButton::clicked,
-            this,
-            [this] { ui->doubleSpinBox_task->setValue(12.0); });
+            this, [this] { ui->doubleSpinBox_task->setValue(12.0); });
 
     connect(ui->pushButton_signal_16mA,
             &QPushButton::clicked,
-            this,
-            [this] { ui->doubleSpinBox_task->setValue(16.0); });
+            this, [this] { ui->doubleSpinBox_task->setValue(16.0); });
 
     connect(ui->pushButton_signal_20mA,
             &QPushButton::clicked,
-            this,
-            [this] { ui->doubleSpinBox_task->setValue(20.0); });
-
+            this, [this] { ui->doubleSpinBox_task->setValue(20.0); });
 
     // ===== main test =====
     connect(ui->pushButton_mainTest_start, &QPushButton::clicked,
@@ -682,30 +654,26 @@ void MainWindow::setTaskControlsEnabled(bool enabled)
     ui->verticalSlider_task->setEnabled(enabled);
     ui->doubleSpinBox_task->setEnabled(enabled);
     ui->groupBox_DO->setEnabled(enabled);
-    ui->groupBox_SettingCurrentSignal->setEnabled(enabled);
+    ui->groupBox_settingCurrentSignal->setEnabled(enabled);
     ui->pushButton_back->setEnabled(enabled);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == ui->toolButton_arrowUp) {
-        if (event->type() == QEvent::Enter) {
-            ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUpHover.png"));
-            return true;
-        }
-        if (event->type() == QEvent::Leave) {
-            ui->toolButton_arrowUp->setIcon(QIcon(":/Src/Img/arrowUp.png"));
-            return true;
-        }
-    }
+    auto* button = qobject_cast<QToolButton*>(watched);
+    if (button &&
+        (button == ui->toolButton_arrowUp || button == ui->toolButton_arrowDown)) {
 
-    if (watched == ui->toolButton_arrowDown) {
+        const QString normalIcon = button->property("normalIcon").toString();
+        const QString hoverIcon  = button->property("hoverIcon").toString();
+
         if (event->type() == QEvent::Enter) {
-            ui->toolButton_arrowDown->setIcon(QIcon(":/Src/Img/arrowDownHover.png"));
+            button->setIcon(QIcon(hoverIcon));
             return true;
         }
+
         if (event->type() == QEvent::Leave) {
-            ui->toolButton_arrowDown->setIcon(QIcon(":/Src/Img/arrowDown.png"));
+            button->setIcon(QIcon(normalIcon));
             return true;
         }
     }
@@ -880,7 +848,7 @@ void MainWindow::displayDependingPattern() {
         ui->tabWidget_main->setTabEnabled(4, true);
         break;
     case SelectTests::Pattern_C_SOVT:
-        ui->groupBox_SettingCurrentSignal->setVisible(false);
+        ui->groupBox_settingCurrentSignal->setVisible(false);
         ui->groupBox_DO->setEnabled(true);
         ui->tabWidget_main->setTabEnabled(1, true);
         ui->tabWidget_main->setTabEnabled(2, false);
@@ -898,9 +866,11 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 
     if (hasSensors) m_isInitialized = true;
 
+    setAppState(AppState::Idle);
+
     updateAvailableTabs();
 
-    ui->groupBox_SettingCurrentSignal->setEnabled(hasSensors);
+    ui->groupBox_settingCurrentSignal->setEnabled(hasSensors);
 
     ui->pushButton_mainTest_start->setEnabled(sensorCount > 1);
     ui->pushButton_strokeTest_start->setEnabled(hasSensors);
@@ -1093,37 +1063,71 @@ void MainWindow::endTest()
     }
 }
 
+void MainWindow::setAppState(AppState state)
+{
+    m_appState = state;
+
+    switch (state)
+    {
+    case AppState::Idle:
+        ui->statusbar->showMessage(tr("Готов к работе"));
+        break;
+
+    case AppState::Initializing:
+        ui->statusbar->showMessage(tr("Инициализация устройства..."));
+        break;
+
+    case AppState::RunningTest:
+        ui->statusbar->showMessage(tr("Тест выполняется"));
+        break;
+
+    case AppState::SavingResults:
+        ui->statusbar->showMessage(tr("Сохранение результатов..."));
+        break;
+
+    case AppState::Error:
+        ui->statusbar->showMessage(tr("Ошибка"));
+        break;
+    }
+}
+
 void MainWindow::setTestState(TestState state)
 {
     m_testState = state;
 
-    switch (state) {
+    switch (state)
+    {
     case TestState::Idle:
-        ui->statusbar->showMessage(tr("Готов к запуску теста"));
+        setAppState(AppState::Idle);
         break;
 
     case TestState::Starting:
-        ui->statusbar->showMessage(tr("Настройка параметров теста..."));
+        setAppState(AppState::RunningTest);
+        ui->statusbar->showMessage(tr("Подготовка теста..."));
         break;
 
     case TestState::Running:
-        ui->statusbar->showMessage(tr("Тест в процессе"));
-        break;
-
-    case TestState::Finished:
-        ui->statusbar->showMessage(tr("Тест завершён"));
+        setAppState(AppState::RunningTest);
         break;
 
     case TestState::Canceled:
-        ui->statusbar->showMessage(tr("Тест отменён пользователем"));
+        setAppState(AppState::Idle);
+        ui->statusbar->showMessage(tr("Тест остановлен"));
+        break;
+
+    case TestState::Finished:
+        setAppState(AppState::SavingResults);
+
+        QTimer::singleShot(1500, this, [this]{
+            setAppState(AppState::Idle);
+        });
         break;
     }
 }
 
 bool MainWindow::tryStartTest()
 {
-    if (m_testState == TestState::Running ||
-        m_testState == TestState::Starting) {
+    if (m_testState == TestState::Running) {
         if (QMessageBox::question( this, tr("Внимание!"),
                 tr("Вы действительно хотите завершить тест?"))
             == QMessageBox::Yes) {
@@ -1285,20 +1289,17 @@ void MainWindow::saveCyclicChartClicked()
 
 void MainWindow::setDoButtonsChecked(quint8 bitmask)
 {
-    ui->pushButton_DO0->blockSignals(true);
-    ui->pushButton_DO1->blockSignals(true);
-    ui->pushButton_DO2->blockSignals(true);
-    ui->pushButton_DO3->blockSignals(true);
+    const std::array<QPushButton*, 4> buttons = {
+        ui->pushButton_DO0,
+        ui->pushButton_DO1,
+        ui->pushButton_DO2,
+        ui->pushButton_DO3
+    };
 
-    ui->pushButton_DO0->setChecked((bitmask & (1 << 0)) != 0);
-    ui->pushButton_DO1->setChecked((bitmask & (1 << 1)) != 0);
-    ui->pushButton_DO2->setChecked((bitmask & (1 << 2)) != 0);
-    ui->pushButton_DO3->setChecked((bitmask & (1 << 3)) != 0);
-
-    ui->pushButton_DO0->blockSignals(false);
-    ui->pushButton_DO1->blockSignals(false);
-    ui->pushButton_DO2->blockSignals(false);
-    ui->pushButton_DO3->blockSignals(false);
+    for (int i = 0; i < 4; ++i) {
+        QSignalBlocker blocker(buttons[i]);
+        buttons[i]->setChecked((bitmask & (1 << i)) != 0);
+    }
 
     ui->groupBox_DO->setEnabled(true);
 }
@@ -1497,6 +1498,8 @@ void MainWindow::getImage(QLabel *label, QImage *image)
 
 void MainWindow::initClicked()
 {
+    setAppState(AppState::Initializing);
+
     QVector<bool> states = {
         ui->pushButton_DO0->isChecked(),
         ui->pushButton_DO1->isChecked(),

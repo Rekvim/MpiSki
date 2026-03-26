@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ui_MainWindow.h"
-#include "Src/Telemetry/TelemetryStore.h"
+#include "Src/Storage/Telemetry.h"
 
 class TelemetryUiMapper
 {

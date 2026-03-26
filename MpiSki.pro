@@ -20,8 +20,10 @@ INCLUDEPATH += $$PWD/Src/CustomChart
 SOURCES += \
     Src/CustomChart/ChartImageService.cpp \
     Src/CustomChart/ChartManager.cpp \
+    Src/Domain/DeviceInitializer.cpp \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
     Src/Storage/AppSettings.cpp \
+    Src/Storage/Telemetry.cpp \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
     Src/Ui/MainWindow/TelemetryUiMapper.cpp \
     Src/Ui/MainWindow/TestController.cpp \
@@ -40,8 +42,8 @@ SOURCES += \
     Src/CustomChart/MyChart.cpp \
     Src/CustomChart/MySeries.cpp \
     Src/LabeledSlider/LabeledSlider.cpp \
-    Src/Mpi/Mpi.cpp \
-    Src/Mpi/MpiSettings.cpp \
+    Src/Domain/Mpi/Mpi.cpp \
+    Src/Domain/Mpi/MpiSettings.cpp \
     Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.cpp \
     Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.cpp \
     Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.cpp \
@@ -54,10 +56,8 @@ SOURCES += \
     Src/Runners/MainTestRunner.cpp \
     Src/Runners/OptionResolutionRunner.cpp \
     Src/Runners/OptionResponseRunner.cpp \
-    Src/Runners/RunnerFactory.cpp \
     Src/Runners/StepTestRunner.cpp \
     Src/Runners/StrokeTestRunner.cpp \
-    Src/Telemetry/TelemetryStore.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
     Src/Tests/CyclicTests.cpp \
     Src/Tests/CyclicTestsRegulatory.cpp \
@@ -67,17 +67,18 @@ SOURCES += \
     Src/Tests/StepTest.cpp \
     Src/Tests/StrokeTest.cpp \
     Src/Tests/Test.cpp \
-    Src/Uart/Uart.cpp \
-    Src/Uart/UartMessage.cpp \
-    Src/Uart/UartReader.cpp \
+    Src/Domain/Uart/Uart.cpp \
+    Src/Domain/Uart/UartMessage.cpp \
+    Src/Domain/Uart/UartReader.cpp \
     Src/ValidatorFactory/ValidatorFactory.cpp \
-    Program.cpp \
+    Src/Domain/Program.cpp \
     Src/Storage/Registry.cpp \
-    Sensor.cpp
+    Src/Domain/Sensor.cpp
 
 HEADERS += \
     Src/CustomChart/ChartImageService.h \
     Src/CustomChart/ChartManager.h \
+    Src/Domain/DeviceInitializer.h \
     Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
     Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
     Src/ReportBuilders/ReportBlocks/IReportBlock.h \
@@ -89,6 +90,7 @@ HEADERS += \
     Src/ReportBuilders/ReportWriter.h \
     Src/Storage/AppSettings.h \
     Src/Storage/SettingsGroup.h \
+    Src/Storage/Telemetry.h \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.h \
     Src/Ui/MainWindow/TelemetryUiMapper.h \
     Src/Ui/MainWindow/TestController.h \
@@ -105,14 +107,14 @@ HEADERS += \
     Src/Ui/TestSettings/StepTestSettings.h \
     Src/Ui/TestSettings/MainTestSettings.h \
     Src/Ui/MainWindow/MainWindow.h \
-    Program.h \
+    Src/Domain/Program.h \
     Src/Storage/Registry.h \
-    Sensor.h \
+    Src/Domain/Sensor.h \
     Src/CustomChart/MyChart.h \
     Src/CustomChart/MySeries.h \
     Src/LabeledSlider/LabeledSlider.h \
-    Src/Mpi/Mpi.h \
-    Src/Mpi/MpiSettings.h \
+    Src/Domain/Mpi/Mpi.h \
+    Src/Domain/Mpi/MpiSettings.h \
     Src/ReportBuilders/ReportBuilder.h \
     Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h \
     Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h \
@@ -127,10 +129,8 @@ HEADERS += \
     Src/Runners/MainTestRunner.h \
     Src/Runners/OptionResolutionRunner.h \
     Src/Runners/OptionResponseRunner.h \
-    Src/Runners/RunnerFactory.h \
     Src/Runners/StepTestRunner.h \
     Src/Runners/StrokeTestRunner.h \
-    Src/Telemetry/TelemetryStore.h \
     Src/Tests/CyclicTestPositioner.h \
     Src/Tests/CyclicTests.h \
     Src/Tests/CyclicTestsRegulatory.h \
@@ -140,9 +140,9 @@ HEADERS += \
     Src/Tests/StepTest.h \
     Src/Tests/StrokeTest.h \
     Src/Tests/Test.h \
-    Src/Uart/Uart.h \
-    Src/Uart/UartMessage.h \
-    Src/Uart/UartReader.h \
+    Src/Domain/Uart/Uart.h \
+    Src/Domain/Uart/UartMessage.h \
+    Src/Domain/Uart/UartReader.h \
     Src/Utils/NumberUtils.h \
     Src/Utils/Shortcuts/TabActionRouter.h \
     Src/Utils/Shortcuts/TabBinder.h \

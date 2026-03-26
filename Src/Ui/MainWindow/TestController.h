@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include "Program.h"
+#include "Src/Domain/Program.h"
 
 enum class TestState {
     Idle,

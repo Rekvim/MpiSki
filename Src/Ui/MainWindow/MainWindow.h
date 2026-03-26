@@ -15,14 +15,23 @@
 #include "Src/Ui/MainWindow/CrossingIndicatorsPresenter.h"
 
 #include "Src/ReportBuilders/ReportSaver.h"
-#include "Program.h"
+#include "Src/Domain/Program.h"
 #include "Src/Storage/Registry.h"
-#include "Src/Telemetry/TelemetryStore.h"
+#include "Src/Storage/Telemetry.h"
 #include "Src/Ui/TestSettings/AbstractTestSettings.h"
 #include "Src/CustomChart/ChartManager.h"
 #include "Src/CustomChart/ChartImageService.h"
 
 #include "TestController.h"
+
+enum class AppState
+{
+    Idle,
+    Initializing,
+    RunningTest,
+    SavingResults,
+    Error
+};
 
 // QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -103,7 +112,10 @@ private slots:
     void generateReportClicked();
     void openReportClicked();
     void backClicked();
-
+    void setupArrowButton(QToolButton* button,
+                          const QString& normalIcon,
+                          const QString& hoverIcon,
+                          double step);
 
 private:
     Ui::MainWindow *ui;
@@ -138,6 +150,9 @@ private:
 
     void setupShortcuts();
     void setupPrimaryActions();
+
+    void setAppState(AppState state);
+    AppState m_appState = AppState::Idle;
 
     void setTestState(TestState state);
     TestState m_testState = TestState::Idle;
