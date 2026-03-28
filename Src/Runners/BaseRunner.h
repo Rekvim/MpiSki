@@ -1,10 +1,9 @@
-#ifndef BASERUNNER_H
-#define BASERUNNER_H
+#pragma once
 
 #include <QThread>
 #include <QMetaObject>
 #include <QObject>
-#include "./Src/Runners/AbstractTestRunner.h"
+#include "Src/Runners/AbstractTestRunner.h"
 
 class Test;
 class QThread;
@@ -39,5 +38,3 @@ private:
     QThread* m_thread = nullptr;
     Test* m_worker = nullptr;
 };
-
-#endif // BASERUNNER_H

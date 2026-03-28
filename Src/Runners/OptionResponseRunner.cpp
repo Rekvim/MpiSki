@@ -1,7 +1,7 @@
 #include "OptionResponseRunner.h"
-#include "./Program.h"
-#include "./Src/Storage/Registry.h"
-#include "./Src/Tests/OptionTest.h"
+#include "Src/Domain/Program.h"
+#include "Src/Storage/Registry.h"
+#include "Src/Tests/OptionTest.h"
 
 RunnerConfig OptionResponseRunner::buildConfig()
 {

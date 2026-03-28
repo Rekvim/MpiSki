@@ -1,5 +1,5 @@
 #include "CyclicShutoffRunner.h"
-#include "./Program.h"
+#include "Src/Domain/Program.h"
 
 static QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen) {
     QVector<quint16> raw; raw.reserve(seq.size());

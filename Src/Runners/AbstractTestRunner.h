@@ -1,7 +1,5 @@
-#ifndef ABSTRACTTESTRUNNER_H
-#define ABSTRACTTESTRUNNER_H
-
 #pragma once
+
 #include <QObject>
 #include <QPoint>
 
@@ -29,6 +27,3 @@ signals:
     void telemetryUpdated(const TelemetryStore&);
     void requestSetDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart);
 };
-
-
-#endif // ITESTRUNNER_H

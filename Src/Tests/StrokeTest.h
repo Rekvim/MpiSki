@@ -13,7 +13,7 @@ public:
     void Process() override;
 
     struct Config {
-        bool normalClosed = true; // NC: low->high->low, NO: high->low->high
+        bool normalClosed = false;
     };
     void setConfig(const Config& cfg) { m_cfg = cfg; }
 

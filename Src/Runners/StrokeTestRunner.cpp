@@ -1,6 +1,6 @@
 #include "StrokeTestRunner.h"
-#include "./Src/Tests/StrokeTest.h"
-#include "./Program.h"
+#include "Src/Tests/StrokeTest.h"
+#include "Src/Domain/Program.h"
 
 RunnerConfig StrokeTestRunner::buildConfig()
 {

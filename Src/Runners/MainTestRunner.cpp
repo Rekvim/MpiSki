@@ -1,7 +1,7 @@
 #include "MainTestRunner.h"
-#include "./Src/Tests/MainTest.h"
-#include "./Src/Ui/TestSettings/MainTestSettings.h"
-#include "./Program.h"
+#include "Src/Tests/MainTest.h"
+#include "Src/Ui/TestSettings/MainTestSettings.h"
+#include "Src/Domain/Program.h"
 
 RunnerConfig MainTestRunner::buildConfig() {
     auto p = m_params;

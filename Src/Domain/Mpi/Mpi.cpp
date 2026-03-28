@@ -1,6 +1,6 @@
 #include "Mpi.h"
 #include <utility>
-#include "./Src/Mpi/MpiSettings.h"
+#include "Src/Domain/Mpi/MpiSettings.h"
 
 namespace {
 // DAC: 16-bit scale

@@ -91,6 +91,10 @@ bool Registry::loadValveInfo(const QString& position)
         static_cast<DriveType>(
             m_settings.value("driveType", 0).toInt());
 
+    v.positionerType =
+        static_cast<PositionerType>(
+            m_settings.value("positionerType", 0).toInt());
+
     v.driveRangeLow = m_settings.value("driveRangeLow", 0.0).toDouble();
     v.driveRangeHigh = m_settings.value("driveRangeHigh", 0.0).toDouble();
 
@@ -164,6 +168,7 @@ void Registry::saveValveInfo()
     setValue("driveModel", v.driveModel);
     setValue("safePosition", static_cast<int>(v.safePosition));
     setValue("driveType", static_cast<int>(v.driveType));
+    setValue("positionerType", static_cast<int>(v.positionerType));
 
     // setValue("driveRecomendRange", v.driveRecomendRange);
     setValue("driveRangeLow", v.driveRangeLow);

@@ -153,6 +153,7 @@ void Program::updateSensors()
     QVector<Point> points;
 
     const auto& v = m_registry->valveInfo();
+
     qreal percent = calcPercent(
         m_mpi.dac()->value(),
         v.safePosition == SafePosition::NormallyOpen
@@ -265,6 +266,7 @@ void Program::initialization()
     if (m_patternType == SelectTests::Pattern_B_CVT ||
         m_patternType == SelectTests::Pattern_C_CVT) {
 
+        setDacRaw(0, 10000, true);
         waitForDacCycle();
         initializer.measureStartPosition(normalClosed);
         emit telemetryUpdated(m_telemetryStore);
@@ -282,10 +284,25 @@ void Program::initialization()
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
         initializer.recordStrokeRange(normalClosed);
+
+        setDacRaw(0, 10000, true);
+
         emit telemetryUpdated(m_telemetryStore);
     }
 
     finalizeInitialization();
+}
+
+void Program::waitForDacCycle()
+{
+    QTimer timer(this);
+    connect(&timer, &QTimer::timeout, this, [this] {
+        if (!m_shouldWaitForButton || m_isDacStopRequested)
+            m_dacEventLoop->quit();
+    });
+    timer.start(50);
+    m_dacEventLoop->exec();
+    timer.stop();
 }
 
 void Program::finalizeInitialization()

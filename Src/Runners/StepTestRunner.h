@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseRunner.h"
-#include "./Src/Ui/TestSettings/StepTestSettings.h"
+#include "Src/Ui/TestSettings/StepTestSettings.h"
 
 class StepTestRunner : public BaseRunner
 {

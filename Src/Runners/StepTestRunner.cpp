@@ -1,6 +1,6 @@
 #include "StepTestRunner.h"
-#include "./Program.h"
-#include "./Src/Storage/Registry.h"
+#include "Src/Domain/Program.h"
+#include "Src/Storage/Registry.h"
 
 static QVector<quint16> buildSequence(const StepTestSettings::TestParameters& p,
                                       Mpi& mpi, bool normalOpen)

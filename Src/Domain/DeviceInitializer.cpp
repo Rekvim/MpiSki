@@ -51,14 +51,14 @@ bool DeviceInitializer::detectSensors()
         m_telemetry.init.connectedSensorsColor = Qt::darkGreen;
     }
 
+    m_telemetry.init.startingPositionText = "Измерение";
+    m_telemetry.init.startingPositionColor = Qt::darkYellow;
+
     return cnt > 0;
 }
 
 void DeviceInitializer::measureStartPosition(bool normalClosed)
 {
-    m_telemetry.init.startingPositionText = "Измерение";
-    m_telemetry.init.startingPositionColor = Qt::darkYellow;
-
     if (normalClosed)
         m_mpi[0]->captureMin();
     else
@@ -66,13 +66,13 @@ void DeviceInitializer::measureStartPosition(bool normalClosed)
 
     m_telemetry.init.startingPositionText = m_mpi[0]->formattedValue();
     m_telemetry.init.startingPositionColor = Qt::darkGreen;
+
+    m_telemetry.init.finalPositionText = "Измерение";
+    m_telemetry.init.finalPositionColor = Qt::darkYellow;
 }
 
 void DeviceInitializer::measureEndPosition(bool normalClosed)
 {
-    m_telemetry.init.finalPositionText = "Измерение";
-    m_telemetry.init.finalPositionColor = Qt::darkYellow;
-
     if (normalClosed)
         m_mpi[0]->captureMax();
     else

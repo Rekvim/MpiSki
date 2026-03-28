@@ -62,6 +62,7 @@ ValveInfo Mapper::read(const ValveWindow& view)
     v.driveType = ValveEnums::driveTypeFromCombo(ui->comboBox_driveType);
     v.materialStuffingBoxSeal = ValveEnums::stuffingBoxSealFromCombo(ui->comboBox_materialStuffingBoxSeal);
     v.toolNumber = ValveEnums::toolNumberFromCombo(ui->comboBox_toolNumber);
+    v.positionerType = ValveEnums::positionerTypeFromCombo(ui->comboBox_positionerType);
 
     v.driveDiameter = ui->lineEdit_driveDiameter->text().toDouble();
     v.diameterPulley = ui->lineEdit_pulleyDiameter->text().toDouble();
@@ -150,6 +151,7 @@ void Mapper::write(ValveWindow& view, const ValveInfo& v)
     ui->comboBox_driveType->setCurrentIndex(static_cast<int>(v.driveType));
     ui->comboBox_strokeMovement->setCurrentIndex(static_cast<int>(v.strokeMovement));
     ui->comboBox_toolNumber->setCurrentIndex(static_cast<int>(v.toolNumber));
+    ui->comboBox_positionerType->setCurrentIndex(static_cast<int>(v.positionerType));
 
     auto& c = v.crossingLimits;
 

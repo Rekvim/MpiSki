@@ -63,6 +63,7 @@ struct ValveInfo
     QString driveModel;
     SafePosition safePosition = SafePosition::NormallyClosed;
     DriveType driveType = DriveType::SpringDiaphragm;
+    PositionerType positionerType = PositionerType::Intelligent;
 
     double driveRangeLow = 0.0;
     double driveRangeHigh = 0.0;

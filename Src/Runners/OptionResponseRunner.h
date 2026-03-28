@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseRunner.h"
-#include "./Src/Ui/TestSettings/OtherTestSettings.h"
+#include "Src/Ui/TestSettings/OtherTestSettings.h"
 
 class OptionResponseRunner : public BaseRunner
 {

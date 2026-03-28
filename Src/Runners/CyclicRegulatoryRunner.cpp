@@ -1,6 +1,6 @@
 #include "CyclicRegulatoryRunner.h"
-#include "./Program.h"
-#include "./Src/Tests/CyclicTestsRegulatory.h"
+#include "Src/Domain/Program.h"
+#include "Src/Tests/CyclicTestsRegulatory.h"
 
 QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen)
 {
