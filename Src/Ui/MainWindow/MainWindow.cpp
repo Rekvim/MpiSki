@@ -147,6 +147,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_testController, &TestController::startCyclicRequested,
             m_program, &Program::startCyclicTest);
 
+    connect(m_program, &Program::sampleReady,
+            this, [this](const Sample& s)
+            {
+                Q_UNUSED(this);
+                qDebug() << "[Sample]"
+                         << "t=" << s.time
+                         << "dac=" << s.dac
+                         << "task=" << s.taskPercent
+                         << "pos=" << s.positionPercent
+                         << "p1=" << s.pressure1
+                         << "p2=" << s.pressure2
+                         << "p3=" << s.pressure3;
+            });
+
     // kоговое окно
     // logOutput = new QPlainTextEdit(this);
     // logOutput->setReadOnly(true);

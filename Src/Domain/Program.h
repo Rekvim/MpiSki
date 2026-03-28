@@ -17,6 +17,9 @@
 
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
+#include "Src/Domain/Measurement/Sample.h"
+#include "Src/Domain/Measurement/TestDataBuffer.h"
+
 #include "Src/Runners/AbstractTestRunner.h"
 
 #include "Src/Tests/StepTest.h"
@@ -55,8 +58,6 @@ enum class TextObjects
     LineEdit_feedback_4_20mA,
 };
 
-
-
 class Program : public QObject
 {
     Q_OBJECT
@@ -70,6 +71,9 @@ public:
     const Registry* registry() const { return m_registry; }
 
 signals:
+    // Sample
+    void sampleReady(const Sample& sample);
+    //
     void realtimeUpdated(const RealtimeState &s);
     void telemetryUpdated(const TelemetryStore &store);
 
@@ -125,13 +129,27 @@ signals:
     void totalTestTimeMs(quint64 totalMs);
 
 private:
-    SelectTests::PatternType m_patternType;
+    // Sample
+    Sample makeSample() const;
+    void updateRealtimeTexts(const Sample& s);
+    TestDataBuffer m_testDataBuffer;
 
-    inline qreal calcPercent(qreal value, bool invert = false) {
-        qreal percent = ((value - 4.0) / 16.0) * 100.0;
-        percent = qBound<qreal>(0.0, percent, 100.0);
-        return invert ? (100.0 - percent) : percent;
-    }
+    enum class ActiveChartMode
+    {
+        None,
+        TrendOnly,
+        Stroke,
+        Main,
+        Response,
+        Resolution,
+        Step,
+        Cyclic
+    };
+
+    ActiveChartMode m_activeChartMode = ActiveChartMode::TrendOnly;
+    //
+
+    SelectTests::PatternType m_patternType;
 
     std::unique_ptr<AbstractTestRunner> m_activeRunner;
     template<typename RunnerT>
@@ -161,6 +179,8 @@ private:
         emit setButtonInitEnabled(false);
         emit setTaskControlsEnabled(false);
 
+        m_isTestRunning = true;
+        m_testDataBuffer.clear();
         m_activeRunner = std::move(r);
         emit testStarted();
         m_activeRunner->start();
@@ -220,11 +240,19 @@ public slots:
 
     void initialization();
 
+    // updateCharts
     void updateCharts_mainTest();
     void updateCharts_strokeTest();
     void updateCharts_optionTest(Charts chart);
     void updateCharts_CyclicTest(Charts chart);
 
+    void updateChartsFromSample(const Sample& s);
+    void updateTrendChart(const Sample& s);
+    void updateStrokeChart(const Sample& s);
+    void updateMainCharts(const Sample& s);
+    void updateOptionChart(const Sample& s, Charts chart);
+    void updateCyclicChart(const Sample& s);
+    //
     void results_mainTest(const MainTest::TestResults &results);
     void results_strokeTest(const quint64 forwardTime, const  quint64 backwardTime);
     void results_stepTest(const QVector<StepTest::TestResult> &results, const quint32 T_value);

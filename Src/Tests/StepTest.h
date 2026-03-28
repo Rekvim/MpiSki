@@ -1,7 +1,5 @@
-#ifndef STEPTEST_H
-#define STEPTEST_H
-
 #pragma once
+
 #include <QEventLoop>
 #include <QObject>
 #include <QPointF>
@@ -35,5 +33,3 @@ signals:
     void GetPoints(QVector<QVector<QPointF>> &points);
     void Results(QVector<TestResult> result, quint32 T_value);
 };
-
-#endif // STEPTEST_H

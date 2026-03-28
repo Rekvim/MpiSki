@@ -24,6 +24,7 @@ SOURCES += \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
     Src/Storage/AppSettings.cpp \
     Src/Storage/Telemetry.cpp \
+    Src/Tests/Analyzer/StepTestAnalyzer.cpp \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
     Src/Ui/MainWindow/TelemetryUiMapper.cpp \
     Src/Ui/MainWindow/TestController.cpp \
@@ -79,6 +80,8 @@ HEADERS += \
     Src/CustomChart/ChartImageService.h \
     Src/CustomChart/ChartManager.h \
     Src/Domain/DeviceInitializer.h \
+    Src/Domain/Measurement/Sample.h \
+    Src/Domain/Measurement/TestDataBuffer.h \
     Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
     Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
     Src/ReportBuilders/ReportBlocks/IReportBlock.h \
@@ -91,6 +94,7 @@ HEADERS += \
     Src/Storage/AppSettings.h \
     Src/Storage/SettingsGroup.h \
     Src/Storage/Telemetry.h \
+    Src/Tests/Analyzer/StepTestAnalyzer.h \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.h \
     Src/Ui/MainWindow/TelemetryUiMapper.h \
     Src/Ui/MainWindow/TestController.h \
@@ -146,6 +150,7 @@ HEADERS += \
     Src/Utils/NumberUtils.h \
     Src/Utils/Shortcuts/TabActionRouter.h \
     Src/Utils/Shortcuts/TabBinder.h \
+    Src/Utils/SignalUtils.h \
     Src/ValidatorFactory/RegexPatterns.h \
     Src/ValidatorFactory/ValidatorFactory.h
 
