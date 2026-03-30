@@ -216,17 +216,14 @@ bool Mpi::initialize()
             const qreal b = (5.0 * s.min - s.max) / 4.0;
 
             sensor->setCoefficients(k, b);
-            sensor->setUnit(adcNum == 0 ? "мм" : "bar");
         }
         else if (adcNum == 4)
         {
             sensor->setCoefficients(adcCur / kAdcRawMask, 0.0);
-            sensor->setUnit("mA");
         }
         else
         {
             sensor->setCoefficients(1.0, 0.0);
-            sensor->setUnit("");
         }
 
         ++sensorNum;

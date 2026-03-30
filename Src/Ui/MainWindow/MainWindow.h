@@ -174,7 +174,6 @@ private:
         QVector<bool> visible;
     };
 
-
     void restoreSeries(Charts chart, const SeriesVisibilityBackup& b);
 
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;

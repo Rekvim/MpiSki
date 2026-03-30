@@ -25,6 +25,7 @@ SOURCES += \
     Src/Storage/AppSettings.cpp \
     Src/Storage/Telemetry.cpp \
     Src/Tests/Analyzer/StepTestAnalyzer.cpp \
+    Src/Tests/Analyzer/StrokeTestAnalyzer.cpp \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
     Src/Ui/MainWindow/TelemetryUiMapper.cpp \
     Src/Ui/MainWindow/TestController.cpp \
@@ -95,6 +96,7 @@ HEADERS += \
     Src/Storage/SettingsGroup.h \
     Src/Storage/Telemetry.h \
     Src/Tests/Analyzer/StepTestAnalyzer.h \
+    Src/Tests/Analyzer/StrokeTestAnalyzer.h \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.h \
     Src/Ui/MainWindow/TelemetryUiMapper.h \
     Src/Ui/MainWindow/TestController.h \

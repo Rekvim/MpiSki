@@ -7,6 +7,16 @@ DeviceInitializer::DeviceInitializer(Mpi& mpi,
     : m_mpi(mpi), m_registry(registry), m_telemetry(telemetry)
 {}
 
+static QString formatPosition(qreal value, const Registry& registry)
+{
+    const auto& valveInfo = registry.valveInfo();
+
+    QString unit =
+        (valveInfo.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
+
+    return QString("%1 %2").arg(value, 0, 'f', 2).arg(unit);
+}
+
 // Подключение и инициализация устройства
 bool DeviceInitializer::connectAndInitDevice()
 {
@@ -64,7 +74,11 @@ void DeviceInitializer::measureStartPosition(bool normalClosed)
     else
         m_mpi[0]->captureMax();
 
-    m_telemetry.init.startingPositionText = m_mpi[0]->formattedValue();
+    const qreal value = m_mpi[0]->value();
+
+    m_telemetry.init.startingPositionText =
+        formatPosition(value, m_registry);
+
     m_telemetry.init.startingPositionColor = Qt::darkGreen;
 
     m_telemetry.init.finalPositionText = "Измерение";
@@ -78,7 +92,11 @@ void DeviceInitializer::measureEndPosition(bool normalClosed)
     else
         m_mpi[0]->captureMin();
 
-    m_telemetry.init.finalPositionText = m_mpi[0]->formattedValue();
+    const qreal value = m_mpi[0]->value();
+
+    m_telemetry.init.finalPositionText =
+        formatPosition(value, m_registry);
+
     m_telemetry.init.finalPositionColor = Qt::darkGreen;
 }
 
@@ -102,7 +120,11 @@ void DeviceInitializer::measureStartPositionShutoff(
     else
         m_mpi[0]->captureMax();
 
-    m_telemetry.init.startingPositionText = m_mpi[0]->formattedValue();
+    const qreal value = m_mpi[0]->value();
+
+    m_telemetry.init.startingPositionText =
+        formatPosition(value, m_registry);
+
     m_telemetry.init.startingPositionColor = Qt::darkGreen;
 }
 
@@ -121,10 +143,16 @@ void DeviceInitializer::measureEndPositionShutoff(
         }
     }
 
-    if (normalClosed) m_mpi[0]->captureMax();
-    else m_mpi[0]->captureMin();
+    if (normalClosed)
+        m_mpi[0]->captureMax();
+    else
+        m_mpi[0]->captureMin();
 
-    m_telemetry.init.finalPositionText = m_mpi[0]->formattedValue();
+    const qreal value = m_mpi[0]->value();
+
+    m_telemetry.init.finalPositionText =
+        formatPosition(value, m_registry);
+
     m_telemetry.init.finalPositionColor = Qt::darkGreen;
 }
 
@@ -136,7 +164,6 @@ void DeviceInitializer::calculateCoefficients()
 
     if (valveInfo.strokeMovement == StrokeMovement::Rotary) {
         coeff = qRadiansToDegrees(2.0 / valveInfo.diameterPulley);
-        m_mpi[0]->setUnit("°");
     }
 
     m_mpi[0]->correctCoefficients(coeff);
@@ -144,11 +171,10 @@ void DeviceInitializer::calculateCoefficients()
 
 void DeviceInitializer::recordStrokeRange(bool normalClosed)
 {
-    if (normalClosed) {
-        m_telemetry.valveStrokeRecord.range = m_mpi[0]->formattedValue();
-        m_telemetry.valveStrokeRecord.real = m_mpi[0]->value();
-    } else {
-        m_telemetry.valveStrokeRecord.range = m_mpi[0]->formattedValue();
-        m_telemetry.valveStrokeRecord.real = m_mpi[0]->value();
-    }
+    const qreal value = m_mpi[0]->value();
+
+    m_telemetry.valveStrokeRecord.range =
+        formatPosition(value, m_registry);
+
+    m_telemetry.valveStrokeRecord.real = value;
 }

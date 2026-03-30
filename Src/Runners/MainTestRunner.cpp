@@ -32,9 +32,9 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<MainTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    connect(&t, &MainTest::UpdateGraph,
-            owner, &Program::updateCharts_mainTest,
-            Qt::QueuedConnection);
+    // connect(&t, &MainTest::UpdateGraph,
+    //         owner, &Program::updateCharts_mainTest,
+    //         Qt::QueuedConnection);
 
     connect(&t, &MainTest::GetPoints,
             owner, &Program::receivedPoints_mainTest,

@@ -23,7 +23,8 @@ public:
     void setPointsVisible(quint8 seriesN, bool visible);
     QVector<MySeries*>& series();
     void setSeriesMarkersOnly(quint8 seriesN, bool on);
-
+    int seriesCount() const;
+    bool isSeriesVisible(int series) const;
 public slots:
     void useTimeaxis(bool);
     void addAxis(QString);

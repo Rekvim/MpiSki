@@ -74,9 +74,9 @@ void OptionResolutionRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<OptionTest&>(base);
     auto* owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
-    connect(&t, &OptionTest::UpdateGraph,
-            owner, [owner]{ owner->updateCharts_optionTest(Charts::Resolution); },
-            Qt::QueuedConnection);
+    // connect(&t, &OptionTest::UpdateGraph,
+    //         owner, [owner]{ owner->updateCharts_optionTest(Charts::Resolution); },
+    //         Qt::QueuedConnection);
 
     connect(&t, &OptionTest::SetStartTime,
             owner, &Program::setTimeStart,

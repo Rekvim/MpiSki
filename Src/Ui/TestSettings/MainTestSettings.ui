@@ -56,7 +56,7 @@
            <property name="minimumDateTime">
             <datetime>
              <hour>0</hour>
-             <minute>3</minute>
+             <minute>1</minute>
              <second>0</second>
              <year>2000</year>
              <month>1</month>
@@ -73,7 +73,7 @@
            <property name="minimumTime">
             <time>
              <hour>0</hour>
-             <minute>3</minute>
+             <minute>1</minute>
              <second>0</second>
             </time>
            </property>

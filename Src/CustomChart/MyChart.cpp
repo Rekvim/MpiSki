@@ -65,6 +65,19 @@ MyChart::MyChart(QWidget *parent)
     m_markerTimer.start(); // для троттлинга маркеров
 }
 
+int MyChart::seriesCount() const
+{
+    return m_mySeries.size();
+}
+
+bool MyChart::isSeriesVisible(int series) const
+{
+    if (series < 0 || series >= m_mySeries.size())
+        return false;
+
+    return m_mySeries[series]->isVisible();
+}
+
 bool MyChart::allowMarkerUpdate()
 {
     // ограничим до ~60 fps

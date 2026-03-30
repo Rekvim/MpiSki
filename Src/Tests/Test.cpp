@@ -4,7 +4,7 @@ Test::Test(QObject *parent)
     : QObject{parent}
 {
     m_graphTimer = new QTimer(this);
-    connect(m_graphTimer, &QTimer::timeout, this, [&] { emit UpdateGraph(); });
+    // connect(m_graphTimer, &QTimer::timeout, this, [&] { emit UpdateGraph(); });
     m_terminate = false;
     m_eventLoop = new QEventLoop(this);
 }

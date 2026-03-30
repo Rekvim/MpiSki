@@ -41,16 +41,6 @@ qreal Sensor::percent() const
     return 100.0 * pos / span;
 }
 
-QString Sensor::percentFormatted() const
-{
-    return QString::asprintf("%.2f %%", percent());
-}
-
-QString Sensor::formattedValue() const
-{
-    return QString::asprintf(m_unit.toStdString().c_str(), value());
-}
-
 // --- mutators ---
 
 void Sensor::setValue(quint16 value)
@@ -85,9 +75,4 @@ void Sensor::captureMin()
 void Sensor::captureMax()
 {
     m_maxValue = m_value;
-}
-
-void Sensor::setUnit(const QString &unit)
-{
-    m_unit = "%.2f " + unit;
 }

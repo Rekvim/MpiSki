@@ -54,11 +54,11 @@ ChartImageService::hideAuxSeries(Charts chart)
 
     if (chart == Charts::Task) {
 
-        // b.visible = {
-        //     ch->isVisible(2),
-        //     ch->isVisible(3),
-        //     ch->isVisible(4)
-        // };
+        b.visible = {
+            ch->series()[2]->isVisible(),
+            ch->series()[3]->isVisible(),
+            ch->series()[4]->isVisible()
+        };
 
         ch->visible(2,false);
         ch->visible(3,false);
@@ -67,11 +67,14 @@ ChartImageService::hideAuxSeries(Charts chart)
 
     if (chart == Charts::Pressure) {
 
-        //  b.visible = { ch->isVisible(1) };
-        ch->visible(1,false);
-    }
+        b.visible = {
+            ch->series()[1]->isVisible()
+    };
 
-    return b;
+    ch->visible(1,false);
+}
+
+return b;
 }
 
 void ChartImageService::saveChart(

@@ -20,8 +20,9 @@ void ChartManager::addPoints(Charts chart, const QVector<Point> &points)
     if (!m_charts.contains(chart))
         return;
 
-    for (const auto& p : points)
+    for (const auto& p : points) {
         m_charts[chart]->addPoint(p.seriesNum, p.X, p.Y);
+    }
 }
 
 void ChartManager::clearPoints(Charts chart)

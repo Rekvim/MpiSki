@@ -26,7 +26,7 @@
 #include "Src/Tests/MainTest.h"
 #include "Src/Tests/CyclicTestsRegulatory.h"
 #include "Src/Tests/CyclicTestsShutoff.h"
-
+#include "Src/Tests/Analyzer/StrokeTestAnalyzer.h"
 #include "Src/Ui/Setup/SelectTests.h"
 
 struct RealtimeState
@@ -146,6 +146,7 @@ private:
         Cyclic
     };
 
+    StrokeTestAnalyzer m_strokeAnalyzer;
     ActiveChartMode m_activeChartMode = ActiveChartMode::TrendOnly;
     //
 
@@ -154,6 +155,7 @@ private:
     std::unique_ptr<AbstractTestRunner> m_activeRunner;
     template<typename RunnerT>
     void startRunner(std::unique_ptr<RunnerT> r) {
+
         disposeActiveRunnerAsync();
         connect(r.get(), &AbstractTestRunner::requestClearChart, this, [this](int chart){
             emit clearPoints(static_cast<Charts>(chart));
@@ -179,7 +181,10 @@ private:
         emit setButtonInitEnabled(false);
         emit setTaskControlsEnabled(false);
 
+        setDacRaw(0, 5000, true);
+
         m_isTestRunning = true;
+        m_startTime = QDateTime::currentMSecsSinceEpoch();
         m_testDataBuffer.clear();
         m_activeRunner = std::move(r);
         emit testStarted();
@@ -241,20 +246,16 @@ public slots:
     void initialization();
 
     // updateCharts
-    void updateCharts_mainTest();
-    void updateCharts_strokeTest();
-    void updateCharts_optionTest(Charts chart);
-    void updateCharts_CyclicTest(Charts chart);
-
     void updateChartsFromSample(const Sample& s);
     void updateTrendChart(const Sample& s);
     void updateStrokeChart(const Sample& s);
     void updateMainCharts(const Sample& s);
     void updateOptionChart(const Sample& s, Charts chart);
     void updateCyclicChart(const Sample& s);
+
     //
     void results_mainTest(const MainTest::TestResults &results);
-    void results_strokeTest(const quint64 forwardTime, const  quint64 backwardTime);
+    void results_strokeTest();
     void results_stepTest(const QVector<StepTest::TestResult> &results, const quint32 T_value);
 
     void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults &results);

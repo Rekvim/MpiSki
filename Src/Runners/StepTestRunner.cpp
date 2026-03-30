@@ -52,9 +52,9 @@ void StepTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<StepTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    connect(&t, &StepTest::UpdateGraph,
-            owner, [owner]{ owner->updateCharts_optionTest(Charts::Step); },
-            Qt::QueuedConnection);
+    // connect(&t, &StepTest::UpdateGraph,
+    //         owner, [owner]{ owner->updateCharts_optionTest(Charts::Step); },
+    //         Qt::QueuedConnection);
 
     connect(&t, &StepTest::GetPoints,
             owner, &Program::receivedPoints_stepTest,

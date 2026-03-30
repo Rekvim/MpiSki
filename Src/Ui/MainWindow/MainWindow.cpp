@@ -150,15 +150,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Program::sampleReady,
             this, [this](const Sample& s)
             {
-                Q_UNUSED(this);
-                qDebug() << "[Sample]"
-                         << "t=" << s.time
-                         << "dac=" << s.dac
-                         << "task=" << s.taskPercent
-                         << "pos=" << s.positionPercent
-                         << "p1=" << s.pressure1
-                         << "p2=" << s.pressure2
-                         << "p3=" << s.pressure3;
+                // Q_UNUSED(this);
+                // qDebug() << "[Sample]"
+                //          << "t=" << s.time
+                //          << "dac=" << s.dac
+                //          << "task=" << s.taskPercent
+                //          << "pos=" << s.positionPercent
+                //          << "p1=" << s.pressure1
+                //          << "p2=" << s.pressure2
+                //          << "p3=" << s.pressure3;
             });
 
     // kоговое окно
@@ -1424,8 +1424,8 @@ void MainWindow::initCharts()
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
 
-        cyclic->addSeries(0, tr("Кв закрыто →"), QColor(200,200,0));
-        cyclic->addSeries(0, tr("Кв открыто →"), QColor(0,200,0));
+        cyclic->addSeries(0, tr("Кв закрыто →"), QColor(200, 200 ,0));
+        cyclic->addSeries(0, tr("Кв открыто →"), QColor(0, 200, 0));
 
         cyclic->setSeriesMarkersOnly(2, true);
         cyclic->setSeriesMarkersOnly(3, true);

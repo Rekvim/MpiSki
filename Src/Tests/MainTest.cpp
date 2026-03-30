@@ -8,14 +8,9 @@ MainTest::MainTest(QObject *parent, bool endTestAfterProcess)
 void MainTest::Process()
 {
     emit started();
-    emit ClearGraph();
-    emit ShowDots(!m_parameters.continuous);
+    // emit ShowDots(!m_parameters.continuous);
 
     setDacBlocked(m_parameters.dac_min, 10000, true);
-
-    m_graphTimer->start(m_parameters.delay);
-
-    Sleep(m_parameters.delay);
 
     quint16 pointNumbers = m_parameters.pointNumbers * m_parameters.delay / m_parameters.response;
 
@@ -80,7 +75,7 @@ void MainTest::Process()
     QVector<QPointF> pointsBackward = GetRegressionPoints(regressionBackward, regressionLimits);
 
     // Ошибка нелинейности характеристики "давление от перемещения", % диапазона
-    qreal linErrForward  = GetLinearityError(points[2], regressionForward,  regressionLimits);
+    qreal linErrForward = GetLinearityError(points[2], regressionForward,  regressionLimits);
     qreal linErrBackward = GetLinearityError(points[3], regressionBackward, regressionLimits);
 
 
@@ -98,7 +93,6 @@ void MainTest::Process()
     QVector<QPointF> frictionPoints = GetFrictionPoints(points[2], points[3], regressionLimits);
 
     emit AddFriction(frictionPoints);
-
 
     qreal y_mean = (regressionLimits.maxY + regressionLimits.minY) / 2.0;
 

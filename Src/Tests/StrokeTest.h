@@ -20,7 +20,7 @@ public:
 signals:
     void GetPoints(QVector<QVector<QPointF>> &points);
     void SetStartTime();
-    void Results(quint64 forwardTime, quint64 backwardTime);
+    void Results();
 
 private:
     Config m_cfg;
