@@ -2,9 +2,9 @@
 
 #include <QObject>
 #include <QPointF>
-
 #include "Test.h"
-#include "./Src/Ui/TestSettings/MainTestSettings.h"
+
+#include "Src/Domain/TestParams/MainTestParams.h"
 
 class MainTest : public Test
 {
@@ -12,7 +12,7 @@ class MainTest : public Test
 public:
     explicit MainTest(QObject *parent = nullptr, bool endTestAfterProcess = true);
     virtual void Process() override;
-    void SetParameters(MainTestSettings::TestParameters &parameters);
+    void SetParameters(MainTestParams &parameters);
 
     struct TestResults
     {
@@ -30,7 +30,7 @@ public:
     };
 
 protected:
-    MainTestSettings::TestParameters m_parameters;
+    MainTestParams m_params;
 
 private:
     const bool m_endTestAfterProcess;

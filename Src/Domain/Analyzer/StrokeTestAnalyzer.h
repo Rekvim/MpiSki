@@ -1,13 +1,10 @@
 #pragma once
 
 #include <QtGlobal>
-#include "Src/Domain/Measurement/TestDataBuffer.h"
+#include <QVector>
 
-struct StrokeTestResults
-{
-    quint64 forwardTimeMs = 0;
-    quint64 backwardTimeMs = 0;
-};
+#include "Src/Domain/Measurement/Sample.h"
+#include "Src/Domain/TestResults/StrokeTestResult.h"
 
 class StrokeTestAnalyzer
 {
@@ -24,7 +21,7 @@ public:
 
     void onSample(const Sample& s);
 
-    StrokeTestResults finish();
+    StrokeTestResult finish();
 
 private:
     Config m_cfg;

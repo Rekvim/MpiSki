@@ -13,18 +13,15 @@ MainTestSettings::~MainTestSettings()
     delete ui;
 }
 
-MainTestSettings::TestParameters MainTestSettings::getParameters() const
+void MainTestSettings::readUi()
 {
-    TestParameters testParameters;
-
     if (ui->tabWidget->currentIndex() == 0) {
-        testParameters.continuous = true;
-        testParameters.delay = 50;
-        testParameters.response = 50;
-        testParameters.pointNumbers = qreal(ui->timeEdit->time().msecsSinceStartOfDay()) / 50;
-        testParameters.signal_min = 3.0;
-        testParameters.signal_max = 21.0;
-
+        m_params.continuous = true;
+        m_params.delay = 50;
+        m_params.response = 50;
+        m_params.pointNumbers = qreal(ui->timeEdit->time().msecsSinceStartOfDay()) / 50;
+        m_params.signal_min = 3.0;
+        m_params.signal_max = 21.0;
     } /*else {
         testParameters.continuous = false;
         testParameters.delay = ui->doubleSpinBox_delay->value() * 1000;
@@ -33,13 +30,17 @@ MainTestSettings::TestParameters MainTestSettings::getParameters() const
         testParameters.signal_max = ui->doubleSpinBox_signal_max->value();
         testParameters.response = ui->doubleSpinBox_response->value() * 1000;
     }*/
-    return testParameters;
+}
+
+void MainTestSettings::accept()
+{
+    readUi();
+    QDialog::accept();
 }
 
 void MainTestSettings::applyValveInfo(const ValveInfo& info)
 {
     Q_UNUSED(info);
-    // если для main-теста ничего делать не надо
 }
 
 void MainTestSettings::applyPattern(SelectTests::PatternType pattern)

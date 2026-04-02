@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Src/Runners/BaseRunner.h"
 #include "Src/Tests/Test.h"
 #include "Src/Domain/Mpi/Mpi.h"

@@ -1,6 +1,9 @@
 #include "OtherTestSettings.h"
 #include "ui_OtherTestSettings.h"
+
 #include "./Src/Storage/Registry.h"
+
+#include <QInputDialog>
 
 OtherTestSettings::OtherTestSettings(QWidget* parent)
     : AbstractTestSettings(parent)
@@ -8,7 +11,25 @@ OtherTestSettings::OtherTestSettings(QWidget* parent)
 {
     ui->setupUi(this);
 
+    initUi();
+    initDefaults();
+    initConnections();
+}
+
+OtherTestSettings::~OtherTestSettings()
+{
+    delete ui;
+}
+
+void OtherTestSettings::initUi()
+{
+    clampTime(ui->timeEdit, m_minTime, m_maxTime);
+}
+
+void OtherTestSettings::initDefaults()
+{
     m_sequence = {25.0, 50.0, 75.0};
+
     fillNumericList(ui->listWidget_value, m_sequence);
 
     bindNumericListEditor(
@@ -18,53 +39,63 @@ OtherTestSettings::OtherTestSettings(QWidget* parent)
         ui->pushButton_delete_value,
         "50.0"
         );
+}
 
-    clampTime(ui->timeEdit, m_minTime, m_maxTime);
-
-    // --- step list ---
+void OtherTestSettings::initConnections()
+{
     ui->pushButton_change_step->setEnabled(false);
     ui->pushButton_delete_step->setEnabled(false);
 
     connect(ui->listWidget_step, &QListWidget::currentRowChanged,
-            this, [=](int v) {
-                ui->pushButton_change_step->setEnabled(v >= 0);
-                ui->pushButton_delete_step->setEnabled(v >= 0 && ui->listWidget_step->count() > 1);
+            this,
+            [this](int row)
+            {
+                ui->pushButton_change_step->setEnabled(row >= 0);
+
+                ui->pushButton_delete_step->setEnabled(
+                    row >= 0 && ui->listWidget_step->count() > 1);
             });
 
     connect(ui->pushButton_add_step, &QPushButton::clicked,
-            this, [=]() {
+            this,
+            [this]()
+            {
                 ui->listWidget_step->addItem("3.0");
-                ui->listWidget_step->setCurrentRow(ui->listWidget_step->count() - 1);
+                ui->listWidget_step->setCurrentRow(
+                    ui->listWidget_step->count() - 1);
             });
 
     connect(ui->pushButton_delete_step, &QPushButton::clicked,
-            this, [=]() {
+            this,
+            [this]()
+            {
                 delete ui->listWidget_step->currentItem();
-                ui->pushButton_delete_step->setEnabled(ui->listWidget_step->count() > 1);
             });
 
     connect(ui->pushButton_change_step, &QPushButton::clicked,
-            this, [=]() {
+            this,
+            [this]()
+            {
                 auto* it = ui->listWidget_step->currentItem();
-                if (!it) return;
+                if (!it)
+                    return;
 
-                bool ok;
-                double d = QInputDialog::getDouble(
+                bool ok = false;
+
+                double value = QInputDialog::getDouble(
                     this,
                     tr("Ввод числа"),
                     tr("Значение:"),
                     it->text().toDouble(),
-                    0.0, 100.0, 1, &ok
+                    0.0,
+                    100.0,
+                    1,
+                    &ok
                     );
 
                 if (ok)
-                    it->setText(QString::number(d, 'f', 1));
+                    it->setText(QString::number(value, 'f', 1));
             });
-}
-
-OtherTestSettings::~OtherTestSettings()
-{
-    delete ui;
 }
 
 void OtherTestSettings::applyValveInfo(const ValveInfo& info)
@@ -88,19 +119,31 @@ QListWidget* OtherTestSettings::sequenceListWidget()
     return ui->listWidget_value;
 }
 
-OtherTestSettings::TestParameters OtherTestSettings::getParameters()
+QVector<double> OtherTestSettings::readList(QListWidget* list) const
 {
-    TestParameters testParameters;
+    QVector<double> values;
 
-    testParameters.delay = ui->timeEdit->time().msecsSinceStartOfDay();
+    values.reserve(list->count());
 
-    for (int i = 0; i < ui->listWidget_value->count(); i++) {
-        testParameters.points.append(ui->listWidget_value->item(i)->text().toDouble());
-    }
+    for (int i = 0; i < list->count(); ++i)
+        values.append(list->item(i)->text().toDouble());
 
-    for (int i = 0; i < ui->listWidget_step->count(); i++) {
-        testParameters.steps.append(ui->listWidget_step->item(i)->text().toDouble());
-    }
+    return values;
+}
 
-    return testParameters;
+void OtherTestSettings::readParamsFromUi(OptionTestParams& params)
+{
+    params.delay = ui->timeEdit->time().msecsSinceStartOfDay();
+
+    params.points = readList(ui->listWidget_value);
+    params.steps = readList(ui->listWidget_step);
+}
+
+OptionTestParams OtherTestSettings::parameters()
+{
+    OptionTestParams params;
+
+    readParamsFromUi(params);
+
+    return params;
 }

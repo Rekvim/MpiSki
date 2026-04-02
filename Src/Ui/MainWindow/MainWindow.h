@@ -14,6 +14,9 @@
 #include "Src/Ui/MainWindow/TelemetryUiMapper.h"
 #include "Src/Ui/MainWindow/CrossingIndicatorsPresenter.h"
 
+#include "Src/Ui/TestSettings/MainTestSettings.h"
+#include "Src/Ui/TestSettings/CyclicTestSettings.h"
+
 #include "Src/ReportBuilders/ReportSaver.h"
 #include "Src/Domain/Program.h"
 #include "Src/Storage/Registry.h"
@@ -68,7 +71,7 @@ private slots:
 
     void promptSaveChartsAfterTest();
 
-    void getDirectory(const QString &currentPath, QString &result);
+    void directoryToSave(const QString &currentPath, QString &result);
 
     void setText(TextObjects object, const QString &text);
     void setTask(qreal task);
@@ -92,12 +95,12 @@ private slots:
 
     void endTest();
 
-    void onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
-    void onMainTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
-    void onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
-    void onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart);
+    void onStrokeTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
+    void onMainTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
+    void onStepTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
+    void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
 
-    void onCyclicTestParametersRequested(CyclicTestSettings::TestParameters &parameters);
+    void onCyclicTestParametersRequested(CyclicTestParams& parameters);
 
     void setupUiConnections();
     void startMainTestClicked();

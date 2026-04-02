@@ -289,8 +289,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::askQuestion,
             Qt::DirectConnection);
 
-    connect(m_reportSaver, &ReportSaver::getDirectory,
-            this, &MainWindow::getDirectory,
+    connect(m_reportSaver, &ReportSaver::setDirectoryToSave,
+            this, &MainWindow::directoryToSave,
             Qt::DirectConnection);
 
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
@@ -972,19 +972,18 @@ static QString seqToString(const QVector<qreal>& seq)
     return parts.join('-');
 }
 
-void MainWindow::onCyclicTestParametersRequested(CyclicTestSettings::TestParameters &parameters)
+void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
 {
     if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
-        using TP = CyclicTestSettings::TestParameters;
-        parameters = m_cyclicTestSettings->getParameters();
+        parameters = m_cyclicTestSettings->parameters();
 
         switch (parameters.testType) {
-        case TP::Regulatory:
+        case CyclicTestParams::Regulatory:
             ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.regSeqValues));
             ui->label_cyclicTest_specifiedCyclesValue->setText(
                 QString::number(parameters.regulatory_numCycles));
             break;
-        case TP::Shutoff:
+        case CyclicTestParams::Shutoff:
             ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.offSeqValues));
             ui->label_cyclicTest_specifiedCyclesValue->setText(
                 QString::number(parameters.shutoff_numCycles));
@@ -995,13 +994,13 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestSettings::TestParamet
             break;
         }
 
-        if (parameters.testType == TP::Regulatory && parameters.regulatory_enable_20mA) {
+        if (parameters.testType == CyclicTestParams::Regulatory && parameters.regulatory_enable_20mA) {
             ui->doubleSpinBox_task->setValue(20.0);
         }
 
         qint64 totalMs = 0;
         switch (parameters.testType) {
-        case TP::Regulatory: {
+        case CyclicTestParams::Regulatory: {
             const auto raw = parameters.regSeqValues;
             quint64 steps = static_cast<quint64>(raw.size()) * parameters.regulatory_numCycles;
 
@@ -1009,7 +1008,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestSettings::TestParamet
                                + parameters.regulatory_holdMs);
             break;
         }
-        case TP::Shutoff: {
+        case CyclicTestParams::Shutoff: {
             const auto raw = parameters.offSeqValues;
             quint64 steps = static_cast<quint64>(raw.size()) * parameters.shutoff_numCycles;
             totalMs = steps * (parameters.shutoff_holdMs
@@ -1017,7 +1016,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestSettings::TestParamet
 
             break;
         }
-        case TP::Combined: {
+        case CyclicTestParams::Combined: {
             const auto regRaw = parameters.regSeqValues;
             quint64 regSteps = static_cast<quint64>(regRaw.size()) * parameters.regulatory_numCycles;
             quint64 regMs = regSteps * (parameters.regulatory_delayMs
@@ -1052,7 +1051,7 @@ void MainWindow::askQuestion(const QString &title, const QString &text, bool &re
     result = (QMessageBox::question(this, title, text) == QMessageBox::Yes);
 }
 
-void MainWindow::getDirectory(const QString &currentPath, QString &result)
+void MainWindow::directoryToSave(const QString &currentPath, QString &result)
 {
     result = QFileDialog::getExistingDirectory(this,
                                                tr("Выберите папку для сохранения изображений"),
@@ -1161,7 +1160,7 @@ void MainWindow::startMainTestClicked()
     if (m_mainTestSettings->exec() != QDialog::Accepted)
         return;
 
-    const auto params = m_mainTestSettings->getParameters();
+    const auto params = m_mainTestSettings->parameters();
 
     m_testController->runMainTest(params);
 }
@@ -1253,14 +1252,14 @@ void MainWindow::startOptionalTestClicked()
             return;
 
         m_testController->runResponseTest(
-            m_responseTestSettings->getParameters());
+            m_responseTestSettings->parameters());
     }
     else if (id == 1) {
         if (m_resolutionTestSettings->exec() != QDialog::Accepted)
             return;
 
         m_testController->runResolutionTest(
-            m_resolutionTestSettings->getParameters());
+            m_resolutionTestSettings->parameters());
     }
     else if (id == 2) {
         if (m_stepTestSettings->exec() != QDialog::Accepted)
@@ -1294,7 +1293,7 @@ void MainWindow::startCyclicTestClicked()
         return;
 
     m_testController->runCyclicTest(
-        m_cyclicTestSettings->getParameters());
+        m_cyclicTestSettings->parameters());
 }
 
 void MainWindow::saveCyclicChartClicked()

@@ -13,7 +13,7 @@ void CyclicTests::SetPatternType(SelectTests::PatternType pt)
     m_patternType = pt;
 }
 
-void CyclicTests::SetParameters(const Parameters& params)
+void CyclicTests::SetParameters(const CyclicTestParams& params)
 {
     m_params = params;
 }
@@ -43,13 +43,13 @@ void CyclicTests::Process()
     double totalSec = 0.0;
 
     switch (m_params.testType) {
-    case CyclicTestSettings::TestParameters::Regulatory:
+    case CyclicTestParams::Regulatory:
         totalSec += processRegulatory();
         break;
-    case CyclicTestSettings::TestParameters::Shutoff:
+    case CyclicTestParams::Shutoff:
         totalSec += processShutoff();
         break;
-    case CyclicTestSettings::TestParameters::Combined:
+    case CyclicTestParams::Combined:
         totalSec += processRegulatory();
         if (!m_terminate) totalSec += processShutoff();
         break;
@@ -63,7 +63,7 @@ void CyclicTests::Process()
     fetchPoints(pts);
 
     const bool shutoffOnly =
-        (m_params.testType == CyclicTestSettings::TestParameters::Shutoff);
+        (m_params.testType == CyclicTestParams::Shutoff);
 
     // const QVector<qreal>& seq = shutoffOnly
     //                               ? m_params.offSeqValues

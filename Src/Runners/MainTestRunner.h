@@ -2,14 +2,14 @@
 
 #include <QObject>
 #include "BaseRunner.h"
-#include "Src/Ui/TestSettings/MainTestSettings.h"
+#include "Src/Domain/TestParams/MainTestParams.h"
 
 class MainTestRunner : public BaseRunner {
     Q_OBJECT
 public:
     MainTestRunner(Mpi& mpi,
                    Registry& reg,
-                   const MainTestSettings::TestParameters& params,
+                   const MainTestParams& params,
                    QObject* parent=nullptr)
     : BaseRunner(mpi, reg, parent), m_params(params) {}
 
@@ -18,5 +18,5 @@ protected:
     void wireSpecificSignals(Test& t) override;
 
 private:
-    MainTestSettings::TestParameters m_params;
+    MainTestParams m_params;
 };

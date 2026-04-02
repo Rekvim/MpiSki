@@ -22,10 +22,12 @@ SOURCES += \
     Src/CustomChart/ChartManager.cpp \
     Src/Domain/DeviceInitializer.cpp \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
+    Src/Runners/ResolutionRunner.cpp \
+    Src/Runners/ResponseRunner.cpp \
     Src/Storage/AppSettings.cpp \
     Src/Storage/Telemetry.cpp \
-    Src/Tests/Analyzer/StepTestAnalyzer.cpp \
-    Src/Tests/Analyzer/StrokeTestAnalyzer.cpp \
+    Src/Domain/Analyzer/StepTestAnalyzer.cpp \
+    Src/Domain/Analyzer/StrokeTestAnalyzer.cpp \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
     Src/Ui/MainWindow/TelemetryUiMapper.cpp \
     Src/Ui/MainWindow/TestController.cpp \
@@ -56,8 +58,6 @@ SOURCES += \
     Src/Runners/CyclicRegulatoryRunner.cpp \
     Src/Runners/CyclicShutoffRunner.cpp \
     Src/Runners/MainTestRunner.cpp \
-    Src/Runners/OptionResolutionRunner.cpp \
-    Src/Runners/OptionResponseRunner.cpp \
     Src/Runners/StepTestRunner.cpp \
     Src/Runners/StrokeTestRunner.cpp \
     Src/Tests/CyclicTestPositioner.cpp \
@@ -83,6 +83,13 @@ HEADERS += \
     Src/Domain/DeviceInitializer.h \
     Src/Domain/Measurement/Sample.h \
     Src/Domain/Measurement/TestDataBuffer.h \
+    Src/Domain/TestParams/CyclicTestParams.h \
+    Src/Domain/TestParams/MainTestParams.h \
+    Src/Domain/TestParams/OptionTestParams.h \
+    Src/Domain/TestParams/StepTestParams.h \
+    Src/Domain/TestResults/MainTestResult.h \
+    Src/Domain/TestResults/StepTestResult.h \
+    Src/Domain/TestResults/StrokeTestResult.h \
     Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
     Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
     Src/ReportBuilders/ReportBlocks/IReportBlock.h \
@@ -92,11 +99,13 @@ HEADERS += \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.h \
     Src/ReportBuilders/ReportBlocks/ValveSpecBlock.h \
     Src/ReportBuilders/ReportWriter.h \
+    Src/Runners/ResolutionRunner.h \
+    Src/Runners/ResponseRunner.h \
     Src/Storage/AppSettings.h \
     Src/Storage/SettingsGroup.h \
     Src/Storage/Telemetry.h \
-    Src/Tests/Analyzer/StepTestAnalyzer.h \
-    Src/Tests/Analyzer/StrokeTestAnalyzer.h \
+    Src/Domain/Analyzer/StepTestAnalyzer.h \
+    Src/Domain/Analyzer/StrokeTestAnalyzer.h \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.h \
     Src/Ui/MainWindow/TelemetryUiMapper.h \
     Src/Ui/MainWindow/TestController.h \
@@ -133,8 +142,6 @@ HEADERS += \
     Src/Runners/CyclicRegulatoryRunner.h \
     Src/Runners/CyclicShutoffRunner.h \
     Src/Runners/MainTestRunner.h \
-    Src/Runners/OptionResolutionRunner.h \
-    Src/Runners/OptionResponseRunner.h \
     Src/Runners/StepTestRunner.h \
     Src/Runners/StrokeTestRunner.h \
     Src/Tests/CyclicTestPositioner.h \

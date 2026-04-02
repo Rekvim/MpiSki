@@ -1,4 +1,5 @@
 #include "MainTest.h"
+#include <QDateTime>
 
 MainTest::MainTest(QObject *parent, bool endTestAfterProcess)
     : Test(parent)
@@ -8,20 +9,20 @@ MainTest::MainTest(QObject *parent, bool endTestAfterProcess)
 void MainTest::Process()
 {
     emit started();
-    // emit ShowDots(!m_parameters.continuous);
+    // emit ShowDots(!m_params.continuous);
 
-    setDacBlocked(m_parameters.dac_min, 10000, true);
+    setDacBlocked(m_params.dac_min, 10000, true);
 
-    quint16 pointNumbers = m_parameters.pointNumbers * m_parameters.delay / m_parameters.response;
+    quint16 pointNumbers = m_params.pointNumbers * m_params.delay / m_params.response;
 
     quint64 time;
     time = QDateTime::currentMSecsSinceEpoch();
 
     for (qint16 i = 0; i <= pointNumbers; ++i) {
-        quint16 dac = i * (m_parameters.dac_max - m_parameters.dac_min) / pointNumbers
-                      + m_parameters.dac_min;
+        quint16 dac = i * (m_params.dac_max - m_params.dac_min) / pointNumbers
+                      + m_params.dac_min;
 
-        time += m_parameters.response;
+        time += m_params.response;
         quint64 currentTime = QDateTime::currentMSecsSinceEpoch();
         setDacBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
@@ -31,19 +32,19 @@ void MainTest::Process()
         }
     }
 
-    setDacBlocked(m_parameters.dac_max, 0, true);
+    setDacBlocked(m_params.dac_max, 0, true);
 
     emit DublSeries();
 
-    Sleep(m_parameters.delay);
+    Sleep(m_params.delay);
 
     time = QDateTime::currentMSecsSinceEpoch();
 
     for (qint16 i = pointNumbers; i >= 0; --i) {
-        quint16 dac = i * (m_parameters.dac_max - m_parameters.dac_min) / pointNumbers
-                      + m_parameters.dac_min;
+        quint16 dac = i * (m_params.dac_max - m_params.dac_min) / pointNumbers
+                      + m_params.dac_min;
 
-        time += m_parameters.response;
+        time += m_params.response;
         quint64 currentTime = QDateTime::currentMSecsSinceEpoch();
         setDacBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
@@ -53,7 +54,7 @@ void MainTest::Process()
         }
     }
 
-    setDacBlocked(m_parameters.dac_min, 0, true);
+    setDacBlocked(m_params.dac_min, 0, true);
 
     m_graphTimer->stop();
 
@@ -129,9 +130,9 @@ void MainTest::Process()
     }
 }
 
-void MainTest::SetParameters(MainTestSettings::TestParameters &parameters)
+void MainTest::SetParameters(MainTestParams &parameters)
 {
-    m_parameters = parameters;
+    m_params = parameters;
 }
 
 MainTest::Regression MainTest::CalculateRegression(const QVector<QPointF> &points, Limits limits)

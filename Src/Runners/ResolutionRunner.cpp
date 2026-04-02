@@ -1,9 +1,9 @@
-#include "OptionResponseRunner.h"
+#include "ResolutionRunner.h"
 #include "Src/Domain/Program.h"
 #include "Src/Storage/Registry.h"
 #include "Src/Tests/OptionTest.h"
 
-RunnerConfig OptionResponseRunner::buildConfig()
+RunnerConfig OptionResolutionRunner::buildConfig()
 {
     auto p = m_params;
 
@@ -21,22 +21,30 @@ RunnerConfig OptionResponseRunner::buildConfig()
     for (auto it = p.points.begin(); it != p.points.end(); ++it)
     {
         const qreal basePercent = normalOpen ? (100.0 - *it) : *it;
+
         const qreal baseCurrent = 16.0 * basePercent / 100.0 + 4.0;
 
-        for (quint8 phase = 0; phase < 2; ++phase)
+        const qreal baseRaw = m_mpi.dac()->rawFromValue(baseCurrent);
+
+        task.value.push_back(baseRaw);
+
+        for (auto it_s = p.steps.begin();
+             it_s < p.steps.end();
+             ++it_s)
         {
-            qreal current = baseCurrent;
+            const qreal stepValue = 16.0 * (*it_s) / 100.0;
 
-            task.value.push_back(m_mpi.dac()->rawFromValue(current));
+            // вверх
+            const qreal stepUpCurrent = baseCurrent + stepValue;
+            task.value.push_back(m_mpi.dac()->rawFromValue(stepUpCurrent));
 
-            const qreal dir = (phase == 0 ? +1.0 : -1.0);
+            task.value.push_back(baseRaw);\
 
-            for (auto it_s = p.steps.begin(); it_s < p.steps.end(); ++it_s)
-            {
-                const qreal stepValue = 16.0 * (*it_s) / 100.0;
-                current += dir * stepValue;
-                task.value.push_back(m_mpi.dac()->rawFromValue(current));
-            }
+                // вниз
+                const qreal stepDownCurrent = baseCurrent - stepValue;
+            task.value.push_back(m_mpi.dac()->rawFromValue(stepDownCurrent));
+
+            task.value.push_back(baseRaw);
         }
     }
 
@@ -47,23 +55,27 @@ RunnerConfig OptionResponseRunner::buildConfig()
     const quint64 P = static_cast<quint64>(p.points.size());
     const quint64 S = static_cast<quint64>(p.steps.size());
     const quint64 delay = static_cast<quint64>(p.delay);
-    const quint64 N_values = 1ULL + 2ULL * P * (1ULL + S);
-    const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
+
+    const quint64 N_values =
+        2ULL + P * (1ULL + 2ULL * S);
+
+    const quint64 totalMs =
+        10000ULL + N_values * delay + 10000ULL;
 
     RunnerConfig cfg;
     cfg.worker = worker;
     cfg.totalMs = totalMs;
-    cfg.chartToClear = static_cast<int>(Charts::Response);
+    cfg.chartToClear = static_cast<int>(Charts::Resolution);
+
     return cfg;
 }
 
-
-void OptionResponseRunner::wireSpecificSignals(Test& base) {
+void OptionResolutionRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<OptionTest&>(base);
     auto* owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
     // connect(&t, &OptionTest::UpdateGraph,
-    //         owner, [owner]{ owner->updateCharts_optionTest(Charts::Response); },
+    //         owner, [owner]{ owner->updateCharts_optionTest(Charts::Resolution); },
     //         Qt::QueuedConnection);
 
     connect(&t, &OptionTest::SetStartTime,

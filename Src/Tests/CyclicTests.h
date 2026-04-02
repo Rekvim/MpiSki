@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MainTest.h"
-#include "./Src/Ui/TestSettings/CyclicTestSettings.h"
+#include "Src/Ui/TestSettings/CyclicTestSettings.h"
 #include <QVector>
 #include <QPointF>
 #include <QString>
@@ -9,10 +9,9 @@
 class CyclicTests : public MainTest {
     Q_OBJECT
 public:
-    using Parameters = CyclicTestSettings::TestParameters;
 
     explicit CyclicTests(QObject* parent = nullptr);
-    void SetParameters(const Parameters& params);
+    void SetParameters(const CyclicTestParams& params);
     void SetPatternType(SelectTests::PatternType pt);
 
     struct Task {
@@ -71,7 +70,7 @@ private:
     void fetchPoints(QVector<QVector<QPointF>>& pts);
 
 private:
-    Parameters m_params;
+    CyclicTestParams m_params;
     QVector<quint16> m_doOnCounts;
     QVector<quint16> m_doOffCounts;
 };

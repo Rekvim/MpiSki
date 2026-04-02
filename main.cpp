@@ -8,12 +8,10 @@
 #include "./Src/Storage/Registry.h"
 #include "./Src/Ui/Setup/ValveWindow/ValveWindow.h"
 
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    qRegisterMetaType<MainTestSettings::TestParameters>("MainTestSettings::TestParameters");
     qRegisterMetaType<TelemetryStore>("TelemetryStore");
 
     QTranslator qtTranslator;

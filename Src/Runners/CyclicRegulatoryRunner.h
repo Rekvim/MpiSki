@@ -1,14 +1,14 @@
 #pragma once
 
 #include "BaseRunner.h"
-#include "Src/Ui/TestSettings/CyclicTestSettings.h"
+#include "Src/Domain/TestParams/CyclicTestParams.h"
 
 class CyclicRegulatoryRunner final : public BaseRunner {
     Q_OBJECT
 public:
     CyclicRegulatoryRunner(Mpi& mpi,
                          Registry& reg,
-                         const CyclicTestSettings::TestParameters& params,
+                         const CyclicTestParams& params,
                          QObject* parent=nullptr)
         : BaseRunner(mpi, reg, parent), m_params(params) {}
 
@@ -17,5 +17,5 @@ protected:
     void wireSpecificSignals(Test& t) override;
 
 private:
-    CyclicTestSettings::TestParameters m_params;
+    CyclicTestParams m_params;
 };

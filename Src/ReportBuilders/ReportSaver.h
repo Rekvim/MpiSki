@@ -52,5 +52,5 @@ private:
 
 signals:
     void question(const QString &title, const QString &text, bool &result);
-    void getDirectory(const QString &currentPath, QString &result);
+    void setDirectoryToSave(const QString &currentPath, QString &result);
 };

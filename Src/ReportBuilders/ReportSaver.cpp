@@ -178,7 +178,7 @@ void ReportSaver::createDir()
         QString folderPath;
 
         do {
-            emit getDirectory(m_dir.path(), folderPath);
+            emit setDirectoryToSave(m_dir.path(), folderPath);
         } while (folderPath.isEmpty());
 
         QDir chosenDir(folderPath);

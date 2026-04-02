@@ -126,9 +126,9 @@ static void debugPoint(
         << "pos =" << s.positionPercent;
 }
 
-StrokeTestResults StrokeTestAnalyzer::finish()
+StrokeTestResult StrokeTestAnalyzer::finish()
 {
-    StrokeTestResults r;
+    StrokeTestResult r;
     qDebug() << "Samples count =" << m_samples.size();
 
     if (m_samples.isEmpty())

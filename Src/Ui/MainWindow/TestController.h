@@ -22,12 +22,12 @@ public:
 
 public slots:
 
-    void runMainTest(const MainTestSettings::TestParameters& params);
+    void runMainTest(const MainTestParams& params);
     void runStrokeTest();
-    void runResponseTest(const OtherTestSettings::TestParameters& params);
-    void runResolutionTest(const OtherTestSettings::TestParameters& params);
+    void runResponseTest(const OptionTestParams& params);
+    void runResolutionTest(const OptionTestParams& params);
     void runStepTest(const StepTestSettings::TestParameters& params);
-    void runCyclicTest(const CyclicTestSettings::TestParameters& params);
+    void runCyclicTest(const CyclicTestParams& params);
 
     void finish();
     void stop();
@@ -38,12 +38,12 @@ signals:
     void testFinished();
     void stateChanged(TestState state);
 
-    void startMainRequested(const MainTestSettings::TestParameters& params);
+    void startMainRequested(const MainTestParams& params);
     void startStrokeRequested();
-    void startResponseRequested(const OtherTestSettings::TestParameters& params);
-    void startResolutionRequested(const OtherTestSettings::TestParameters& params);
+    void startResponseRequested(const OptionTestParams& params);
+    void startResolutionRequested(const OptionTestParams& params);
     void startStepRequested(const StepTestSettings::TestParameters& params);
-    void startCyclicRequested(const CyclicTestSettings::TestParameters& params);
+    void startCyclicRequested(const CyclicTestParams& params);
 
 private:
     void run(std::function<void()> start);

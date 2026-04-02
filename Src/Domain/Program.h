@@ -10,10 +10,11 @@
 #include "Src/Domain/Mpi/Mpi.h"
 #include "Src/Ui/TestSettings/OtherTestSettings.h"
 #include "Src/Ui/TestSettings/StepTestSettings.h"
-#include "Src/Ui/TestSettings/CyclicTestSettings.h"
 
 #include "Src/CustomChart/ChartManager.h"
 
+#include "Src/Domain/TestParams/MainTestParams.h"
+#include "Src/Domain/TestParams/CyclicTestParams.h"
 
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
@@ -26,7 +27,7 @@
 #include "Src/Tests/MainTest.h"
 #include "Src/Tests/CyclicTestsRegulatory.h"
 #include "Src/Tests/CyclicTestsShutoff.h"
-#include "Src/Tests/Analyzer/StrokeTestAnalyzer.h"
+#include "Src/Domain/Analyzer/StrokeTestAnalyzer.h"
 #include "Src/Ui/Setup/SelectTests.h"
 
 struct RealtimeState
@@ -116,11 +117,11 @@ signals:
     void releaseBlock();
 
     void mainTestFinished();
-    void getParameters_mainTest(MainTestSettings::TestParameters &parameters);
+    void getParameters_mainTest(MainTestParams &parameters);
     void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
-    void getParameters_resolutionTest(OtherTestSettings::TestParameters &parameters);
-    void getParameters_responseTest(OtherTestSettings::TestParameters &parameters);
-    void getParameters_cyclicTest(CyclicTestSettings::TestParameters &parameters);
+    void getParameters_resolutionTest(OptionTestParams &parameters);
+    void getParameters_responseTest(OptionTestParams &parameters);
+    void getParameters_cyclicTest(CyclicTestParams &parameters);
 
     void question(QString &title, QString &text, bool &result);
 
@@ -201,8 +202,8 @@ private:
 
     template<typename Runner, typename... Args>
     void runTest(Args&&... args);
-    void prepareShutoffTelemetry(const CyclicTestSettings::TestParameters& params);
-    void prepareRegulatoryTelemetry(const CyclicTestSettings::TestParameters& params);
+    void prepareShutoffTelemetry(const CyclicTestParams& params);
+    void prepareRegulatoryTelemetry(const CyclicTestParams& params);
 
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
     QString seqToString(const QVector<quint16> &seq);
@@ -279,16 +280,17 @@ public slots:
     void setTimeStart();
 
     void startStrokeTest();
-    void startMainTest(const MainTestSettings::TestParameters& params);
-    void startResponseTest(const OtherTestSettings::TestParameters& params);
-    void startResolutionTest(const OtherTestSettings::TestParameters& params);
+    void startMainTest(const MainTestParams& params);
+    void startResponseTest(const OptionTestParams& params);
+    void startResolutionTest(const OptionTestParams& params);
     void startStepTest(const StepTestSettings::TestParameters& params);
-    void startCyclicTest(const CyclicTestSettings::TestParameters& params);
-    void runCombinedCyclicTest(const CyclicTestSettings::TestParameters& params);
+    void startCyclicTest(const CyclicTestParams& params);
 
-    void forwardGetParameters_mainTest(MainTestSettings::TestParameters &p) { emit getParameters_mainTest(p); }
-    void forwardGetParameters_responseTest(OtherTestSettings::TestParameters &p) { emit getParameters_responseTest(p); }
-    void forwardGetParameters_resolutionTest(OtherTestSettings::TestParameters &p) { emit getParameters_resolutionTest(p); }
+    void runCombinedCyclicTest(const CyclicTestParams& params);
+
+    void forwardGetParameters_mainTest(MainTestParams &p) { emit getParameters_mainTest(p); }
+    void forwardGetParameters_responseTest(OptionTestParams &p) { emit getParameters_responseTest(p); }
+    void forwardGetParameters_resolutionTest(OptionTestParams &p) { emit getParameters_resolutionTest(p); }
 
     void endTest();
     void terminateTest();

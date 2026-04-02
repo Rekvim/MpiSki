@@ -7,8 +7,8 @@
 #include "Src/Runners/MainTestRunner.h"
 #include "Src/Runners/StepTestRunner.h"
 #include "Src/Runners/StrokeTestRunner.h"
-#include "Src/Runners/OptionResponseRunner.h"
-#include "Src/Runners/OptionResolutionRunner.h"
+#include "Src/Runners/ResponseRunner.h"
+#include "Src/Runners/ResolutionRunner.h"
 #include "Src/Runners/CyclicRegulatoryRunner.h"
 #include "Src/Runners/CyclicShutoffRunner.h"
 
@@ -554,7 +554,7 @@ void Program::runTest(Args&&... args)
     startRunner(std::move(r));
 }
 
-void Program::startMainTest(const MainTestSettings::TestParameters& params)
+void Program::startMainTest(const MainTestParams& params)
 {
     m_activeChartMode = ActiveChartMode::Main;
     runTest<MainTestRunner>(params);
@@ -829,8 +829,7 @@ void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResul
     // emit telemetryUpdated(m_telemetryStore);
 }
 
-void Program::prepareRegulatoryTelemetry(
-    const CyclicTestSettings::TestParameters& params)
+void Program::prepareRegulatoryTelemetry(const CyclicTestParams& params)
 {
     auto& rec = m_telemetryStore.cyclicTestRecord;
 
@@ -869,8 +868,7 @@ void Program::prepareRegulatoryTelemetry(
     }
 }
 
-void Program::prepareShutoffTelemetry(
-    const CyclicTestSettings::TestParameters& params)
+void Program::prepareShutoffTelemetry(const CyclicTestParams& params)
 {
     auto& rec = m_telemetryStore.cyclicTestRecord;
 
@@ -893,8 +891,7 @@ void Program::prepareShutoffTelemetry(
     rec.totalTimeSecShutoff = totalMs / 1000.0;
 }
 
-void Program::runCombinedCyclicTest(
-    const CyclicTestSettings::TestParameters& params)
+void Program::runCombinedCyclicTest(const CyclicTestParams& params)
 {
     const quint64 regSteps =
         params.regSeqValues.size() * params.regulatory_numCycles;
@@ -929,20 +926,20 @@ void Program::runCombinedCyclicTest(
     startRunner(std::move(reg));
 }
 
-void Program::startCyclicTest(const CyclicTestSettings::TestParameters& params)
+void Program::startCyclicTest(const CyclicTestParams& params)
 {
     if (params.regSeqValues.isEmpty() && params.offSeqValues.isEmpty()) {
         emit testFinished();
         return;
     }
 
-    if (params.testType == CyclicTestSettings::TestParameters::Regulatory ||
-        params.testType == CyclicTestSettings::TestParameters::Combined) {
+    if (params.testType == CyclicTestParams::Regulatory ||
+        params.testType == CyclicTestParams::Combined) {
 
         prepareRegulatoryTelemetry(params);
     }
 
-    if (params.testType == CyclicTestSettings::TestParameters::Shutoff) {
+    if (params.testType == CyclicTestParams::Shutoff) {
         prepareShutoffTelemetry(params);
     }
 
@@ -950,13 +947,13 @@ void Program::startCyclicTest(const CyclicTestSettings::TestParameters& params)
 
     switch (params.testType)
     {
-    case CyclicTestSettings::TestParameters::Regulatory:
+    case CyclicTestParams::Regulatory:
         runTest<CyclicRegulatoryRunner>(params);
         break;
-    case CyclicTestSettings::TestParameters::Shutoff:
+    case CyclicTestParams::Shutoff:
         runTest<CyclicShutoffRunner>(params);
         break;
-    case CyclicTestSettings::TestParameters::Combined:
+    case CyclicTestParams::Combined:
         runCombinedCyclicTest(params);
         break;
     default:
@@ -990,12 +987,12 @@ void Program::onCyclicStepMeasured(int cycle, int step, bool forward)
     emit telemetryUpdated(m_telemetryStore);
 }
 
-void Program::startResponseTest(const OtherTestSettings::TestParameters& params) {
+void Program::startResponseTest(const OptionTestParams& params) {
     m_activeChartMode = ActiveChartMode::Response;
     runTest<OptionResponseRunner>(params);
 }
 
-void Program::startResolutionTest(const OtherTestSettings::TestParameters& params) {
+void Program::startResolutionTest(const OptionTestParams& params) {
     m_activeChartMode = ActiveChartMode::Resolution;
     runTest<OptionResponseRunner>(params);
 }

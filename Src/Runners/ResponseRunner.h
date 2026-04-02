@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseRunner.h"
-#include "Src/Ui/TestSettings/OtherTestSettings.h"
+#include "Src/Domain/TestParams/OptionTestParams.h"
 
 class OptionResponseRunner : public BaseRunner
 {
@@ -9,7 +9,7 @@ class OptionResponseRunner : public BaseRunner
 public:
     OptionResponseRunner(Mpi& mpi,
                            Registry& reg,
-                           const OtherTestSettings::TestParameters& params,
+                           const OptionTestParams& params,
                            QObject* parent=nullptr)
         : BaseRunner(mpi, reg, parent), m_params(params) {}
 
@@ -18,5 +18,5 @@ protected:
     void wireSpecificSignals(Test& t) override;
 
 private:
-    OtherTestSettings::TestParameters m_params;
+    OptionTestParams m_params;
 };

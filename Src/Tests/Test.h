@@ -1,7 +1,5 @@
-#ifndef TEST_H
-#define TEST_H
-
 #pragma once
+
 #include <QEventLoop>
 #include <QObject>
 #include <QPointF>
@@ -39,4 +37,3 @@ signals:
     void EndTest();
     void started();
 };
-#endif // TEST_H

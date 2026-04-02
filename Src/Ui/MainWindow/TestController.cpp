@@ -19,7 +19,7 @@ void TestController::setState(TestState s)
     emit stateChanged(s);
 }
 
-void TestController::runMainTest(const MainTestSettings::TestParameters& params)
+void TestController::runMainTest(const MainTestParams& params)
 {
     run([this, params]{
         emit startMainRequested(params);
@@ -33,14 +33,14 @@ void TestController::runStrokeTest()
     });
 }
 
-void TestController::runResponseTest(const OtherTestSettings::TestParameters& params)
+void TestController::runResponseTest(const OptionTestParams& params)
 {
     run([this, params]{
         emit startResponseRequested(params);
     });
 }
 
-void TestController::runResolutionTest(const OtherTestSettings::TestParameters& params)
+void TestController::runResolutionTest(const OptionTestParams& params)
 {
     run([this, params]{
         emit startResolutionRequested(params);
@@ -54,7 +54,7 @@ void TestController::runStepTest(const StepTestSettings::TestParameters& params)
     });
 }
 
-void TestController::runCyclicTest(const CyclicTestSettings::TestParameters& params)
+void TestController::runCyclicTest(const CyclicTestParams& params)
 {
     run([this, params]{
         emit startCyclicRequested(params);
