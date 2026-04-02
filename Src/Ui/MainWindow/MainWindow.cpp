@@ -11,7 +11,7 @@
 #include "Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.h"
 #include "Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.h"
 #include "Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.h"
-#include "./Src/Ui/TestSettings/AbstractTestSettings.h"
+#include "Src/Ui/TestSettings/AbstractTestSettings.h"
 
 namespace {
 constexpr auto kArrowButtonStyle =
@@ -27,6 +27,7 @@ constexpr auto kArrowButtonStyle =
     "QToolButton:pressed {"
     "   background-color: transparent;"
     "}";
+
 static QString formatRange(double lo, double hi)
 {
     if (lo > hi) std::swap(lo, hi);
@@ -73,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
         this,
         ui->tabWidget_main,
         innerTabs
-        );
+    );
 
     setupPrimaryActions();
     setupShortcuts();
@@ -194,7 +195,7 @@ MainWindow::MainWindow(QWidget *parent)
             m_program, &Program::initialization);
 
     connect(this, &MainWindow::doInitStatesSelected,
-            m_program, &Program::setInitDOStates);
+            m_program, &Program::setInitDoStates);
 
     connect(ui->pushButton_set, &QPushButton::clicked,
             m_program, &Program::button_set_position);
@@ -238,7 +239,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::setDiCheckboxesChecked);
 
     connect(this, &MainWindow::dacValueRequested,
-            m_program, &Program::setDAC_real);
+            m_program, &Program::setDacReal);
 
     connect(ui->doubleSpinBox_task,
             qOverload<double>(&QDoubleSpinBox::valueChanged),

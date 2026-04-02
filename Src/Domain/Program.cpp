@@ -399,13 +399,13 @@ void Program::endTest()
 void Program::disposeActiveRunnerAsync() {
     m_activeRunner.reset();
 }
-// ???
-void Program::setDAC_real(qreal value)
+
+void Program::setDacReal(qreal value)
 {
     m_mpi.setDacValue(value);
 }
 
-void Program::setInitDOStates(const QVector<bool> &states)
+void Program::setInitDoStates(const QVector<bool> &states)
 {
     m_initialDoStates = states;
     m_savedInitialDoStates = states;

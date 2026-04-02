@@ -264,7 +264,7 @@ public slots:
     void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults &regulatoryResults,
                                      const CyclicTestsShutoff::TestResults &shutoffResults);
 
-    void setInitDOStates(const QVector<bool> &states);
+    void setInitDoStates(const QVector<bool> &states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
 
     void addRegression(const QVector<QPointF> &points);
@@ -275,7 +275,7 @@ public slots:
     void receivedPoints_stepTest(QVector<QVector<QPointF>> &points);
     void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points);
 
-    void setDAC_real(qreal value);
+    void setDacReal(qreal value);
     void setTimeStart();
 
     void startStrokeTest();
