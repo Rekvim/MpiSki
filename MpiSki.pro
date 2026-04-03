@@ -20,6 +20,7 @@ INCLUDEPATH += $$PWD/Src/CustomChart
 SOURCES += \
     Src/CustomChart/ChartImageService.cpp \
     Src/CustomChart/ChartManager.cpp \
+    Src/Domain/Analyzer/MainTestAnalyzer.cpp \
     Src/Domain/DeviceInitializer.cpp \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
     Src/Runners/ResolutionRunner.cpp \
@@ -80,6 +81,7 @@ SOURCES += \
 HEADERS += \
     Src/CustomChart/ChartImageService.h \
     Src/CustomChart/ChartManager.h \
+    Src/Domain/Analyzer/MainTestAnalyzer.h \
     Src/Domain/DeviceInitializer.h \
     Src/Domain/Measurement/Sample.h \
     Src/Domain/Measurement/TestDataBuffer.h \

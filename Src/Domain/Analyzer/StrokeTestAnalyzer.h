@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QtGlobal>
 #include <QVector>
 
 #include "Src/Domain/Measurement/Sample.h"
