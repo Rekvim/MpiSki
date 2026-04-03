@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QObject>
-
 #include "Test.h"
 
 class OptionTest : public Test
@@ -9,7 +7,7 @@ class OptionTest : public Test
     Q_OBJECT
 
 public:
-    explicit OptionTest(QObject *parent = nullptr, bool endTestAfterProcess = true);
+    explicit OptionTest(QObject *parent = nullptr);
     virtual void Process() override;
 
     struct Task
@@ -22,7 +20,4 @@ public:
 
 private:
     Task m_task;
-    const bool m_endTestAfterProcess;
-signals:
-    void SetStartTime();
 };

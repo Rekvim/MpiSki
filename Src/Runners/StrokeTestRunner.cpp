@@ -6,14 +6,6 @@ RunnerConfig StrokeTestRunner::buildConfig()
 {
     auto* worker = new StrokeTest;
 
-    auto owner = qobject_cast<Program*>(parent());
-    const auto& valveInfo = owner->registry()->valveInfo();
-
-    StrokeTest::Config cfg;
-    cfg.normalClosed = (valveInfo.safePosition == SafePosition::NormallyClosed);
-
-    worker->setConfig(cfg);
-
     RunnerConfig rc;
     rc.worker = worker;
     rc.totalMs = 0;
@@ -26,19 +18,7 @@ void StrokeTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<StrokeTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    // connect(&t, &StrokeTest::UpdateGraph,
-    //         owner, &Program::updateCharts_strokeTest,
-    //         Qt::QueuedConnection);
-
-    // connect(&t, &StrokeTest::SetStartTime,
-    //         owner, &Program::setTimeStart,
-    //         Qt::QueuedConnection);
-
     connect(&t, &StrokeTest::Results,
             owner, &Program::results_strokeTest,
             Qt::QueuedConnection);
-
-    connect(&t, &StrokeTest::GetPoints,
-            owner, &Program::receivedPoints_strokeTest,
-            Qt::BlockingQueuedConnection);
 }

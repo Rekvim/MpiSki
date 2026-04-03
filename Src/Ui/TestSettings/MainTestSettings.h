@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QDialog>
-#include <QMetaType>
 #include "AbstractTestSettings.h"
 #include "Src/Domain/TestParams/MainTestParams.h"
 
@@ -20,14 +18,10 @@ public:
     void applyValveInfo(const ValveInfo& info) override;
     void applyPattern(SelectTests::PatternType pattern) override;
 
-    MainTestParams parameters() const { return m_params; }
+    MainTestParams parameters() const;
 private:
     Ui::MainTestSettings *ui;
-    MainTestParams m_params;
-
-    void readUi();
-private slots:
-    void accept() override;
+    MainTestParams readParamsFromUi() const;
 
 protected:
     virtual QVector<qreal>& sequence() {

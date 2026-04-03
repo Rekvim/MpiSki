@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QDialog>
-#include <QListWidget>
-#include <QTime>
-
 #include "AbstractTestSettings.h"
 #include "Src/Domain/TestParams/OptionTestParams.h"
 
@@ -22,7 +18,7 @@ public:
     void applyValveInfo(const ValveInfo& info) override;
     void applyPattern(SelectTests::PatternType pattern) override;
 
-    OptionTestParams parameters();
+    OptionTestParams parameters() const;
 
 private:
     Ui::OtherTestSettings *ui = nullptr;
@@ -37,7 +33,7 @@ private:
     void initDefaults();
     void initConnections();
 
-    void readParamsFromUi(OptionTestParams& params);
+    OptionTestParams readParamsFromUi() const;
 
     QVector<double> readList(QListWidget* list) const;
 

@@ -8,13 +8,13 @@
 #include <QTimer>
 
 #include "Src/Domain/Mpi/Mpi.h"
-#include "Src/Ui/TestSettings/OtherTestSettings.h"
-#include "Src/Ui/TestSettings/StepTestSettings.h"
 
 #include "Src/CustomChart/ChartManager.h"
 
 #include "Src/Domain/TestParams/MainTestParams.h"
 #include "Src/Domain/TestParams/CyclicTestParams.h"
+#include "Src/Domain/TestParams/StepTestParams.h"
+#include "Src/Domain/TestParams/OptionTestParams.h"
 
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
@@ -29,25 +29,6 @@
 #include "Src/Tests/CyclicTestsShutoff.h"
 #include "Src/Domain/Analyzer/StrokeTestAnalyzer.h"
 #include "Src/Ui/Setup/SelectTests.h"
-
-struct RealtimeState
-{
-    qint64 timestampMs = 0;
-    qint64 elapsedFromInitMs = 0;
-
-    quint8 sensorCount = 0;
-
-    QVector<QString> sensorText;
-    QVector<qreal> sensorPercent;
-
-    qreal dacValue = 0.0;
-    QString dacText;
-
-    quint8 diMask = 0;
-    quint8 doMask = 0;
-};
-
-Q_DECLARE_METATYPE(RealtimeState)
 
 enum class TextObjects
 {
@@ -74,8 +55,7 @@ public:
 signals:
     // Sample
     void sampleReady(const Sample& sample);
-    //
-    void realtimeUpdated(const RealtimeState &s);
+
     void telemetryUpdated(const TelemetryStore &store);
 
     void errorOccured(const QString&);
@@ -96,16 +76,16 @@ signals:
     void setVisible(Charts chart, quint16 series, bool visible);
     void setRegressionEnable(bool enable);
 
-    void setStepResults(const QVector<StepTest::TestResult> &results, quint32 T_value);
+    void setStepResults(const QVector<StepTest::TestResult>& results, quint32 T_value);
     void setDoButtonsChecked(quint8 status);
 
     void setDiCheckboxesChecked(quint8 status);
-    void getPoints(QVector<QVector<QPointF>> &points, Charts chart);
+    void getPoints(QVector<QVector<QPointF>>& points, Charts chart);
 
-    void getPoints_strokeTest(QVector<QVector<QPointF>> &points, Charts chart);
-    void getPoints_mainTest(QVector<QVector<QPointF>> &points, Charts chart);
-    void getPoints_stepTest(QVector<QVector<QPointF>> &points, Charts chart);
-    void getPoints_cyclicTest(QVector<QVector<QPointF>> &points, Charts chart);
+    void getPoints_strokeTest(QVector<QVector<QPointF>>& points, Charts chart);
+    void getPoints_mainTest(QVector<QVector<QPointF>>& points, Charts chart);
+    void getPoints_stepTest(QVector<QVector<QPointF>>& points, Charts chart);
+    void getPoints_cyclicTest(QVector<QVector<QPointF>>& points, Charts chart);
 
     void addPoints(Charts chart, const QVector<Point> &points);
     void clearPoints(Charts chart);
@@ -117,13 +97,8 @@ signals:
     void releaseBlock();
 
     void mainTestFinished();
-    void getParameters_mainTest(MainTestParams &parameters);
-    void getParameters_stepTest(StepTestSettings::TestParameters &parameters);
-    void getParameters_resolutionTest(OptionTestParams &parameters);
-    void getParameters_responseTest(OptionTestParams &parameters);
-    void getParameters_cyclicTest(CyclicTestParams &parameters);
 
-    void question(QString &title, QString &text, bool &result);
+    void question(QString& title, QString& text, bool& result);
 
     void testFinished();
 
@@ -248,49 +223,41 @@ public slots:
 
     // updateCharts
     void updateChartsFromSample(const Sample& s);
-    void updateTrendChart(const Sample& s);
-    void updateStrokeChart(const Sample& s);
     void updateMainCharts(const Sample& s);
-    void updateOptionChart(const Sample& s, Charts chart);
-    void updateCyclicChart(const Sample& s);
-
+    void updateCyclicChart(const Sample& s, Charts chart);
+    void updateTimeChart(const Sample& s, Charts chart, qint64 time);
     //
-    void results_mainTest(const MainTest::TestResults &results);
+    void results_mainTest(const MainTest::TestResults& results);
     void results_strokeTest();
-    void results_stepTest(const QVector<StepTest::TestResult> &results, const quint32 T_value);
+    void results_stepTest(const QVector<StepTest::TestResult>& results, const quint32 T_value);
 
-    void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults &results);
-    void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults &results);
+    void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results);
+    void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results);
 
-    void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults &regulatoryResults,
-                                     const CyclicTestsShutoff::TestResults &shutoffResults);
+    void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
+                                     const CyclicTestsShutoff::TestResults& shutoffResults);
 
-    void setInitDoStates(const QVector<bool> &states);
+    void setInitDoStates(const QVector<bool>& states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
 
-    void addRegression(const QVector<QPointF> &points);
-    void addFriction(const QVector<QPointF> &points);
+    void addRegression(const QVector<QPointF>& points);
+    void addFriction(const QVector<QPointF>& points);
 
-    void receivedPoints_strokeTest(QVector<QVector<QPointF>> &points);
-    void receivedPoints_mainTest(QVector<QVector<QPointF>> &points);
-    void receivedPoints_stepTest(QVector<QVector<QPointF>> &points);
-    void receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points);
+    void receivedPoints_strokeTest(QVector<QVector<QPointF>>& points);
+    void receivedPoints_mainTest(QVector<QVector<QPointF>>& points);
+    void receivedPoints_stepTest(QVector<QVector<QPointF>>& points);
+    void receivedPoints_cyclicTest(QVector<QVector<QPointF>>& points);
 
     void setDacReal(qreal value);
-    void setTimeStart();
 
     void startStrokeTest();
     void startMainTest(const MainTestParams& params);
     void startResponseTest(const OptionTestParams& params);
     void startResolutionTest(const OptionTestParams& params);
-    void startStepTest(const StepTestSettings::TestParameters& params);
+    void startStepTest(const StepTestParams& params);
     void startCyclicTest(const CyclicTestParams& params);
 
     void runCombinedCyclicTest(const CyclicTestParams& params);
-
-    void forwardGetParameters_mainTest(MainTestParams &p) { emit getParameters_mainTest(p); }
-    void forwardGetParameters_responseTest(OptionTestParams &p) { emit getParameters_responseTest(p); }
-    void forwardGetParameters_resolutionTest(OptionTestParams &p) { emit getParameters_resolutionTest(p); }
 
     void endTest();
     void terminateTest();

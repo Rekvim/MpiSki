@@ -1,27 +1,14 @@
 #pragma once
 
-#include <QPointF>
-#include <QTimer>
-#include <QDateTime>
 #include "Test.h"
 
 class StrokeTest : public Test
 {
     Q_OBJECT
 public:
-    explicit StrokeTest(QObject *parent = nullptr);
+    explicit StrokeTest(QObject *parent = nullptr) : Test(parent) {}
     void Process() override;
 
-    struct Config {
-        bool normalClosed = false;
-    };
-    void setConfig(const Config& cfg) { m_cfg = cfg; }
-
 signals:
-    void GetPoints(QVector<QVector<QPointF>> &points);
-    void SetStartTime();
     void Results();
-
-private:
-    Config m_cfg;
 };

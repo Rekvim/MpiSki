@@ -45,14 +45,6 @@ void CyclicShutoffRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<CyclicTestsShutoff&>(base);
     auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
-    // connect(&t, &CyclicTestsShutoff::UpdateGraph,
-    //         owner, [owner]{ owner->updateCharts_CyclicTest(Charts::Cyclic); },
-    //         Qt::QueuedConnection);
-
-    connect(&t, &CyclicTestsShutoff::SetStartTime,
-            owner, &Program::setTimeStart,
-            Qt::QueuedConnection);
-
     connect(&t, &CyclicTestsShutoff::Results,
             owner, &Program::results_cyclicShutoffTests,
             Qt::QueuedConnection);

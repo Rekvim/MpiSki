@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QObject>
 #include "BaseRunner.h"
 #include "Src/Domain/TestParams/MainTestParams.h"
 

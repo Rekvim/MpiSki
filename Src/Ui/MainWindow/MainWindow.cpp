@@ -1266,7 +1266,7 @@ void MainWindow::startOptionalTestClicked()
             return;
 
         m_testController->runStepTest(
-            m_stepTestSettings->getParameters());
+            m_stepTestSettings->parameters());
     }
 }
 void MainWindow::saveOptionalTestChartClicked()

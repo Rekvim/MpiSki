@@ -16,6 +16,8 @@
 
 #include "Src/Ui/TestSettings/MainTestSettings.h"
 #include "Src/Ui/TestSettings/CyclicTestSettings.h"
+#include "Src/Ui/TestSettings/OtherTestSettings.h"
+#include "Src/Ui/TestSettings/StepTestSettings.h"
 
 #include "Src/ReportBuilders/ReportSaver.h"
 #include "Src/Domain/Program.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseRunner.h"
-#include "Src/Ui/TestSettings/StepTestSettings.h"
+#include "Src/Domain/TestParams/StepTestParams.h"
 
 class StepTestRunner : public BaseRunner
 {
@@ -9,14 +9,14 @@ class StepTestRunner : public BaseRunner
 public:
     StepTestRunner(Mpi& mpi,
                    Registry& reg,
-                   const StepTestSettings::TestParameters& params,
+                   const StepTestParams& params,
                    QObject* parent=nullptr)
-        : BaseRunner(mpi, reg, parent), m_params(params) {}
+    : BaseRunner(mpi, reg, parent), m_params(params) {}
 
 protected:
     RunnerConfig buildConfig() override;
     void wireSpecificSignals(Test& t) override;
 
 private:
-    StepTestSettings::TestParameters m_params;
+    StepTestParams m_params;
 };

@@ -2,7 +2,7 @@
 #include "Src/Domain/Program.h"
 #include "Src/Storage/Registry.h"
 
-static QVector<quint16> buildSequence(const StepTestSettings::TestParameters& p,
+static QVector<quint16> buildSequence(const StepTestParams& p,
                                       Mpi& mpi, bool normalOpen)
 {
     QVector<quint16> seq;
@@ -23,8 +23,7 @@ static QVector<quint16> buildSequence(const StepTestSettings::TestParameters& p,
 
 RunnerConfig StepTestRunner::buildConfig() {
     auto p = m_params;
-    auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
-    emit owner->getParameters_stepTest(p);
+
     if (p.points.empty()) return {};
 
     const quint64 P = static_cast<quint64>(p.points.size());
@@ -52,19 +51,11 @@ void StepTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<StepTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    // connect(&t, &StepTest::UpdateGraph,
-    //         owner, [owner]{ owner->updateCharts_optionTest(Charts::Step); },
-    //         Qt::QueuedConnection);
-
     connect(&t, &StepTest::GetPoints,
             owner, &Program::receivedPoints_stepTest,
             Qt::BlockingQueuedConnection);
 
     connect(&t, &StepTest::Results,
             owner, &Program::results_stepTest,
-            Qt::QueuedConnection);
-
-    connect(&t, &OptionTest::SetStartTime,
-            owner, &Program::setTimeStart,
             Qt::QueuedConnection);
 }

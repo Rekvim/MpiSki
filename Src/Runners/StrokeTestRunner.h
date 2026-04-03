@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BaseRunner.h"
-#include "Src/Tests/StrokeTest.h"
 
 class StrokeTestRunner : public BaseRunner {
     Q_OBJECT

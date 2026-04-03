@@ -16,12 +16,84 @@ public:
     };
 
     void setConfig(const Config& cfg);
-
     void start();
-
     void onSample(const Sample& s);
-
     StrokeTestResult finish();
+
+private:
+    struct Thresholds
+    {
+        double forwardStart;
+        double forwardEnd;
+
+        double backwardStart;
+        double backwardEnd;
+
+        double forwardTask;
+        double backwardTask;
+
+        bool forwardStartLow;
+        bool forwardEndLow;
+
+        bool backwardStartLow;
+        bool backwardEndLow;
+
+        bool forwardTaskAbove;
+        bool backwardTaskAbove;
+    };
+
+    Thresholds computeThresholds(const QVector<double>& pos) const;
+
+    struct Events
+    {
+        int cmdForward = -1;
+        int forwardStart = -1;
+        int forwardEnd = -1;
+
+        int cmdBackward = -1;
+        int backwardStart = -1;
+        int backwardEnd = -1;
+    };
+
+    Events detectEvents(
+        const QVector<Sample>& s,
+        const QVector<double>& pos,
+        const Thresholds& t) const;
+
+    StrokeTestResult computeTimes(
+        const QVector<Sample>& s,
+        const QVector<double>& pos,
+        const Thresholds& t,
+        const Events& e) const;
+
+    QVector<double> medianFilter(
+        const QVector<Sample>& samples,
+        int window = 5) const;
+
+    int findFirstReachLevelStable(
+        const QVector<double>& pos,
+        int startIdx,
+        double level,
+        bool reachAtOrBelow,
+        int confirm = 3) const;
+
+    quint64 interpolateTime(
+        const QVector<Sample>& samples,
+        const QVector<double>& pos,
+        int idx,
+        double level) const;
+
+    int findFirstTaskLevel(
+        const QVector<Sample>& samples,
+        int startIdx,
+        double level,
+        bool reachAtOrAbove) const;
+
+    int findLastAtLevelBeforeLeaving(
+        const QVector<double>& pos,
+        int startIdx,
+        double level,
+        bool atOrBelow) const;
 
 private:
     Config m_cfg;

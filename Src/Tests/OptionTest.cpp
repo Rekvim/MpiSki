@@ -1,8 +1,7 @@
 #include "OptionTest.h"
 
-OptionTest::OptionTest(QObject *parent, bool endTestAfterProcess)
+OptionTest::OptionTest(QObject *parent)
     : Test(parent)
-    , m_endTestAfterProcess(endTestAfterProcess)
 {}
 
 void OptionTest::Process()
@@ -12,13 +11,10 @@ void OptionTest::Process()
         emit EndTest();
         return;
     }
-    emit SetStartTime();
 
     setDacBlocked(m_task.value.first(), 10000, true);
 
     if (m_terminate) { emit EndTest(); return; }
-
-    m_graphTimer->start(50);
 
     for (const auto &value : m_task.value) {
         setDacBlocked(value, m_task.delay);
@@ -28,9 +24,8 @@ void OptionTest::Process()
             return;
         }
     }
-    if (m_endTestAfterProcess) {
-        emit EndTest();
-    }
+
+    emit EndTest();
 }
 
 void OptionTest::SetTask(Task task)

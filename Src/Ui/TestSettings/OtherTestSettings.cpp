@@ -131,19 +131,18 @@ QVector<double> OtherTestSettings::readList(QListWidget* list) const
     return values;
 }
 
-void OtherTestSettings::readParamsFromUi(OptionTestParams& params)
+OptionTestParams OtherTestSettings::readParamsFromUi() const
 {
-    params.delay = ui->timeEdit->time().msecsSinceStartOfDay();
+    OptionTestParams p;
 
-    params.points = readList(ui->listWidget_value);
-    params.steps = readList(ui->listWidget_step);
+    p.delay = ui->timeEdit->time().msecsSinceStartOfDay();
+    p.points = readList(ui->listWidget_value);
+    p.steps = readList(ui->listWidget_step);
+
+    return p;
 }
 
-OptionTestParams OtherTestSettings::parameters()
+OptionTestParams OtherTestSettings::parameters() const
 {
-    OptionTestParams params;
-
-    readParamsFromUi(params);
-
-    return params;
+    return readParamsFromUi();
 }

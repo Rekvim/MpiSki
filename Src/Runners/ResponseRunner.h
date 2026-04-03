@@ -3,11 +3,11 @@
 #include "BaseRunner.h"
 #include "Src/Domain/TestParams/OptionTestParams.h"
 
-class OptionResponseRunner : public BaseRunner
+class ResponseRunner : public BaseRunner
 {
     Q_OBJECT
 public:
-    OptionResponseRunner(Mpi& mpi,
+    ResponseRunner(Mpi& mpi,
                            Registry& reg,
                            const OptionTestParams& params,
                            QObject* parent=nullptr)

@@ -1,14 +1,5 @@
 #include "StrokeTest.h"
 
-#include <QDateTime>
-#include <QVector>
-#include <QPointF>
-#include <QDebug>
-
-StrokeTest::StrokeTest(QObject *parent)
-    : Test(parent)
-{}
-
 void StrokeTest::Process()
 {
     emit started();

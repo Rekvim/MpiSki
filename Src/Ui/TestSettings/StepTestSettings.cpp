@@ -1,4 +1,3 @@
-#include <QInputDialog>
 #include "StepTestSettings.h"
 #include "ui_StepTestSettings.h"
 #include "./Src/Ui/Setup/ValveWindow/ValveEnums.h"
@@ -21,6 +20,7 @@ StepTestSettings::StepTestSettings(QWidget* parent)
         );
 
     clampTime(ui->timeEdit, m_minTime, m_maxTime);
+    ui->spinBox_T_value->setRange(m_minTValue, m_maxTValue);
 }
 
 QVector<qreal>& StepTestSettings::sequence()
@@ -38,18 +38,26 @@ StepTestSettings::~StepTestSettings()
     delete ui;
 }
 
-StepTestSettings::TestParameters StepTestSettings::getParameters()
+StepTestParams StepTestSettings::readParamsFromUi() const
 {
-    TestParameters testParameters;
+    StepTestParams p;
 
-    testParameters.delay = ui->timeEdit->time().msecsSinceStartOfDay();
-    testParameters.testValue = ui->spinBox_T_value->value();
-    for (int i = 0; i < ui->listWidget_value->count(); i++) {
-        testParameters.points.append(ui->listWidget_value->item(i)->text().toDouble());
-    }
+    p.delay = ui->timeEdit->time().msecsSinceStartOfDay();
+    p.testValue = ui->spinBox_T_value->value();
 
-    return testParameters;
+    for (int i = 0; i < ui->listWidget_value->count(); ++i)
+        p.points.push_back(ui->listWidget_value->item(i)->text().toDouble());
+
+    // params.points.reserve(ui->listWidget_value->count());
+
+    return p;
 }
+
+StepTestParams StepTestSettings::parameters() const
+{
+    return readParamsFromUi();
+}
+
 
 void StepTestSettings::applyValveInfo(const ValveInfo& info)
 {

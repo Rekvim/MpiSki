@@ -19,6 +19,13 @@ void TestController::setState(TestState s)
     emit stateChanged(s);
 }
 
+void TestController::runStrokeTest()
+{
+    run([this]{
+        emit startStrokeRequested();
+    });
+}
+
 void TestController::runMainTest(const MainTestParams& params)
 {
     run([this, params]{
@@ -26,12 +33,6 @@ void TestController::runMainTest(const MainTestParams& params)
     });
 }
 
-void TestController::runStrokeTest()
-{
-    run([this]{
-        emit startStrokeRequested();
-    });
-}
 
 void TestController::runResponseTest(const OptionTestParams& params)
 {
@@ -47,7 +48,7 @@ void TestController::runResolutionTest(const OptionTestParams& params)
     });
 }
 
-void TestController::runStepTest(const StepTestSettings::TestParameters& params)
+void TestController::runStepTest(const StepTestParams& params)
 {
     run([this, params]{
         emit startStepRequested(params);

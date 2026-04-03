@@ -26,7 +26,7 @@ public slots:
     void runStrokeTest();
     void runResponseTest(const OptionTestParams& params);
     void runResolutionTest(const OptionTestParams& params);
-    void runStepTest(const StepTestSettings::TestParameters& params);
+    void runStepTest(const StepTestParams& params);
     void runCyclicTest(const CyclicTestParams& params);
 
     void finish();
@@ -42,7 +42,7 @@ signals:
     void startStrokeRequested();
     void startResponseRequested(const OptionTestParams& params);
     void startResolutionRequested(const OptionTestParams& params);
-    void startStepRequested(const StepTestSettings::TestParameters& params);
+    void startStepRequested(const StepTestParams& params);
     void startCyclicRequested(const CyclicTestParams& params);
 
 private:

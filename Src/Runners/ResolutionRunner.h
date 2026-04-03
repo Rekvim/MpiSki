@@ -3,11 +3,11 @@
 #include "BaseRunner.h"
 #include "Src/Domain/TestParams/OptionTestParams.h"
 
-class OptionResolutionRunner : public BaseRunner
+class ResolutionRunner : public BaseRunner
 {
     Q_OBJECT
 public:
-    OptionResolutionRunner(Mpi& mpi,
+    ResolutionRunner(Mpi& mpi,
                            Registry& reg,
                            const OptionTestParams& params,
                            QObject* parent=nullptr)

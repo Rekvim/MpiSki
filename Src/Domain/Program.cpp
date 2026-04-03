@@ -27,7 +27,6 @@ constexpr quint8 VersionFlag = 0x40;
 Program::Program(QObject *parent)
     : QObject{parent}
 {
-    qRegisterMetaType<RealtimeState>("RealtimeState");
     qRegisterMetaType<Sample>("Sample");
 
     m_timerSensors = new QTimer(this);
@@ -127,11 +126,6 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
     emit releaseBlock();
 }
 
-void Program::setTimeStart()
-{
-    m_startTime = QDateTime::currentMSecsSinceEpoch();
-}
-
 Sample Program::makeSample() const
 {
     Sample s;
@@ -225,26 +219,6 @@ void Program::updateRealtimeTexts(const Sample& s)
     }
 }
 
-void Program::updateTrendChart(const Sample& s)
-{
-    QVector<Point> points;
-
-    points.push_back({0, qreal(s.systemTime), s.taskPercent});
-    points.push_back({1, qreal(s.systemTime), s.positionPercent});
-
-    emit addPoints(Charts::Trend, points);
-}
-
-void Program::updateStrokeChart(const Sample& s)
-{
-    QVector<Point> points;
-
-    points.push_back({0, qreal(s.testTime), s.taskPercent});
-    points.push_back({1, qreal(s.testTime), s.positionPercent});
-
-    emit addPoints(Charts::Stroke, points);
-}
-
 void Program::updateMainCharts(const Sample& s)
 {
     QVector<Point> points;
@@ -277,22 +251,13 @@ void Program::updateMainCharts(const Sample& s)
     }
 }
 
-void Program::updateOptionChart(const Sample& s, Charts chart)
+void Program::updateCyclicChart(const Sample& s, Charts chart)
 {
     QVector<Point> points;
     points.push_back({0, qreal(s.testTime), s.taskPercent});
     points.push_back({1, qreal(s.testTime), s.positionPercent});
 
     emit addPoints(chart, points);
-}
-
-void Program::updateCyclicChart(const Sample& s)
-{
-    QVector<Point> points;
-    points.push_back({0, qreal(s.testTime), s.taskPercent});
-    points.push_back({1, qreal(s.testTime), s.positionPercent});
-
-    emit addPoints(Charts::Cyclic, points);
 
     if (m_patternType == SelectTests::Pattern_C_SOVT ||
         m_patternType == SelectTests::Pattern_B_SACVT ||
@@ -304,9 +269,9 @@ void Program::updateCyclicChart(const Sample& s)
             QVector<Point> diPts;
 
             const bool lastClosed = (m_lastDiStatus & 0x01);
-            const bool lastOpen   = (m_lastDiStatus & 0x02);
+            const bool lastOpen = (m_lastDiStatus & 0x02);
             const bool nowClosed  = (di & 0x01);
-            const bool nowOpen    = (di & 0x02);
+            const bool nowOpen = (di & 0x02);
 
             if (nowClosed && !lastClosed) {
                 ++m_telemetryStore.cyclicTestRecord.switch3to0Count;
@@ -323,7 +288,7 @@ void Program::updateCyclicChart(const Sample& s)
             }
 
             if (!diPts.isEmpty())
-                emit addPoints(Charts::Cyclic, diPts);
+                emit addPoints(chart, diPts);
 
             m_lastDiStatus = di;
         }
@@ -337,7 +302,7 @@ void Program::updateSensors()
     emit sampleReady(s);
 
     if (m_isTestRunning) {
-        m_testDataBuffer.add(s);
+        // m_testDataBuffer.add(s);
         m_strokeAnalyzer.onSample(s);
     }
 
@@ -345,14 +310,24 @@ void Program::updateSensors()
     updateChartsFromSample(s);
 }
 
+void Program::updateTimeChart(const Sample& s, Charts chart, qint64 time)
+{
+    QVector<Point> points;
+
+    points.push_back({0, qreal(time), s.taskPercent});
+    points.push_back({1, qreal(time), s.positionPercent});
+
+    emit addPoints(chart, points);
+}
+
 void Program::updateChartsFromSample(const Sample& s)
 {
-    updateTrendChart(s);
+    updateTimeChart(s, Charts::Trend, s.systemTime);
 
     switch (m_activeChartMode)
     {
     case ActiveChartMode::Stroke:
-        updateStrokeChart(s);
+        updateTimeChart(s, Charts::Stroke, s.testTime);
         break;
 
     case ActiveChartMode::Main:
@@ -360,19 +335,19 @@ void Program::updateChartsFromSample(const Sample& s)
         break;
 
     case ActiveChartMode::Cyclic:
-        updateCyclicChart(s);
+        updateCyclicChart(s, Charts::Cyclic);
         break;
 
     case ActiveChartMode::Step:
-        updateOptionChart(s, Charts::Step);
+        updateTimeChart(s, Charts::Step, s.testTime);
         break;
 
     case ActiveChartMode::Response:
-        updateOptionChart(s, Charts::Response);
+        updateTimeChart(s, Charts::Response, s.testTime);
         break;
 
     case ActiveChartMode::Resolution:
-        updateOptionChart(s, Charts::Resolution);
+        updateTimeChart(s, Charts::Resolution, s.testTime);
         break;
 
     default:
@@ -989,14 +964,14 @@ void Program::onCyclicStepMeasured(int cycle, int step, bool forward)
 
 void Program::startResponseTest(const OptionTestParams& params) {
     m_activeChartMode = ActiveChartMode::Response;
-    runTest<OptionResponseRunner>(params);
+    runTest<ResponseRunner>(params);
 }
 
 void Program::startResolutionTest(const OptionTestParams& params) {
     m_activeChartMode = ActiveChartMode::Resolution;
-    runTest<OptionResponseRunner>(params);
+    runTest<ResolutionRunner>(params);
 }
-void Program::startStepTest(const StepTestSettings::TestParameters& params) {
+void Program::startStepTest(const StepTestParams& params) {
     m_activeChartMode = ActiveChartMode::Step;
     runTest<StepTestRunner>(params);
 }

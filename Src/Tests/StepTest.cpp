@@ -1,7 +1,7 @@
 #include "StepTest.h"
 
 StepTest::StepTest(QObject *parent)
-    : OptionTest(parent, false)
+    : OptionTest(parent)
 {}
 
 void StepTest::Set_T_value(quint32 T_value)
@@ -64,8 +64,6 @@ QVector<StepTest::TestResult> StepTest::CalculateResult(const QVector<QVector<QP
 
 void StepTest::Process()
 {
-    emit SetStartTime();
-
     OptionTest::Process();
     if (m_terminate) {
         emit EndTest();

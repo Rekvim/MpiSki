@@ -3,7 +3,7 @@
 #include "Src/Storage/Registry.h"
 #include "Src/Tests/OptionTest.h"
 
-RunnerConfig OptionResponseRunner::buildConfig()
+RunnerConfig ResponseRunner::buildConfig()
 {
     auto p = m_params;
 
@@ -57,16 +57,7 @@ RunnerConfig OptionResponseRunner::buildConfig()
     return cfg;
 }
 
-
-void OptionResponseRunner::wireSpecificSignals(Test& base) {
+void ResponseRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<OptionTest&>(base);
     auto* owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
-
-    // connect(&t, &OptionTest::UpdateGraph,
-    //         owner, [owner]{ owner->updateCharts_optionTest(Charts::Response); },
-    //         Qt::QueuedConnection);
-
-    connect(&t, &OptionTest::SetStartTime,
-            owner, &Program::setTimeStart,
-            Qt::QueuedConnection);
 }

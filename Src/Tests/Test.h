@@ -15,7 +15,7 @@ public:
 protected:
     QTimer *m_graphTimer;
     QEventLoop *m_eventLoop;
-    bool m_terminate;
+    bool m_terminate = false;
 
     void Sleep(quint16 msecs);
     void setDacBlocked(quint16 value,
