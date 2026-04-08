@@ -24,18 +24,15 @@ MainTestAnalyzer::computeLimits(const MotionData& data) const
     if (data.forward.isEmpty() || data.backward.isEmpty())
         return result;
 
-    auto initByFirst = [&](const PPPoint& p)
-    {
+    auto initByFirst = [&](const PPPoint& p) {
         result.minX = result.maxX = p.pressure;
         result.minY = result.maxY = p.position;
     };
 
     initByFirst(data.forward.first());
 
-    auto update = [&](const QVector<PPPoint>& points)
-    {
-        for (const PPPoint& p : points)
-        {
+    auto update = [&](const QVector<PPPoint>& points) {
+        for (const PPPoint& p : points) {
             result.minX = std::min(result.minX, p.pressure);
             result.maxX = std::max(result.maxX, p.pressure);
             result.minY = std::min(result.minY, p.position);
@@ -170,17 +167,14 @@ MainTestAnalyzer::MotionData MainTestAnalyzer::buildMotionData() const
     int peakIdx = 0;
     double peakDac = m_samples.first().dac;
 
-    for (int i = 1; i < m_samples.size(); ++i)
-    {
-        if (m_samples[i].dac > peakDac)
-        {
+    for (int i = 1; i < m_samples.size(); ++i) {
+        if (m_samples[i].dac > peakDac) {
             peakDac = m_samples[i].dac;
             peakIdx = i;
         }
     }
 
-    auto appendSample = [&](const Sample& s, QVector<PPPoint>& pp, QVector<TimePoint>& dyn)
-    {
+    auto appendSample = [&](const Sample& s, QVector<PPPoint>& pp, QVector<TimePoint>& dyn) {
         if (qIsNaN(s.pressure1) || qIsNaN(s.positionPercent) || qIsNaN(s.taskPercent))
             return;
 
@@ -236,10 +230,8 @@ QPair<double, double> MainTestAnalyzer::computeDynamicErrorMeanMax(
     double minY = forward.first().position;
     double maxY = forward.first().position;
 
-    auto updateMinMax = [&](const QVector<TimePoint>& pts)
-    {
-        for (const TimePoint& p : pts)
-        {
+    auto updateMinMax = [&](const QVector<TimePoint>& pts) {
+        for (const TimePoint& p : pts) {
             minY = std::min(minY, p.position);
             maxY = std::max(maxY, p.position);
         }

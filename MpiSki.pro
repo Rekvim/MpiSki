@@ -100,6 +100,7 @@ HEADERS += \
     Src/ReportBuilders/ReportBlocks/StepReactionBlock.h \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.h \
     Src/ReportBuilders/ReportBlocks/ValveSpecBlock.h \
+    Src/ReportBuilders/ReportBuilderFactory.h \
     Src/ReportBuilders/ReportWriter.h \
     Src/Runners/ResolutionRunner.h \
     Src/Runners/ResponseRunner.h \

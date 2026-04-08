@@ -6,11 +6,7 @@
 #include "Src/Utils/Shortcuts/TabBinder.h"
 #include "Src/Utils/NumberUtils.h"
 
-#include "Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h"
-#include "Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h"
-#include "Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.h"
-#include "Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.h"
-#include "Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.h"
+#include "Src/ReportBuilders/ReportBuilderFactory.h"
 #include "Src/Ui/TestSettings/AbstractTestSettings.h"
 
 namespace {
@@ -1623,8 +1619,6 @@ void MainWindow::collectRegistryOverrides(
 
 void MainWindow::generateReportClicked()
 {
-    std::unique_ptr<ReportBuilder> reportBuilder;
-
     collectReportOverrides();
 
     ObjectInfo objectInfo = m_registry->objectInfo();
@@ -1633,13 +1627,10 @@ void MainWindow::generateReportClicked()
 
     collectRegistryOverrides(objectInfo, valveInfo, otherParameters);
 
-    switch (m_patternType) {
-    case SelectTests::Pattern_B_CVT: reportBuilder = std::make_unique<ReportBuilder_B_CVT>(); break;
-    case SelectTests::Pattern_B_SACVT: reportBuilder = std::make_unique<ReportBuilder_B_SACVT>(); break;
-    case SelectTests::Pattern_C_CVT: reportBuilder = std::make_unique<ReportBuilder_C_CVT>(); break;
-    case SelectTests::Pattern_C_SACVT: reportBuilder = std::make_unique<ReportBuilder_C_SACVT>(); break;
-    case SelectTests::Pattern_C_SOVT: reportBuilder = std::make_unique<ReportBuilder_C_SOVT>(); break;
-    default:
+    auto reportBuilder = ReportBuilderFactory::create(m_patternType);
+
+    if (!reportBuilder)
+    {
         QMessageBox::warning(this, tr("Ошибка"), tr("Не выбран корректный паттерн отчёта!"));
         return;
     }
