@@ -4,7 +4,7 @@
 #include "Src/Storage/Registry.h"
 
 BaseRunner::BaseRunner(Mpi& mpi, Registry& reg, QObject* parent)
-    : AbstractTestRunner(parent), m_mpi(mpi), m_reg(reg) {}
+    : QObject(parent), m_mpi(mpi), m_reg(reg) {}
 
 BaseRunner::~BaseRunner()
 {
@@ -22,10 +22,10 @@ void BaseRunner::start() {
         return;
     }
 
-    m_worker = cfg.worker;
+    m_worker = std::move(cfg.worker);
 
     if (cfg.totalMs > 0) emit totalTestTimeMs(cfg.totalMs);
-    if (cfg.chartToClear >= 0) emit requestClearChart(cfg.chartToClear);
+    if (cfg.chartToClear != Charts::None) emit requestClearChart(cfg.chartToClear);
 
     m_thread = new QThread(this);
     m_worker->moveToThread(m_thread);
@@ -36,16 +36,16 @@ void BaseRunner::start() {
                 m_worker = nullptr;
             });
 
-    connect(m_worker, &Test::started,
+    connect(m_worker.get(), &Test::started,
             this, &BaseRunner::testActuallyStarted);
 
     connect(m_thread, &QThread::started,
-            m_worker, &Test::Process);
+            m_worker.get(), &Test::Process);
 
-    connect(m_worker, &Test::EndTest,
+    connect(m_worker.get(), &Test::EndTest,
             m_thread, &QThread::quit);
 
-    connect(m_worker, &Test::setDac,
+    connect(m_worker.get(), &Test::setDac,
             this, &BaseRunner::requestSetDAC,
             Qt::QueuedConnection);
 
@@ -53,9 +53,9 @@ void BaseRunner::start() {
             m_thread, &QObject::deleteLater);
 
     connect(m_thread, &QThread::finished,
-            m_worker, &QObject::deleteLater);
+            m_worker.get(), &QObject::deleteLater);
 
-    connect(m_worker, &Test::EndTest,
+    connect(m_worker.get(), &Test::EndTest,
             this, &BaseRunner::endTest);
 
     wireSpecificSignals(*m_worker);
@@ -65,10 +65,10 @@ void BaseRunner::start() {
 
 void BaseRunner::stop() {
     if (m_worker)
-        QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_worker.get(), "StoppingTheTest", Qt::QueuedConnection);
 }
 
 void BaseRunner::releaseBlock() {
     if (m_worker)
-        QMetaObject::invokeMethod(m_worker, "ReleaseBlock", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(m_worker.get(), "ReleaseBlock", Qt::QueuedConnection);
 }

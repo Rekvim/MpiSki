@@ -8,11 +8,9 @@
 class TabBinder
 {
 public:
-
     static void bindNumbers(QWidget* parent, QTabWidget* tw)
     {
-        for (int i = 0; i < tw->count() && i < 9; ++i)
-        {
+        for (int i = 0; i < tw->count() && i < 9; ++i) {
             auto* sc = new QShortcut(QKeySequence(Qt::Key_1 + i), parent);
             sc->setContext(Qt::ApplicationShortcut);
 
@@ -23,8 +21,7 @@ public:
         }
     }
 
-    static void bindArrowNavigation(QWidget* parent,
-                                    QTabWidget* mainTabs,
+    static void bindArrowNavigation(QWidget* parent, QTabWidget* mainTabs,
                                     const QHash<QWidget*, QTabWidget*>& innerTabs)
     {
         auto* left = new QShortcut(QKeySequence(Qt::Key_Left), parent);
@@ -45,9 +42,8 @@ public:
     }
 
 private:
-
-    static QTabWidget* currentTabWidget(QTabWidget* mainTabs,
-                                        const QHash<QWidget*, QTabWidget*>& innerTabs)
+    static QTabWidget*
+    currentTabWidget(QTabWidget* mainTabs, const QHash<QWidget*, QTabWidget*>& innerTabs)
     {
         QWidget* top = mainTabs->currentWidget();
 

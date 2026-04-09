@@ -21,9 +21,5 @@ signals:
     void totalTestTimeMs(quint64);
     void endTest();
     void testActuallyStarted();
-    void addPoints(int chart, const QVector<struct QPoint>&);
-    void clearPoints(int chart);
-
-    void telemetryUpdated(const TelemetryStore&);
     void requestSetDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart);
 };

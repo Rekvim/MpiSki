@@ -21,7 +21,7 @@
 #include "Src/Domain/Measurement/Sample.h"
 #include "Src/Domain/Measurement/TestDataBuffer.h"
 
-#include "Src/Runners/AbstractTestRunner.h"
+#include "Src/Runners/BaseRunner.h"
 
 #include "Src/Tests/StepTest.h"
 #include "Src/Tests/MainTest.h"
@@ -128,31 +128,32 @@ private:
 
     SelectTests::PatternType m_patternType;
 
-    std::unique_ptr<AbstractTestRunner> m_activeRunner;
+    std::unique_ptr<BaseRunner> m_activeRunner;
     template<typename RunnerT>
     void startRunner(std::unique_ptr<RunnerT> r) {
 
         disposeActiveRunnerAsync();
-        connect(r.get(), &AbstractTestRunner::requestClearChart, this, [this](int chart){
-            emit clearPoints(static_cast<Charts>(chart));
-        });
-        connect(r.get(), &AbstractTestRunner::testActuallyStarted,
+        connect(r.get(), &BaseRunner::requestClearChart,
+                this, [this](Charts chart){
+            emit clearPoints(chart);});
+
+        connect(r.get(), &BaseRunner::testActuallyStarted,
                 this, &Program::testActuallyStarted);
 
-        connect(r.get(), &AbstractTestRunner::requestSetDAC,
+        connect(r.get(), &BaseRunner::requestSetDAC,
                 this, &Program::setDacRaw);
 
         connect(this, &Program::releaseBlock,
-                r.get(), &AbstractTestRunner::releaseBlock);
+                r.get(), &BaseRunner::releaseBlock);
 
-        connect(r.get(), &AbstractTestRunner::totalTestTimeMs,
+        connect(r.get(), &BaseRunner::totalTestTimeMs,
                 this, &Program::totalTestTimeMs);
 
-        connect(r.get(), &AbstractTestRunner::endTest,
+        connect(r.get(), &BaseRunner::endTest,
                 this, &Program::endTest);
 
         connect(this, &Program::stopTheTest,
-                r.get(), &AbstractTestRunner::stop);
+                r.get(), &BaseRunner::stop);
 
         emit setButtonInitEnabled(false);
         emit setTaskControlsEnabled(false);

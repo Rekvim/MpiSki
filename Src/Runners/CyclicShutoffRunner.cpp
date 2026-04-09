@@ -1,33 +1,25 @@
 #include "CyclicShutoffRunner.h"
 #include "Src/Domain/Program.h"
-
-static QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen) {
-    QVector<quint16> raw; raw.reserve(seq.size());
-    for (qreal pct : seq) {
-        const qreal cur = 16.0 * (normalOpen ? (100.0 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.dac()->rawFromValue(cur));
-    }
-    return raw;
-}
+#include "Src/Utils/SignalUtils.h"
 
 RunnerConfig CyclicShutoffRunner::buildConfig()
 {
     const auto& p = m_params;
     if (p.testType != p.Type::Shutoff) return {};
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
-    const auto rawCycle = makeRawValues(p.offSeqValues, m_mpi, normalOpen);
+    const bool normalOpen = isNormallyOpen();
+    const auto rawCycle = SignalUtils::makeRawValues(p.offSeqValues, m_mpi, normalOpen);
     if (rawCycle.isEmpty() || p.shutoff_numCycles <= 0) return {};
 
     CyclicTestsShutoff::Task task;
     task.delayMsecs = p.shutoff_delayMs;
-    task.holdMsecs  = p.shutoff_holdMs;
+    task.holdMsecs = p.shutoff_holdMs;
     task.cycles = p.shutoff_numCycles;
     task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
 
     task.values = rawCycle;
+    auto worker = std::make_unique<CyclicTestsShutoff>();
 
-    auto* worker = new CyclicTestsShutoff;
     worker->SetTask(task);
 
     const quint64 stepsPerCycle = static_cast<quint64>(rawCycle.size());
@@ -35,10 +27,10 @@ RunnerConfig CyclicShutoffRunner::buildConfig()
     const quint64 totalMs = totalSteps * static_cast<quint64>(task.delayMsecs + task.holdMsecs);
 
     RunnerConfig cfg;
-    cfg.worker = worker;
+    cfg.worker = std::move(worker);
     cfg.totalMs = totalMs;
-    cfg.chartToClear = static_cast<int>(Charts::Cyclic);
-    return cfg;
+    cfg.chartToClear = Charts::Cyclic;
+    return makeConfig(std::move(worker), totalMs, Charts::Cyclic);
 }
 
 void CyclicShutoffRunner::wireSpecificSignals(Test& base) {

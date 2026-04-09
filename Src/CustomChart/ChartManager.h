@@ -8,6 +8,7 @@
 
 enum class Charts
 {
+    None,
     Task,
     Pressure,
     Friction,

@@ -1,18 +1,7 @@
 #include "CyclicRegulatoryRunner.h"
 #include "Src/Domain/Program.h"
 #include "Src/Tests/CyclicTestsRegulatory.h"
-
-QVector<quint16> makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen)
-{
-    QVector<quint16> raw;
-    raw.reserve(seq.size());
-
-    for (quint16 pct : seq) {
-        const qreal current = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.dac()->rawFromValue(current));
-    }
-    return raw;
-}
+#include "Src/Utils/SignalUtils.h"
 
 RunnerConfig CyclicRegulatoryRunner::buildConfig()
 {
@@ -24,8 +13,8 @@ RunnerConfig CyclicRegulatoryRunner::buildConfig()
         return {};
     }
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
-    const auto raw = makeRawValues(p.regSeqValues, m_mpi, normalOpen);
+    const bool normalOpen = isNormallyOpen();
+    const auto raw = SignalUtils::makeRawValues(p.regSeqValues, m_mpi, normalOpen);
 
     CyclicTestsRegulatory::Task task;
     task.delayMsecs = p.regulatory_delayMs;
@@ -34,18 +23,14 @@ RunnerConfig CyclicRegulatoryRunner::buildConfig()
     task.values = raw;
     task.cycles = p.regulatory_numCycles;
 
-    auto* worker = new CyclicTestsRegulatory;
+    auto worker = std::make_unique<CyclicTestsRegulatory>();
     worker->SetTask(task);
 
     const quint64 stepsPerCycle = static_cast<quint64>(raw.size());
     const quint64 totalSteps = stepsPerCycle * p.regulatory_numCycles;
     const quint64 totalMs = totalSteps * (p.regulatory_delayMs + p.regulatory_holdMs);
 
-    RunnerConfig cfg;
-    cfg.worker = worker;
-    cfg.totalMs = totalMs;
-    cfg.chartToClear = static_cast<int>(Charts::Cyclic);
-    return cfg;
+    return makeConfig(std::move(worker), totalMs, Charts::Cyclic);;
 }
 
 void CyclicRegulatoryRunner::wireSpecificSignals(Test& base) {

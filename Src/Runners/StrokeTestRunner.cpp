@@ -4,14 +4,9 @@
 
 RunnerConfig StrokeTestRunner::buildConfig()
 {
-    auto* worker = new StrokeTest;
+    auto worker = std::make_unique<StrokeTest>();
 
-    RunnerConfig rc;
-    rc.worker = worker;
-    rc.totalMs = 0;
-    rc.chartToClear = static_cast<int>(Charts::Stroke);
-
-    return rc;
+    return makeConfig(std::move(worker), 0, Charts::Stroke);
 }
 
 void StrokeTestRunner::wireSpecificSignals(Test& base) {

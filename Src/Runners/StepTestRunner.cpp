@@ -22,7 +22,7 @@ static QVector<quint16> buildSequence(const StepTestParams& p,
 }
 
 RunnerConfig StepTestRunner::buildConfig() {
-    auto p = m_params;
+    const auto& p = m_params;
 
     if (p.points.empty()) return {};
 
@@ -31,20 +31,16 @@ RunnerConfig StepTestRunner::buildConfig() {
     const quint64 N_values = 3 + 2 * P;
     const quint64 totalMs = 10000ULL + N_values * delay;
 
-    auto* worker = new StepTest;
+    auto worker = std::make_unique<StepTest>();
     StepTest::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
+    const bool normalOpen = isNormallyOpen();
     task.value = buildSequence(p, m_mpi, normalOpen);
     worker->SetTask(task);
     worker->Set_T_value(p.testValue);
 
-    RunnerConfig cfg;
-    cfg.worker = worker;
-    cfg.totalMs = totalMs;
-    cfg.chartToClear = static_cast<int>(Charts::Step);
-    return cfg;
+    return makeConfig(std::move(worker), totalMs, Charts::Step);
 }
 
 void StepTestRunner::wireSpecificSignals(Test& base) {

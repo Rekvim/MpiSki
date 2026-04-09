@@ -14,17 +14,10 @@ RunnerConfig MainTestRunner::buildConfig() {
     p.dac_min = qMax(m_mpi.dac()->rawFromValue(p.signal_min), m_mpi.dacMin());
     p.dac_max = qMin(m_mpi.dac()->rawFromValue(p.signal_max), m_mpi.dacMax());
 
-    auto* worker = new MainTest;
+    auto worker = std::make_unique<MainTest>();
     worker->SetParameters(p);
 
-    RunnerConfig cfg;
-    cfg.worker = worker;
-    cfg.totalMs = totalMs;
-    cfg.chartToClear = static_cast<int>(Charts::Task);
-
-    emit totalTestTimeMs(totalMs);
-
-    return cfg;
+    return makeConfig(std::move(worker), totalMs, Charts::Task);
 }
 
 void MainTestRunner::wireSpecificSignals(Test& base) {

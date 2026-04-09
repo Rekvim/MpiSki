@@ -26,7 +26,6 @@ SOURCES += \
     Src/Runners/ResolutionRunner.cpp \
     Src/Runners/ResponseRunner.cpp \
     Src/Storage/AppSettings.cpp \
-    Src/Storage/Telemetry.cpp \
     Src/Domain/Analyzer/StepTestAnalyzer.cpp \
     Src/Domain/Analyzer/StrokeTestAnalyzer.cpp \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
@@ -120,7 +119,6 @@ HEADERS += \
     Src/Ui/Setup/ValveWindow/Mapper.h \
     Src/Ui/TestSettings/AbstractTestSettings.h \
     Src/Ui/TestSettings/CyclicTestSettings.h \
-    Src/Ui/TestSettings/ITestSettings.h \
     Src/Ui/TestSettings/OtherTestSettings.h \
     Src/Ui/TestSettings/StepTestSettings.h \
     Src/Ui/TestSettings/MainTestSettings.h \

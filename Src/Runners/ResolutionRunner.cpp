@@ -5,45 +5,38 @@
 
 RunnerConfig ResolutionRunner::buildConfig()
 {
-    auto p = m_params;
+    const auto& p = m_params;
 
     if (p.points.empty())
         return {};
 
-    auto* worker = new OptionTest;
+    auto worker = std::make_unique<OptionTest>();
     OptionTest::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
+    const bool normalOpen = isNormallyOpen();
 
     task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
 
     for (auto it = p.points.begin(); it != p.points.end(); ++it)
     {
         const qreal basePercent = normalOpen ? (100.0 - *it) : *it;
-
         const qreal baseCurrent = 16.0 * basePercent / 100.0 + 4.0;
-
         const qreal baseRaw = m_mpi.dac()->rawFromValue(baseCurrent);
-
         task.value.push_back(baseRaw);
 
-        for (auto it_s = p.steps.begin();
-             it_s < p.steps.end();
-             ++it_s)
+        for (auto it_s = p.steps.begin(); it_s < p.steps.end(); ++it_s)
         {
             const qreal stepValue = 16.0 * (*it_s) / 100.0;
 
             // вверх
             const qreal stepUpCurrent = baseCurrent + stepValue;
             task.value.push_back(m_mpi.dac()->rawFromValue(stepUpCurrent));
+            task.value.push_back(baseRaw);
 
-            task.value.push_back(baseRaw);\
-
-                // вниз
-                const qreal stepDownCurrent = baseCurrent - stepValue;
+            // вниз
+            const qreal stepDownCurrent = baseCurrent - stepValue;
             task.value.push_back(m_mpi.dac()->rawFromValue(stepDownCurrent));
-
             task.value.push_back(baseRaw);
         }
     }
@@ -62,12 +55,7 @@ RunnerConfig ResolutionRunner::buildConfig()
     const quint64 totalMs =
         10000ULL + N_values * delay + 10000ULL;
 
-    RunnerConfig cfg;
-    cfg.worker = worker;
-    cfg.totalMs = totalMs;
-    cfg.chartToClear = static_cast<int>(Charts::Resolution);
-
-    return cfg;
+    return makeConfig(std::move(worker), totalMs, Charts::Resolution);
 }
 
 void ResolutionRunner::wireSpecificSignals(Test& base) {

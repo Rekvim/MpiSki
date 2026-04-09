@@ -1,20 +1,19 @@
 #include "ResponseRunner.h"
 #include "Src/Domain/Program.h"
-#include "Src/Storage/Registry.h"
 #include "Src/Tests/OptionTest.h"
 
 RunnerConfig ResponseRunner::buildConfig()
 {
-    auto p = m_params;
+    const auto& p = m_params;
 
     if (p.points.empty())
         return {};
 
-    auto* worker = new OptionTest;
+    auto worker = std::make_unique<OptionTest>();
     OptionTest::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = (m_reg.valveInfo().safePosition == SafePosition::NormallyOpen);
+    const bool normalOpen = isNormallyOpen();
 
     task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
 
@@ -50,11 +49,7 @@ RunnerConfig ResponseRunner::buildConfig()
     const quint64 N_values = 1ULL + 2ULL * P * (1ULL + S);
     const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
 
-    RunnerConfig cfg;
-    cfg.worker = worker;
-    cfg.totalMs = totalMs;
-    cfg.chartToClear = static_cast<int>(Charts::Response);
-    return cfg;
+    return makeConfig(std::move(worker), totalMs, Charts::Response);
 }
 
 void ResponseRunner::wireSpecificSignals(Test& base) {
