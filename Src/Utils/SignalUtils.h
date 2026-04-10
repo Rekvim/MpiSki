@@ -1,8 +1,7 @@
 #pragma once
 
-#include <QString>
-#include <QLineEdit>
-#include "Src/Domain/Program.h"
+#include <QVector>
+#include "Src/Domain/Mpi/Mpi.h"
 
 namespace SignalUtils
 {

@@ -2,7 +2,7 @@
 
 #include "AbstractTestSettings.h"
 #include "Src/Storage/Registry.h"
-#include "Src/Domain/TestParams/StepTestParams.h"
+#include "Src/Domain/Tests/Option/Step/StepTestParams.h"
 
 namespace Ui {
 class StepTestSettings;

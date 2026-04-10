@@ -3,7 +3,7 @@ QT += serialport charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17 
+CONFIG += c++17
 # static release
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -20,14 +20,9 @@ INCLUDEPATH += $$PWD/Src/CustomChart
 SOURCES += \
     Src/CustomChart/ChartImageService.cpp \
     Src/CustomChart/ChartManager.cpp \
-    Src/Domain/Analyzer/MainTestAnalyzer.cpp \
     Src/Domain/DeviceInitializer.cpp \
     Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
-    Src/Runners/ResolutionRunner.cpp \
-    Src/Runners/ResponseRunner.cpp \
     Src/Storage/AppSettings.cpp \
-    Src/Domain/Analyzer/StepTestAnalyzer.cpp \
-    Src/Domain/Analyzer/StrokeTestAnalyzer.cpp \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
     Src/Ui/MainWindow/TelemetryUiMapper.cpp \
     Src/Ui/MainWindow/TestController.cpp \
@@ -54,21 +49,26 @@ SOURCES += \
     Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.cpp \
     Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.cpp \
     Src/ReportBuilders/ReportSaver.cpp \
-    Src/Runners/BaseRunner.cpp \
-    Src/Runners/CyclicRegulatoryRunner.cpp \
-    Src/Runners/CyclicShutoffRunner.cpp \
-    Src/Runners/MainTestRunner.cpp \
-    Src/Runners/StepTestRunner.cpp \
-    Src/Runners/StrokeTestRunner.cpp \
-    Src/Tests/CyclicTestPositioner.cpp \
-    Src/Tests/CyclicTests.cpp \
-    Src/Tests/CyclicTestsRegulatory.cpp \
-    Src/Tests/CyclicTestsShutoff.cpp \
-    Src/Tests/MainTest.cpp \
-    Src/Tests/OptionTest.cpp \
-    Src/Tests/StepTest.cpp \
-    Src/Tests/StrokeTest.cpp \
-    Src/Tests/Test.cpp \
+    Src/Domain/Tests/BaseRunner.cpp \
+    Src/Domain/Tests/Test.cpp \
+    Src/Domain/Tests/Stroke/StrokeTestRunner.cpp \
+    Src/Domain/Tests/Stroke/StrokeTest.cpp \
+    Src/Domain/Tests/Stroke/StrokeTestAnalyzer.cpp \
+    Src/Domain/Tests/Main/MainTestRunner.cpp \
+    Src/Domain/Tests/Main/MainTest.cpp \
+    Src/Domain/Tests/Main/MainTestAnalyzer.cpp \
+    Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.cpp \
+    Src/Domain/Tests/Option/OptionTest.cpp \
+    Src/Domain/Tests/Option/Response/ResponseRunner.cpp \
+    Src/Domain/Tests/Option/Resolution/ResolutionRunner.cpp \
+    Src/Domain/Tests/Option/Step/StepTestRunner.cpp \
+    Src/Domain/Tests/Option/Step/StepTest.cpp \
+    Src/Domain/Tests/Option/Step/StepTestAnalyzer.cpp \
+    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryRunner.cpp \
+    Src/Domain/Tests/CyclicRegulatory/CyclicTestsRegulatory.cpp \
+    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryAnalyzer.cpp \
+    Src/Domain/Tests/CyclicShutoff/CyclicShutoffRunner.cpp \
+    Src/Domain/Tests/CyclicShutoff/CyclicTestsShutoff.cpp \
     Src/Domain/Uart/Uart.cpp \
     Src/Domain/Uart/UartMessage.cpp \
     Src/Domain/Uart/UartReader.cpp \
@@ -80,17 +80,11 @@ SOURCES += \
 HEADERS += \
     Src/CustomChart/ChartImageService.h \
     Src/CustomChart/ChartManager.h \
-    Src/Domain/Analyzer/MainTestAnalyzer.h \
     Src/Domain/DeviceInitializer.h \
     Src/Domain/Measurement/Sample.h \
     Src/Domain/Measurement/TestDataBuffer.h \
-    Src/Domain/TestParams/CyclicTestParams.h \
-    Src/Domain/TestParams/MainTestParams.h \
-    Src/Domain/TestParams/OptionTestParams.h \
-    Src/Domain/TestParams/StepTestParams.h \
-    Src/Domain/TestResults/MainTestResult.h \
-    Src/Domain/TestResults/StepTestResult.h \
-    Src/Domain/TestResults/StrokeTestResult.h \
+    Src/Domain/Tests/AnalyzerFactory.h \
+    Src/Domain/Tests/IAnalyzer.h \
     Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
     Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
     Src/ReportBuilders/ReportBlocks/IReportBlock.h \
@@ -101,13 +95,9 @@ HEADERS += \
     Src/ReportBuilders/ReportBlocks/ValveSpecBlock.h \
     Src/ReportBuilders/ReportBuilderFactory.h \
     Src/ReportBuilders/ReportWriter.h \
-    Src/Runners/ResolutionRunner.h \
-    Src/Runners/ResponseRunner.h \
     Src/Storage/AppSettings.h \
     Src/Storage/SettingsGroup.h \
     Src/Storage/Telemetry.h \
-    Src/Domain/Analyzer/StepTestAnalyzer.h \
-    Src/Domain/Analyzer/StrokeTestAnalyzer.h \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.h \
     Src/Ui/MainWindow/TelemetryUiMapper.h \
     Src/Ui/MainWindow/TestController.h \
@@ -138,22 +128,36 @@ HEADERS += \
     Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.h \
     Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.h \
     Src/ReportBuilders/ReportSaver.h \
-    Src/Runners/AbstractTestRunner.h \
-    Src/Runners/BaseRunner.h \
-    Src/Runners/CyclicRegulatoryRunner.h \
-    Src/Runners/CyclicShutoffRunner.h \
-    Src/Runners/MainTestRunner.h \
-    Src/Runners/StepTestRunner.h \
-    Src/Runners/StrokeTestRunner.h \
-    Src/Tests/CyclicTestPositioner.h \
-    Src/Tests/CyclicTests.h \
-    Src/Tests/CyclicTestsRegulatory.h \
-    Src/Tests/CyclicTestsShutoff.h \
-    Src/Tests/MainTest.h \
-    Src/Tests/OptionTest.h \
-    Src/Tests/StepTest.h \
-    Src/Tests/StrokeTest.h \
-    Src/Tests/Test.h \
+    Src/Domain/Tests/Test.h \
+    Src/Domain/Tests/Main/MainTestAnalyzer.h \
+    Src/Domain/Tests/AbstractTestRunner.h \
+    Src/Domain/Tests/BaseRunner.h \
+    Src/Domain/Tests/Stroke/StrokeTestRunner.h \
+    Src/Domain/Tests/Stroke/StrokeTest.h \
+    Src/Domain/Tests/Stroke/StrokeTestAnalyzer.h \
+    Src/Domain/Tests/Stroke/StrokeTestResult.h \
+    Src/Domain/Tests/CyclicTestPositioner.h \
+    Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.h \
+    Src/Domain/Tests/CyclicRegulatory/CyclicTestParams.h \
+    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryRunner.h \
+    Src/Domain/Tests/CyclicRegulatory/CyclicTestsRegulatory.h \
+    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryAnalyzer.h \
+    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryTestResult.h \
+    Src/Domain/Tests/CyclicShutoff/CyclicShutoffRunner.h \
+    Src/Domain/Tests/CyclicShutoff/CyclicTestsShutoff.h \
+    Src/Domain/Tests/Main/MainTestParams.h \
+    Src/Domain/Tests/Main/MainTestRunner.h \
+    Src/Domain/Tests/Main/MainTest.h \
+    Src/Domain/Tests/Main/MainTestResult.h \
+    Src/Domain/Tests/Option/OptionTest.h \
+    Src/Domain/Tests/Option/OptionTestParams.h \
+    Src/Domain/Tests/Option/Response/ResponseRunner.h \
+    Src/Domain/Tests/Option/Resolution/ResolutionRunner.h \
+    Src/Domain/Tests/Option/Step/StepTestParams.h \
+    Src/Domain/Tests/Option/Step/StepTest.h \
+    Src/Domain/Tests/Option/Step/StepTestRunner.h \
+    Src/Domain/Tests/Option/Step/StepTestAnalyzer.h \
+    Src/Domain/Tests/Option/Step//StepTestResult.h \
     Src/Domain/Uart/Uart.h \
     Src/Domain/Uart/UartMessage.h \
     Src/Domain/Uart/UartReader.h \

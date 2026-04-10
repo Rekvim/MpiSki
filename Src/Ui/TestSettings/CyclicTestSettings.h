@@ -5,7 +5,7 @@
 
 #include "AbstractTestSettings.h"
 #include "Src/Ui/Setup/SelectTests.h"
-#include "Src/Domain/TestParams/CyclicTestParams.h"
+#include "Src/Domain/Tests/CyclicRegulatory/CyclicTestParams.h"
 
 namespace Ui {
 class CyclicTestSettings;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AbstractTestSettings.h"
-#include "Src/Domain/TestParams/MainTestParams.h"
+#include "Src/Domain/Tests/Main/MainTestParams.h"
 
 namespace Ui {
 class MainTestSettings;

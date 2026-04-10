@@ -11,23 +11,26 @@
 
 #include "Src/CustomChart/ChartManager.h"
 
-#include "Src/Domain/TestParams/MainTestParams.h"
-#include "Src/Domain/TestParams/CyclicTestParams.h"
-#include "Src/Domain/TestParams/StepTestParams.h"
-#include "Src/Domain/TestParams/OptionTestParams.h"
+#include "Src/Domain/Tests/Main/MainTestParams.h"
+#include "Src/Domain/Tests/CyclicRegulatory/CyclicTestParams.h"
+#include "Src/Domain/Tests/Option/Step/StepTestParams.h"
+#include "Src/Domain/Tests/Option/OptionTestParams.h"
 
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
+
 #include "Src/Domain/Measurement/Sample.h"
 #include "Src/Domain/Measurement/TestDataBuffer.h"
+#include "Src/Domain/Tests/Stroke/StrokeTestAnalyzer.h"
+#include "Src/Domain/Tests/Option/Step/StepTestAnalyzer.h"
+#include "Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryAnalyzer.h"
 
-#include "Src/Runners/BaseRunner.h"
+#include "Src/Domain/Tests/BaseRunner.h"
 
-#include "Src/Tests/StepTest.h"
-#include "Src/Tests/MainTest.h"
-#include "Src/Tests/CyclicTestsRegulatory.h"
-#include "Src/Tests/CyclicTestsShutoff.h"
-#include "Src/Domain/Analyzer/StrokeTestAnalyzer.h"
+#include "Src/Domain/Tests/Option/Step/StepTest.h"
+#include "Src/Domain/Tests/Main/MainTest.h"
+#include "Src/Domain/Tests/CyclicRegulatory/CyclicTestsRegulatory.h"
+#include "Src/Domain/Tests/CyclicShutoff/CyclicTestsShutoff.h"
 #include "Src/Ui/Setup/SelectTests.h"
 
 enum class TextObjects
@@ -123,6 +126,9 @@ private:
     };
 
     StrokeTestAnalyzer m_strokeAnalyzer;
+    StepTestAnalyzer m_stepAnalyzer;
+    CyclicRegulatoryAnalyzer m_regAnalyzer;
+
     ActiveChartMode m_activeChartMode = ActiveChartMode::TrendOnly;
     //
 
@@ -232,11 +238,10 @@ public slots:
     void results_strokeTest();
     void results_stepTest(const QVector<StepTest::TestResult>& results, const quint32 T_value);
 
-    void results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results);
+    void results_cyclicRegulatoryTests();
     void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results);
 
-    void results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
-                                     const CyclicTestsShutoff::TestResults& shutoffResults);
+    void results_cyclicCombinedTests(const CyclicTestsShutoff::TestResults& shutoffResults);
 
     void setInitDoStates(const QVector<bool>& states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }

@@ -1,23 +1,21 @@
 #include "Program.h"
 
-#include "Src/Tests/StepTest.h"
-#include "Src/Tests/StrokeTest.h"
-#include "Src/Tests/MainTest.h"
+#include "Src/Domain/Tests/Option/Step/StepTest.h"
+#include "Src/Domain/Tests/Stroke/StrokeTest.h"
+#include "Src/Domain/Tests/Main/MainTest.h"
 
-#include "Src/Runners/MainTestRunner.h"
-#include "Src/Runners/StepTestRunner.h"
-#include "Src/Runners/StrokeTestRunner.h"
-#include "Src/Runners/ResponseRunner.h"
-#include "Src/Runners/ResolutionRunner.h"
-#include "Src/Runners/CyclicRegulatoryRunner.h"
-#include "Src/Runners/CyclicShutoffRunner.h"
+#include "Src/Domain/Tests/Stroke/StrokeTestRunner.h"
+#include "Src/Domain/Tests/Main/MainTestRunner.h"
+#include "Src/Domain/Tests/Option/Step/StepTestRunner.h"
+#include "Src/Domain/Tests/Option/Response/ResponseRunner.h"
+#include "Src/Domain/Tests/Option/Resolution/ResolutionRunner.h"
+#include "Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryRunner.h"
+#include "Src/Domain/Tests/CyclicShutoff/CyclicShutoffRunner.h"
 
 #include "Src/Domain/DeviceInitializer.h"
 
 #include "Src/Utils/NumberUtils.h"
 #include "Src/Utils/SignalUtils.h"
-
-
 #include <QRegularExpression>
 #include <QLocale>
 #include <utility>
@@ -27,8 +25,6 @@ constexpr quint8 VersionFlag = 0x40;
 Program::Program(QObject *parent)
     : QObject{parent}
 {
-    qRegisterMetaType<Sample>("Sample");
-
     m_timerSensors = new QTimer(this);
     m_timerSensors->setInterval(200);
 
@@ -304,6 +300,7 @@ void Program::updateSensors()
     if (m_isTestRunning) {
         // m_testDataBuffer.add(s);
         m_strokeAnalyzer.onSample(s);
+        m_stepAnalyzer.onSample(s);
     }
 
     updateRealtimeTexts(s);
@@ -736,7 +733,7 @@ void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
 }
 
 
-void Program::results_cyclicRegulatoryTests(const CyclicTestsRegulatory::TestResults& results)
+void Program::results_cyclicRegulatoryTests()
 {
     // auto &dst = m_telemetryStore.cyclicTestRecord;
 
@@ -779,8 +776,7 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
     emit telemetryUpdated(m_telemetryStore);
 }
 
-void Program::results_cyclicCombinedTests(const CyclicTestsRegulatory::TestResults& regulatoryResults,
-                                          const CyclicTestsShutoff::TestResults& shutoffResults)
+void Program::results_cyclicCombinedTests(const CyclicTestsShutoff::TestResults& shutoffResults)
 {
     // auto &dst = m_telemetryStore.cyclicTestRecord;
     // dst.sequence = dst.sequence;
@@ -940,24 +936,12 @@ void Program::startCyclicTest(const CyclicTestParams& params)
 
 void Program::onCyclicStepMeasured(int cycle, int step, bool forward)
 {
-    if (step < 0 || step >= m_telemetryStore.cyclicTestRecord.ranges.size())
-        return;
+    Sample s;
+    s.positionPercent = m_mpi[0]->percent();
 
-    auto& rec = m_telemetryStore.cyclicTestRecord.ranges[step];
+    m_regAnalyzer.onSample(s);
 
-    const qreal measured = m_mpi[0]->percent();
-
-    if (forward) {
-        if (rec.maxForwardCycle < 0 || measured > rec.maxForwardValue) {
-            rec.maxForwardValue = measured;
-            rec.maxForwardCycle = cycle;
-        }
-    } else {
-        if (rec.maxReverseCycle < 0 || measured < rec.maxReverseValue) {
-            rec.maxReverseValue = measured;
-            rec.maxReverseCycle = cycle;
-        }
-    }
+    // m_telemetryStore.cyclicTestRecord.ranges = m_regAnalyzer.result().ranges;
 
     emit telemetryUpdated(m_telemetryStore);
 }
@@ -972,6 +956,8 @@ void Program::startResolutionTest(const OptionTestParams& params) {
     runTest<ResolutionRunner>(params);
 }
 void Program::startStepTest(const StepTestParams& params) {
+    m_stepAnalyzer.setConfig({params.testValue});
+    m_stepAnalyzer.start();
     m_activeChartMode = ActiveChartMode::Step;
     runTest<StepTestRunner>(params);
 }
