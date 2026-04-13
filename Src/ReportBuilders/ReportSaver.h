@@ -51,6 +51,6 @@ private:
     Registry *m_registry = nullptr;
 
 signals:
-    void question(const QString &title, const QString &text, bool &result);
+    bool question(const QString &title, const QString &text);
     void setDirectoryToSave(const QString &currentPath, QString &result);
 };

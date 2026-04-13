@@ -9,7 +9,7 @@ ReportBuilder_C_SOVT::ReportBuilder_C_SOVT() {}
 
 void ReportBuilder_C_SOVT::buildReport(
     ReportSaver::Report& report,
-    const TelemetryStore& telemetryStore,
+    const Telemetry& telemetryStore,
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,

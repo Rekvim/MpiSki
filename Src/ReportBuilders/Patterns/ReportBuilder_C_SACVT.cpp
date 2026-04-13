@@ -11,7 +11,7 @@ ReportBuilder_C_SACVT::ReportBuilder_C_SACVT() {}
 
 void ReportBuilder_C_SACVT::buildReport(
     ReportSaver::Report& report,
-    const TelemetryStore& telemetryStore,
+    const Telemetry& telemetryStore,
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
@@ -45,54 +45,53 @@ void ReportBuilder_C_SACVT::buildReport(
                        }, CyclicMode::Regulatory).build(writer, ctx);
 
     // Лист: Отчет ЦТ; Страница: 1 Блок: Циклические испытания позиционера
-    {
-        const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+    const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
 
-        struct Agg {
-            qreal rangePercent;
-            qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
-            int maxFwdCycle = -1;
-            qreal minRevVal = std::numeric_limits<qreal>::max();
-            int minRevCycle = -1;
-        };
-        QMap<qreal, Agg> aggMap;
+    struct Agg {
+        qreal rangePercent;
+        qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
+        int maxFwdCycle = -1;
+        qreal minRevVal = std::numeric_limits<qreal>::max();
+        int minRevCycle = -1;
+    };
+    QMap<qreal, Agg> aggMap;
 
-        // 1) Собираем все rec по ключу rangePercent
-        for (const auto& rec : ranges) {
-            auto it = aggMap.find(rec.rangePercent);
-            if (it == aggMap.end()) {
-                // первый раз для этого percent
-                Agg a;
-                a.rangePercent = rec.rangePercent;
-                // прямой ход
-                if (rec.maxForwardCycle >= 0) {
-                    a.maxFwdVal   = rec.maxForwardValue;
-                    a.maxFwdCycle = rec.maxForwardCycle;
-                }
-                // обратный ход
-                if (rec.maxReverseCycle >= 0) {
-                    a.minRevVal   = rec.maxReverseValue;
-                    a.minRevCycle = rec.maxReverseCycle;
-                }
-                aggMap.insert(rec.rangePercent, a);
+    // 1) Собираем все rec по ключу rangePercent
+    for (const auto& rec : ranges) {
+        auto it = aggMap.find(rec.rangePercent);
+        if (it == aggMap.end()) {
+            // первый раз для этого percent
+            Agg a;
+            a.rangePercent = rec.rangePercent;
+            // прямой ход
+            if (rec.maxForwardCycle >= 0) {
+                a.maxFwdVal = rec.maxForwardPosition;
+                a.maxFwdCycle = rec.maxForwardCycle;
+            }
+            // обратный ход
+            if (rec.minReverseCycle >= 0) {
+                a.minRevVal = rec.minReverseCycle;
+                a.minRevCycle = rec.minReverseCycle;
+            }
+            aggMap.insert(rec.rangePercent, a);
 
-            } else {
-                // уже есть — обновляем экстремумы
-                Agg &a = it.value();
-                // прямой ход — берём глобальный максимум
-                if (rec.maxForwardCycle >= 0
-                    && rec.maxForwardValue > a.maxFwdVal) {
-                    a.maxFwdVal   = rec.maxForwardValue;
-                    a.maxFwdCycle = rec.maxForwardCycle;
-                }
-                // обратный ход — берём глобальный минимум
-                if (rec.maxReverseCycle >= 0
-                    && rec.maxReverseValue < a.minRevVal) {
-                    a.minRevVal   = rec.maxReverseValue;
-                    a.minRevCycle = rec.maxReverseCycle;
-                }
+        } else {
+            // уже есть — обновляем экстремумы
+            Agg &a = it.value();
+            // прямой ход — берём глобальный максимум
+            if (rec.maxForwardCycle >= 0
+                && rec.maxForwardPosition > a.maxFwdVal) {
+                a.maxFwdVal   = rec.maxForwardPosition;
+                a.maxFwdCycle = rec.maxForwardCycle;
+            }
+            // обратный ход — берём глобальный минимум
+            if (rec.minReverseCycle >= 0
+                && rec.minReverseCycle < a.minRevVal) {
+                a.minRevVal = rec.minReverseCycle;
+                a.minRevCycle = rec.minReverseCycle;
             }
         }
+
 
         // 2) Выводим первые 10 (или сколько есть) диапазонов
         QVector<qreal> percents;

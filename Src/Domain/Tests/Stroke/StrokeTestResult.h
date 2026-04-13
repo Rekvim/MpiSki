@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QString>
+#include <QMetaType>
 
 struct StrokeTestResult {
     QString timeForwardMs = "";
@@ -9,3 +9,4 @@ struct StrokeTestResult {
     quint64 forwardTimeMs = 0;
     quint64 backwardTimeMs = 0;
 };
+Q_DECLARE_METATYPE(StrokeTestResult)

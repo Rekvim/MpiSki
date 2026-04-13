@@ -1,5 +1,12 @@
 #include "StepTestAnalyzer.h"
 
+void StepTestAnalyzer::start()
+{
+    m_results.clear();
+
+    m_prevTask = qQNaN();
+    m_hasStep = false;
+}
 
 // Вызывается каждый раз, когда приходит новый Sample.
 void StepTestAnalyzer::onSample(const Sample& s)
@@ -89,9 +96,12 @@ void StepTestAnalyzer::finishStep()
     m_hasStep = false;
 }
 
-// Завершение теста.
-QVector<StepTestResult> StepTestAnalyzer::finish()
+void StepTestAnalyzer::finish()
 {
     finishStep();
+}
+
+const QVector<StepTestResult>& StepTestAnalyzer::result() const
+{
     return m_results;
 }

@@ -7,7 +7,7 @@
 
 #include "StrokeTestResult.h"
 
-class StrokeTestAnalyzer : IAnalyzer
+class StrokeTestAnalyzer : public IAnalyzer
 {
 public:
 
@@ -17,11 +17,12 @@ public:
     };
 
     void setConfig(const Config& cfg);
-    void start();
-    void onSample(const Sample& s) override;
-    StrokeTestResult finish();
 
-    void reset() override;
+    void start() override;
+    void onSample(const Sample& s) override;
+    void finish() override;
+    const StrokeTestResult& result() const;
+
 private:
     struct Thresholds
     {
@@ -100,4 +101,5 @@ private:
 private:
     Config m_cfg;
     QVector<Sample> m_samples;
+    StrokeTestResult m_result;
 };

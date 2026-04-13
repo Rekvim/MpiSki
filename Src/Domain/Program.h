@@ -12,7 +12,7 @@
 #include "Src/CustomChart/ChartManager.h"
 
 #include "Src/Domain/Tests/Main/MainTestParams.h"
-#include "Src/Domain/Tests/CyclicRegulatory/CyclicTestParams.h"
+#include "Src/Domain/Tests/Cyclic/CyclicTestParams.h"
 #include "Src/Domain/Tests/Option/Step/StepTestParams.h"
 #include "Src/Domain/Tests/Option/OptionTestParams.h"
 
@@ -21,16 +21,13 @@
 
 #include "Src/Domain/Measurement/Sample.h"
 #include "Src/Domain/Measurement/TestDataBuffer.h"
-#include "Src/Domain/Tests/Stroke/StrokeTestAnalyzer.h"
-#include "Src/Domain/Tests/Option/Step/StepTestAnalyzer.h"
-#include "Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryAnalyzer.h"
+#include "Src/Domain/Tests/IAnalyzer.h"
 
 #include "Src/Domain/Tests/BaseRunner.h"
 
 #include "Src/Domain/Tests/Option/Step/StepTest.h"
 #include "Src/Domain/Tests/Main/MainTest.h"
-#include "Src/Domain/Tests/CyclicRegulatory/CyclicTestsRegulatory.h"
-#include "Src/Domain/Tests/CyclicShutoff/CyclicTestsShutoff.h"
+#include "Src/Domain/Tests/Cyclic/Shutoff/CyclicTestsShutoff.h"
 #include "Src/Ui/Setup/SelectTests.h"
 
 enum class TextObjects
@@ -55,11 +52,23 @@ public:
 
     const Registry* registry() const { return m_registry; }
 
+    enum class Test
+    {
+        None,
+        Stroke,
+        Main,
+        Response,
+        Resolution,
+        Step,
+        CyclicRegulatory,
+        CyclicShutOff
+    };
+
 signals:
     // Sample
     void sampleReady(const Sample& sample);
 
-    void telemetryUpdated(const TelemetryStore &store);
+    void telemetryUpdated(const Telemetry &telemetry);
 
     void errorOccured(const QString&);
 
@@ -101,7 +110,7 @@ signals:
 
     void mainTestFinished();
 
-    void question(QString& title, QString& text, bool& result);
+    bool question(QString& title, QString& text);
 
     void testFinished();
 
@@ -113,23 +122,8 @@ private:
     void updateRealtimeTexts(const Sample& s);
     TestDataBuffer m_testDataBuffer;
 
-    enum class ActiveChartMode
-    {
-        None,
-        TrendOnly,
-        Stroke,
-        Main,
-        Response,
-        Resolution,
-        Step,
-        Cyclic
-    };
-
-    StrokeTestAnalyzer m_strokeAnalyzer;
-    StepTestAnalyzer m_stepAnalyzer;
-    CyclicRegulatoryAnalyzer m_regAnalyzer;
-
-    ActiveChartMode m_activeChartMode = ActiveChartMode::TrendOnly;
+    std::unique_ptr<IAnalyzer> m_analyzer;
+    Test m_activeTest = Test::None;
     //
 
     SelectTests::PatternType m_patternType;
@@ -138,7 +132,7 @@ private:
     template<typename RunnerT>
     void startRunner(std::unique_ptr<RunnerT> r) {
 
-        disposeActiveRunnerAsync();
+        m_activeRunner.reset();
         connect(r.get(), &BaseRunner::requestClearChart,
                 this, [this](Charts chart){
             emit clearPoints(chart);});
@@ -176,8 +170,6 @@ private:
 
     void updateCrossingStatus();
 
-    void disposeActiveRunnerAsync();
-
     // init
     void waitForDacCycle();
     void finalizeInitialization();
@@ -194,7 +186,7 @@ private:
 
     Mpi m_mpi;
 
-    TelemetryStore m_telemetryStore;
+    Telemetry m_telemetry;
     QTimer *m_diPollTimer = nullptr;
     quint8 m_lastDiStatus = 0;
     QTimer *m_timerSensors;
@@ -217,8 +209,6 @@ private slots:
     void updateSensors();
 
 public slots:
-    void onCyclicStepMeasured(int cycle, int step, bool forward);
-
     void setMultipleDO(const QVector<bool>& states);
 
     void setDacRaw(quint16 dac,

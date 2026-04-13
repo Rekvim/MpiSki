@@ -24,17 +24,18 @@ public:
     void build(ReportWriter& writer,
                const ReportContext& ctx) override
     {
-        const auto& stroke = ctx.telemetry.strokeTestRecord;
+        const auto& stroke = ctx.telemetry.stroke;
         const auto& cyclic = ctx.telemetry.cyclicTestRecord;
 
         quint16 row = m_layout.rowStart;
 
-        writer.cell(m_layout.sheet, row, m_layout.column,
-                    stroke.timeForwardMs);
+        QString forward = stroke ? stroke->timeForwardMs : "";
+        QString backward = stroke ? stroke->timeBackwardMs : "";
+
+        writer.cell(m_layout.sheet, row, m_layout.column, forward);
         row += m_layout.rowStep;
 
-        writer.cell(m_layout.sheet, row, m_layout.column,
-                    stroke.timeBackwardMs);
+        writer.cell(m_layout.sheet, row, m_layout.column, backward);
         row += m_layout.rowStep;
 
         // Различающиеся поля

@@ -8,6 +8,7 @@ void StrokeTestAnalyzer::setConfig(const Config& cfg)
 void StrokeTestAnalyzer::start()
 {
     m_samples.clear();
+    m_result = {};
 }
 
 void StrokeTestAnalyzer::onSample(const Sample& s)
@@ -270,12 +271,10 @@ StrokeTestResult StrokeTestAnalyzer::computeTimes(
     return r;
 }
 
-StrokeTestResult StrokeTestAnalyzer::finish()
+void StrokeTestAnalyzer::finish()
 {
-    StrokeTestResult r;
-
     if (m_samples.isEmpty())
-        return r;
+        return;
 
     const QVector<Sample>& s = m_samples;
 
@@ -285,12 +284,10 @@ StrokeTestResult StrokeTestAnalyzer::finish()
 
     auto events = detectEvents(s, pos, thr);
 
-    r = computeTimes(s, pos, thr, events);
-
-    return r;
+    m_result = computeTimes(s, pos, thr, events);
 }
 
-void StrokeTestAnalyzer::reset()
+const StrokeTestResult& StrokeTestAnalyzer::result() const
 {
-
+    return m_result;
 }

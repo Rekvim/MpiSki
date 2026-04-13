@@ -79,6 +79,8 @@ void TechnicalResultsBlock::build(ReportWriter& w,
     w.cell(m.sheet, r5, m.colFact, f3(t.mainTestRecord.frictionForce));
 
     // stroke times
-    w.cell(m.sheet, m.rowStrokeTime, 5, t.strokeTestRecord.timeForwardMs);
-    w.cell(m.sheet, m.rowStrokeTime, 8, t.strokeTestRecord.timeBackwardMs);
+    // if (t.stroke) {
+    //     w.cell(m.sheet, m.rowStrokeTime, 5, t.stroke->timeForwardMs);
+    //     w.cell(m.sheet, m.rowStrokeTime, 8, t.stroke->timeBackwardMs);
+    // }
 }

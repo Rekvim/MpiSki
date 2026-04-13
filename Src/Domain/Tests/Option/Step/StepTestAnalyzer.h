@@ -3,10 +3,12 @@
 #include <QtGlobal>
 #include <QVector>
 
+#include "Src/Domain/Tests/IAnalyzer.h"
+
 #include "Src/Domain/Measurement/Sample.h"
 #include "StepTestResult.h"
 
-class StepTestAnalyzer
+class StepTestAnalyzer : public IAnalyzer
 {
 public:
 
@@ -22,17 +24,11 @@ public:
         m_cfg = cfg;
     }
 
-    void start()
-    {
-        m_results.clear();
+    void start() override;
+    void onSample(const Sample& s) override;
+    void finish() override;
 
-        m_prevTask = qQNaN();
-        m_hasStep = false;
-    }
-
-    void onSample(const Sample& s);
-
-    QVector<StepTestResult> finish();
+    const QVector<StepTestResult>& result() const;
 
 private:
 
@@ -47,19 +43,11 @@ private:
 
         quint64 startTime = 0; // — момент начала шага
 
-        bool tReached = false; // — старое задание
-        quint32 tTime = 0; // — старое задание
+        bool tReached = false; // — движение все еще есть?
+        quint32 tTime = 0; // — время достижения
 
         double overshoot = -1e9; // — перерегулирование
     };
-
-private:
-
-    void startStep(double from, double to, quint64 time);
-    void updateStep(double pos, quint64 time);
-    void finishStep();
-
-private:
 
     Config m_cfg;
 
@@ -69,4 +57,8 @@ private:
 
     double m_prevTask = qQNaN();
     bool m_hasStep = false;
+
+    void startStep(double from, double to, quint64 time);
+    void updateStep(double pos, quint64 time);
+    void finishStep();
 };

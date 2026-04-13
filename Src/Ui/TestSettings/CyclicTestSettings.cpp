@@ -194,7 +194,7 @@ void CyclicTestSettings::updateVisibilityBySelectedTest()
     const auto type = static_cast<CyclicTestParams::Type>(
         ui->comboBox_testSelection->itemData(idx).toInt());
 
-    m_params.testType = type;
+    m_params.type = type;
 
     const bool showReg = (type == CyclicTestParams::Regulatory ||
                           type == CyclicTestParams::Combined);
@@ -306,91 +306,74 @@ bool CyclicTestSettings::validatePositiveInt(const QString& text,
 
 bool CyclicTestSettings::readRegulatoryParams(CyclicTestParams& outParams)
 {
+    auto& p = outParams.regulatory;
+
     if (!ui->listWidget_testRangeRegulatory->currentItem()) {
-        showWarning(QStringLiteral(
-            "Выберите хотя бы одну последовательность (регулирующий)."));
+        showWarning("Выберите последовательность.");
         return false;
     }
 
+    QString error;
+
+    if (!CyclicSequenceUtils::parseSequence(
+            ui->listWidget_testRangeRegulatory->currentItem()->text(),
+            p.sequence,
+            error))
     {
-        const QString seqText =
-            ui->listWidget_testRangeRegulatory->currentItem()->text().trimmed();
-
-        QString error;
-        if (!CyclicSequenceUtils::parseSequence(seqText, outParams.regSeqValues, error)) {
-            showWarning(QStringLiteral("Регулирующая последовательность: ") + error);
-            return false;
-        }
-    }
-
-    if (!ui->listWidget_delayTimeRegulatory->currentItem()) {
-        showWarning(QStringLiteral(
-            "Выберите время задержки (регулирующий)."));
+        showWarning(error);
         return false;
     }
 
-    outParams.regulatory_delayMs =
-        ui->listWidget_delayTimeRegulatory->currentItem()->text().toUInt() * 1000U;
+    p.delayMs =
+        ui->listWidget_delayTimeRegulatory->currentItem()->text().toUInt() * 1000;
 
-    outParams.regulatory_holdMs =
+    p.holdMs =
         ui->timeEdit_retentionTimeRegulatory->time().msecsSinceStartOfDay();
 
-    {
-        int cycles = 0;
-        if (!validatePositiveInt(ui->lineEdit_numberCyclesRegulatory->text(),
-                                 cycles,
-                                 QStringLiteral("Число циклов (регулирующий)")))
-            return false;
+    int cycles = 0;
 
-        outParams.regulatory_numCycles = static_cast<quint16>(cycles);
-    }
+    if (!validatePositiveInt(
+            ui->lineEdit_numberCyclesRegulatory->text(),
+            cycles,
+            "Число циклов"))
+        return false;
 
-    outParams.regulatory_enable_20mA =
-        ui->checkBox_20mA_enable->isChecked();
+    p.numCycles = static_cast<quint16>(cycles);
+
+    p.enable20mA = ui->checkBox_20mA_enable->isChecked();
 
     return true;
 }
 
 bool CyclicTestSettings::readShutoffParams(CyclicTestParams& outParams)
 {
-    if (!ui->listWidget_testRangeShutOff->currentItem()) {
-        showWarning(QStringLiteral(
-            "Выберите хотя бы одну последовательность (отсечной)."));
-        return false;
-    }
+    auto& p = outParams.shutoff;
 
-    // Если по бизнес-логике shutoff всегда фиксированный:
-    outParams.offSeqValues = {0.0, 100.0, 0.0};
+    p.sequence = {0.0, 100.0, 0.0};
 
-    if (!ui->listWidget_delayTimeShutOff->currentItem()) {
-        showWarning(QStringLiteral(
-            "Выберите время задержки (отсечной)."));
-        return false;
-    }
+    p.delayMs =
+        ui->listWidget_delayTimeShutOff->currentItem()->text().toUInt() * 1000;
 
-    outParams.shutoff_delayMs =
-        ui->listWidget_delayTimeShutOff->currentItem()->text().toUInt() * 1000U;
-
-    outParams.shutoff_holdMs =
+    p.holdMs =
         ui->timeEdit_retentionTimeShutOff->time().msecsSinceStartOfDay();
 
-    {
-        int cycles = 0;
-        if (!validatePositiveInt(ui->lineEdit_numberCyclesShutOff->text(),
-                                 cycles,
-                                 QStringLiteral("Число циклов (отсечной)")))
-            return false;
+    int cycles = 0;
 
-        outParams.shutoff_numCycles = static_cast<quint16>(cycles);
-    }
+    if (!validatePositiveInt(
+            ui->lineEdit_numberCyclesShutOff->text(),
+            cycles,
+            "Число циклов"))
+        return false;
 
-    outParams.shutoff_DO[0] = ui->pushButton_DO0_ShutOff->isChecked();
-    outParams.shutoff_DO[1] = ui->pushButton_DO1_ShutOff->isChecked();
-    outParams.shutoff_DO[2] = ui->pushButton_DO2_ShutOff->isChecked();
-    outParams.shutoff_DO[3] = ui->pushButton_DO3_ShutOff->isChecked();
+    p.numCycles = static_cast<quint16>(cycles);
 
-    outParams.shutoff_DI[0] = ui->checkBox_switch_3_0_ShutOff->isChecked();
-    outParams.shutoff_DI[1] = ui->checkBox_switch_0_3_ShutOff->isChecked();
+    p.DO[0] = ui->pushButton_DO0_ShutOff->isChecked();
+    p.DO[1] = ui->pushButton_DO1_ShutOff->isChecked();
+    p.DO[2] = ui->pushButton_DO2_ShutOff->isChecked();
+    p.DO[3] = ui->pushButton_DO3_ShutOff->isChecked();
+
+    p.DI[0] = ui->checkBox_switch_3_0_ShutOff->isChecked();
+    p.DI[1] = ui->checkBox_switch_0_3_ShutOff->isChecked();
 
     return true;
 }
@@ -404,27 +387,27 @@ bool CyclicTestSettings::readParamsFromUi(CyclicTestParams& outParams)
     }
 
     outParams = CyclicTestParams{};
-    outParams.testType = static_cast<CyclicTestParams::Type>(
+    outParams.type = static_cast<CyclicTestParams::Type>(
         ui->comboBox_testSelection->itemData(idx).toInt());
 
-    const bool needReg = (outParams.testType == CyclicTestParams::Regulatory ||
-                          outParams.testType == CyclicTestParams::Combined);
+    const bool needReg = (outParams.type == CyclicTestParams::Regulatory ||
+                          outParams.type == CyclicTestParams::Combined);
 
-    const bool needOff = (outParams.testType == CyclicTestParams::Shutoff ||
-                          outParams.testType == CyclicTestParams::Combined);
+    const bool needOff = (outParams.type == CyclicTestParams::Shutoff ||
+                          outParams.type == CyclicTestParams::Combined);
 
     if (needReg) {
         if (!readRegulatoryParams(outParams))
             return false;
     } else {
-        outParams.clearRegulatory();
+        outParams.regulatory = {};
     }
 
     if (needOff) {
         if (!readShutoffParams(outParams))
             return false;
     } else {
-        outParams.clearShutoff();
+        outParams.shutoff = {};
     }
 
     return true;
@@ -455,7 +438,7 @@ void CyclicTestSettings::on_pushButton_addRangeRegulatory_clicked()
         QLineEdit::Normal,
         QString(),
         &ok
-        );
+    );
 
     if (!ok || text.trimmed().isEmpty())
         return;

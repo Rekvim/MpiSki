@@ -4,6 +4,7 @@
 void MainTestAnalyzer::start()
 {
     m_samples.clear();
+    m_result = {};
 }
 
 void MainTestAnalyzer::onSample(const Sample& s)
@@ -369,17 +370,17 @@ QPair<double, double> MainTestAnalyzer::computeRangeLimits(
     return qMakePair(minX, maxX);
 }
 
-MainTestResult MainTestAnalyzer::finish()
+void MainTestAnalyzer::finish()
 {
-    MainTestResult r;
+    m_result = {};
 
     if (m_samples.isEmpty())
-        return r;
+        return;
 
     const MotionData data = buildMotionData();
 
     if (data.forward.isEmpty() || data.backward.isEmpty())
-        return r;
+        return;
 
     const Limits limits = computeLimits(data);
 
@@ -387,40 +388,39 @@ MainTestResult MainTestAnalyzer::finish()
     const Regression regBackward = regression(data.backward, limits);
 
     if (!regForward.valid || !regBackward.valid)
-        return r;
+        return ;
 
-    r.linearityError = std::max<double>(
+    m_result.linearityError = std::max<double>(
         computeLinearity(data.forward, regForward, limits),
         computeLinearity(data.backward, regBackward, limits));
 
-    r.linearity = 100.0 - r.linearityError;
+    m_result.linearity = 100.0 - m_result.linearityError;
 
-    r.pressureDiff = computePressureDiff(regForward, regBackward, limits);
+    m_result.pressureDiff = computePressureDiff(regForward, regBackward, limits);
 
     const qreal forceCoef =
         5.0 * M_PI * m_cfg.driveDiameter * m_cfg.driveDiameter / 4.0;
 
-    r.frictionForce = r.pressureDiff * forceCoef;
-    r.frictionPercent =
-        computeFrictionPercent(regForward, limits, r.pressureDiff);
+    m_result.frictionForce = m_result.pressureDiff * forceCoef;
+    m_result.frictionPercent = computeFrictionPercent(regForward, limits, m_result.pressureDiff);
 
-    QPair<double, double> dyn =
-        computeDynamicErrorMeanMax(data.forwardDyn, data.backwardDyn);
+    QPair<double, double> dyn = computeDynamicErrorMeanMax(data.forwardDyn, data.backwardDyn);
 
-    r.dynamicErrorMean = dyn.first;
-    r.dynamicErrorMax = dyn.second;
+    m_result.dynamicErrorMean = dyn.first;
+    m_result.dynamicErrorMax = dyn.second;
 
-    QPair<double, double> range =
-        computeRangeLimits(regForward, regBackward, limits);
+    QPair<double, double> range = computeRangeLimits(regForward, regBackward, limits);
 
-    r.lowLimitPressure = range.first;
-    r.highLimitPressure = range.second;
+    m_result.lowLimitPressure = range.first;
+    m_result.highLimitPressure = range.second;
 
-    QPair<double, double> spring =
-        computeSpringLimits(regForward, regBackward, limits);
+    QPair<double, double> spring = computeSpringLimits(regForward, regBackward, limits);
 
-    r.springLow = spring.first;
-    r.springHigh = spring.second;
+    m_result.springLow = spring.first;
+    m_result.springHigh = spring.second;
+}
 
-    return r;
+const MainTestResult& MainTestAnalyzer::result() const
+{
+    return m_result;
 }

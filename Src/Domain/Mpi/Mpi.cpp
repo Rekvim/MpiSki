@@ -138,7 +138,7 @@ quint8 Mpi::version()
     return version;
 }
 
-quint8 Mpi::digitalOutputs()
+quint8 Mpi::digitalOutputs() const
 {
     if (!m_isConnected)
         return 0;
@@ -148,7 +148,7 @@ quint8 Mpi::digitalOutputs()
     return DO;
 }
 
-quint8 Mpi::digitalInputs()
+quint8 Mpi::digitalInputs() const
 {
     if (!m_isConnected)
         return 0;

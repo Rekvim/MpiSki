@@ -642,15 +642,15 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
     }
 }
 
-void MainWindow::onTelemetryUpdated(const TelemetryStore &t) {
-    m_telemetryStore = t;
+void MainWindow::onTelemetryUpdated(const Telemetry &t) {
+    m_telemetry = t;
     m_mapper->updateInit(t.init);
 
     m_mapper->updateMainTest(t);
     m_mapper->updateCrossing(t);
-    m_crossingIndicators->update(m_telemetryStore.crossingStatus);
-
-    m_mapper->updateStrokeTest(t.strokeTestRecord);
+    m_crossingIndicators->update(m_telemetry.crossingStatus);
+    if (t.stroke)
+        m_mapper->updateStrokeTest(*t.stroke);
 }
 
 void MainWindow::appendLog(const QString& text) {
@@ -777,7 +777,6 @@ void MainWindow::setRegistry(Registry *registry)
     }
 
     m_program->setRegistry(registry);
-    m_programThread->start();
 
     m_reportSaver->setRegistry(registry);
 }
@@ -970,81 +969,96 @@ static QString seqToString(const QVector<qreal>& seq)
 
 void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
 {
-    if (m_cyclicTestSettings->exec() == QDialog::Accepted) {
-        parameters = m_cyclicTestSettings->parameters();
-
-        switch (parameters.testType) {
-        case CyclicTestParams::Regulatory:
-            ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.regSeqValues));
-            ui->label_cyclicTest_specifiedCyclesValue->setText(
-                QString::number(parameters.regulatory_numCycles));
-            break;
-        case CyclicTestParams::Shutoff:
-            ui->label_cyclicTest_sequenceValue->setText(seqToString(parameters.offSeqValues));
-            ui->label_cyclicTest_specifiedCyclesValue->setText(
-                QString::number(parameters.shutoff_numCycles));
-            break;
-        default:
-            ui->label_cyclicTest_sequenceValue->clear();
-            ui->label_cyclicTest_specifiedCyclesValue->clear();
-            break;
-        }
-
-        if (parameters.testType == CyclicTestParams::Regulatory && parameters.regulatory_enable_20mA) {
-            ui->doubleSpinBox_task->setValue(20.0);
-        }
-
-        qint64 totalMs = 0;
-        switch (parameters.testType) {
-        case CyclicTestParams::Regulatory: {
-            const auto raw = parameters.regSeqValues;
-            quint64 steps = static_cast<quint64>(raw.size()) * parameters.regulatory_numCycles;
-
-            totalMs = steps * (parameters.regulatory_delayMs
-                               + parameters.regulatory_holdMs);
-            break;
-        }
-        case CyclicTestParams::Shutoff: {
-            const auto raw = parameters.offSeqValues;
-            quint64 steps = static_cast<quint64>(raw.size()) * parameters.shutoff_numCycles;
-            totalMs = steps * (parameters.shutoff_holdMs
-                               + parameters.shutoff_delayMs);
-
-            break;
-        }
-        case CyclicTestParams::Combined: {
-            const auto regRaw = parameters.regSeqValues;
-            quint64 regSteps = static_cast<quint64>(regRaw.size()) * parameters.regulatory_numCycles;
-            quint64 regMs = regSteps * (parameters.regulatory_delayMs
-                                        + parameters.regulatory_holdMs)
-                            + parameters.regulatory_delayMs;
-
-            const auto offRaw = parameters.offSeqValues;
-            quint64 offSteps = static_cast<quint64>(offRaw.size()) * parameters.shutoff_numCycles;
-            quint64 offMs = offSteps * (parameters.shutoff_holdMs
-                                        + parameters.shutoff_delayMs);
-
-            totalMs = regMs + offMs;
-            break;
-        }
-        default:
-            break;
-        }
-
-        QTime t0(0, 0);
-        t0 = t0.addMSecs(totalMs);
-        ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
-
-        return;
-    } else {
+    if (m_cyclicTestSettings->exec() != QDialog::Accepted) {
         parameters = {};
         return;
     }
+
+    parameters = m_cyclicTestSettings->parameters();
+
+    switch (parameters.type)
+    {
+    case CyclicTestParams::Regulatory:
+    {
+        const auto& p = parameters.regulatory;
+
+        ui->label_cyclicTest_sequenceValue->setText(seqToString(p.sequence));
+        ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.numCycles));
+
+        if (p.enable20mA)
+            ui->doubleSpinBox_task->setValue(20.0);
+
+        break;
+    }
+
+    case CyclicTestParams::Shutoff:
+    {
+        const auto& p = parameters.shutoff;
+
+        ui->label_cyclicTest_sequenceValue->setText(seqToString(p.sequence));
+        ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.numCycles));
+
+        break;
+    }
+
+    default:
+        ui->label_cyclicTest_sequenceValue->clear();
+        ui->label_cyclicTest_specifiedCyclesValue->clear();
+        break;
+    }
+
+    qint64 totalMs = 0;
+
+    switch (parameters.type)
+    {
+    case CyclicTestParams::Regulatory:
+    {
+        const auto& p = parameters.regulatory;
+
+        quint64 steps = static_cast<quint64>(p.sequence.size()) * p.numCycles;
+
+        totalMs = steps * (p.delayMs + p.holdMs);
+
+        break;
+    }
+
+    case CyclicTestParams::Shutoff:
+    {
+        const auto& p = parameters.shutoff;
+
+        quint64 steps = static_cast<quint64>(p.sequence.size()) * p.numCycles;
+
+        totalMs = steps * (p.delayMs + p.holdMs);
+
+        break;
+    }
+
+    case CyclicTestParams::Combined:
+    {
+        const auto& r = parameters.regulatory;
+        const auto& s = parameters.shutoff;
+
+        quint64 regSteps = static_cast<quint64>(r.sequence.size()) * r.numCycles;
+        quint64 offSteps = static_cast<quint64>(s.sequence.size()) * s.numCycles;
+
+        qint64 regMs = regSteps * (r.delayMs + r.holdMs);
+        qint64 offMs = offSteps * (s.delayMs + s.holdMs);
+
+        totalMs = regMs + offMs;
+
+        break;
+    }
+    }
+
+    QTime t0(0,0);
+    t0 = t0.addMSecs(totalMs);
+
+    ui->label_cyclicTest_totalTimeValue->setText(t0.toString("hh:mm:ss.zzz"));
 }
 
-void MainWindow::askQuestion(const QString &title, const QString &text, bool &result)
+bool MainWindow::askQuestion(const QString &title, const QString &text)
 {
-    result = (QMessageBox::question(this, title, text) == QMessageBox::Yes);
+    return QMessageBox::question(this, title, text) == QMessageBox::Yes;
 }
 
 void MainWindow::directoryToSave(const QString &currentPath, QString &result)
@@ -1572,36 +1586,39 @@ void MainWindow::collectReportOverrides()
 {
     // ===== MainTestRecord =====
     NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionForceValue,
-               m_telemetryStore.mainTestRecord.frictionForce);
+               m_telemetry.mainTestRecord.frictionForce);
 
     NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionPercentValue,
-               m_telemetryStore.mainTestRecord.frictionPercent);
+               m_telemetry.mainTestRecord.frictionPercent);
 
     NumberUtils::readDouble(ui->lineEdit_resultsTable_dynamicErrorReal,
-               m_telemetryStore.mainTestRecord.dynamicErrorReal);
+               m_telemetry.mainTestRecord.dynamicErrorReal);
 
     NumberUtils::readRange(ui->lineEdit_resultsTable_rangePressure,
-              m_telemetryStore.mainTestRecord.lowLimitPressure,
-              m_telemetryStore.mainTestRecord.highLimitPressure);
+              m_telemetry.mainTestRecord.lowLimitPressure,
+              m_telemetry.mainTestRecord.highLimitPressure);
 
     NumberUtils::readRange(ui->lineEdit_resultsTable_driveRangeReal,
-              m_telemetryStore.mainTestRecord.springLow,
-              m_telemetryStore.mainTestRecord.springHigh);
+              m_telemetry.mainTestRecord.springLow,
+              m_telemetry.mainTestRecord.springHigh);
 
     // ===== Stroke =====
     NumberUtils::readDouble(ui->lineEdit_resultsTable_strokeReal,
-               m_telemetryStore.valveStrokeRecord.real);
+               m_telemetry.valveStrokeRecord.real);
 
     // ===== Stroke test =====
-    m_telemetryStore.strokeTestRecord.timeForwardMs =
-        ui->lineEdit_resultsTable_strokeTest_forwardTime->text();
+    if (m_telemetry.stroke)
+    {
+        m_telemetry.stroke->timeForwardMs =
+            ui->lineEdit_resultsTable_strokeTest_forwardTime->text();
+
+        m_telemetry.stroke->timeBackwardMs =
+            ui->lineEdit_resultsTable_strokeTest_backwardTime->text();
+    }
 
     // SupplyRecord
-    m_telemetryStore.supplyRecord.pressure_bar =
+    m_telemetry.supplyRecord.pressure_bar =
         QString(ui->lineEdit_supplyPressure->text()).toDouble();
-
-    m_telemetryStore.strokeTestRecord.timeBackwardMs =
-        ui->lineEdit_resultsTable_strokeTest_backwardTime->text();
 }
 
 void MainWindow::collectRegistryOverrides(
@@ -1637,7 +1654,7 @@ void MainWindow::generateReportClicked()
 
     ReportSaver::Report report;
     reportBuilder->buildReport(report,
-                               m_telemetryStore,
+                               m_telemetry,
                                m_registry->objectInfo(),
                                m_registry->valveInfo(),
                                m_registry->otherParameters(),

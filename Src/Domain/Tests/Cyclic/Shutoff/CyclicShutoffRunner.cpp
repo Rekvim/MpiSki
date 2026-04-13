@@ -4,18 +4,17 @@
 
 RunnerConfig CyclicShutoffRunner::buildConfig()
 {
-    const auto& p = m_params;
-    if (p.testType != p.Type::Shutoff) return {};
+    const auto& p = m_params.shutoff;
 
     const bool normalOpen = isNormallyOpen();
-    const auto rawCycle = SignalUtils::makeRawValues(p.offSeqValues, m_mpi, normalOpen);
-    if (rawCycle.isEmpty() || p.shutoff_numCycles <= 0) return {};
+    const auto rawCycle = SignalUtils::makeRawValues(p.sequence, m_mpi, normalOpen);
+    if (rawCycle.isEmpty() || p.numCycles <= 0) return {};
 
     CyclicTestsShutoff::Task task;
-    task.delayMsecs = p.shutoff_delayMs;
-    task.holdMsecs = p.shutoff_holdMs;
-    task.cycles = p.shutoff_numCycles;
-    task.doMask = QVector<bool>(p.shutoff_DO.begin(), p.shutoff_DO.end());
+    task.delayMsecs = p.delayMs;
+    task.holdMsecs = p.holdMs;
+    task.cycles = p.numCycles;
+    task.doMask = QVector<bool>(p.DO.begin(), p.DO.end());
 
     task.values = rawCycle;
     auto worker = std::make_unique<CyclicTestsShutoff>();

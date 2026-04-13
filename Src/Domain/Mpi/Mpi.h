@@ -22,8 +22,8 @@ public:
 
     quint8 version();
 
-    quint8 digitalOutputs();
-    quint8 digitalInputs();
+    quint8 digitalOutputs() const;
+    quint8 digitalInputs() const;
 
     void setDacRaw(quint16 value);
     void setDacValue(qreal value);
@@ -60,8 +60,8 @@ signals:
     void requestDisableAdc();
 
     void setDigitalOutput(quint8 index, bool state);
-    void requestDigitalOutputs(quint8& DO);
-    void requestDigitalInputs(quint8& DI);
+    void requestDigitalOutputs(quint8& DO) const;
+    void requestDigitalInputs(quint8& DI) const;
 
 private:
     std::array<Sensor*, 6> m_sensorByAdc { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };

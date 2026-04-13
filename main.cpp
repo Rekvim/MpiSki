@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    qRegisterMetaType<TelemetryStore>("TelemetryStore");
+    qRegisterMetaType<Telemetry>("Telemetry");
 
     QTranslator qtTranslator;
 

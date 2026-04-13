@@ -1,9 +1,6 @@
 #include "TelemetryUiMapper.h"
 
-TelemetryUiMapper::TelemetryUiMapper(Ui::MainWindow* ui)
-    : m_ui(ui)
-{
-}
+
 
 void TelemetryUiMapper::updateInit(const InitState& init)
 {
@@ -28,7 +25,7 @@ void TelemetryUiMapper::updateInit(const InitState& init)
         "color:" + init.finalPositionColor.name(QColor::HexRgb));
 }
 
-void TelemetryUiMapper::updateMainTest(const TelemetryStore& t)
+void TelemetryUiMapper::updateMainTest(const Telemetry& t)
 {
     m_ui->label_pressureDifferenceValue->setText(
         QString("%1")
@@ -112,7 +109,7 @@ void TelemetryUiMapper::updateMainTest(const TelemetryStore& t)
         );
 }
 
-void TelemetryUiMapper::updateStrokeTest(const StrokeTestRecord& r)
+void TelemetryUiMapper::updateStrokeTest(const StrokeTestResult& r)
 {
     m_ui->lineEdit_strokeTest_forwardTime->setText(r.timeForwardMs);
     m_ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(r.timeForwardMs);
@@ -121,7 +118,7 @@ void TelemetryUiMapper::updateStrokeTest(const StrokeTestRecord& r)
     m_ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(r.timeBackwardMs);
 }
 
-void TelemetryUiMapper::updateCrossing(const TelemetryStore& t)
+void TelemetryUiMapper::updateCrossing(const Telemetry& t)
 {
     m_ui->lineEdit_crossingLimits_dynamicError_value->setText(
         QString::number(t.mainTestRecord.dynamicErrorReal, 'f', 2));

@@ -1,16 +1,22 @@
 #include "CyclicRegulatoryAnalyzer.h"
 
+void CyclicRegulatoryAnalyzer::start()
+{
+    m_result = {};
+}
+
 void CyclicRegulatoryAnalyzer::configure(const CyclicTestParams& params)
 {
+    const auto& p = params.regulatory;
     m_ranges.clear();
-    m_ranges.reserve(params.regSeqValues.size());
+    m_ranges.reserve(p.sequence.size());
 
     m_result.ranges.clear();
-    m_result.ranges.resize(params.regSeqValues.size());
+    m_result.ranges.resize(p.sequence.size());
 
-    for (int i = 0; i < params.regSeqValues.size(); ++i)
+    for (int i = 0; i < p.sequence.size(); ++i)
     {
-        const int range = params.regSeqValues[i];
+        const int range = p.sequence[i];
 
         m_ranges.push_back(range);
 
@@ -60,31 +66,25 @@ void CyclicRegulatoryAnalyzer::updateRange(double pos)
 
     auto& r = m_result.ranges[m_step];
 
-    if (m_forward)
-    {
-        if (pos > r.maxForwardPosition)
-        {
+    if (m_forward) {
+        if (pos > r.maxForwardPosition) {
             r.maxForwardPosition = pos;
             r.maxForwardCycle = m_cycle;
         }
-    }
-    else
-    {
-        if (pos < r.minReversePosition)
-        {
+    } else {
+        if (pos < r.minReversePosition) {
             r.minReversePosition = pos;
             r.minReverseCycle = m_cycle;
         }
     }
 }
 
+void CyclicRegulatoryAnalyzer::finish()
+{
+}
+
 const CyclicRegulatoryResult&
 CyclicRegulatoryAnalyzer::result() const
 {
     return m_result;
-}
-
-void CyclicRegulatoryAnalyzer::reset()
-{
-    m_result = {};
 }

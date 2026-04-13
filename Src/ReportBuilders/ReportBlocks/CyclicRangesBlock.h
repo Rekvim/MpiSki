@@ -17,7 +17,7 @@ public:
                const ReportContext& ctx) override
     {
         const auto& ranges =
-            ctx.telemetry.cyclicTestRecord.ranges;
+            ctx.telemetry.cyclicTestRecord.regulatoryResult.ranges;
 
         quint16 row = m_layout.rowStart;
 
@@ -30,16 +30,16 @@ public:
 
             if (r.maxForwardCycle >= 0) {
                 w.cell(m_layout.sheet, row, 8,
-                       QString::number(r.maxForwardValue, 'f', 2));
+                       QString::number(r.maxForwardPosition, 'f', 2));
                 w.cell(m_layout.sheet, row, 11,
                        QString::number(r.maxForwardCycle + 1));
             }
 
-            if (r.maxReverseCycle >= 0) {
+            if (r.minReverseCycle >= 0) {
                 w.cell(m_layout.sheet, row, 12,
-                       QString::number(r.maxReverseValue, 'f', 2));
+                       QString::number(r.minReversePosition, 'f', 2));
                 w.cell(m_layout.sheet, row, 15,
-                       QString::number(r.maxReverseCycle + 1));
+                       QString::number(r.minReverseCycle + 1));
             }
 
             row += m_layout.rowStep;

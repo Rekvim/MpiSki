@@ -16,6 +16,9 @@ struct Sample
     qreal positionValue = 0.0;
     qreal positionPercent = 0.0;
 
+    quint8 diMask = 0;
+    quint8 doMask = 0;
+
     qreal pressure1 = qQNaN();
     qreal pressure2 = qQNaN();
     qreal pressure3 = qQNaN();

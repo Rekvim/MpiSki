@@ -64,11 +64,12 @@ SOURCES += \
     Src/Domain/Tests/Option/Step/StepTestRunner.cpp \
     Src/Domain/Tests/Option/Step/StepTest.cpp \
     Src/Domain/Tests/Option/Step/StepTestAnalyzer.cpp \
-    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryRunner.cpp \
-    Src/Domain/Tests/CyclicRegulatory/CyclicTestsRegulatory.cpp \
-    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryAnalyzer.cpp \
-    Src/Domain/Tests/CyclicShutoff/CyclicShutoffRunner.cpp \
-    Src/Domain/Tests/CyclicShutoff/CyclicTestsShutoff.cpp \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryRunner.cpp \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicTestsRegulatory.cpp \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryAnalyzer.cpp \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffAnalyzer.cpp \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffRunner.cpp \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicTestsShutoff.cpp \
     Src/Domain/Uart/Uart.cpp \
     Src/Domain/Uart/UartMessage.cpp \
     Src/Domain/Uart/UartReader.cpp \
@@ -84,7 +85,12 @@ HEADERS += \
     Src/Domain/Measurement/Sample.h \
     Src/Domain/Measurement/TestDataBuffer.h \
     Src/Domain/Tests/AnalyzerFactory.h \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryParams.h \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffAnalyzer.h \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffParams.h \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffResult.h \
     Src/Domain/Tests/IAnalyzer.h \
+    Src/Domain/Tests/ITestRunner.h \
     Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
     Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
     Src/ReportBuilders/ReportBlocks/IReportBlock.h \
@@ -138,13 +144,13 @@ HEADERS += \
     Src/Domain/Tests/Stroke/StrokeTestResult.h \
     Src/Domain/Tests/CyclicTestPositioner.h \
     Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.h \
-    Src/Domain/Tests/CyclicRegulatory/CyclicTestParams.h \
-    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryRunner.h \
-    Src/Domain/Tests/CyclicRegulatory/CyclicTestsRegulatory.h \
-    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryAnalyzer.h \
-    Src/Domain/Tests/CyclicRegulatory/CyclicRegulatoryTestResult.h \
-    Src/Domain/Tests/CyclicShutoff/CyclicShutoffRunner.h \
-    Src/Domain/Tests/CyclicShutoff/CyclicTestsShutoff.h \
+    Src/Domain/Tests/Cyclic/CyclicTestParams.h \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryRunner.h \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicTestsRegulatory.h \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryAnalyzer.h \
+    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryTestResult.h \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffRunner.h \
+    Src/Domain/Tests/Cyclic/Shutoff/CyclicTestsShutoff.h \
     Src/Domain/Tests/Main/MainTestParams.h \
     Src/Domain/Tests/Main/MainTestRunner.h \
     Src/Domain/Tests/Main/MainTest.h \

@@ -68,7 +68,7 @@ private slots:
     void setSensorsMask(quint8 mask);
     void appendLog(const QString& text);
 
-    void onTelemetryUpdated(const TelemetryStore &telemetry);
+    void onTelemetryUpdated(const Telemetry &telemetry);
 
 
     void promptSaveChartsAfterTest();
@@ -93,7 +93,7 @@ private slots:
     void onCountdownTimeout();
     void onTotalTestTimeMs(quint64 totalMs);
 
-    void askQuestion(const QString &title, const QString &text, bool &result);
+    bool askQuestion(const QString &title, const QString &text);
 
     void endTest();
 
@@ -132,7 +132,7 @@ private:
     ChartImageService* m_chartImages;
 
     Registry *m_registry = nullptr;
-    TelemetryStore m_telemetryStore;
+    Telemetry m_telemetry;
 
     Program *m_program;
     QThread *m_programThread;

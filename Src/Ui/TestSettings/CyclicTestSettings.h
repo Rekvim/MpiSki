@@ -5,7 +5,7 @@
 
 #include "AbstractTestSettings.h"
 #include "Src/Ui/Setup/SelectTests.h"
-#include "Src/Domain/Tests/CyclicRegulatory/CyclicTestParams.h"
+#include "Src/Domain/Tests/Cyclic/CyclicTestParams.h"
 
 namespace Ui {
 class CyclicTestSettings;
@@ -16,6 +16,7 @@ class CyclicTestSettings : public AbstractTestSettings
     Q_OBJECT
 
 public:
+
     explicit CyclicTestSettings(QWidget* parent = nullptr);
     ~CyclicTestSettings() override;
 

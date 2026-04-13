@@ -5,7 +5,7 @@
 #include "Src/Storage/Registry.h"
 
 struct ReportContext {
-    const TelemetryStore& telemetry;
+    const Telemetry& telemetry;
     const ObjectInfo& object;
     const ValveInfo& valve;
     const OtherParameters& params;
@@ -20,7 +20,7 @@ public:
     virtual ~ReportBuilder() = default;
     virtual void buildReport(
         ReportSaver::Report& report,
-        const TelemetryStore& telemetryStore,
+        const Telemetry& telemetryStore,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,

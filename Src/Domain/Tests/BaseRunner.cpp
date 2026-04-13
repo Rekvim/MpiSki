@@ -34,7 +34,7 @@ void BaseRunner::start() {
             this, [this]{
                 m_thread = nullptr;
                 m_worker = nullptr;
-            });
+    });
 
     connect(m_worker.get(), &Test::started,
             this, &BaseRunner::testActuallyStarted);

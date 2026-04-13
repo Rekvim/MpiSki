@@ -10,7 +10,7 @@
 #include "Src/Domain/Tests/Main/MainTestResult.h"
 #include "Src/Domain/Tests/IAnalyzer.h"
 
-class MainTestAnalyzer : IAnalyzer
+class MainTestAnalyzer : public IAnalyzer
 {
 public:
     struct Config
@@ -41,9 +41,12 @@ public:
 
 public:
     void setConfig(const Config& cfg);
-    void start();
-    void onSample(const Sample& s);
-    MainTestResult finish();
+
+    void start() override;
+    void onSample(const Sample& s) override;
+    void finish() override;
+
+    const MainTestResult& result() const;
 
 private:
     struct TimePoint
@@ -62,6 +65,10 @@ private:
     };
 
 private:
+    QVector<Sample> m_samples;
+    Config m_cfg;
+    MainTestResult m_result;
+
     MotionData buildMotionData() const;
 
     Limits computeLimits(const MotionData& data) const;
@@ -98,8 +105,4 @@ private:
         const Regression& reg1,
         const Regression& reg2,
         const Limits& limits) const;
-
-private:
-    QVector<Sample> m_samples;
-    Config m_cfg;
 };

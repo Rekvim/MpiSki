@@ -3,7 +3,7 @@
 
 DeviceInitializer::DeviceInitializer(Mpi& mpi,
                                      Registry& registry,
-                                     TelemetryStore& telemetry)
+                                     Telemetry& telemetry)
     : m_mpi(mpi), m_registry(registry), m_telemetry(telemetry)
 {}
 

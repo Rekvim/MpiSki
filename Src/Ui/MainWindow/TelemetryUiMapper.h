@@ -2,19 +2,21 @@
 
 #include "ui_MainWindow.h"
 #include "Src/Storage/Telemetry.h"
+#include "Src/Domain/Tests/Stroke/StrokeTestResult.h"
 
 class TelemetryUiMapper
 {
 public:
-    explicit TelemetryUiMapper(Ui::MainWindow* ui);
+    TelemetryUiMapper(Ui::MainWindow* ui)
+        : m_ui(ui) { }
 
     void updateInit(const InitState& init);
-    void updateMainTest(const TelemetryStore& t);
-    void updateStrokeTest(const StrokeTestRecord& r);
-    void updateCrossing(const TelemetryStore& t);
+    void updateMainTest(const Telemetry& t);
+    void updateStrokeTest(const StrokeTestResult& r);
+    void updateCrossing(const Telemetry& t);
 
 private:
     Ui::MainWindow* m_ui;
 
-    void updateCrossingIndicators(const TelemetryStore& t);
+    void updateCrossingIndicators(const Telemetry& t);
 };

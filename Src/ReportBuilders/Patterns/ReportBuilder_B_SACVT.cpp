@@ -9,7 +9,7 @@ ReportBuilder_B_SACVT::ReportBuilder_B_SACVT() {}
 
 void ReportBuilder_B_SACVT::buildReport(
     ReportSaver::Report& report,
-    const TelemetryStore& telemetryStore,
+    const Telemetry& telemetryStore,
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
@@ -44,7 +44,7 @@ void ReportBuilder_B_SACVT::buildReport(
 
     // Страница:Отчет ЦТ; Блок: Циклические испытания позиционера
     {
-        const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+        const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
 
         struct Agg {
             qreal rangePercent;
@@ -64,13 +64,13 @@ void ReportBuilder_B_SACVT::buildReport(
                 a.rangePercent = rec.rangePercent;
                 // прямой ход
                 if (rec.maxForwardCycle >= 0) {
-                    a.maxFwdVal   = rec.maxForwardValue;
+                    a.maxFwdVal = rec.maxForwardPosition;
                     a.maxFwdCycle = rec.maxForwardCycle;
                 }
                 // обратный ход
-                if (rec.maxReverseCycle >= 0) {
-                    a.minRevVal   = rec.maxReverseValue;
-                    a.minRevCycle = rec.maxReverseCycle;
+                if (rec.minReverseCycle >= 0) {
+                    a.minRevVal = rec.minReverseCycle;
+                    a.minRevCycle = rec.minReverseCycle;
                 }
                 aggMap.insert(rec.rangePercent, a);
 
@@ -79,15 +79,15 @@ void ReportBuilder_B_SACVT::buildReport(
                 Agg &a = it.value();
                 // прямой ход — берём глобальный максимум
                 if (rec.maxForwardCycle >= 0
-                    && rec.maxForwardValue > a.maxFwdVal) {
-                    a.maxFwdVal   = rec.maxForwardValue;
+                    && rec.maxForwardPosition > a.maxFwdVal) {
+                    a.maxFwdVal   = rec.maxForwardPosition;
                     a.maxFwdCycle = rec.maxForwardCycle;
                 }
                 // обратный ход — берём глобальный минимум
-                if (rec.maxReverseCycle >= 0
-                    && rec.maxReverseValue < a.minRevVal) {
-                    a.minRevVal   = rec.maxReverseValue;
-                    a.minRevCycle = rec.maxReverseCycle;
+                if (rec.minReverseCycle >= 0
+                    && rec.minReverseCycle < a.minRevVal) {
+                    a.minRevVal = rec.minReverseCycle;
+                    a.minRevCycle = rec.minReverseCycle;
                 }
             }
         }

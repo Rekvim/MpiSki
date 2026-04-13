@@ -11,7 +11,7 @@ ReportBuilder_C_CVT::ReportBuilder_C_CVT() {}
 
 void ReportBuilder_C_CVT::buildReport(
     ReportSaver::Report& report,
-    const TelemetryStore& telemetryStore,
+    const Telemetry& telemetryStore,
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
@@ -39,14 +39,11 @@ void ReportBuilder_C_CVT::buildReport(
 
     ObjectInfoBlock({m_sheetCyclicTests, 4, 4}).build(writer, ctx);
     ValveSpecBlock({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
-    CyclicSummaryBlock({m_sheetCyclicTests,
-                           19,
-                           8,
-                           2
-                       }, CyclicMode::Regulatory).build(writer, ctx);
+    CyclicSummaryBlock({m_sheetCyclicTests, 19, 8, 2 },
+                       CyclicMode::Regulatory).build(writer, ctx);
 
     {
-        const auto& ranges = telemetryStore.cyclicTestRecord.ranges;
+        const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
 
         struct Agg {
             qreal rangePercent;
@@ -66,13 +63,13 @@ void ReportBuilder_C_CVT::buildReport(
                 a.rangePercent = rec.rangePercent;
                 // прямой ход
                 if (rec.maxForwardCycle >= 0) {
-                    a.maxFwdVal   = rec.maxForwardValue;
+                    a.maxFwdVal = rec.maxForwardPosition;
                     a.maxFwdCycle = rec.maxForwardCycle;
                 }
                 // обратный ход
-                if (rec.maxReverseCycle >= 0) {
-                    a.minRevVal   = rec.maxReverseValue;
-                    a.minRevCycle = rec.maxReverseCycle;
+                if (rec.minReverseCycle >= 0) {
+                    a.minRevVal = rec.minReverseCycle;
+                    a.minRevCycle = rec.minReverseCycle;
                 }
                 aggMap.insert(rec.rangePercent, a);
 
@@ -81,15 +78,15 @@ void ReportBuilder_C_CVT::buildReport(
                 Agg &a = it.value();
                 // прямой ход — берём глобальный максимум
                 if (rec.maxForwardCycle >= 0
-                    && rec.maxForwardValue > a.maxFwdVal) {
-                    a.maxFwdVal   = rec.maxForwardValue;
+                    && rec.maxForwardPosition > a.maxFwdVal) {
+                    a.maxFwdVal   = rec.maxForwardPosition;
                     a.maxFwdCycle = rec.maxForwardCycle;
                 }
                 // обратный ход — берём глобальный минимум
-                if (rec.maxReverseCycle >= 0
-                    && rec.maxReverseValue < a.minRevVal) {
-                    a.minRevVal   = rec.maxReverseValue;
-                    a.minRevCycle = rec.maxReverseCycle;
+                if (rec.minReverseCycle >= 0
+                    && rec.minReversePosition < a.minRevVal) {
+                    a.minRevVal = rec.minReversePosition;
+                    a.minRevCycle = rec.minReverseCycle;
                 }
             }
         }
@@ -146,10 +143,10 @@ void ReportBuilder_C_CVT::buildReport(
         }
     }
 
-    // CyclicRangesBlock({m_sheetCyclicTests,
-    //                              33,
-    //                              2
-    //                          }).build(writer, ctx);
+    CyclicRangesBlock({m_sheetCyclicTests,
+                                 33,
+                                 2
+                             }).build(writer, ctx);
 
     writer.cell(m_sheetCyclicTests, 56, 4, ctx.object.FIO);
     writer.cell(m_sheetCyclicTests, 60, 12, ctx.params.date);
@@ -171,13 +168,13 @@ void ReportBuilder_C_CVT::buildReport(
     ObjectInfoBlock({m_sheetTechnicalInspection, 5, 4}).build(writer, ctx);
     ValveSpecBlock({m_sheetTechnicalInspection, 5, 13, true, false}).build(writer, ctx);
 
-    TechnicalResultsBlock({m_sheetTechnicalInspection,
-                              26, // rowStart
-                              5, // colFact
-                              8, // colNorm
-                              11, // colResult
-                              48 // rowStrokeTime
-                          }).build(writer, ctx);
+    // TechnicalResultsBlock({m_sheetTechnicalInspection,
+    //                           26, // rowStart
+    //                           5, // colFact
+    //                           8, // colNorm
+    //                           11, // colResult
+    //                           48 // rowStrokeTime
+    //                       }).build(writer, ctx);
 
     writer.cell(m_sheetTechnicalInspection, 62, 12, ctx.params.date);
     writer.cell(m_sheetTechnicalInspection, 70, 4, ctx.object.FIO);

@@ -10,7 +10,7 @@ public:
     DeviceInitializer(
         Mpi& mpi,
         Registry& registry,
-        TelemetryStore& telemetry);
+        Telemetry& telemetry);
 
     bool connectAndInitDevice();
     bool detectSensors();
@@ -32,5 +32,5 @@ public:
 private:
     Mpi& m_mpi;
     Registry& m_registry;
-    TelemetryStore& m_telemetry;
+    Telemetry& m_telemetry;
 };

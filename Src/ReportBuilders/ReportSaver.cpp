@@ -191,10 +191,9 @@ void ReportSaver::createDir()
 
         if (!chosenDir.isEmpty()) {
             bool answer = false;
-            emit question(
+            answer = emit question(
                 QStringLiteral("Внимание!"),
-                QStringLiteral("Папка не пуста. Вы действительно хотите выбрать эту папку?"),
-                answer);
+                QStringLiteral("Папка не пуста. Вы действительно хотите выбрать эту папку?"));
 
             if (!answer) {
                 continue;

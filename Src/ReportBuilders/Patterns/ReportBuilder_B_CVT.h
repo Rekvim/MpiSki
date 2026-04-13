@@ -7,7 +7,7 @@ public:
     ReportBuilder_B_CVT();
     void buildReport(
         ReportSaver::Report& report,
-        const TelemetryStore& telemetryStore,
+        const Telemetry& telemetryStore,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,

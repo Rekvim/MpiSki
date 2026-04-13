@@ -4,6 +4,11 @@
 #include <QString>
 #include <QColor>
 
+#include "Src/Domain/Tests/Stroke/StrokeTestResult.h"
+#include "Src/Domain/Tests/Main/MainTestResult.h"
+#include "Src/Domain/Tests/Option/Step/StepTestResult.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryTestResult.h"
+
 struct InitState {
     QString deviceStatusText = "";
     QColor deviceStatusColor = QColor();
@@ -42,7 +47,19 @@ struct CyclicTestRecord {
     double totalTimeSecRegulatory = 0.0;
     double totalTimeSecShutoff = 0.0;
 
-    QVector<RangeDeviationRecord> ranges = {};
+    CyclicRegulatoryResult regulatoryResult{
+        {
+            {0,   0.4,  3,  -0.2,  4},
+            {25, 25.7,  2,  24.2,  5},
+            {50, 50.9,  3,  49.1,  6},
+            {75, 75.8,  2,  73.9,  5},
+            {100,100.3, 1,  98.6,  4},
+            {75, 76.2,  4,  73.7,  6},
+            {50, 51.0,  3,  48.8,  7},
+            {25, 25.6,  2,  23.9,  5},
+            {0,   0.3,  4,  -0.4,  6}
+        }
+    };
     int switch3to0Count = 0;
     int switch0to3Count = 0;
 
@@ -53,11 +70,6 @@ struct CyclicTestRecord {
     int pos_0to3_errors = 0;
     int pos_3to0_hits = 0;
     int pos_3to0_errors = 0;
-};
-
-struct StrokeTestRecord {
-    QString timeForwardMs = "";
-    QString timeBackwardMs = "";
 };
 
 struct CrossingStatus {
@@ -106,24 +118,27 @@ struct SupplyRecord {
     double pressure_bar = 0.0;
 };
 
-class TelemetryStore {
+class Telemetry {
 public:
     InitState init;
     QVector<StepTestRecord> stepResults;
     CyclicTestRecord cyclicTestRecord;
-    StrokeTestRecord strokeTestRecord;
     ValveStrokeRecord valveStrokeRecord;
     SupplyRecord supplyRecord;
     MainTestRecord mainTestRecord;
     CrossingStatus crossingStatus;
 
-    TelemetryStore() = default;
+    std::optional<StrokeTestResult> stroke;
+    std::optional<MainTestResult> main;
+    QVector<StepTestResult> step;
+    CyclicRegulatoryResult regulatory;
+
+    Telemetry() = default;
 
     void clearAll() {
         init = {};
         stepResults.clear();
         cyclicTestRecord = {};
-        strokeTestRecord = {};
         valveStrokeRecord = {};
         supplyRecord = {};
         mainTestRecord = {};

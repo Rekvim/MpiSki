@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Src/Domain/Tests/BaseRunner.h"
-#include "Src/Domain/Tests/CyclicRegulatory/CyclicTestParams.h"
+#include "Src/Domain/Tests/Cyclic/CyclicTestParams.h"
 
 class CyclicRegulatoryRunner final : public BaseRunner {
     Q_OBJECT
