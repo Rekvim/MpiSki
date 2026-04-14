@@ -22,7 +22,7 @@
 
 constexpr quint8 VersionFlag = 0x40;
 
-void debugAnalyzer()
+void Program::debugAnalyzer()
 {
     CyclicRegulatoryAnalyzer analyzer;
 
@@ -73,8 +73,12 @@ void debugAnalyzer()
     send(0,5);
     send(0,-1);
 
-    const auto& result = analyzer.result();
+    analyzer.finish();
 
+    const auto& result = analyzer.result();
+    m_telemetry.cyclicTestRecord.regulatoryResult = analyzer.result();
+
+    emit telemetryUpdated(m_telemetry);
     for (const auto& r : result.ranges)
     {
         qDebug()
@@ -84,6 +88,25 @@ void debugAnalyzer()
         << "minReverse =" << r.minReversePosition
         << "cycle =" << r.minReverseCycle;
     }
+
+    m_telemetry.cyclicTestRecord.regulatoryResult = result;
+    emit telemetryUpdated(m_telemetry);
+
+    // qDebug() << "\n===== TELEMETRY CHECK =====";
+
+    // const auto& ranges = m_telemetry.cyclicTestRecord.regulatoryResult.ranges;
+
+    // for (const auto& r : ranges)
+    // {
+    //     qDebug()
+    //     << "T range =" << r.rangePercent
+    //     << "maxF =" << r.maxForwardPosition
+    //     << "cycleF =" << r.maxForwardCycle
+    //     << "minR =" << r.minReversePosition
+    //     << "cycleR =" << r.minReverseCycle;
+    // }
+
+    // qDebug() << "============================\n";
 }
 
 Program::Program(QObject *parent)

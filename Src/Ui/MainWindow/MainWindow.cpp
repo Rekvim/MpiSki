@@ -643,7 +643,13 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
 }
 
 void MainWindow::onTelemetryUpdated(const Telemetry &t) {
+    qDebug() << "UPDATED telemetry ranges:"
+             << t.cyclicTestRecord.regulatoryResult.ranges.size();
+
     m_telemetry = t;
+
+    qDebug() << "STORED telemetry ranges:"
+             << m_telemetry.cyclicTestRecord.regulatoryResult.ranges.size();
     m_mapper->updateInit(t.init);
 
     m_mapper->updateMainTest(t);

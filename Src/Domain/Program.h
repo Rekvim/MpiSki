@@ -63,14 +63,15 @@ public:
         CyclicRegulatory,
         CyclicShutOff
     };
+    void debugAnalyzer();
+
 
 signals:
-    // Sample
     void sampleReady(const Sample& sample);
 
-    void telemetryUpdated(const Telemetry &telemetry);
+    void telemetryUpdated(const Telemetry& telemetry);
 
-    void errorOccured(const QString&);
+    void errorOccured(const QString& error);
 
     void cyclicCycleCompleted(int completedCycles);
 

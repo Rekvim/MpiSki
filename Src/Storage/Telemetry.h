@@ -47,19 +47,7 @@ struct CyclicTestRecord {
     double totalTimeSecRegulatory = 0.0;
     double totalTimeSecShutoff = 0.0;
 
-    CyclicRegulatoryResult regulatoryResult{
-        {
-            {0,   0.4,  3,  -0.2,  4},
-            {25, 25.7,  2,  24.2,  5},
-            {50, 50.9,  3,  49.1,  6},
-            {75, 75.8,  2,  73.9,  5},
-            {100,100.3, 1,  98.6,  4},
-            {75, 76.2,  4,  73.7,  6},
-            {50, 51.0,  3,  48.8,  7},
-            {25, 25.6,  2,  23.9,  5},
-            {0,   0.3,  4,  -0.4,  6}
-        }
-    };
+    CyclicRegulatoryResult regulatoryResult;
     int switch3to0Count = 0;
     int switch0to3Count = 0;
 

@@ -20,6 +20,7 @@ public:
 private:
 
     QVector<int> m_ranges;
+    int findStep(double task) const;
 
     void updateRange(double pos);
 
