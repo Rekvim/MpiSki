@@ -11,7 +11,8 @@ SOURCES += \
 
 # Заголовки тестов
 HEADERS += \
-    analyzers/CyclicRegulatoryAnalyzerTest.h
+    analyzers/CyclicRegulatoryAnalyzerTest.h \
+    analyzers/SampleGenerator.h
 
 # Для отладки
 CONFIG(debug, debug|release) {

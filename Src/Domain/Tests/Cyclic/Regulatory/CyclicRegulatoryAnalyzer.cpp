@@ -3,11 +3,6 @@
 void CyclicRegulatoryAnalyzer::start()
 {
     m_result = {};
-
-    m_step = -1;
-    m_cycle = 0;
-    m_prevTask = std::numeric_limits<double>::quiet_NaN();
-    m_forward = true;
 }
 
 void CyclicRegulatoryAnalyzer::configure(const CyclicTestParams& params)
@@ -17,11 +12,21 @@ void CyclicRegulatoryAnalyzer::configure(const CyclicTestParams& params)
     m_ranges.clear();
     m_result.ranges.clear();
 
-    // берём только возрастающую часть (прямой ход)
+    if (seq.empty())
+        return;
+
+    // определяем направление: возрастание или убывание
+    bool isAscending = (seq.size() == 1) || (seq[1] > seq[0]);
+
     for (int i = 0; i < seq.size(); ++i)
     {
-        if (i > 0 && seq[i] < seq[i - 1])
-            break;
+        if (i > 0)
+        {
+            if (isAscending && seq[i] < seq[i - 1])
+                break;
+            if (!isAscending && seq[i] > seq[i - 1])
+                break;
+        }
 
         m_ranges.push_back(seq[i]);
 
@@ -40,7 +45,7 @@ int CyclicRegulatoryAnalyzer::findStep(double task) const
 {
     for (int i = 0; i < m_ranges.size(); ++i)
     {
-        if (qAbs(m_ranges[i] - task) < 0.5)
+        if (qFuzzyCompare(1.0 + m_ranges[i], 1.0 + task))
             return i;
     }
     return -1;
@@ -79,6 +84,9 @@ void CyclicRegulatoryAnalyzer::onSample(const Sample& s)
 void CyclicRegulatoryAnalyzer::updateRange(double pos)
 {
     if (m_step < 0 || m_step >= m_result.ranges.size())
+        return;
+
+    if (m_result.ranges.empty())
         return;
 
     auto& r = m_result.ranges[m_step];

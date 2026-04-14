@@ -30,6 +30,7 @@ private:
     int m_cycle = 0;
 
     bool m_forward = true;
+    bool m_firstSampleProcessed = false;
 
     CyclicRegulatoryResult m_result;
 };

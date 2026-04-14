@@ -1,18 +1,15 @@
-#ifndef CYCLICREGULATORYANALYZERTEST_H
-#define CYCLICREGULATORYANALYZERTEST_H
+#pragma once
 
 #include <QtTest>
-#include <QDebug>
 
-// Не включайте здесь cpp файлы!
 class CyclicRegulatoryAnalyzerTest : public QObject
 {
     Q_OBJECT
 
 private slots:
-    void testConfigureWithFullSequence();
-    void testIdealMotion();
-    void testHysteresisDetection();
+    void testWithManyPoints();
+    void testForwardMax();
+    void testReverseMin();
+    void testOnlyForward();
+    void testExtremumStability();
 };
-
-#endif

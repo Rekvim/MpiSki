@@ -1,132 +1,145 @@
 #include "CyclicRegulatoryAnalyzerTest.h"
 #include "Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryAnalyzer.h"
-#include "Src/Domain/Measurement/Sample.h"
+#include "SampleGenerator.h"
 
-void CyclicRegulatoryAnalyzerTest::testConfigureWithFullSequence()
-{
-    qDebug() << "\n========== TEST 1: Configure with sequence ==========\n";
-    
-    CyclicRegulatoryAnalyzer analyzer;
-    CyclicTestParams params;
-    params.type = CyclicTestParams::Regulatory;
-    params.regulatory.sequence = {0, 25, 50, 75, 100, 75, 50, 25, 0};
-    
-    analyzer.start();
-    analyzer.configure(params);
-    const auto& result = analyzer.result();
-    
-    qDebug() << "Sequence:" << params.regulatory.sequence;
-    qDebug() << "Extracted ranges:" << result.ranges.size();
-    
-    QCOMPARE(result.ranges.size(), 5); // Только 0,25,50,75,100
-    
-    for (int i = 0; i < result.ranges.size(); ++i) {
-        qDebug() << QString("  Range %1: %2%").arg(i).arg(result.ranges[i].rangePercent);
-        QCOMPARE(result.ranges[i].rangePercent, i * 25.0);
-    }
-    
-    qDebug() << "\n✓ Test passed!\n";
+// Вспомогательная функция для создания образца
+static Sample makeSample(double task, double position) {
+    Sample s;
+    s.taskPercent = task;
+    s.positionPercent = position;
+    return s;
 }
 
-void CyclicRegulatoryAnalyzerTest::testIdealMotion()
+void CyclicRegulatoryAnalyzerTest::testWithManyPoints()
 {
-    qDebug() << "\n========== TEST 2: Ideal motion (no hysteresis) ==========\n";
-    
     CyclicRegulatoryAnalyzer analyzer;
-    CyclicTestParams params;
-    params.type = CyclicTestParams::Regulatory;
-    params.regulatory.sequence = {0, 25, 50, 75, 100};
-    params.regulatory.numCycles = 1;
-    
-    analyzer.start();
-    analyzer.configure(params);
-    
-    // Идеальное движение: задача = позиция
-    QVector<QPair<double, double>> testData = {
-        {0, 0}, {25, 25}, {50, 50}, {75, 75}, {100, 100},  // forward
-        {75, 75}, {50, 50}, {25, 25}, {0, 0}                // reverse
-    };
-    
-    qDebug() << "Feeding" << testData.size() << "samples...";
-    for (const auto& data : testData) {
-        Sample s;
-        s.taskPercent = data.first;
-        s.positionPercent = data.second;
-        analyzer.onSample(s);
-        qDebug() << QString("  Task: %1% → Pos: %2%").arg(data.first, 5).arg(data.second, 5);
-    }
-    
-    analyzer.finish();
-    const auto& result = analyzer.result();
-    
-    qDebug() << "\nResults:";
-    for (const auto& range : result.ranges) {
-        double hysteresis = range.minReversePosition - range.maxForwardPosition;
-        qDebug() << QString("  %1%: forward=%2, reverse=%3, hysteresis=%4")
-                    .arg(range.rangePercent, 3)
-                    .arg(range.maxForwardPosition, 6, 'f', 2)
-                    .arg(range.minReversePosition, 6, 'f', 2)
-                    .arg(hysteresis, 6, 'f', 2);
-        
-        // В идеале погрешность должна быть меньше 0.01%
-        QVERIFY(qAbs(range.maxForwardPosition - range.rangePercent) < 0.01);
-        QVERIFY(qAbs(range.minReversePosition - range.rangePercent) < 0.01);
-    }
-    
-    qDebug() << "\n✓ Test passed!\n";
-}
 
-void CyclicRegulatoryAnalyzerTest::testHysteresisDetection()
-{
-    qDebug() << "\n========== TEST 3: Hysteresis detection (2% lag) ==========\n";
-    
-    CyclicRegulatoryAnalyzer analyzer;
     CyclicTestParams params;
     params.type = CyclicTestParams::Regulatory;
     params.regulatory.sequence = {0, 50, 100};
-    params.regulatory.numCycles = 1;
-    
+
     analyzer.start();
     analyzer.configure(params);
-    
-    // Данные с гистерезисом: forward отстает на 2%, reverse опережает на 2%
-    QVector<QPair<double, double>> testData = {
-        {0, 0},      // forward start
-        {50, 48},    // отстает на 2%
-        {100, 98},   // отстает на 2%
-        {50, 52},    // опережает на 2%
-        {0, 2}       // опережает на 2%
-    };
-    
-    qDebug() << "Simulating 2% hysteresis (forward lags, reverse leads):";
-    for (const auto& data : testData) {
-        Sample s;
-        s.taskPercent = data.first;
-        s.positionPercent = data.second;
+
+    // Генерируем много точек для каждого шага
+    auto samples = SampleGenerator::generateForwardSequence(
+        {0, 0, 0, 0, 0,
+         50, 50, 50, 50, 50,
+         100, 100, 100, 100, 100},
+        0.05
+        );
+
+    for (const auto& s : samples) {
         analyzer.onSample(s);
-        qDebug() << QString("  Task: %1% → Pos: %2%").arg(data.first, 5).arg(data.second, 5);
     }
-    
+
     analyzer.finish();
+
     const auto& result = analyzer.result();
-    
-    qDebug() << "\nResults:";
-    for (const auto& range : result.ranges) {
-        double hysteresis = range.minReversePosition - range.maxForwardPosition;
-        qDebug() << QString("  %1%: forward=%2, reverse=%3, hysteresis=%4")
-                    .arg(range.rangePercent, 3)
-                    .arg(range.maxForwardPosition, 6, 'f', 2)
-                    .arg(range.minReversePosition, 6, 'f', 2)
-                    .arg(hysteresis, 6, 'f', 2);
-        
-        if (range.rangePercent == 50) {
-            // Для 50% ожидаем гистерезис ~4% (52 - 48)
-            QVERIFY(hysteresis > 3.5 && hysteresis < 4.5);
-            qDebug() << "  ✓ Hysteresis correctly detected!";
-        }
-    }
-    
-    qDebug() << "\n✓ Test passed!\n";
+    QCOMPARE(result.ranges.size(), 3);
 }
 
-// НЕ НУЖНО добавлять QTEST_MAIN здесь - он будет в main.cpp
+void CyclicRegulatoryAnalyzerTest::testForwardMax()
+{
+    CyclicRegulatoryAnalyzer analyzer;
+
+    CyclicTestParams params;
+    params.type = CyclicTestParams::Regulatory;
+    params.regulatory.sequence = {0, 50, 100};
+
+    analyzer.start();
+    analyzer.configure(params);
+
+    // ACT
+    analyzer.onSample(makeSample(0, 0.0));
+    analyzer.onSample(makeSample(50, 49.0));
+    analyzer.onSample(makeSample(100, 100.0));
+
+    analyzer.onSample(makeSample(0, 0.0));   // новый цикл
+    analyzer.onSample(makeSample(50, 50.5)); // максимум
+    analyzer.onSample(makeSample(100, 99.0));
+
+    analyzer.finish();
+
+    // ASSERT
+    const auto& r = analyzer.result();
+
+    QVERIFY(r.ranges.size() == 3);
+
+    QCOMPARE(r.ranges[1].maxForwardPosition, 50.5);
+}
+
+void CyclicRegulatoryAnalyzerTest::testReverseMin()
+{
+    CyclicRegulatoryAnalyzer analyzer;
+
+    CyclicTestParams params;
+    params.type = CyclicTestParams::Regulatory;
+    params.regulatory.sequence = {100, 50, 0};
+
+    analyzer.start();
+    analyzer.configure(params);
+
+    // ACT
+    analyzer.onSample(makeSample(100, 100.0));
+    analyzer.onSample(makeSample(50, 50.0));
+    analyzer.onSample(makeSample(0, 0.0));
+
+    analyzer.onSample(makeSample(100, 100.0));
+    analyzer.onSample(makeSample(50, 48.8)); // минимум
+    analyzer.onSample(makeSample(0, 1.0));
+
+    analyzer.finish();
+
+    const auto& r = analyzer.result();
+
+    QCOMPARE(r.ranges[1].minReversePosition, 48.8);
+}
+
+void CyclicRegulatoryAnalyzerTest::testOnlyForward()
+{
+    CyclicRegulatoryAnalyzer analyzer;
+
+    CyclicTestParams params;
+    params.type = CyclicTestParams::Regulatory;
+    params.regulatory.sequence = {0, 50, 100};
+
+    analyzer.start();
+    analyzer.configure(params);
+
+    analyzer.onSample(makeSample(0, 0.0));
+    analyzer.onSample(makeSample(50, 50.2));
+    analyzer.onSample(makeSample(100, 99.9));
+
+    analyzer.finish();
+
+    const auto& r = analyzer.result();
+
+    QVERIFY(qIsNaN(r.ranges[0].minReversePosition));
+    QVERIFY(qIsNaN(r.ranges[1].minReversePosition));
+    QVERIFY(qIsNaN(r.ranges[2].minReversePosition));
+}
+
+void CyclicRegulatoryAnalyzerTest::testExtremumStability()
+{
+    CyclicRegulatoryAnalyzer analyzer;
+
+    CyclicTestParams params;
+    params.type = CyclicTestParams::Regulatory;
+    params.regulatory.sequence = {0, 50, 100};
+
+    analyzer.start();
+    analyzer.configure(params);
+
+    // ACT (несколько значений для одного шага)
+    analyzer.onSample(makeSample(0, 0.0));
+    analyzer.onSample(makeSample(50, 49.0));
+    analyzer.onSample(makeSample(50, 51.0)); // max
+    analyzer.onSample(makeSample(50, 50.5)); // не должен заменить max
+
+    analyzer.finish();
+
+    const auto& r = analyzer.result();
+
+    QCOMPARE(r.ranges[1].maxForwardPosition, 51.0);
+}
