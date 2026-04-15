@@ -2,20 +2,20 @@
 #include <QDebug>
 
 #include "analyzers/CyclicRegulatoryAnalyzerTest.h"
+#include "analyzers/StrokeTestAnalyzerTest.h"
+
 
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
 
-    qDebug() << "\n";
-    qDebug() << "\n";
     qDebug() << "Running Unit Tests for Analyzers";
-    qDebug() << "\n";
-    qDebug() << "\n";
 
     int status = 0;
 
     CyclicRegulatoryAnalyzerTest test;
+    // StrokeTestAnalyzerTest test;
+
     status = QTest::qExec(&test, argc, argv);
 
     if (status == 0) {

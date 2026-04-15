@@ -6,13 +6,16 @@ INCLUDEPATH += $$ROOT_DIR
 
 SOURCES += \
     $$ROOT_DIR/Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryAnalyzer.cpp \
+    $$ROOT_DIR/Src/Domain/Tests/Stroke/StrokeTestAnalyzer.cpp \
+    analyzers/StrokeTestAnalyzerTest.cpp \
     main.cpp \
     analyzers/CyclicRegulatoryAnalyzerTest.cpp
 
 # Заголовки тестов
 HEADERS += \
     analyzers/CyclicRegulatoryAnalyzerTest.h \
-    analyzers/SampleGenerator.h
+    analyzers/SampleGenerator.h \
+    analyzers/StrokeTestAnalyzerTest.h
 
 # Для отладки
 CONFIG(debug, debug|release) {

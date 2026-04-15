@@ -42,6 +42,12 @@ QVector<double> StrokeTestAnalyzer::medianFilter(
 
         std::sort(buf.begin(), buf.end());
 
+        if (buf.isEmpty())
+        {
+            filtered[i] = samples[i].positionPercent;
+            continue;
+        }
+
         filtered[i] = buf[buf.size()/2];
     }
 
@@ -85,6 +91,9 @@ quint64 StrokeTestAnalyzer::interpolateTime(
     int idx,
     double level) const
 {
+    if (samples.isEmpty())
+        return 0;
+
     if (idx <= 0)
         return samples[idx].testTime;
 
@@ -206,40 +215,37 @@ StrokeTestAnalyzer::detectEvents(
     Events e;
 
     e.cmdForward = findFirstTaskLevel(
-        s,
-        0,
-        t.forwardTask,
-        t.forwardTaskAbove);
+        s, 0, t.forwardTask, t.forwardTaskAbove);
+
+    if (e.cmdForward < 0)
+        return e;
 
     e.forwardStart = findLastAtLevelBeforeLeaving(
-        pos,
-        e.cmdForward,
-        t.forwardStart,
-        t.forwardStartLow);
+        pos, e.cmdForward, t.forwardStart, t.forwardStartLow);
+
+    if (e.forwardStart < 0)
+        return e;
 
     e.forwardEnd = findFirstReachLevelStable(
-        pos,
-        e.forwardStart,
-        t.forwardEnd,
-        t.forwardEndLow);
+        pos, e.forwardStart, t.forwardEnd, t.forwardEndLow);
+
+    if (e.forwardEnd < 0)
+        return e;
 
     e.cmdBackward = findFirstTaskLevel(
-        s,
-        e.forwardEnd,
-        t.backwardTask,
-        t.backwardTaskAbove);
+        s, e.forwardEnd, t.backwardTask, t.backwardTaskAbove);
+
+    if (e.cmdBackward < 0)
+        return e;
 
     e.backwardStart = findLastAtLevelBeforeLeaving(
-        pos,
-        e.cmdBackward,
-        t.backwardStart,
-        t.backwardStartLow);
+        pos, e.cmdBackward, t.backwardStart, t.backwardStartLow);
+
+    if (e.backwardStart < 0)
+        return e;
 
     e.backwardEnd = findFirstReachLevelStable(
-        pos,
-        e.backwardStart,
-        t.backwardEnd,
-        t.backwardEndLow);
+        pos, e.backwardStart, t.backwardEnd, t.backwardEndLow);
 
     return e;
 }

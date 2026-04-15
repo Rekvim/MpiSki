@@ -1,11 +1,10 @@
 #pragma once
 
 #include <QVector>
+#include "StrokeTestResult.h"
 
 #include "Src/Domain/Measurement/Sample.h"
 #include "Src/Domain/Tests/IAnalyzer.h"
-
-#include "StrokeTestResult.h"
 
 class StrokeTestAnalyzer : public IAnalyzer
 {
@@ -78,7 +77,7 @@ private:
         int startIdx,
         double level,
         bool reachAtOrBelow,
-        int confirm = 3) const;
+        int confirm = 1) const;
 
     quint64 interpolateTime(
         const QVector<Sample>& samples,
