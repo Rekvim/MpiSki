@@ -13,7 +13,7 @@ void StrokeTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<StrokeTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    connect(&t, &StrokeTest::Results,
+    connect(&t, &StrokeTest::results,
             owner, &Program::results_strokeTest,
             Qt::QueuedConnection);
 }

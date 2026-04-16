@@ -8,7 +8,7 @@ class OptionTest : public Test
 
 public:
     explicit OptionTest(QObject *parent = nullptr);
-    virtual void Process() override;
+    virtual void run() override;
 
     struct Task
     {
@@ -16,7 +16,7 @@ public:
         quint32 delay;
     };
 
-    void SetTask(Task task);
+    void setTask(Task task);
 
 private:
     Task m_task;

@@ -29,15 +29,6 @@
 
 #include "TestController.h"
 
-enum class AppState
-{
-    Idle,
-    Initializing,
-    RunningTest,
-    SavingResults,
-    Error
-};
-
 // QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 // QT_END_NAMESPACE
@@ -156,12 +147,12 @@ private:
     void setupShortcuts();
     void setupPrimaryActions();
 
-    void setAppState(AppState state);
-    AppState m_appState = AppState::Idle;
 
-    void setTestState(TestState state);
     TestState m_testState = TestState::Idle;
-
+    void applyTestStateToUi(TestState  state);
+    void setTestState(TestState state);
+    void showInitializingState();
+    void showIdleState();
     void collectRegistryOverrides(
         ObjectInfo& objectInfo,
         ValveInfo& valveInfo,

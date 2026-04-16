@@ -3,6 +3,7 @@
 
 #include "analyzers/CyclicRegulatoryAnalyzerTest.h"
 #include "analyzers/StrokeTestAnalyzerTest.h"
+#include "analyzers/StepTestAnalyzerTest.h"
 
 
 int main(int argc, char *argv[])
@@ -13,8 +14,9 @@ int main(int argc, char *argv[])
 
     int status = 0;
 
-    CyclicRegulatoryAnalyzerTest test;
+    StepTestAnalyzerTest test;
     // StrokeTestAnalyzerTest test;
+    // CyclicRegulatoryAnalyzerTest test;
 
     status = QTest::qExec(&test, argc, argv);
 

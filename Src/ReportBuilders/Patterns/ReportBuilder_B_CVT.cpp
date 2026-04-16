@@ -39,107 +39,95 @@ void ReportBuilder_B_CVT::buildReport(
     ValveSpecBlock({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
     CyclicSummaryBlock({m_sheetCyclicTests, 19, 8, 2}, CyclicMode::Regulatory).build(writer, ctx);
 
+    const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
+
+    struct Agg {
+        qreal rangePercent;
+
+        qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
+        int   maxFwdCycle = -1;
+
+        qreal minRevVal = std::numeric_limits<qreal>::max();
+        int   minRevCycle = -1;
+    };
+
+    QMap<qreal, Agg> aggMap;
+
+    // --- агрегация ---
+    for (const auto& r : ranges)
     {
-        const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
+        auto it = aggMap.find(r.rangePercent);
 
-        struct Agg {
-            qreal rangePercent;
-            qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
-            int maxFwdCycle = -1;
-            qreal minRevVal = std::numeric_limits<qreal>::max();
-            int minRevCycle = -1;
-        };
-        QMap<qreal, Agg> aggMap;
+        if (it == aggMap.end())
+        {
+            Agg a;
+            a.rangePercent = r.rangePercent;
 
-        // 1) Собираем все rec по ключу rangePercent
-        for (const auto& rec : ranges) {
-            auto it = aggMap.find(rec.rangePercent);
-            if (it == aggMap.end()) {
-                // первый раз для этого percent
-                Agg a;
-                a.rangePercent = rec.rangePercent;
-                // прямой ход
-                if (rec.maxForwardCycle >= 0) {
-                    a.maxFwdVal = rec.maxForwardPosition;
-                    a.maxFwdCycle = rec.maxForwardCycle;
-                }
-                // обратный ход
-                if (rec.minReverseCycle >= 0) {
-                    a.minRevVal = rec.minReverseCycle;
-                    a.minRevCycle = rec.minReverseCycle;
-                }
-                aggMap.insert(rec.rangePercent, a);
+            if (r.maxForwardCycle >= 0) {
+                a.maxFwdVal = r.maxForwardPosition;
+                a.maxFwdCycle = r.maxForwardCycle;
+            }
 
-            } else {
-                // уже есть — обновляем экстремумы
-                Agg &a = it.value();
-                // прямой ход — берём глобальный максимум
-                if (rec.maxForwardCycle >= 0
-                    && rec.maxForwardPosition > a.maxFwdVal) {
-                    a.maxFwdVal   = rec.maxForwardPosition;
-                    a.maxFwdCycle = rec.maxForwardCycle;
-                }
-                // обратный ход — берём глобальный минимум
-                if (rec.minReverseCycle >= 0
-                    && rec.minReverseCycle < a.minRevVal) {
-                    a.minRevVal = rec.minReverseCycle;
-                    a.minRevCycle = rec.minReverseCycle;
-                }
+            if (r.minBackwardCycle >= 0) {
+                a.minRevVal = r.minBackwardPosition;
+                a.minRevCycle = r.minBackwardCycle;
+            }
+
+            aggMap.insert(r.rangePercent, a);
+        }
+        else
+        {
+            Agg& a = it.value();
+
+            // максимум прямого
+            if (r.maxForwardCycle >= 0 &&
+                r.maxForwardPosition > a.maxFwdVal)
+            {
+                a.maxFwdVal = r.maxForwardPosition;
+                a.maxFwdCycle = r.maxForwardCycle;
+            }
+
+            // минимум обратного
+            if (r.minBackwardCycle >= 0 &&
+                r.minBackwardPosition < a.minRevVal)
+            {
+                a.minRevVal = r.minBackwardPosition;
+                a.minRevCycle = r.minBackwardCycle;
             }
         }
+    }
 
-        // 2) Выводим первые 10 (или сколько есть) диапазонов
-        QVector<qreal> percents;
-        percents.reserve(aggMap.size());
-        for (auto it = aggMap.constBegin(); it != aggMap.constEnd(); ++it) {
-            percents.append(it.key());
+    constexpr quint16 rowStart = 33, rowStep = 2;
+
+    int i = 0;
+    for (auto it = aggMap.begin(); it != aggMap.end(); ++it, ++i)
+    {
+        quint16 row = rowStart + i * rowStep;
+        const Agg& a = it.value();
+
+        writer.cell(m_sheetCyclicTests, row, 2,
+                    QString::number(a.rangePercent));
+
+        // forward
+        if (a.maxFwdVal != std::numeric_limits<qreal>::lowest()) {
+            writer.cell(m_sheetCyclicTests, row, 8,
+                        QString::number(a.maxFwdVal, 'f', 2));
+            writer.cell(m_sheetCyclicTests, row, 11,
+                        QString::number(a.maxFwdCycle + 1));
+        } else {
+            writer.cell(m_sheetCyclicTests, row, 8, "");
+            writer.cell(m_sheetCyclicTests, row, 11, "");
         }
 
-        constexpr quint16 rowStart = 33, rowStep = 2;
-        for (int i = 0; i < percents.size() && i < 10; ++i) {
-            quint16 row = rowStart + i * rowStep;
-            const Agg &a = aggMap[percents[i]];
-
-            // Процент
-            writer.cell(
-                m_sheetCyclicTests, row, 2,
-                QString::number(a.rangePercent)
-            );
-
-            // Прямой ход (максимум)
-            if (a.maxFwdCycle >= 0) {
-                writer.cell(
-                    m_sheetCyclicTests, row, 8,
-                    QString("%1")
-                        .arg(a.maxFwdVal,   0, 'f', 2)
-                );
-                writer.cell(
-                    m_sheetCyclicTests, row, 11,
-                    QString("%1")
-                        .arg(a.maxFwdCycle + 1)
-                );
-            } else {
-                // нет данных
-                writer.cell(m_sheetCyclicTests, row, 8, QString());
-                writer.cell(m_sheetCyclicTests, row, 11, QString());
-            }
-
-            // Обратный ход (минимум)
-            if (a.minRevCycle >= 0) {
-                writer.cell(
-                    m_sheetCyclicTests, row, 12,
-                    QString("%1")
-                        .arg(a.minRevVal, 0, 'f', 2)
-                );
-                writer.cell(
-                    m_sheetCyclicTests, row, 15,
-                    QString("%1")
-                        .arg(a.minRevCycle + 1)
-                );
-            } else {
-                writer.cell(m_sheetCyclicTests, row, 12, QString());
-                writer.cell(m_sheetCyclicTests, row, 15, QString());
-            }
+        // reverse
+        if (a.minRevVal != std::numeric_limits<qreal>::max()) {
+            writer.cell(m_sheetCyclicTests, row, 12,
+                        QString::number(a.minRevVal, 'f', 2));
+            writer.cell(m_sheetCyclicTests, row, 15,
+                        QString::number(a.minRevCycle + 1));
+        } else {
+            writer.cell(m_sheetCyclicTests, row, 12, "");
+            writer.cell(m_sheetCyclicTests, row, 15, "");
         }
     }
 

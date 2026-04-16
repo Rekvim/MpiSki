@@ -11,13 +11,10 @@
 class StepTestAnalyzer : public IAnalyzer
 {
 public:
-
     struct Config
     {
         qreal T_value = 86;
     };
-
-public:
 
     void setConfig(const Config& cfg)
     {
@@ -31,22 +28,21 @@ public:
     const QVector<StepTestResult>& result() const;
 
 private:
-
     struct StepState
     {
-        double from = 0; // — старое задание
-        double to = 0; // — новое задание
+        double from = 0; // старое задание
+        double to = 0; // новое задание
 
-        double threshold = 0; // — порог достижения T%
+        double threshold = 0; // порог достижения T%
 
-        bool up = true;
+        bool up = true; // направление движения
 
-        quint64 startTime = 0; // — момент начала шага
+        quint64 startTime = 0; // момент начала шага
 
-        bool tReached = false; // — движение все еще есть?
-        quint32 tTime = 0; // — время достижения
+        bool tReached = false; // достигли ли уже порога
+        quint32 tTime = 0; // время достижения порога
 
-        double overshoot = -1e9; // — перерегулирование
+        double overshoot = -1e9; // максимальное найденное перерегулирование
     };
 
     Config m_cfg;

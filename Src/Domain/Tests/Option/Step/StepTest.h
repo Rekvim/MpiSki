@@ -9,7 +9,7 @@ class StepTest : public OptionTest
 
 public:
     explicit StepTest(QObject *parent = nullptr);
-    void Process() override;
+    void run() override;
 
     struct TestResult
     {
@@ -19,12 +19,12 @@ public:
         qreal overshoot;
     };
 
-    void Set_T_value(quint32 T_value);
+    void setTValue(quint32 T_value);
 
 private:
-    QVector<TestResult> CalculateResult(const QVector<QVector<QPointF>> &points) const;
+    QVector<TestResult> calculateResult(const QVector<QVector<QPointF>> &points) const;
     quint32 m_TValue;
 signals:
-    void GetPoints(QVector<QVector<QPointF>> &points);
-    void Results(QVector<TestResult> result, quint32 T_value);
+    void getPoints(QVector<QVector<QPointF>> &points);
+    void results(QVector<TestResult> result, quint32 T_value);
 };

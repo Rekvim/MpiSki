@@ -2,6 +2,7 @@
 
 #include <QThread>
 #include <QObject>
+#include <memory>
 
 #include "Test.h"
 #include "Src/CustomChart/ChartManager.h"
@@ -15,11 +16,13 @@ struct RunnerConfig {
     Charts chartToClear = Charts::None;
 };
 
-class BaseRunner : public QObject {
+class BaseRunner : public QObject
+{
     Q_OBJECT
+
 public:
-    BaseRunner(Mpi& mpi, Registry& reg, QObject* parent=nullptr);
-    ~BaseRunner();
+    BaseRunner(Mpi& mpi, Registry& reg, QObject* parent = nullptr);
+    ~BaseRunner() override;
 
 public slots:
     void start();
@@ -28,7 +31,7 @@ public slots:
 
 signals:
     void requestClearChart(Charts chartIndex);
-    void totalTestTimeMs(quint64);
+    void totalTestTimeMs(quint64 totalMs);
     void endTest();
     void testActuallyStarted();
     void requestSetDAC(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart);
@@ -38,14 +41,15 @@ protected:
     virtual void wireSpecificSignals(Test& t) {}
 
 protected:
-
-    bool isNormallyOpen() const {
+    bool isNormallyOpen() const
+    {
         return m_reg.valveInfo().safePosition == SafePosition::NormallyOpen;
     }
 
     RunnerConfig makeConfig(std::unique_ptr<Test> worker,
                             quint64 totalMs,
-                            Charts chart) {
+                            Charts chart)
+    {
         RunnerConfig cfg;
         cfg.worker = std::move(worker);
         cfg.totalMs = totalMs;
@@ -57,6 +61,9 @@ protected:
     Registry& m_reg;
 
 private:
+    void cleanupThread();
+
+private:
     QThread* m_thread = nullptr;
-    std::unique_ptr<Test> m_worker = nullptr;
+    Test* m_worker = nullptr;
 };

@@ -15,7 +15,7 @@ RunnerConfig MainTestRunner::buildConfig() {
     p.dac_max = qMin(m_mpi.dac()->rawFromValue(p.signal_max), m_mpi.dacMax());
 
     auto worker = std::make_unique<MainTest>();
-    worker->SetParameters(p);
+    worker->setParameters(p);
 
     return makeConfig(std::move(worker), totalMs, Charts::Task);
 }
@@ -24,40 +24,29 @@ void MainTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<MainTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    // connect(&t, &MainTest::UpdateGraph,
-    //         owner, &Program::updateCharts_mainTest,
-    //         Qt::QueuedConnection);
-
-    connect(&t, &MainTest::GetPoints,
+    connect(&t, &MainTest::getPoints,
             owner, &Program::receivedPoints_mainTest,
             Qt::BlockingQueuedConnection);
 
-    connect(&t, &MainTest::DublSeries,
+    connect(&t, &MainTest::dublSeries,
             owner, [owner]{ emit owner->duplicateMainChartsSeries(); });
 
-    connect(&t, &MainTest::AddRegression,
+    connect(&t, &MainTest::addRegression,
             owner, &Program::addRegression,
             Qt::QueuedConnection);
 
-    connect(&t, &MainTest::AddFriction,
+    connect(&t, &MainTest::addFriction,
             owner, &Program::addFriction,
             Qt::QueuedConnection);
 
-    connect(&t, &MainTest::Results,
+    connect(&t, &MainTest::results,
             owner, &Program::results_mainTest,
             Qt::QueuedConnection);
 
-    connect(&t, &MainTest::ShowDots,
-            owner, [owner](bool v){ emit owner->showDots(v); });
-
-    connect(&t, &MainTest::ClearGraph, owner, [owner]{
-        emit owner->clearPoints(Charts::Task);
-        emit owner->clearPoints(Charts::Pressure);
-        emit owner->clearPoints(Charts::Friction);
-        emit owner->setRegressionEnable(false);
-    });
-
-    connect(&t, &MainTest::EndTest,
-            owner, &Program::mainTestFinished,
-            Qt::QueuedConnection);
+    // connect(&t, &MainTest::clearGraph, owner, [owner]{
+    //     emit owner->clearPoints(Charts::Task);
+    //     emit owner->clearPoints(Charts::Pressure);
+    //     emit owner->clearPoints(Charts::Friction);
+    //     emit owner->setRegressionEnable(false);
+    // });
 }

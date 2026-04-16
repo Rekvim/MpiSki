@@ -4,9 +4,9 @@ CyclicTestsRegulatory::CyclicTestsRegulatory(QObject* parent)
     : Test(parent)
 {}
 
-void CyclicTestsRegulatory::Process()
+void CyclicTestsRegulatory::run()
 {
-    emit started();
+    emit executionStarted();
 
     const auto& raw = m_task.values;
     const auto& seq = m_task.sequence;
@@ -24,21 +24,21 @@ void CyclicTestsRegulatory::Process()
             setDacBlocked(dacRaw, m_task.holdMsecs + m_task.delayMsecs);
             if (m_terminate) break;
 
-            emit StepMeasured(cycle, i, forward);
+            emit stepMeasured(cycle, i, forward);
         }
 
         if (!m_terminate)
-            emit CycleCompleted(cycle + 1);
+            emit cycleCompleted(cycle + 1);
     }
 
     setDacBlocked(0, 0, true);
 
-    emit Results();
+    emit results();
 
-    emit EndTest();
+    emit finished();
 }
 
-void CyclicTestsRegulatory::SetTask(Task task)
+void CyclicTestsRegulatory::setTask(Task task)
 {
     m_task = task;
 }

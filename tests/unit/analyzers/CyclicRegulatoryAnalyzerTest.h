@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtTest>
+#include <QObject>
 
 class CyclicRegulatoryAnalyzerTest : public QObject
 {
@@ -9,7 +9,7 @@ class CyclicRegulatoryAnalyzerTest : public QObject
 private slots:
     void testWithManyPoints();
     void testForwardMax();
-    void testReverseMin();
+    void testBackwardMin();
     void testOnlyForward();
     void testExtremumStability();
 };

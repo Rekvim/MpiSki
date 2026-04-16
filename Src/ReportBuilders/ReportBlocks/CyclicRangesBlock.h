@@ -35,11 +35,11 @@ public:
                        QString::number(r.maxForwardCycle + 1));
             }
 
-            if (r.minReverseCycle >= 0) {
+            if (r.minBackwardCycle >= 0) {
                 w.cell(m_layout.sheet, row, 12,
-                       QString::number(r.minReversePosition, 'f', 2));
+                       QString::number(r.minBackwardPosition, 'f', 2));
                 w.cell(m_layout.sheet, row, 15,
-                       QString::number(r.minReverseCycle + 1));
+                       QString::number(r.minBackwardCycle + 1));
             }
 
             row += m_layout.rowStep;

@@ -16,19 +16,17 @@ void Test::Sleep(quint16 msecs)
 
 void Test::setDacBlocked(quint16 value, quint32 sleepMs, bool waitForStop, bool waitForStart)
 {
-    emit setDac(value, sleepMs, waitForStop, waitForStart);
+    emit dacCommandRequested(value, sleepMs, waitForStop, waitForStart);
     m_eventLoop->exec();
 }
 
-void Test::StoppingTheTest()
+void Test::requestStop()
 {
     m_terminate = true;
     m_eventLoop->quit();
-
-    // emit EndTest();
 }
 
-void Test::ReleaseBlock()
+void Test::releaseWait()
 {
     m_eventLoop->quit();
 }

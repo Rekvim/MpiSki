@@ -42,21 +42,8 @@ void ReportBuilder_C_CVT::buildReport(
     CyclicSummaryBlock({m_sheetCyclicTests, 19, 8, 2 },
                        CyclicMode::Regulatory).build(writer, ctx);
 
-    qDebug() << "\n===== TELEMETRY CHECK =====";
-
     const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
 
-    for (const auto& r : ranges)
-    {
-        qDebug()
-        << "T range =" << r.rangePercent
-        << "maxF =" << r.maxForwardPosition
-        << "cycleF =" << r.maxForwardCycle
-        << "minR =" << r.minReversePosition
-        << "cycleR =" << r.minReverseCycle;
-    }
-
-    qDebug() << "============================\n";
     struct Agg {
         qreal rangePercent;
 
@@ -84,9 +71,9 @@ void ReportBuilder_C_CVT::buildReport(
                 a.maxFwdCycle = r.maxForwardCycle;
             }
 
-            if (r.minReverseCycle >= 0) {
-                a.minRevVal = r.minReversePosition;
-                a.minRevCycle = r.minReverseCycle;
+            if (r.minBackwardCycle >= 0) {
+                a.minRevVal = r.minBackwardPosition;
+                a.minRevCycle = r.minBackwardCycle;
             }
 
             aggMap.insert(r.rangePercent, a);
@@ -104,11 +91,11 @@ void ReportBuilder_C_CVT::buildReport(
             }
 
             // минимум обратного
-            if (r.minReverseCycle >= 0 &&
-                r.minReversePosition < a.minRevVal)
+            if (r.minBackwardCycle >= 0 &&
+                r.minBackwardPosition < a.minRevVal)
             {
-                a.minRevVal = r.minReversePosition;
-                a.minRevCycle = r.minReverseCycle;
+                a.minRevVal = r.minBackwardPosition;
+                a.minRevCycle = r.minBackwardCycle;
             }
         }
     }

@@ -144,20 +144,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_testController, &TestController::startCyclicRequested,
             m_program, &Program::startCyclicTest);
 
-    connect(m_program, &Program::sampleReady,
-            this, [this](const Sample& s)
-            {
-                // Q_UNUSED(this);
-                // qDebug() << "[Sample]"
-                //          << "t=" << s.time
-                //          << "dac=" << s.dac
-                //          << "task=" << s.taskPercent
-                //          << "pos=" << s.positionPercent
-                //          << "p1=" << s.pressure1
-                //          << "p2=" << s.pressure2
-                //          << "p3=" << s.pressure3;
-            });
-
     // kоговое окно
     // logOutput = new QPlainTextEdit(this);
     // logOutput->setReadOnly(true);
@@ -217,13 +203,10 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     connect(this, &MainWindow::stopTest,
-            m_program, &Program::terminateTest);
-
-    connect(m_program, &Program::stopTheTest,
-            this, &MainWindow::endTest);
-
-    connect(this, &MainWindow::stopTest,
             m_testController, &TestController::stop);
+
+    connect(m_program, &Program::testFinished,
+            this, &MainWindow::endTest);
 
     connect(m_program, &Program::setText,
             this, &MainWindow::setText);
@@ -312,15 +295,6 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::onTelemetryUpdated,
             Qt::QueuedConnection);
 
-    connect(m_program, &Program::testFinished,
-            this, &MainWindow::endTest);
-
-    connect(m_testController, &TestController::testFinished,
-            this, &MainWindow::endTest);
-
-    connect(m_program, &Program::testFinished,
-            m_testController,  &TestController::finish);
-
     connect(m_program, &Program::cyclicCycleCompleted,
             this, [this](int completed){
                 int remaining = completed;
@@ -365,9 +339,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    QMetaObject::invokeMethod(
-        m_program, "terminateTest",
-        Qt::BlockingQueuedConnection);
+    if (m_program) {
+        QMetaObject::invokeMethod(
+            m_program, "terminateTest",
+            Qt::BlockingQueuedConnection);
+    }
 
     m_programThread->quit();
     m_programThread->wait();
@@ -882,7 +858,8 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 
     if (hasSensors) m_isInitialized = true;
 
-    setAppState(AppState::Idle);
+    if (m_testState == TestState::Idle)
+        showIdleState();
 
     updateAvailableTabs();
 
@@ -1076,83 +1053,58 @@ void MainWindow::directoryToSave(const QString &currentPath, QString &result)
 
 void MainWindow::endTest()
 {
-    const TestState prevState = m_testState;
+    const TestState finalState = m_testState;
 
     if (m_durationTimer)
         m_durationTimer->stop();
 
-    if (prevState == TestState::Running) {
-        setTestState(TestState::Finished);
+    if (finalState == TestState::Finished) {
         promptSaveChartsAfterTest();
-    }
-    else if (prevState == TestState::Canceled) {
-        setTestState(TestState::Idle);
-    }
-    else {
-        setTestState(TestState::Idle);
     }
 }
 
-void MainWindow::setAppState(AppState state)
+void MainWindow::applyTestStateToUi(TestState state)
 {
-    m_appState = state;
-
-    switch (state)
-    {
-    case AppState::Idle:
+    switch (state) {
+    case TestState::Idle:
         ui->statusbar->showMessage(tr("Готов к работе"));
         break;
-
-    case AppState::Initializing:
-        ui->statusbar->showMessage(tr("Инициализация устройства..."));
+    case TestState::Starting:
+        ui->statusbar->showMessage(tr("Подготовка теста..."));
         break;
-
-    case AppState::RunningTest:
+    case TestState::Running:
         ui->statusbar->showMessage(tr("Тест выполняется"));
         break;
-
-    case AppState::SavingResults:
-        ui->statusbar->showMessage(tr("Сохранение результатов..."));
+    case TestState::Canceled:
+        ui->statusbar->showMessage(tr("Тест остановлен"));
         break;
-
-    case AppState::Error:
-        ui->statusbar->showMessage(tr("Ошибка"));
+    case TestState::Finished:
+        ui->statusbar->showMessage(tr("Сохранение результатов..."));
+        QTimer::singleShot(1500, this, [this]{
+            if (m_testState == TestState::Finished)
+                showIdleState();
+        });
         break;
     }
+}
+
+void MainWindow::showInitializingState()
+{
+    ui->statusbar->showMessage(tr("Инициализация устройства..."));
+}
+
+void MainWindow::showIdleState()
+{
+    ui->statusbar->showMessage(tr("Готов к работе"));
 }
 
 void MainWindow::setTestState(TestState state)
 {
+    if (m_testState == state)
+        return;
+
     m_testState = state;
-
-    switch (state)
-    {
-    case TestState::Idle:
-        setAppState(AppState::Idle);
-        break;
-
-    case TestState::Starting:
-        setAppState(AppState::RunningTest);
-        ui->statusbar->showMessage(tr("Подготовка теста..."));
-        break;
-
-    case TestState::Running:
-        setAppState(AppState::RunningTest);
-        break;
-
-    case TestState::Canceled:
-        setAppState(AppState::Idle);
-        ui->statusbar->showMessage(tr("Тест остановлен"));
-        break;
-
-    case TestState::Finished:
-        setAppState(AppState::SavingResults);
-
-        QTimer::singleShot(1500, this, [this]{
-            setAppState(AppState::Idle);
-        });
-        break;
-    }
+    applyTestStateToUi(state);
 }
 
 bool MainWindow::tryStartTest()
@@ -1462,9 +1414,6 @@ void MainWindow::initCharts()
     connect(m_program, &Program::setRegressionEnable,
             this, &MainWindow::setRegressionEnabled);
 
-    connect(m_program, &Program::showDots,
-            m_chartManager.get(), &ChartManager::showDots);
-
     connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged,
             this, [&](int state) {
                 m_chartManager->chart(Charts::Task)->visible(0, state != 0);
@@ -1528,7 +1477,7 @@ void MainWindow::getImage(QLabel *label, QImage *image)
 
 void MainWindow::initClicked()
 {
-    setAppState(AppState::Initializing);
+    showInitializingState();
 
     QVector<bool> states = {
         ui->pushButton_DO0->isChecked(),

@@ -14,26 +14,26 @@ class AnalyzerFactory
 public:
 
     static std::unique_ptr<IAnalyzer>
-    create(Program::Test type) {
+    create(Program::TestWorker type) {
         switch (type)
         {
-        case Program::Test::Step:
+        case Program::TestWorker::Step:
             return std::make_unique<StepTestAnalyzer>();
             break;
 
-        case Program::Test::Stroke:
+        case Program::TestWorker::Stroke:
             return std::make_unique<StrokeTestAnalyzer>();
             break;
 
-        case Program::Test::Main:
+        case Program::TestWorker::Main:
             return std::make_unique<MainTestAnalyzer>();
             break;
 
-        case Program::Test::CyclicRegulatory:
+        case Program::TestWorker::CyclicRegulatory:
             return std::make_unique<CyclicRegulatoryAnalyzer>();
             break;
 
-        case Program::Test::CyclicShutOff:
+        case Program::TestWorker::CyclicShutOff:
             return std::make_unique<CyclicShutoffAnalyzer>();
             return nullptr;
             break;

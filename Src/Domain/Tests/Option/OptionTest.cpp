@@ -4,31 +4,34 @@ OptionTest::OptionTest(QObject *parent)
     : Test(parent)
 {}
 
-void OptionTest::Process()
+void OptionTest::run()
 {
-    emit started();
+    emit executionStarted();
     if (m_task.value.empty()) {
-        emit EndTest();
+        emit finished();
         return;
     }
 
     setDacBlocked(m_task.value.first(), 10000, true);
 
-    if (m_terminate) { emit EndTest(); return; }
+    if (m_terminate) {
+        emit finished();
+        return;
+    }
 
     for (const auto &value : m_task.value) {
         setDacBlocked(value, m_task.delay);
 
         if (m_terminate) {
-            emit EndTest();
+            emit finished();
             return;
         }
     }
 
-    emit EndTest();
+    emit finished();
 }
 
-void OptionTest::SetTask(Task task)
+void OptionTest::setTask(Task task)
 {
     m_task = task;
 }

@@ -41,7 +41,7 @@ RunnerConfig ResponseRunner::buildConfig()
 
     task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
 
-    worker->SetTask(task);
+    worker->setTask(task);
 
     const quint64 P = static_cast<quint64>(p.points.size());
     const quint64 S = static_cast<quint64>(p.steps.size());

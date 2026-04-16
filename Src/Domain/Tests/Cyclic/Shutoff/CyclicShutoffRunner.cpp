@@ -19,7 +19,7 @@ RunnerConfig CyclicShutoffRunner::buildConfig()
     task.values = rawCycle;
     auto worker = std::make_unique<CyclicTestsShutoff>();
 
-    worker->SetTask(task);
+    worker->setTask(task);
 
     const quint64 stepsPerCycle = static_cast<quint64>(rawCycle.size());
     const quint64 totalSteps = stepsPerCycle * static_cast<quint64>(task.cycles);
@@ -36,11 +36,11 @@ void CyclicShutoffRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<CyclicTestsShutoff&>(base);
     auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
-    connect(&t, &CyclicTestsShutoff::Results,
+    connect(&t, &CyclicTestsShutoff::results,
             owner, &Program::results_cyclicShutoffTests,
             Qt::QueuedConnection);
 
-    connect(&t, &CyclicTestsShutoff::CycleCompleted,
+    connect(&t, &CyclicTestsShutoff::cycleCompleted,
             owner, &Program::cyclicCycleCompleted,
             Qt::QueuedConnection);
 

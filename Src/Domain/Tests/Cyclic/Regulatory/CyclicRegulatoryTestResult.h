@@ -10,8 +10,8 @@ struct CyclicRangeResult
     qreal maxForwardPosition = std::numeric_limits<qreal>::lowest();
     int maxForwardCycle = -1;
 
-    qreal minReversePosition = std::numeric_limits<qreal>::max();
-    int minReverseCycle = -1;
+    qreal minBackwardPosition = std::numeric_limits<qreal>::max();
+    int minBackwardCycle = -1;
 };
 
 struct CyclicRegulatoryResult

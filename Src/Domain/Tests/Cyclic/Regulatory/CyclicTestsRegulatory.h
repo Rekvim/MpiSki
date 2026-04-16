@@ -16,18 +16,17 @@ public:
         quint16 holdMsecs;
     };
 
-    void SetTask(Task task);
+    void setTask(Task task);
 
 public slots:
-    void Process() override;
+    void run() override;
 
 signals:
     void errorOccured(const QString& text);
-    void SetStartTime();
-    void CycleCompleted(int completedCycles);
+    void cycleCompleted(int completedCycles);
 
-    void StepMeasured(int cycle, int step, bool forward);
-    void Results();
+    void stepMeasured(int cycle, int step, bool forward);
+    void results();
 
 private:
     Task m_task;

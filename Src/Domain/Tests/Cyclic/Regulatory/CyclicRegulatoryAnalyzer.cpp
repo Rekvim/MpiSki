@@ -15,13 +15,12 @@ void CyclicRegulatoryAnalyzer::configure(const CyclicTestParams& params)
     if (seq.empty())
         return;
 
-    // определяем направление: возрастание или убывание
+    // Определение направления хода: прямой или обратный
     bool isAscending = (seq.size() == 1) || (seq[1] > seq[0]);
 
     for (int i = 0; i < seq.size(); ++i)
     {
-        if (i > 0)
-        {
+        if (i > 0) {
             if (isAscending && seq[i] < seq[i - 1])
                 break;
             if (!isAscending && seq[i] > seq[i - 1])
@@ -33,9 +32,9 @@ void CyclicRegulatoryAnalyzer::configure(const CyclicTestParams& params)
         CyclicRangeResult r;
         r.rangePercent = seq[i];
         r.maxForwardPosition = std::numeric_limits<qreal>::lowest();
-        r.minReversePosition = std::numeric_limits<qreal>::max();
+        r.minBackwardPosition = std::numeric_limits<qreal>::max();
         r.maxForwardCycle = -1;
-        r.minReverseCycle = -1;
+        r.minBackwardCycle = -1;
 
         m_result.ranges.push_back(r);
     }
@@ -69,7 +68,7 @@ void CyclicRegulatoryAnalyzer::onSample(const Sample& s)
         if (newStep < 0)
             return;
 
-        m_forward = task > m_prevTask;
+        m_isForward = task > m_prevTask;
 
         if (newStep < m_step)
             m_cycle++;
@@ -91,15 +90,15 @@ void CyclicRegulatoryAnalyzer::updateRange(double pos)
 
     auto& r = m_result.ranges[m_step];
 
-    if (m_forward) {
+    if (m_isForward) {
         if (pos > r.maxForwardPosition) {
             r.maxForwardPosition = pos;
             r.maxForwardCycle = m_cycle;
         }
     } else {
-        if (pos < r.minReversePosition) {
-            r.minReversePosition = pos;
-            r.minReverseCycle = m_cycle;
+        if (pos < r.minBackwardPosition) {
+            r.minBackwardPosition = pos;
+            r.minBackwardCycle = m_cycle;
         }
     }
 }

@@ -22,93 +22,6 @@
 
 constexpr quint8 VersionFlag = 0x40;
 
-void Program::debugAnalyzer()
-{
-    CyclicRegulatoryAnalyzer analyzer;
-
-    CyclicTestParams params;
-    params.regulatory.sequence = {0,25,50,75,100,75,50,25,0};
-
-    analyzer.start();
-    analyzer.configure(params);
-
-    auto send = [&](double task, double pos)
-    {
-        Sample s;
-        s.taskPercent = task;
-        s.positionPercent = pos;
-        analyzer.onSample(s);
-    };
-
-    send(0,0);
-    send(0,0.1);
-
-    send(25,10);
-    send(25,20);
-    send(25,26);
-    send(25,24);
-
-    send(50,40);
-    send(50,52);
-    send(50,50);
-
-    send(75,60);
-    send(75,76);
-    send(75,74);
-
-    send(100,90);
-    send(100,101);
-    send(100,99);
-
-    send(75,80);
-    send(75,73);
-    send(75,74);
-
-    send(50,55);
-    send(50,48);
-
-    send(25,30);
-    send(25,23);
-
-    send(0,5);
-    send(0,-1);
-
-    analyzer.finish();
-
-    const auto& result = analyzer.result();
-    m_telemetry.cyclicTestRecord.regulatoryResult = analyzer.result();
-
-    emit telemetryUpdated(m_telemetry);
-    for (const auto& r : result.ranges)
-    {
-        qDebug()
-        << "range =" << r.rangePercent
-        << "maxForward =" << r.maxForwardPosition
-        << "cycle =" << r.maxForwardCycle
-        << "minReverse =" << r.minReversePosition
-        << "cycle =" << r.minReverseCycle;
-    }
-
-    m_telemetry.cyclicTestRecord.regulatoryResult = result;
-    emit telemetryUpdated(m_telemetry);
-
-    // qDebug() << "\n===== TELEMETRY CHECK =====";
-
-    // const auto& ranges = m_telemetry.cyclicTestRecord.regulatoryResult.ranges;
-
-    // for (const auto& r : ranges)
-    // {
-    //     qDebug()
-    //     << "T range =" << r.rangePercent
-    //     << "maxF =" << r.maxForwardPosition
-    //     << "cycleF =" << r.maxForwardCycle
-    //     << "minR =" << r.minReversePosition
-    //     << "cycleR =" << r.minReverseCycle;
-    // }
-
-    // qDebug() << "============================\n";
-}
-
 Program::Program(QObject *parent)
     : QObject{parent}
 {
@@ -126,13 +39,20 @@ Program::Program(QObject *parent)
         quint8 DI = m_mpi.digitalInputs();
         emit setDiCheckboxesChecked(DI);
     });
-
-    debugAnalyzer();
 }
 
 void Program::setRegistry(Registry *registry)
 {
     m_registry = registry;
+}
+
+void Program::onRunnerActuallyStarted()
+{
+    m_isTestRunning = true;
+    m_startTime = QDateTime::currentMSecsSinceEpoch();
+    m_testDataBuffer.clear();
+
+    emit testActuallyStarted();
 }
 
 void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool waitForStart)
@@ -411,32 +331,33 @@ void Program::updateChartsFromSample(const Sample& s)
 {
     updateTimeChart(s, Charts::Trend, s.systemTime);
 
-    switch (m_activeTest)
+    switch (m_testWorker)
     {
-    case Test::Stroke:
+    case TestWorker::Stroke:
         updateTimeChart(s, Charts::Stroke, s.testTime);
         break;
 
-    case Test::Main:
+    case TestWorker::Main:
         updateMainCharts(s);
         break;
 
-    case Test::CyclicRegulatory:
-        updateCyclicChart(s, Charts::Cyclic);
-        break;
-    case Test::CyclicShutOff:
+    case TestWorker::CyclicRegulatory:
         updateCyclicChart(s, Charts::Cyclic);
         break;
 
-    case Test::Step:
+    case TestWorker::CyclicShutOff:
+        updateCyclicChart(s, Charts::Cyclic);
+        break;
+
+    case TestWorker::Step:
         updateTimeChart(s, Charts::Step, s.testTime);
         break;
 
-    case Test::Response:
+    case TestWorker::Response:
         updateTimeChart(s, Charts::Response, s.testTime);
         break;
 
-    case Test::Resolution:
+    case TestWorker::Resolution:
         updateTimeChart(s, Charts::Resolution, s.testTime);
         break;
 
@@ -448,7 +369,7 @@ void Program::updateChartsFromSample(const Sample& s)
 void Program::endTest()
 {
     m_isTestRunning = false;
-    m_activeTest = Test::None;
+    m_testWorker = TestWorker::None;
 
     emit setTaskControlsEnabled(true);
     emit setButtonInitEnabled(true);
@@ -606,18 +527,17 @@ template<typename Runner, typename... Args>
 void Program::runTest(Args&&... args)
 {
     auto r = std::make_unique<Runner>(
-        m_mpi,
-        *m_registry,
+        m_mpi, *m_registry,
         std::forward<Args>(args)...,
         this
-        );
+    );
 
     startRunner(std::move(r));
 }
 
 void Program::startMainTest(const MainTestParams& params)
 {
-    m_activeTest = Test::Main;
+    m_testWorker = TestWorker::Main;
     runTest<MainTestRunner>(params);
 }
 
@@ -827,7 +747,7 @@ void Program::addRegression(const QVector<QPointF> &points)
 
 void Program::startStrokeTest()
 {
-    m_activeTest = Test::Stroke;
+    m_testWorker = TestWorker::Stroke;
 
     const auto& valveInfo = m_registry->valveInfo();
 
@@ -835,7 +755,7 @@ void Program::startStrokeTest()
 
     cfg.normalClosed = (valveInfo.safePosition == SafePosition::NormallyClosed);
 
-    m_analyzer = AnalyzerFactory::create(m_activeTest);
+    m_analyzer = AnalyzerFactory::create(m_testWorker);
 
     auto* analyzer = static_cast<StrokeTestAnalyzer*>(m_analyzer.get());
 
@@ -1057,8 +977,8 @@ void Program::startCyclicTest(const CyclicTestParams& params)
     switch (params.type)
     {
     case CyclicTestParams::Regulatory: {
-        m_activeTest = Test::CyclicRegulatory;
-        m_analyzer = AnalyzerFactory::create(m_activeTest);
+        m_testWorker = TestWorker::CyclicRegulatory;
+        m_analyzer = AnalyzerFactory::create(m_testWorker);
 
         auto* analyzer = dynamic_cast<CyclicRegulatoryAnalyzer*>(m_analyzer.get());
         analyzer->configure(params);
@@ -1067,7 +987,7 @@ void Program::startCyclicTest(const CyclicTestParams& params)
         runTest<CyclicRegulatoryRunner>(params);
         break;
     } case CyclicTestParams::Shutoff: {
-        m_activeTest = Test::CyclicShutOff;
+        m_testWorker = TestWorker::CyclicShutOff;
         runTest<CyclicShutoffRunner>(params);
         break;
     } case CyclicTestParams::Combined: {
@@ -1081,18 +1001,18 @@ void Program::startCyclicTest(const CyclicTestParams& params)
 }
 
 void Program::startResponseTest(const OptionTestParams& params) {
-    m_activeTest = Test::Response;
+    m_testWorker = TestWorker::Response;
     runTest<ResponseRunner>(params);
 }
 
 void Program::startResolutionTest(const OptionTestParams& params) {
-    m_activeTest = Test::Resolution;
+    m_testWorker = TestWorker::Resolution;
     runTest<ResolutionRunner>(params);
 }
 void Program::startStepTest(const StepTestParams& params) {
-    m_activeTest = Test::Step;
+    m_testWorker = TestWorker::Step;
 
-    m_analyzer = AnalyzerFactory::create(m_activeTest);
+    m_analyzer = AnalyzerFactory::create(m_testWorker);
 
     auto* analyzer = static_cast<StepTestAnalyzer*>(m_analyzer.get());
 

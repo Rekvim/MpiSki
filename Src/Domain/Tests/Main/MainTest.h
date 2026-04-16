@@ -9,8 +9,8 @@ class MainTest : public Test
     Q_OBJECT
 public:
     explicit MainTest(QObject *parent = nullptr, bool endTestAfterProcess = true);
-    virtual void Process() override;
-    void SetParameters(MainTestParams &parameters);
+    virtual void run() override;
+    void setParameters(MainTestParams &parameters);
 
     struct TestResults
     {
@@ -46,36 +46,34 @@ private:
         double maxY;
     };
 
-    Regression CalculateRegression(const QVector<QPointF> &points, Limits limits);
+    Regression calculateRegression(const QVector<QPointF> &points, Limits limits);
 
-    Limits GetLimits(const QVector<QPointF> &points1, const QVector<QPointF> &points2);
+    Limits limits(const QVector<QPointF> &points1, const QVector<QPointF> &points2);
 
-    QVector<QPointF> GetRegressionPoints(Regression regression, Limits limits);
+    QVector<QPointF> regressionPoints(Regression regression, Limits limits);
 
-    double GetLinearityError(const QVector<QPointF>& points,
+    double linearityError(const QVector<QPointF>& points,
                                       const Regression& regression,
                                       const Limits& limits);
 
-    QVector<QPointF> GetFrictionPoints(const QVector<QPointF> &points1,
+    QVector<QPointF> frictionPoints(const QVector<QPointF> &points1,
                                        const QVector<QPointF> &points2,
                                        Limits limits);
 
-    QPair<double, double> GetMeanMax(const QVector<QPointF> &points_forward,
+    QPair<double, double> meanMax(const QVector<QPointF> &points_forward,
                                    const QVector<QPointF> &points_backward);
 
-    QPair<double, double> GetRangeLimits(Regression regression1,
+    QPair<double, double> rangeLimits(Regression regression1,
                                        Regression regression2,
                                        Limits limits);
-    QPair<double, double> GetSpringLimits(Regression regression1,
+    QPair<double, double> springLimits(Regression regression1,
                                         Regression regression2,
                                         Limits limits);
 signals:
-    void RequestSensorRawValue(quint16 &value);
-    void DublSeries();
-    void GetPoints(QVector<QVector<QPointF>> &points);
-    void AddRegression(const QVector<QPointF> &points);
-    void AddFriction(const QVector<QPointF> &points);
-    void Results(TestResults results);
-    void ShowDots(bool visible);
-    void ClearGraph();
+    void requestSensorRawValue(quint16 &value);
+    void dublSeries();
+    void getPoints(QVector<QVector<QPointF>> &points);
+    void addRegression(const QVector<QPointF> &points);
+    void addFriction(const QVector<QPointF> &points);
+    void results(TestResults results);
 };

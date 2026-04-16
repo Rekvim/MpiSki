@@ -4,12 +4,25 @@ StepTest::StepTest(QObject *parent)
     : OptionTest(parent)
 {}
 
-void StepTest::Set_T_value(quint32 T_value)
+void StepTest::run()
+{
+    OptionTest::run();
+    if (m_terminate) {
+        emit finished();
+        return;
+    }
+    QVector<QVector<QPointF>> points;
+    emit getPoints(points);
+    emit results(calculateResult(points), m_TValue);
+    emit finished();
+}
+
+void StepTest::setTValue(quint32 T_value)
 {
     m_TValue = T_value;
 }
 
-QVector<StepTest::TestResult> StepTest::CalculateResult(const QVector<QVector<QPointF>> &points) const
+QVector<StepTest::TestResult> StepTest::calculateResult(const QVector<QVector<QPointF>> &points) const
 {
     QVector<TestResult> result;
     const QVector<QPointF> &line = points.at(0);
@@ -60,17 +73,4 @@ QVector<StepTest::TestResult> StepTest::CalculateResult(const QVector<QVector<QP
                       t86Have ? t86Time : 0,
                       overshoot});
     return result;
-}
-
-void StepTest::Process()
-{
-    OptionTest::Process();
-    if (m_terminate) {
-        emit EndTest();
-        return;
-    }
-    QVector<QVector<QPointF>> points;
-    emit GetPoints(points);
-    emit Results(CalculateResult(points), m_TValue);
-    emit EndTest();
 }

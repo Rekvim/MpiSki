@@ -39,8 +39,8 @@ RunnerConfig StepTestRunner::buildConfig() {
 
     const bool normalOpen = isNormallyOpen();
     task.value = buildSequence(p, m_mpi, normalOpen);
-    worker->SetTask(task);
-    worker->Set_T_value(p.testValue);
+    worker->setTask(task);
+    worker->setTValue(p.testValue);
 
     return makeConfig(std::move(worker), totalMs, Charts::Step);
 }
@@ -49,11 +49,11 @@ void StepTestRunner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<StepTest&>(base);
     auto owner = qobject_cast<Program*>(parent());
 
-    connect(&t, &StepTest::GetPoints,
+    connect(&t, &StepTest::getPoints,
             owner, &Program::receivedPoints_stepTest,
             Qt::BlockingQueuedConnection);
 
-    connect(&t, &StepTest::Results,
+    connect(&t, &StepTest::results,
             owner, &Program::results_stepTest,
             Qt::QueuedConnection);
 }

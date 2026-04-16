@@ -25,16 +25,15 @@ public:
         quint16 switch0to3Count = 0;
     };
 
-    void SetTask(const Task& task);
+    void setTask(const Task& task);
 
 public slots:
-    void Process() override;
+    void run() override;
 
 signals:
-    void CycleCompleted(int completedCycles);
-    void Results(TestResults results);
+    void cycleCompleted(int completedCycles);
+    void results(TestResults results);
     void SetMultipleDO(const QVector<bool>& states);
-    void SetStartTime();
 
     // НОВОЕ: запросить у Program текущие маски (BlockingQueuedConnection)
     void GetDI(quint8& di);

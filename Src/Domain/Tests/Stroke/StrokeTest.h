@@ -7,8 +7,8 @@ class StrokeTest : public Test
     Q_OBJECT
 public:
     explicit StrokeTest(QObject *parent = nullptr) : Test(parent) {}
-    void Process() override;
+    void run() override;
 
 signals:
-    void Results();
+    void results();
 };

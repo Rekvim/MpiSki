@@ -7,7 +7,23 @@ TestController::TestController(QObject* parent)
 
 void TestController::setProgram(Program* program)
 {
+    if (m_program == program)
+        return;
+
+    if (m_program) {
+        disconnect(m_program, nullptr, this, nullptr);
+    }
+
     m_program = program;
+
+    if (!m_program)
+        return;
+
+    connect(m_program, &Program::testActuallyStarted,
+            this, &TestController::onProgramActuallyStarted);
+
+    connect(m_program, &Program::testFinished,
+            this, &TestController::onProgramFinished);
 }
 
 void TestController::setState(TestState s)
@@ -21,64 +37,70 @@ void TestController::setState(TestState s)
 
 void TestController::runStrokeTest()
 {
-    run([this]{
+    run([this] {
         emit startStrokeRequested();
     });
 }
 
 void TestController::runMainTest(const MainTestParams& params)
 {
-    run([this, params]{
+    run([this, params] {
         emit startMainRequested(params);
     });
 }
 
-
 void TestController::runResponseTest(const OptionTestParams& params)
 {
-    run([this, params]{
+    run([this, params] {
         emit startResponseRequested(params);
     });
 }
 
 void TestController::runResolutionTest(const OptionTestParams& params)
 {
-    run([this, params]{
+    run([this, params] {
         emit startResolutionRequested(params);
     });
 }
 
 void TestController::runStepTest(const StepTestParams& params)
 {
-    run([this, params]{
+    run([this, params] {
         emit startStepRequested(params);
     });
 }
 
 void TestController::runCyclicTest(const CyclicTestParams& params)
 {
-    run([this, params]{
+    run([this, params] {
         emit startCyclicRequested(params);
     });
 }
 
-void TestController::run(std::function<void()> start)
+void TestController::run(const std::function<void()>& start)
 {
+    if (m_state == TestState::Starting || m_state == TestState::Running)
+        return;
+
+    m_stopRequested = false;
     setState(TestState::Starting);
-
     start();
-
-    setState(TestState::Running);
-    emit testStarted();
 }
 
-void TestController::finish()
+void TestController::onProgramActuallyStarted()
 {
-    if (m_state == TestState::Running)
-    {
+    setState(TestState::Running);
+}
+
+void TestController::onProgramFinished()
+{
+    if (m_state == TestState::Idle)
+        return;
+
+    if (m_stopRequested)
+        setState(TestState::Canceled);
+    else
         setState(TestState::Finished);
-        emit testFinished();
-    }
 }
 
 void TestController::stop()
@@ -86,8 +108,10 @@ void TestController::stop()
     if (!m_program)
         return;
 
-    m_program->terminateTest();
+    if (m_state != TestState::Starting &&
+        m_state != TestState::Running)
+        return;
 
-    setState(TestState::Canceled);
-    emit testFinished();
+    m_stopRequested = true;
+    m_program->terminateTest();
 }

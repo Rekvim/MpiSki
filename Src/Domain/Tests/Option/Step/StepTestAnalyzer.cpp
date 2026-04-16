@@ -28,7 +28,7 @@ void StepTestAnalyzer::onSample(const Sample& s)
         finishStep();
         startStep(m_prevTask, task, time);
         m_prevTask = task;
-
+        updateStep(pos, time);
         return;
     }
 

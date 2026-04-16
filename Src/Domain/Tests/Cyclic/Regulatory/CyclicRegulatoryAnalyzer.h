@@ -18,19 +18,13 @@ public:
 
     const CyclicRegulatoryResult& result() const;
 private:
-
     QVector<int> m_ranges;
-    int findStep(double task) const;
-
-    void updateRange(double pos);
-
-    double m_prevTask = NAN;
-
+    CyclicRegulatoryResult m_result;
     int m_step = -1;
     int m_cycle = 0;
+    bool m_isForward = true;
+    double m_prevTask = NAN;
 
-    bool m_forward = true;
-    bool m_firstSampleProcessed = false;
-
-    CyclicRegulatoryResult m_result;
+    int findStep(double task) const;
+    void updateRange(double pos);
 };

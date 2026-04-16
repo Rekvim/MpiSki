@@ -4,7 +4,7 @@ CyclicTestPositioner::CyclicTestPositioner(QObject *parent)
     : MainTest(parent, false)
 {}
 
-void CyclicTestPositioner::Process()
+void CyclicTestPositioner::run()
 {
     // m_cyclicGraphTimer = new QTimer(this);
     // connect(m_cyclicGraphTimer, &QTimer::timeout, this, [&] { emit UpdateCyclicTred(); });

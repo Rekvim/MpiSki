@@ -3,72 +3,102 @@
 #include "Src/Domain/Mpi/Mpi.h"
 #include "Src/Storage/Registry.h"
 
+#include <QMetaObject>
+
 BaseRunner::BaseRunner(Mpi& mpi, Registry& reg, QObject* parent)
-    : QObject(parent), m_mpi(mpi), m_reg(reg) {}
+    : QObject(parent)
+    , m_mpi(mpi)
+    , m_reg(reg)
+{
+}
 
 BaseRunner::~BaseRunner()
 {
-    if (m_thread) {
-        m_thread->requestInterruption();
-        m_thread->quit();
-        m_thread->wait();
-    }
+    stop();
+    cleanupThread();
 }
 
-void BaseRunner::start() {
-    auto cfg = buildConfig();
+void BaseRunner::cleanupThread()
+{
+    if (!m_thread)
+        return;
+
+    m_thread->requestInterruption();
+    m_thread->quit();
+    m_thread->wait();
+
+    m_thread = nullptr;
+    m_worker = nullptr;
+}
+
+void BaseRunner::start()
+{
+    if (m_thread || m_worker)
+        return;
+
+    RunnerConfig cfg = buildConfig();
     if (!cfg.worker) {
         emit endTest();
         return;
     }
 
-    m_worker = std::move(cfg.worker);
+    if (cfg.totalMs > 0)
+        emit totalTestTimeMs(cfg.totalMs);
 
-    if (cfg.totalMs > 0) emit totalTestTimeMs(cfg.totalMs);
-    if (cfg.chartToClear != Charts::None) emit requestClearChart(cfg.chartToClear);
+    if (cfg.chartToClear != Charts::None)
+        emit requestClearChart(cfg.chartToClear);
 
-    m_thread = new QThread(this);
-    m_worker->moveToThread(m_thread);
+    QThread* thread = new QThread(this);
+    Test* worker = cfg.worker.release();
 
-    connect(m_thread, &QThread::finished,
-            this, [this]{
-                m_thread = nullptr;
-                m_worker = nullptr;
-    });
+    m_thread = thread;
+    m_worker = worker;
 
-    connect(m_worker.get(), &Test::started,
-            this, &BaseRunner::testActuallyStarted);
+    worker->moveToThread(thread);
 
-    connect(m_thread, &QThread::started,
-            m_worker.get(), &Test::Process);
+    connect(thread, &QThread::started,
+            worker, &Test::run);
 
-    connect(m_worker.get(), &Test::EndTest,
-            m_thread, &QThread::quit);
+    connect(worker, &Test::executionStarted,
+            this, &BaseRunner::testActuallyStarted,
+            Qt::QueuedConnection);
 
-    connect(m_worker.get(), &Test::setDac,
+    connect(worker, &Test::dacCommandRequested,
             this, &BaseRunner::requestSetDAC,
             Qt::QueuedConnection);
 
-    connect(m_thread, &QThread::finished,
-            m_thread, &QObject::deleteLater);
+    connect(worker, &Test::finished,
+            thread, &QThread::quit,
+            Qt::QueuedConnection);
 
-    connect(m_thread, &QThread::finished,
-            m_worker.get(), &QObject::deleteLater);
+    connect(worker, &Test::finished,
+            this, &BaseRunner::endTest,
+            Qt::QueuedConnection);
 
-    connect(m_worker.get(), &Test::EndTest,
-            this, &BaseRunner::endTest);
+    connect(thread, &QThread::finished,
+            worker, &QObject::deleteLater);
 
-    wireSpecificSignals(*m_worker);
+    connect(thread, &QThread::finished,
+            thread, &QObject::deleteLater);
 
-    m_thread->start();
+    connect(thread, &QThread::finished,
+            this, [this, thread, worker]() {
+                if (m_worker == worker) m_worker = nullptr;
+                if (m_thread == thread) m_thread = nullptr;
+            }, Qt::QueuedConnection);
+
+    wireSpecificSignals(*worker);
+    thread->start();
 }
 
-void BaseRunner::stop() {
-    if (m_worker)
-        QMetaObject::invokeMethod(m_worker.get(), "StoppingTheTest", Qt::QueuedConnection);
+void BaseRunner::stop()
+{
+    if (!m_worker) return;
+    QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::QueuedConnection);
 }
 
-void BaseRunner::releaseBlock() {
-    if (m_worker)
-        QMetaObject::invokeMethod(m_worker.get(), "ReleaseBlock", Qt::QueuedConnection);
+void BaseRunner::releaseBlock()
+{
+    if (!m_worker) return;
+    QMetaObject::invokeMethod(m_worker, "ReleaseBlock", Qt::QueuedConnection);
 }

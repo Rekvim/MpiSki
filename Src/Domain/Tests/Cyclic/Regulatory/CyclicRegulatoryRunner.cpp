@@ -18,7 +18,7 @@ RunnerConfig CyclicRegulatoryRunner::buildConfig()
     task.cycles = p.numCycles;
 
     auto worker = std::make_unique<CyclicTestsRegulatory>();
-    worker->SetTask(task);
+    worker->setTask(task);
 
     const quint64 stepsPerCycle = static_cast<quint64>(raw.size());
     const quint64 totalSteps = stepsPerCycle * p.numCycles;
@@ -35,11 +35,11 @@ void CyclicRegulatoryRunner::wireSpecificSignals(Test& base) {
     //         owner, &Program::onCyclicStepMeasured,
     //         Qt::QueuedConnection);
 
-    connect(&t, &CyclicTestsRegulatory::Results,
+    connect(&t, &CyclicTestsRegulatory::results,
             owner, &Program::results_cyclicRegulatoryTests,
             Qt::QueuedConnection);
 
-    connect(&t, &CyclicTestsRegulatory::CycleCompleted,
+    connect(&t, &CyclicTestsRegulatory::cycleCompleted,
             owner, &Program::cyclicCycleCompleted,
             Qt::QueuedConnection);
 }

@@ -4,7 +4,7 @@ CyclicTestsShutoff::CyclicTestsShutoff(QObject* parent)
     : Test(parent)
 {}
 
-void CyclicTestsShutoff::SetTask(const Task& task)
+void CyclicTestsShutoff::setTask(const Task& task)
 {
     m_task = task;
 }
@@ -14,11 +14,9 @@ static inline bool bit(quint8 mask, int b)
     return (mask & (1u << b)) != 0;
 }
 
-void CyclicTestsShutoff::Process()
+void CyclicTestsShutoff::run()
 {
-    emit started();
-    // emit SetStartTime();
-    // m_graphTimer->start(100);
+    emit executionStarted();
 
     const int DO_COUNT = m_task.doMask.size();
     m_doOnCounts.assign(DO_COUNT, 0);
@@ -55,7 +53,7 @@ void CyclicTestsShutoff::Process()
     const auto& cycleValues = m_task.values;
     if (cycleValues.isEmpty() || m_task.cycles <= 0) {
         setDacBlocked(0, 0, true);
-        emit EndTest();
+        emit finished();
         return;
     }
 
@@ -92,7 +90,7 @@ void CyclicTestsShutoff::Process()
         }
 
         if (!m_terminate) {
-            emit CycleCompleted(int(cycle + 1));
+            emit cycleCompleted(int(cycle + 1));
         }
     }
 
@@ -103,6 +101,6 @@ void CyclicTestsShutoff::Process()
     r.switch3to0Count = quint16(s3to0);
     r.switch0to3Count = quint16(s0to3);
 
-    emit Results(r);
-    emit EndTest();
+    emit results(r);
+    emit executionStarted();
 }

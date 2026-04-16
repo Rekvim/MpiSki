@@ -35,9 +35,9 @@ void printRanges(const CyclicRegulatoryResult& result)
         qDebug() << "Диапазон" << i
                  << "| уставка =" << r.rangePercent
                  << "| maxForward =" << r.maxForwardPosition
-                 << "| minReverse =" << r.minReversePosition
+                 << "| minReverse =" << r.minBackwardPosition
                  << "| цикл max =" << r.maxForwardCycle
-                 << "| цикл min =" << r.minReverseCycle;
+                 << "| цикл min =" << r.minBackwardCycle;
     }
 }
 
@@ -91,7 +91,7 @@ void CyclicRegulatoryAnalyzerTest::testWithManyPoints()
 
     QCOMPARE(result.ranges.size(), 3);
 
-    // Дополнительная проверка: диапазоны реально существуют.
+    // проверка: диапазоны реально существуют.
     QCOMPARE(result.ranges[0].rangePercent, 0.0);
     QCOMPARE(result.ranges[1].rangePercent, 50.0);
     QCOMPARE(result.ranges[2].rangePercent, 100.0);
@@ -111,12 +111,13 @@ void CyclicRegulatoryAnalyzerTest::testForwardMax()
     analyzer.start();
     analyzer.configure(params);
 
-    analyzer.onSample(makeSample(0,   0.0));
+    analyzer.onSample(makeSample(0, 0.0));
     analyzer.onSample(makeSample(50, 49.0));
     analyzer.onSample(makeSample(100, 100.0));
 
-    analyzer.onSample(makeSample(0,   0.0));   // новый цикл
-    analyzer.onSample(makeSample(50, 50.5));   // максимум
+    // новый цикл
+    analyzer.onSample(makeSample(0, 0.0));
+    analyzer.onSample(makeSample(50, 50.5)); // новый максимум
     analyzer.onSample(makeSample(100, 99.0));
 
     analyzer.finish();
@@ -129,7 +130,7 @@ void CyclicRegulatoryAnalyzerTest::testForwardMax()
 }
 
 // Проверка минимума на обратном ходе.
-void CyclicRegulatoryAnalyzerTest::testReverseMin()
+void CyclicRegulatoryAnalyzerTest::testBackwardMin()
 {
     printCaseHeader("Минимум на обратном ходе");
 
@@ -144,11 +145,12 @@ void CyclicRegulatoryAnalyzerTest::testReverseMin()
 
     analyzer.onSample(makeSample(100, 100.0));
     analyzer.onSample(makeSample(50, 50.0));
-    analyzer.onSample(makeSample(0,   0.0));
+    analyzer.onSample(makeSample(0,0.0));
 
+    // новый цикл
     analyzer.onSample(makeSample(100, 100.0));
-    analyzer.onSample(makeSample(50,  48.8)); // минимум
-    analyzer.onSample(makeSample(0,   1.0));
+    analyzer.onSample(makeSample(50, 48.8)); // новый минимум
+    analyzer.onSample(makeSample(0, 1.0));
 
     analyzer.finish();
 
@@ -156,7 +158,7 @@ void CyclicRegulatoryAnalyzerTest::testReverseMin()
     printRanges(r);
 
     QVERIFY(r.ranges.size() > 1);
-    QCOMPARE(r.ranges[1].minReversePosition, 48.8);
+    QCOMPARE(r.ranges[1].minBackwardPosition, 48.8);
 }
 
 // Проверка случая только прямого хода.
@@ -173,7 +175,7 @@ void CyclicRegulatoryAnalyzerTest::testOnlyForward()
     analyzer.start();
     analyzer.configure(params);
 
-    analyzer.onSample(makeSample(0,   0.0));
+    analyzer.onSample(makeSample(0, 0.0));
     analyzer.onSample(makeSample(50, 50.2));
     analyzer.onSample(makeSample(100, 99.9));
 
@@ -184,9 +186,9 @@ void CyclicRegulatoryAnalyzerTest::testOnlyForward()
 
     QVERIFY(r.ranges.size() == 3);
 
-    QVERIFY(qIsNaN(r.ranges[0].minReversePosition));
-    QVERIFY(qIsNaN(r.ranges[1].minReversePosition));
-    QVERIFY(qIsNaN(r.ranges[2].minReversePosition));
+    QCOMPARE(r.ranges[0].minBackwardPosition, std::numeric_limits<qreal>::max());
+    QCOMPARE(r.ranges[1].minBackwardPosition, std::numeric_limits<qreal>::max());
+    QCOMPARE(r.ranges[2].minBackwardPosition, std::numeric_limits<qreal>::max());
 }
 
 // Проверка устойчивости экстремума.
@@ -204,7 +206,7 @@ void CyclicRegulatoryAnalyzerTest::testExtremumStability()
     analyzer.configure(params);
 
     // Несколько значений на одном шаге.
-    analyzer.onSample(makeSample(0,  0.0));
+    analyzer.onSample(makeSample(0, 0.0));
     analyzer.onSample(makeSample(50, 49.0));
     analyzer.onSample(makeSample(50, 51.0));  // максимум
     analyzer.onSample(makeSample(50, 50.5));  // не должен заменить максимум

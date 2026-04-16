@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <functional>
 #include "Src/Domain/Program.h"
 
 enum class TestState {
@@ -21,7 +22,6 @@ public:
     void setProgram(Program* program);
 
 public slots:
-
     void runMainTest(const MainTestParams& params);
     void runStrokeTest();
     void runResponseTest(const OptionTestParams& params);
@@ -29,13 +29,9 @@ public slots:
     void runStepTest(const StepTestParams& params);
     void runCyclicTest(const CyclicTestParams& params);
 
-    void finish();
     void stop();
 
 signals:
-
-    void testStarted();
-    void testFinished();
     void stateChanged(TestState state);
 
     void startMainRequested(const MainTestParams& params);
@@ -45,10 +41,16 @@ signals:
     void startStepRequested(const StepTestParams& params);
     void startCyclicRequested(const CyclicTestParams& params);
 
+private slots:
+    void onProgramActuallyStarted();
+    void onProgramFinished();
+
 private:
-    void run(std::function<void()> start);
+    void run(const std::function<void()>& start);
     void setState(TestState s);
 
+private:
     Program* m_program = nullptr;
     TestState m_state = TestState::Idle;
+    bool m_stopRequested = false;
 };

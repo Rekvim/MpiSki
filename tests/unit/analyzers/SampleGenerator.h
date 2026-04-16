@@ -16,10 +16,10 @@ public:
                 Sample s;
                 s.taskPercent = task;
 
-                // Идеальное положение = заданию
+                // Идеальное положение
                 double idealPos = task;
 
-                // Добавляем небольшой шум если нужно
+                // Добавление шума
                 if (noiseLevel > 0) {
                     double noise = ((double)rand() / RAND_MAX - 0.5) * 2 * noiseLevel;
                     idealPos += noise;
@@ -34,8 +34,8 @@ public:
     }
 
     static std::vector<Sample> generateCycle(
-        const std::vector<double>& forwardTasks,  // {0, 50, 100}
-        const std::vector<double>& reverseTasks,  // {100, 50, 0}
+        const std::vector<double>& forwardTasks, // {0, 50, 100}
+        const std::vector<double>& backwardTasks, // {100, 50, 0}
         int cycles = 2,
         double noiseLevel = 0.0)
     {
@@ -54,8 +54,8 @@ public:
             }
 
             // Обратный ход (если нужен)
-            if (!reverseTasks.empty()) {
-                for (double task : reverseTasks) {
+            if (!backwardTasks.empty()) {
+                for (double task : backwardTasks) {
                     Sample s;
                     s.taskPercent = task;
                     s.positionPercent = task;

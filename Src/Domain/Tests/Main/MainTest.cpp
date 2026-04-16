@@ -6,10 +6,9 @@ MainTest::MainTest(QObject *parent, bool endTestAfterProcess)
     , m_endTestAfterProcess(endTestAfterProcess)
 {}
 
-void MainTest::Process()
+void MainTest::run()
 {
-    emit started();
-    // emit ShowDots(!m_params.continuous);
+    emit executionStarted();
 
     setDacBlocked(m_params.dac_min, 10000, true);
 
@@ -27,14 +26,14 @@ void MainTest::Process()
         setDacBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
         if (m_terminate) {
-            emit EndTest();
+            emit finished();
             return;
         }
     }
 
     setDacBlocked(m_params.dac_max, 0, true);
 
-    emit DublSeries();
+    emit dublSeries();
 
     Sleep(m_params.delay);
 
@@ -49,7 +48,7 @@ void MainTest::Process()
         setDacBlocked(dac, time < currentTime ? 0 : (time - currentTime));
 
         if (m_terminate) {
-            emit EndTest();
+            emit finished();
             return;
         }
     }
@@ -57,25 +56,25 @@ void MainTest::Process()
     setDacBlocked(m_params.dac_min, 0, true);
 
     if (m_terminate) {
-        emit EndTest();
+        emit finished();
         return;
     }
 
     QVector<QVector<QPointF>> points;
-    emit GetPoints(points);
+    emit getPoints(points);
 
     TestResults testResults;
 
-    Limits regressionLimits = GetLimits(points[2], points[3]);
-    Regression regressionForward = CalculateRegression(points[2], regressionLimits);
-    Regression regressionBackward = CalculateRegression(points[3], regressionLimits);
+    Limits regressionLimits = limits(points[2], points[3]);
+    Regression regressionForward = calculateRegression(points[2], regressionLimits);
+    Regression regressionBackward = calculateRegression(points[3], regressionLimits);
 
-    QVector<QPointF> pointsForward = GetRegressionPoints(regressionForward, regressionLimits);
-    QVector<QPointF> pointsBackward = GetRegressionPoints(regressionBackward, regressionLimits);
+    QVector<QPointF> pointsForward = regressionPoints(regressionForward, regressionLimits);
+    QVector<QPointF> pointsBackward = regressionPoints(regressionBackward, regressionLimits);
 
     // Ошибка нелинейности характеристики "давление от перемещения", % диапазона
-    qreal linErrForward = GetLinearityError(points[2], regressionForward,  regressionLimits);
-    qreal linErrBackward = GetLinearityError(points[3], regressionBackward, regressionLimits);
+    qreal linErrForward = linearityError(points[2], regressionForward,  regressionLimits);
+    qreal linErrBackward = linearityError(points[3], regressionBackward, regressionLimits);
 
 
     // взять максимум из двух веток
@@ -87,18 +86,18 @@ void MainTest::Process()
     pointsForward.append({pointsBackward.rbegin(), pointsBackward.rend()});
     pointsForward.push_back(pointsForward.first());
 
-    emit AddRegression(pointsForward);
+    emit addRegression(pointsForward);
 
-    QVector<QPointF> frictionPoints = GetFrictionPoints(points[2], points[3], regressionLimits);
+    QVector<QPointF> frictionPointsResult = frictionPoints(points[2], points[3], regressionLimits);
 
-    emit AddFriction(frictionPoints);
+    emit addFriction(frictionPointsResult);
 
     qreal y_mean = (regressionLimits.maxY + regressionLimits.minY) / 2.0;
 
     testResults.pressureDiff = qAbs((y_mean - regressionForward.b) / regressionForward.k
                                       - (y_mean - regressionBackward.b) / regressionBackward.k);
 
-    auto [mean, max] = GetMeanMax(points[0], points[1]);
+    auto [mean, max] = meanMax(points[0], points[1]);
 
     testResults.dynamicErrorMean = mean / 2;
     testResults.dynamicErrorMax = max;
@@ -108,32 +107,32 @@ void MainTest::Process()
 
     testResults.friction = 50.0 * testResults.pressureDiff / range;
 
-    auto [lowLimitPressure, highLimitPressure] = GetRangeLimits(regressionForward,
+    auto [lowLimitPressure, highLimitPressure] = rangeLimits(regressionForward,
                                                   regressionBackward,
                                                   regressionLimits);
 
     testResults.lowLimitPressure = lowLimitPressure;
     testResults.highLimitPressure = highLimitPressure;
 
-    auto [springLow, springHigh] = GetSpringLimits(regressionForward,
+    auto [springLow, springHigh] = springLimits(regressionForward,
                                                      regressionBackward,
                                                      regressionLimits);
 
     testResults.springLow = springLow;
     testResults.springHigh = springHigh;
 
-    emit Results(testResults);
+    emit results(testResults);
     if (m_endTestAfterProcess) {
-        emit EndTest();
+        emit finished();
     }
 }
 
-void MainTest::SetParameters(MainTestParams &parameters)
+void MainTest::setParameters(MainTestParams &parameters)
 {
     m_params = parameters;
 }
 
-MainTest::Regression MainTest::CalculateRegression(const QVector<QPointF> &points, Limits limits)
+MainTest::Regression MainTest::calculateRegression(const QVector<QPointF> &points, Limits limits)
 {
     const qreal range = 0.10;
 
@@ -164,7 +163,7 @@ MainTest::Regression MainTest::CalculateRegression(const QVector<QPointF> &point
     return result;
 }
 
-qreal MainTest::GetLinearityError(const QVector<QPointF>& points,
+qreal MainTest::linearityError(const QVector<QPointF>& points,
                                   const Regression& regression,
                                   const Limits& limits)
 {
@@ -192,7 +191,7 @@ qreal MainTest::GetLinearityError(const QVector<QPointF>& points,
     return (maxDiff / Prange) * 100.0;
 }
 
-MainTest::Limits MainTest::GetLimits(const QVector<QPointF> &points1,
+MainTest::Limits MainTest::limits(const QVector<QPointF> &points1,
                                      const QVector<QPointF> &points2)
 {
     Limits result;
@@ -230,7 +229,7 @@ MainTest::Limits MainTest::GetLimits(const QVector<QPointF> &points1,
     return result;
 }
 
-QVector<QPointF> MainTest::GetRegressionPoints(Regression regression, Limits limits)
+QVector<QPointF> MainTest::regressionPoints(Regression regression, Limits limits)
 {
     const QPointF point_minX(limits.minX, regression.k * limits.minX + regression.b);
     const QPointF point_maxX(limits.maxX, regression.k * limits.maxX + regression.b);
@@ -300,7 +299,7 @@ QVector<QPointF> MainTest::GetRegressionPoints(Regression regression, Limits lim
     return result;
 }
 
-QVector<QPointF> MainTest::GetFrictionPoints(const QVector<QPointF> &pointsForward,
+QVector<QPointF> MainTest::frictionPoints(const QVector<QPointF> &pointsForward,
                                              const QVector<QPointF> &pointsBackward,
                                              Limits limits)
 {
@@ -340,14 +339,14 @@ QVector<QPointF> MainTest::GetFrictionPoints(const QVector<QPointF> &pointsForwa
     return result;
 }
 
-QPair<qreal, qreal> MainTest::GetMeanMax(const QVector<QPointF> &pointsForward,
+QPair<qreal, qreal> MainTest::meanMax(const QVector<QPointF> &pointsForward,
                                          const QVector<QPointF> &pointsBackward)
 {
-    Limits limits = GetLimits(pointsForward, pointsBackward);
+    Limits limitsResult = limits(pointsForward, pointsBackward);
 
     const quint16 Sections = qMin(pointsForward.size(), pointsBackward.size()) / 3;
 
-    qreal step = (limits.maxY - limits.minY) / Sections;
+    qreal step = (limitsResult.maxY - limitsResult.minY) / Sections;
 
     QVector<quint16> pointsNumForward(Sections);
     QVector<quint16> pointsNumBackward(Sections);
@@ -355,14 +354,14 @@ QPair<qreal, qreal> MainTest::GetMeanMax(const QVector<QPointF> &pointsForward,
     QVector<qreal> pointsValueBackward(Sections);
 
     for (auto point : pointsForward) {
-        quint16 sectionNum = qFloor((point.y() - limits.minY) / step);
+        quint16 sectionNum = qFloor((point.y() - limitsResult.minY) / step);
         sectionNum = qMin(sectionNum, quint16(Sections - 1));
         ++pointsNumForward[sectionNum];
         pointsValueForward[sectionNum] += point.x();
     }
 
     for (auto point : pointsBackward) {
-        quint16 sectionNum = qFloor((point.y() - limits.minY) / step);
+        quint16 sectionNum = qFloor((point.y() - limitsResult.minY) / step);
         sectionNum = qMin(sectionNum, quint16(Sections - 1));
         ++pointsNumBackward[sectionNum];
         pointsValueBackward[sectionNum] += point.x();
@@ -387,7 +386,7 @@ QPair<qreal, qreal> MainTest::GetMeanMax(const QVector<QPointF> &pointsForward,
     return qMakePair(sum / num, max);
 }
 
-QPair<qreal, qreal> MainTest::GetRangeLimits(Regression regression1,
+QPair<qreal, qreal> MainTest::rangeLimits(Regression regression1,
                                              Regression regression2,
                                              Limits limits)
 {
@@ -404,7 +403,7 @@ QPair<qreal, qreal> MainTest::GetRangeLimits(Regression regression1,
     return qMakePair(min, max);
 }
 
-QPair<qreal, qreal> MainTest::GetSpringLimits(Regression regression1,
+QPair<qreal, qreal> MainTest::springLimits(Regression regression1,
                                               Regression regression2,
                                               Limits limits)
 {

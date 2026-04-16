@@ -10,11 +10,10 @@ class CyclicTestPositioner : public MainTest
     Q_OBJECT
 public:
     explicit CyclicTestPositioner(QObject *parent = nullptr);
-    void Process() override;
+    void run() override;
 
 private:
     QTimer *m_cyclicGraphTimer;
 signals:
-    void UpdateCyclicTred();
-    void SetStartTime();
+    void updateCyclicTred();
 };

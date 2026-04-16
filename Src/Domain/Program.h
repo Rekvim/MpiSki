@@ -52,7 +52,7 @@ public:
 
     const Registry* registry() const { return m_registry; }
 
-    enum class Test
+    enum class TestWorker
     {
         None,
         Stroke,
@@ -76,7 +76,6 @@ signals:
     void cyclicCycleCompleted(int completedCycles);
 
     void testActuallyStarted();
-    void testStarted();
 
     void setSensorsMask(quint8 adcMask);
 
@@ -104,12 +103,9 @@ signals:
     void clearPoints(Charts chart);
 
     void stopTheTest();
-    void showDots(bool visible);
     void setTaskControlsEnabled(bool enable);
     void duplicateMainChartsSeries();
     void releaseBlock();
-
-    void mainTestFinished();
 
     bool question(QString& title, QString& text);
 
@@ -124,22 +120,25 @@ private:
     TestDataBuffer m_testDataBuffer;
 
     std::unique_ptr<IAnalyzer> m_analyzer;
-    Test m_activeTest = Test::None;
+    TestWorker m_testWorker = TestWorker::None;
     //
 
     SelectTests::PatternType m_patternType;
 
     std::unique_ptr<BaseRunner> m_activeRunner;
+    void onRunnerActuallyStarted();
     template<typename RunnerT>
-    void startRunner(std::unique_ptr<RunnerT> r) {
-
+    void startRunner(std::unique_ptr<RunnerT> r)
+    {
         m_activeRunner.reset();
+
         connect(r.get(), &BaseRunner::requestClearChart,
-                this, [this](Charts chart){
-            emit clearPoints(chart);});
+                this, [this](Charts chart) {
+                    emit clearPoints(chart);
+                });
 
         connect(r.get(), &BaseRunner::testActuallyStarted,
-                this, &Program::testActuallyStarted);
+                this, &Program::onRunnerActuallyStarted);
 
         connect(r.get(), &BaseRunner::requestSetDAC,
                 this, &Program::setDacRaw);
@@ -161,11 +160,7 @@ private:
 
         setDacRaw(0, 5000, true);
 
-        m_isTestRunning = true;
-        m_startTime = QDateTime::currentMSecsSinceEpoch();
-        m_testDataBuffer.clear();
         m_activeRunner = std::move(r);
-        emit testStarted();
         m_activeRunner->start();
     }
 
