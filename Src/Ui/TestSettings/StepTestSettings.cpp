@@ -23,12 +23,14 @@ StepTestSettings::StepTestSettings(QWidget* parent)
     ui->spinBox_T_value->setRange(m_minTValue, m_maxTValue);
 }
 
-QVector<qreal>& StepTestSettings::sequence()
+QVector<qreal>&
+StepTestSettings::sequence()
 {
     return m_sequence;
 }
 
-QListWidget* StepTestSettings::sequenceListWidget()
+QListWidget*
+StepTestSettings::sequenceListWidget()
 {
     return ui->listWidget_value;
 }
@@ -38,9 +40,10 @@ StepTestSettings::~StepTestSettings()
     delete ui;
 }
 
-StepTestParams StepTestSettings::readParamsFromUi() const
+Domain::Tests::Option::Step::Params
+StepTestSettings::readParamsFromUi() const
 {
-    StepTestParams p;
+    Domain::Tests::Option::Step::Params p;
 
     p.delay = ui->timeEdit->time().msecsSinceStartOfDay();
     p.testValue = ui->spinBox_T_value->value();
@@ -53,11 +56,11 @@ StepTestParams StepTestSettings::readParamsFromUi() const
     return p;
 }
 
-StepTestParams StepTestSettings::parameters() const
+Domain::Tests::Option::Step::Params
+StepTestSettings::parameters() const
 {
     return readParamsFromUi();
 }
-
 
 void StepTestSettings::applyValveInfo(const ValveInfo& info)
 {

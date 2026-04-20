@@ -3,7 +3,7 @@
 #include "Src/Report/Writer.h"
 #include "Src/Report/Blocks/ObjectInfo.h"
 #include "Src/Report/Blocks/ValveSpec.h"
-#include "Src/Report/Blocks/CyclicSummaryh"
+#include "Src/Report/Blocks/CyclicSummary.h"
 #include "Src/Report/Blocks/CyclicRanges.h"
 #include "Src/Report/Blocks/StepReaction.h"
 #include "Src/Report/Blocks/TechnicalResults.h"

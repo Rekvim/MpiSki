@@ -2,7 +2,7 @@
 
 #include "ui_MainWindow.h"
 #include "Src/Storage/Telemetry.h"
-#include "Src/Domain/Tests/Stroke/StrokeTestResult.h"
+#include "Src/Domain/Tests/Stroke/StrokeResult.h"
 
 class TelemetryUiMapper
 {
@@ -12,7 +12,7 @@ public:
 
     void updateInit(const InitState& init);
     void updateMainTest(const Telemetry& t);
-    void updateStrokeTest(const StrokeTestResult& r);
+    void updateStrokeTest(const Domain::Tests::Stroke::Result& r);
     void updateCrossing(const Telemetry& t);
 
 private:

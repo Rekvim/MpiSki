@@ -7,8 +7,7 @@
 #include "Test.h"
 #include "Src/CustomChart/ChartManager.h"
 #include "Src/Storage/Registry.h"
-
-class Mpi;
+#include "Src/Domain/Mpi/Device.h"
 
 struct RunnerConfig {
     std::unique_ptr<Test> worker = nullptr;
@@ -21,7 +20,7 @@ class BaseRunner : public QObject
     Q_OBJECT
 
 public:
-    BaseRunner(Mpi& mpi, Registry& reg, QObject* parent = nullptr);
+    BaseRunner(Domain::Mpi::Device& device, Registry& reg, QObject* parent = nullptr);
     ~BaseRunner() override;
 
 public slots:
@@ -38,7 +37,7 @@ signals:
 
 protected:
     virtual RunnerConfig buildConfig() = 0;
-    virtual void wireSpecificSignals(Test& t) {}
+    virtual void wireSpecificSignals(Test& t) = 0;
 
 protected:
     bool isNormallyOpen() const
@@ -57,7 +56,7 @@ protected:
         return cfg;
     }
 
-    Mpi& m_mpi;
+    Domain::Mpi::Device& m_device;
     Registry& m_reg;
 
 private:

@@ -1,13 +1,13 @@
 #include "BaseRunner.h"
 #include "Test.h"
-#include "Src/Domain/Mpi/Mpi.h"
+#include "Src/Domain/Mpi/Device.h"
 #include "Src/Storage/Registry.h"
 
 #include <QMetaObject>
 
-BaseRunner::BaseRunner(Mpi& mpi, Registry& reg, QObject* parent)
+BaseRunner::BaseRunner(Domain::Mpi::Device& device, Registry& reg, QObject* parent)
     : QObject(parent)
-    , m_mpi(mpi)
+    , m_device(device)
     , m_reg(reg)
 {
 }

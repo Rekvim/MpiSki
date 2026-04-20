@@ -5,7 +5,7 @@ TestController::TestController(QObject* parent)
 {
 }
 
-void TestController::setProgram(Program* program)
+void TestController::setProgram(Domain::Program* program)
 {
     if (m_program == program)
         return;
@@ -19,10 +19,10 @@ void TestController::setProgram(Program* program)
     if (!m_program)
         return;
 
-    connect(m_program, &Program::testActuallyStarted,
+    connect(m_program, &Domain::Program::testActuallyStarted,
             this, &TestController::onProgramActuallyStarted);
 
-    connect(m_program, &Program::testFinished,
+    connect(m_program, &Domain::Program::testFinished,
             this, &TestController::onProgramFinished);
 }
 
@@ -49,21 +49,21 @@ void TestController::runMainTest(const Domain::Tests::Main::Params& params)
     });
 }
 
-void TestController::runResponseTest(const OptionTestParams& params)
+void TestController::runResponseTest(const Domain::Tests::Option::Params& params)
 {
     run([this, params] {
         emit startResponseRequested(params);
     });
 }
 
-void TestController::runResolutionTest(const OptionTestParams& params)
+void TestController::runResolutionTest(const Domain::Tests::Option::Params& params)
 {
     run([this, params] {
         emit startResolutionRequested(params);
     });
 }
 
-void TestController::runStepTest(const StepTestParams& params)
+void TestController::runStepTest(const Domain::Tests::Option::Step::Params& params)
 {
     run([this, params] {
         emit startStepRequested(params);

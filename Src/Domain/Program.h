@@ -7,13 +7,13 @@
 #include <QMessageBox>
 #include <QTimer>
 
-#include "Src/Domain/Mpi/Mpi.h"
+#include "Src/Domain/Mpi/Device.h"
 
 #include "Src/CustomChart/ChartManager.h"
 
-#include "Src/Domain/Tests/Main/Params.h"
-#include "Src/Domain/Tests/Cyclic/Params.h"
-#include "Src/Domain/Tests/Option/Step/StepTestParams.h"
+#include "Src/Domain/Tests/Main/MainParams.h"
+#include "Src/Domain/Tests/Cyclic/CyclicParams.h"
+#include "Src/Domain/Tests/Option/Step/StepParams.h"
 #include "Src/Domain/Tests/Option/OptionTestParams.h"
 
 #include "Src/Storage/Registry.h"
@@ -25,9 +25,9 @@
 
 #include "Src/Domain/Tests/BaseRunner.h"
 
-#include "Src/Domain/Tests/Option/Step/StepTest.h"
-#include "Src/Domain/Tests/Main/Algorithm.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/Algorithm.h"
+#include "Src/Domain/Tests/Option/Step/StepAlgorithm.h"
+#include "Src/Domain/Tests/Main/MainAlgorithm.h"
+#include "Src/Domain/Tests/Cyclic/Shutoff/ShutoffAlgorithm.h"
 #include "Src/Ui/Setup/SelectTests.h"
 
 enum class TextObjects
@@ -39,7 +39,7 @@ enum class TextObjects
     LineEdit_pressureSensor_3,
     LineEdit_feedback_4_20mA,
 };
-
+namespace Domain {
 class Program : public QObject
 {
     Q_OBJECT
@@ -47,8 +47,8 @@ public:
     explicit Program(QObject *parent = nullptr);
     void setRegistry(Registry *registry);
     bool isInitialized() const;
-    quint8 getDIStatus() { return m_mpi.digitalInputs(); }
-    quint8 getDOStatus() { return m_mpi.digitalOutputs(); }
+    quint8 getDIStatus() { return m_device.digitalInputs(); }
+    quint8 getDOStatus() { return m_device.digitalOutputs(); }
 
     const Registry* registry() const { return m_registry; }
 
@@ -67,7 +67,7 @@ public:
 
 
 signals:
-    void sampleReady(const Sample& sample);
+    void sampleReady(const Domain::Measurement::Sample& sample);
 
     void telemetryUpdated(const Telemetry& telemetry);
 
@@ -88,7 +88,7 @@ signals:
     void setVisible(Charts chart, quint16 series, bool visible);
     void setRegressionEnable(bool enable);
 
-    void setStepResults(const QVector<StepTest::TestResult>& results, quint32 T_value);
+    void setStepResults(const QVector<Domain::Tests::Option::Step::Result>& results, quint32 T_value);
     void setDoButtonsChecked(quint8 status);
 
     void setDiCheckboxesChecked(quint8 status);
@@ -115,9 +115,9 @@ signals:
 
 private:
     // Sample
-    Sample makeSample() const;
-    void updateRealtimeTexts(const Sample& s);
-    TestDataBuffer m_testDataBuffer;
+    Domain::Measurement::Sample makeSample() const;
+    void updateRealtimeTexts(const Domain::Measurement::Sample& s);
+    Domain::Measurement::TestDataBuffer m_testDataBuffer;
 
     std::unique_ptr<IAnalyzer> m_analyzer;
     TestWorker m_testWorker = TestWorker::None;
@@ -172,15 +172,15 @@ private:
 
     template<typename Runner, typename... Args>
     void runTest(Args&&... args);
-    void prepareShutoffTelemetry(const Domain::Tests::Cyclic::Params& params);
-    void prepareRegulatoryTelemetry(const Domain::Tests::Cyclic::Params& params);
+    void prepareShutoffTelemetry(const Tests::Cyclic::Params& params);
+    void prepareRegulatoryTelemetry(const Tests::Cyclic::Params& params);
 
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
     QString seqToString(const QVector<quint16> &seq);
 
     Registry *m_registry;
 
-    Mpi m_mpi;
+    Domain::Mpi::Device m_device;
 
     Telemetry m_telemetry;
     QTimer *m_diPollTimer = nullptr;
@@ -215,19 +215,17 @@ public slots:
     void initialization();
 
     // updateCharts
-    void updateChartsFromSample(const Sample& s);
-    void updateMainCharts(const Sample& s);
-    void updateCyclicChart(const Sample& s, Charts chart);
-    void updateTimeChart(const Sample& s, Charts chart, qint64 time);
+    void updateChartsFromSample(const Domain::Measurement::Sample& s);
+    void updateMainCharts(const Domain::Measurement::Sample& s);
+    void updateCyclicChart(const Domain::Measurement::Sample& s, Charts chart);
+    void updateTimeChart(const Domain::Measurement::Sample& s, Charts chart, qint64 time);
     //
-    void results_mainTest(const Domain::Tests::Main::Algorithm::TestResults& results);
     void results_strokeTest();
-    void results_stepTest(const QVector<StepTest::TestResult>& results, const quint32 T_value);
-
+    void results_mainTest(const Domain::Tests::Main::Algorithm::TestResults& results);
+    void results_stepTest(const QVector<Tests::Option::Step::Result>& results, const quint32 T_value);
     void results_cyclicRegulatoryTests();
-    void results_cyclicShutoffTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& results);
-
-    void results_cyclicCombinedTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& shutoffResults);
+    void results_cyclicShutoffTests(const Tests::Cyclic::Shutoff::Result& results);
+    void results_cyclicCombinedTests(const Tests::Cyclic::Shutoff::Result& shutoffResults);
 
     void setInitDoStates(const QVector<bool>& states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
@@ -244,11 +242,10 @@ public slots:
 
     void startStrokeTest();
     void startMainTest(const Domain::Tests::Main::Params& params);
-    void startResponseTest(const OptionTestParams& params);
-    void startResolutionTest(const OptionTestParams& params);
-    void startStepTest(const StepTestParams& params);
+    void startResponseTest(const Domain::Tests::Option::Params& params);
+    void startResolutionTest(const Domain::Tests::Option::Params& params);
+    void startStepTest(const Domain::Tests::Option::Step::Params& params);
     void startCyclicTest(const Domain::Tests::Cyclic::Params& params);
-
     void runCombinedCyclicTest(const Domain::Tests::Cyclic::Params& params);
 
     void endTest();
@@ -258,3 +255,4 @@ public slots:
     void button_DO(quint8 DO_num, bool state);
     void checkbox_autoInit(int state);
 };
+}

@@ -47,8 +47,7 @@ void OtherTestSettings::initConnections()
     ui->pushButton_delete_step->setEnabled(false);
 
     connect(ui->listWidget_step, &QListWidget::currentRowChanged,
-            this,
-            [this](int row)
+            this, [this](int row)
             {
                 ui->pushButton_change_step->setEnabled(row >= 0);
 
@@ -57,8 +56,7 @@ void OtherTestSettings::initConnections()
             });
 
     connect(ui->pushButton_add_step, &QPushButton::clicked,
-            this,
-            [this]()
+            this, [this]()
             {
                 ui->listWidget_step->addItem("3.0");
                 ui->listWidget_step->setCurrentRow(
@@ -66,15 +64,13 @@ void OtherTestSettings::initConnections()
             });
 
     connect(ui->pushButton_delete_step, &QPushButton::clicked,
-            this,
-            [this]()
+            this, [this]()
             {
                 delete ui->listWidget_step->currentItem();
             });
 
     connect(ui->pushButton_change_step, &QPushButton::clicked,
-            this,
-            [this]()
+            this, [this]()
             {
                 auto* it = ui->listWidget_step->currentItem();
                 if (!it)
@@ -109,12 +105,14 @@ void OtherTestSettings::applyPattern(SelectTests::PatternType pattern)
     Q_UNUSED(pattern);
 }
 
-QVector<qreal>& OtherTestSettings::sequence()
+QVector<qreal>&
+OtherTestSettings::sequence()
 {
     return m_sequence;
 }
 
-QListWidget* OtherTestSettings::sequenceListWidget()
+QListWidget*
+OtherTestSettings::sequenceListWidget()
 {
     return ui->listWidget_value;
 }
@@ -131,9 +129,10 @@ QVector<double> OtherTestSettings::readList(QListWidget* list) const
     return values;
 }
 
-OptionTestParams OtherTestSettings::readParamsFromUi() const
+Domain::Tests::Option::Params
+OtherTestSettings::readParamsFromUi() const
 {
-    OptionTestParams p;
+    Domain::Tests::Option::Params p;
 
     p.delay = ui->timeEdit->time().msecsSinceStartOfDay();
     p.points = readList(ui->listWidget_value);
@@ -142,7 +141,8 @@ OptionTestParams OtherTestSettings::readParamsFromUi() const
     return p;
 }
 
-OptionTestParams OtherTestSettings::parameters() const
+Domain::Tests::Option::Params
+OtherTestSettings::parameters() const
 {
     return readParamsFromUi();
 }

@@ -1,10 +1,10 @@
 #include "DeviceInitializer.h"
 #include <QtMath>
 
-DeviceInitializer::DeviceInitializer(Mpi& mpi,
+DeviceInitializer::DeviceInitializer(Domain::Mpi::Device& device,
                                      Registry& registry,
                                      Telemetry& telemetry)
-    : m_mpi(mpi), m_registry(registry), m_telemetry(telemetry)
+    : m_device(device), m_registry(registry), m_telemetry(telemetry)
 {}
 
 static QString formatPosition(qreal value, const Registry& registry)
@@ -20,10 +20,10 @@ static QString formatPosition(qreal value, const Registry& registry)
 // Подключение и инициализация устройства
 bool DeviceInitializer::connectAndInitDevice()
 {
-    bool ok = m_mpi.isConnect();
+    bool ok = m_device.isConnect();
 
     m_telemetry.init.deviceStatusText =
-        ok ? QString("Успешное подключение к порту %1").arg(m_mpi.portName())
+        ok ? QString("Успешное подключение к порту %1").arg(m_device.portName())
            : "Ошибка подключения";
 
     m_telemetry.init.deviceStatusColor =
@@ -31,7 +31,7 @@ bool DeviceInitializer::connectAndInitDevice()
 
     if (!ok) return false;
 
-    ok = m_mpi.initialize();
+    ok = m_device.initialize();
 
     m_telemetry.init.initStatusText =
         ok ? "Успешная инициализация" : "Ошибка инициализации";
@@ -41,10 +41,11 @@ bool DeviceInitializer::connectAndInitDevice()
 
     return ok;
 }
+
 // Обнаружение и отчёт по датчикам
 bool DeviceInitializer::detectSensors()
 {
-    int cnt = m_mpi.sensorCount();
+    int cnt = m_device.sensorCount();
 
     if (cnt == 0) {
         m_telemetry.init.connectedSensorsText = "Датчики не обнаружены";
@@ -70,11 +71,11 @@ bool DeviceInitializer::detectSensors()
 void DeviceInitializer::measureStartPosition(bool normalClosed)
 {
     if (normalClosed)
-        m_mpi[0]->captureMin();
+        m_device[0]->captureMin();
     else
-        m_mpi[0]->captureMax();
+        m_device[0]->captureMax();
 
-    const qreal value = m_mpi[0]->value();
+    const qreal value = m_device[0]->value();
 
     m_telemetry.init.startingPositionText =
         formatPosition(value, m_registry);
@@ -88,11 +89,11 @@ void DeviceInitializer::measureStartPosition(bool normalClosed)
 void DeviceInitializer::measureEndPosition(bool normalClosed)
 {
     if (normalClosed)
-        m_mpi[0]->captureMax();
+        m_device[0]->captureMax();
     else
-        m_mpi[0]->captureMin();
+        m_device[0]->captureMin();
 
-    const qreal value = m_mpi[0]->value();
+    const qreal value = m_device[0]->value();
 
     m_telemetry.init.finalPositionText =
         formatPosition(value, m_registry);
@@ -111,16 +112,16 @@ void DeviceInitializer::measureStartPositionShutoff(
     for (int i = 0; i < savedStates.size(); ++i) {
         if (savedStates[i]) {
             initialStates[i] = false;
-            m_mpi.setDiscreteOutput(i, false);
+            m_device.setDiscreteOutput(i, false);
         }
     }
 
     if (normalClosed)
-        m_mpi[0]->captureMin();
+        m_device[0]->captureMin();
     else
-        m_mpi[0]->captureMax();
+        m_device[0]->captureMax();
 
-    const qreal value = m_mpi[0]->value();
+    const qreal value = m_device[0]->value();
 
     m_telemetry.init.startingPositionText =
         formatPosition(value, m_registry);
@@ -139,16 +140,16 @@ void DeviceInitializer::measureEndPositionShutoff(
     for (int i = 0; i < savedStates.size(); ++i) {
         if (savedStates[i]) {
             initialStates[i] = true;
-            m_mpi.setDiscreteOutput(i, true);
+            m_device.setDiscreteOutput(i, true);
         }
     }
 
     if (normalClosed)
-        m_mpi[0]->captureMax();
+        m_device[0]->captureMax();
     else
-        m_mpi[0]->captureMin();
+        m_device[0]->captureMin();
 
-    const qreal value = m_mpi[0]->value();
+    const qreal value = m_device[0]->value();
 
     m_telemetry.init.finalPositionText =
         formatPosition(value, m_registry);
@@ -166,12 +167,12 @@ void DeviceInitializer::calculateCoefficients()
         coeff = qRadiansToDegrees(2.0 / valveInfo.diameterPulley);
     }
 
-    m_mpi[0]->correctCoefficients(coeff);
+    m_device[0]->correctCoefficients(coeff);
 }
 
 void DeviceInitializer::recordStrokeRange(bool normalClosed)
 {
-    const qreal value = m_mpi[0]->value();
+    const qreal value = m_device[0]->value();
 
     m_telemetry.valveStrokeRecord.range =
         formatPosition(value, m_registry);

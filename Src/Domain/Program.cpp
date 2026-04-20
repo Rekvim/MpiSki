@@ -1,16 +1,16 @@
 #include "Program.h"
 
-#include "Src/Domain/Tests/Option/Step/StepTest.h"
-#include "Src/Domain/Tests/Main/Algorithm.h"
+#include "Src/Domain/Tests/Option/Step/StepAlgorithm.h"
+#include "Src/Domain/Tests/Main/MainAlgorithm.h"
 
 #include "Src/Domain/Tests/AnalyzerFactory.h"
-#include "Src/Domain/Tests/Stroke/StrokeTestRunner.h"
-#include "Src/Domain/Tests/Main/Runner.h"
-#include "Src/Domain/Tests/Option/Step/StepTestRunner.h"
+#include "Src/Domain/Tests/Stroke/StrokeRunner.h"
+#include "Src/Domain/Tests/Main/MainRunner.h"
+#include "Src/Domain/Tests/Option/Step/StepRunner.h"
 #include "Src/Domain/Tests/Option/Response/ResponseRunner.h"
 #include "Src/Domain/Tests/Option/Resolution/ResolutionRunner.h"
-#include "Src/Domain/Tests/Cyclic/Regulatory/Runner.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/Runner.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/RegulatoryRunner.h"
+#include "Src/Domain/Tests/Cyclic/Shutoff/ShutoffRunner.h"
 
 #include "Src/Domain/DeviceInitializer.h"
 
@@ -20,7 +20,16 @@
 #include <QLocale>
 #include <utility>
 
+namespace Domain {
 constexpr quint8 VersionFlag = 0x40;
+
+namespace MainTest = Domain::Tests::Main;
+namespace StrokeTest = Domain::Tests::Stroke;
+namespace StepTest = Domain::Tests::Option::Step;
+namespace ResponseTest = Domain::Tests::Option::Response;
+namespace ResolutionTest = Domain::Tests::Option::Resolution;
+namespace CyclicReg = Domain::Tests::Cyclic::Regulatory;
+namespace CyclicShut = Domain::Tests::Cyclic::Shutoff;
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -36,7 +45,7 @@ Program::Program(QObject *parent)
     m_timerDI = new QTimer(this);
     m_timerDI->setInterval(1000);
     connect(m_timerDI, &QTimer::timeout, this, [&]() {
-        quint8 DI = m_mpi.digitalInputs();
+        quint8 DI = m_device.digitalInputs();
         emit setDiCheckboxesChecked(DI);
     });
 }
@@ -59,12 +68,12 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
 {
     m_isDacStopRequested = false;
 
-    if (m_mpi.sensorCount() == 0) {
+    if (m_device.sensorCount() == 0) {
         emit releaseBlock();
         return;
     }
 
-    m_mpi.setDacRaw(dac);
+    m_device.setDacRaw(dac);
 
     if (waitForStart) {
         QTimer timer;
@@ -73,7 +82,7 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
         QList<quint16> lineSensor;
 
         connect(&timer, &QTimer::timeout, this, [&]() {
-            lineSensor.push_back(m_mpi[0]->rawValue());
+            lineSensor.push_back(m_device[0]->rawValue());
             if (qAbs(lineSensor.first() - lineSensor.last()) > 10) {
                 timer.stop();
                 m_dacEventLoop->quit();
@@ -113,7 +122,7 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
         QList<quint16> lineSensor;
 
         connect(&timer, &QTimer::timeout, this, [&]() {
-            lineSensor.push_back(m_mpi[0]->rawValue());
+            lineSensor.push_back(m_device[0]->rawValue());
             if (lineSensor.size() == 50) {
                 if (qAbs(lineSensor.first() - lineSensor.last()) < 10) {
                     timer.stop();
@@ -131,49 +140,49 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
     emit releaseBlock();
 }
 
-Sample Program::makeSample() const
+Domain::Measurement::Sample
+Program::makeSample() const
 {
-    Sample s;
+    Domain::Measurement::Sample s;
 
     const auto& v = m_registry->valveInfo();
-
     const qint64 now = QDateTime::currentMSecsSinceEpoch();
 
     s.systemTime = now - m_initTime;
     s.testTime = m_isTestRunning ? now - m_startTime : 0;
 
-    s.dac = m_mpi.dac()->value();
+    s.dac = m_device.dac()->value();
 
     s.taskPercent = SignalUtils::calcPercent(
         s.dac,
         v.safePosition == SafePosition::NormallyOpen
-        );
+    );
 
-    s.diMask = m_mpi.digitalInputs();
-    s.doMask = m_mpi.digitalOutputs();
+    s.diMask = m_device.digitalInputs();
+    s.doMask = m_device.digitalOutputs();
 
-    if (auto* linear = m_mpi.sensorByAdc(0)) {
+    if (auto* linear = m_device.sensorByAdc(0)) {
         s.positionValue = linear->value();
         s.positionPercent = linear->percent();
         s.positionUnit = (v.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
     }
 
-    if (auto* p1 = m_mpi.sensorByAdc(1))
+    if (auto* p1 = m_device.sensorByAdc(1))
         s.pressure1 = p1->value();
 
-    if (auto* p2 = m_mpi.sensorByAdc(2))
+    if (auto* p2 = m_device.sensorByAdc(2))
         s.pressure2 = p2->value();
 
-    if (auto* p3 = m_mpi.sensorByAdc(3))
+    if (auto* p3 = m_device.sensorByAdc(3))
         s.pressure3 = p3->value();
 
-    if (auto* fb = m_mpi.sensorByAdc(4))
+    if (auto* fb = m_device.sensorByAdc(4))
         s.feedbackCurrent = fb->value();
 
     return s;
 }
 
-void Program::updateRealtimeTexts(const Sample& s)
+void Program::updateRealtimeTexts(const Domain::Measurement::Sample& s)
 {
     if (m_isTestRunning && !qIsNaN(s.dac))
         emit setTask(s.dac);
@@ -227,11 +236,11 @@ void Program::updateRealtimeTexts(const Sample& s)
     }
 }
 
-void Program::updateMainCharts(const Sample& s)
+void Program::updateMainCharts(const Domain::Measurement::Sample& s)
 {
     QVector<Point> points;
 
-    if (auto* linear = m_mpi.sensorByAdc(0)) {
+    if (auto* linear = m_device.sensorByAdc(0)) {
         const qreal x = s.dac;
         const qreal taskValue = linear->valueFromPercent(s.taskPercent);
 
@@ -250,7 +259,7 @@ void Program::updateMainCharts(const Sample& s)
 
     emit addPoints(Charts::Task, points);
 
-    if (auto* linear = m_mpi.sensorByAdc(0)) {
+    if (auto* linear = m_device.sensorByAdc(0)) {
         if (!qIsNaN(s.pressure1)) {
             QVector<Point> pressurePoints;
             pressurePoints.push_back({0, s.pressure1, linear->value()});
@@ -259,7 +268,7 @@ void Program::updateMainCharts(const Sample& s)
     }
 }
 
-void Program::updateCyclicChart(const Sample& s, Charts chart)
+void Program::updateCyclicChart(const Domain::Measurement::Sample& s, Charts chart)
 {
     QVector<Point> points;
     points.push_back({0, qreal(s.testTime), s.taskPercent});
@@ -271,7 +280,7 @@ void Program::updateCyclicChart(const Sample& s, Charts chart)
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
 
-        quint8 di = m_mpi.digitalInputs();
+        quint8 di = m_device.digitalInputs();
 
         if (di != m_lastDiStatus) {
             QVector<Point> diPts;
@@ -305,7 +314,7 @@ void Program::updateCyclicChart(const Sample& s, Charts chart)
 
 void Program::updateSensors()
 {
-    const Sample s = makeSample();
+    const Domain::Measurement::Sample s = makeSample();
 
     emit sampleReady(s);
 
@@ -317,7 +326,7 @@ void Program::updateSensors()
     updateChartsFromSample(s);
 }
 
-void Program::updateTimeChart(const Sample& s, Charts chart, qint64 time)
+void Program::updateTimeChart(const Domain::Measurement::Sample& s, Charts chart, qint64 time)
 {
     QVector<Point> points;
 
@@ -327,7 +336,7 @@ void Program::updateTimeChart(const Sample& s, Charts chart, qint64 time)
     emit addPoints(chart, points);
 }
 
-void Program::updateChartsFromSample(const Sample& s)
+void Program::updateChartsFromSample(const Domain::Measurement::Sample& s)
 {
     updateTimeChart(s, Charts::Trend, s.systemTime);
 
@@ -374,7 +383,7 @@ void Program::endTest()
     emit setTaskControlsEnabled(true);
     emit setButtonInitEnabled(true);
 
-    emit setTask(m_mpi.dac()->value());
+    emit setTask(m_device.dac()->value());
 
     m_activeRunner.reset();
 
@@ -384,7 +393,7 @@ void Program::endTest()
 
 void Program::setDacReal(qreal value)
 {
-    m_mpi.setDacValue(value);
+    m_device.setDacValue(value);
 }
 
 void Program::setInitDoStates(const QVector<bool> &states)
@@ -409,7 +418,7 @@ void Program::initialization()
     emit setButtonInitEnabled(false);
 
     DeviceInitializer initializer(
-        m_mpi,
+        m_device,
         *m_registry,
         m_telemetry
     );
@@ -433,8 +442,8 @@ void Program::initialization()
         m_patternType == SelectTests::Pattern_C_SACVT ||
         m_patternType == SelectTests::Pattern_C_SOVT) {
 
-        if ((m_mpi.version() & VersionFlag) != 0) {
-            emit setDoButtonsChecked(m_mpi.digitalOutputs());
+        if ((m_device.version() & VersionFlag) != 0) {
+            emit setDoButtonsChecked(m_device.digitalOutputs());
             m_timerDI->start();
         } else {
             return;
@@ -508,12 +517,12 @@ void Program::finalizeInitialization()
 
     quint8 mask = 0;
     for (quint8 adc = 0; adc < 6; ++adc) {
-        if (m_mpi.sensorByAdc(adc))
+        if (m_device.sensorByAdc(adc))
             mask |= (1 << adc);
     }
 
     emit setSensorsMask(mask);
-    emit setSensorNumber(m_mpi.sensorCount());
+    emit setSensorNumber(m_device.sensorCount());
     emit setButtonInitEnabled(true);
 
     m_timerSensors->start();
@@ -527,7 +536,7 @@ template<typename Runner, typename... Args>
 void Program::runTest(Args&&... args)
 {
     auto r = std::make_unique<Runner>(
-        m_mpi, *m_registry,
+        m_device, *m_registry,
         std::forward<Args>(args)...,
         this
     );
@@ -535,10 +544,10 @@ void Program::runTest(Args&&... args)
     startRunner(std::move(r));
 }
 
-void Program::startMainTest(const Domain::Tests::Main::Params& params)
+void Program::startMainTest(const MainTest::Params& params)
 {
     m_testWorker = TestWorker::Main;
-    runTest<Domain::Tests::Main::Runner>(params);
+    runTest<MainTest::Runner>(params);
 }
 
 void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
@@ -634,8 +643,8 @@ void Program::updateCrossingStatus()
 }
 
 static void debugCompareMainTest(
-    const Domain::Tests::Main::Algorithm::TestResults& oldR,
-    const Domain::Tests::Main::Result& newR)
+    const MainTest::Algorithm::TestResults& oldR,
+    const MainTest::Result& newR)
 {
     qDebug() << "\n===== MAIN TEST COMPARISON =====";
 
@@ -682,9 +691,9 @@ static void debugCompareMainTest(
     qDebug() << "===============================\n";
 }
 
-void Program::results_mainTest(const Domain::Tests::Main::Algorithm::TestResults &results)
+void Program::results_mainTest(const MainTest::Algorithm::TestResults &results)
 {
-    auto* analyzer = static_cast<Domain::Tests::Main::Analyzer*>(m_analyzer.get());
+    auto* analyzer = static_cast<MainTest::Analyzer*>(m_analyzer.get());
     analyzer->finish();
 
 
@@ -751,18 +760,18 @@ void Program::startStrokeTest()
 
     const auto& valveInfo = m_registry->valveInfo();
 
-    StrokeTestAnalyzer::Config cfg;
+    Tests::Stroke::Analyzer::Config cfg;
 
     cfg.normalClosed = (valveInfo.safePosition == SafePosition::NormallyClosed);
 
     m_analyzer = AnalyzerFactory::create(m_testWorker);
 
-    auto* analyzer = static_cast<StrokeTestAnalyzer*>(m_analyzer.get());
+    auto* analyzer = static_cast<Tests::Stroke::Analyzer*>(m_analyzer.get());
 
     analyzer->setConfig(cfg);
     analyzer->start();
 
-    runTest<StrokeTestRunner>();
+    runTest<Tests::Stroke::Runner>();
 }
 
 void Program::receivedPoints_strokeTest(QVector<QVector<QPointF>> &points)
@@ -772,7 +781,7 @@ void Program::receivedPoints_strokeTest(QVector<QVector<QPointF>> &points)
 
 void Program::results_strokeTest()
 {
-    auto* analyzer = dynamic_cast<StrokeTestAnalyzer*>(m_analyzer.get());
+    auto* analyzer = dynamic_cast<Tests::Stroke::Analyzer*>(m_analyzer.get());
 
     auto result = analyzer->result();
     m_telemetry.stroke = result;
@@ -793,7 +802,7 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
 
     for (quint16 pct : seq) {
         qreal current = 16.0 * (normalOpen ? 100 - pct : pct) / 100.0 + 4.0;
-        raw.push_back(m_mpi.dac()->rawFromValue(current));
+        raw.push_back(m_device.dac()->rawFromValue(current));
     }
     return raw;
 }
@@ -822,7 +831,7 @@ void Program::results_cyclicRegulatoryTests()
 
     // emit telemetryUpdated(m_telemetry);
 
-    auto* analyzer = dynamic_cast<Domain::Tests::Cyclic::Regulatory::Analyzer*>(m_analyzer.get());
+    auto* analyzer = dynamic_cast<CyclicReg::Analyzer*>(m_analyzer.get());
     analyzer->finish();
     m_telemetry.cyclicTestRecord.regulatoryResult = analyzer->result();
 
@@ -833,13 +842,13 @@ void Program::setMultipleDO(const QVector<bool>& states)
 {
     quint8 mask = 0;
     for (int d = 0; d < states.size(); ++d) {
-        m_mpi.setDiscreteOutput(d, states[d]);
+        m_device.setDiscreteOutput(d, states[d]);
         if (states[d]) mask |= (1 << d);
     }
     //emit SetButtonsDOChecked(mask);
 }
 
-void Program::results_cyclicShutoffTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& results)
+void Program::results_cyclicShutoffTests(const CyclicShut::Result& results)
 {
     auto &dst = m_telemetry.cyclicTestRecord;
 
@@ -853,7 +862,7 @@ void Program::results_cyclicShutoffTests(const Domain::Tests::Cyclic::Shutoff::A
     emit telemetryUpdated(m_telemetry);
 }
 
-void Program::results_cyclicCombinedTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& shutoffResults)
+void Program::results_cyclicCombinedTests(const CyclicShut::Result& shutoffResults)
 {
     // auto &dst = m_telemetry.cyclicTestRecord;
     // dst.sequence = dst.sequence;
@@ -941,13 +950,13 @@ void Program::runCombinedCyclicTest(const Domain::Tests::Cyclic::Params& params)
 
     emit totalTestTimeMs(regMs + offMs);
 
-    auto reg = std::make_unique<Domain::Tests::Cyclic::Regulatory::Runner>(
-        m_mpi, *m_registry, params.regulatory, this);
+    auto reg = std::make_unique<CyclicReg::Runner>(
+        m_device, *m_registry, params.regulatory, this);
 
     connect(this, &Program::testFinished,
             this, [this, params]() {
-                auto shut = std::make_unique<Domain::Tests::Cyclic::Shutoff::Runner>(
-                    m_mpi, *m_registry, params.shutoff, this);
+                auto shut = std::make_unique<CyclicShut::Runner>(
+                    m_device, *m_registry, params.shutoff, this);
 
                 startRunner(std::move(shut));
             },
@@ -978,15 +987,15 @@ void Program::startCyclicTest(const Domain::Tests::Cyclic::Params& params)
         m_testWorker = TestWorker::CyclicRegulatory;
         m_analyzer = AnalyzerFactory::create(m_testWorker);
 
-        auto* analyzer = dynamic_cast<Domain::Tests::Cyclic::Regulatory::Analyzer*>(m_analyzer.get());
+        auto* analyzer = dynamic_cast<CyclicReg::Analyzer*>(m_analyzer.get());
         analyzer->configure(params.regulatory);
         analyzer->start();
 
-        runTest<Domain::Tests::Cyclic::Regulatory::Runner>(params.regulatory);
+        runTest<CyclicReg::Runner>(params.regulatory);
         break;
     } case Domain::Tests::Cyclic::Params::Shutoff: {
         m_testWorker = TestWorker::CyclicShutOff;
-        runTest<Domain::Tests::Cyclic::Shutoff::Runner>(params.shutoff);
+        runTest<CyclicShut::Runner>(params.shutoff);
         break;
     } case Domain::Tests::Cyclic::Params::Combined: {
         runCombinedCyclicTest(params);
@@ -998,26 +1007,26 @@ void Program::startCyclicTest(const Domain::Tests::Cyclic::Params& params)
     emit telemetryUpdated(m_telemetry);
 }
 
-void Program::startResponseTest(const OptionTestParams& params) {
+void Program::startResponseTest(const Tests::Option::Params& params) {
     m_testWorker = TestWorker::Response;
-    runTest<ResponseRunner>(params);
+    runTest<Tests::Option::Response::Runner>(params);
 }
 
-void Program::startResolutionTest(const OptionTestParams& params) {
+void Program::startResolutionTest(const Tests::Option::Params& params) {
     m_testWorker = TestWorker::Resolution;
-    runTest<ResolutionRunner>(params);
+    runTest<Tests::Option::Resolution::Runner>(params);
 }
-void Program::startStepTest(const StepTestParams& params) {
+void Program::startStepTest(const Tests::Option::Step::Params& params) {
     m_testWorker = TestWorker::Step;
 
     m_analyzer = AnalyzerFactory::create(m_testWorker);
 
-    auto* analyzer = static_cast<StepTestAnalyzer*>(m_analyzer.get());
+    auto* analyzer = static_cast<Tests::Option::Step::Analyzer*>(m_analyzer.get());
 
     analyzer->setConfig({params.testValue});
     analyzer->start();
 
-    runTest<StepTestRunner>(params);
+    runTest<Tests::Option::Step::Runner>(params);
 }
 
 void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
@@ -1025,10 +1034,10 @@ void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
     emit getPoints_stepTest(points, Charts::Step);
 }
 
-void Program::results_stepTest(const QVector<StepTest::TestResult> &results, quint32 T_value)
+void Program::results_stepTest(const QVector<StepTest::Result>& results, quint32 T_value)
 {
     auto* analyzer =
-        static_cast<StepTestAnalyzer*>(m_analyzer.get());
+        static_cast<Tests::Option::Step::Analyzer*>(m_analyzer.get());
 
     analyzer->finish();
 
@@ -1083,8 +1092,8 @@ void Program::button_DO(quint8 DO_num, bool state)
         return;
     }
 
-    m_mpi.setDiscreteOutput(DO_num, state);
-    emit setDoButtonsChecked(m_mpi.digitalOutputs());
+    m_device.setDiscreteOutput(DO_num, state);
+    emit setDoButtonsChecked(m_device.digitalOutputs());
 }
 
 void Program::checkbox_autoInit(int state)
@@ -1097,4 +1106,5 @@ void Program::terminateTest()
     m_isDacStopRequested = true;
     m_dacEventLoop->quit();
     emit stopTheTest();
+}
 }

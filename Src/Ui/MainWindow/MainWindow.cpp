@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
         {TextObjects::LineEdit_feedback_4_20mA, ui->lineEdit_feedback_4_20mA}
     };
 
-    m_program = new Program;
+    m_program = new Domain::Program;
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
     m_programThread->start();
@@ -127,22 +127,22 @@ MainWindow::MainWindow(QWidget *parent)
     m_testController->setProgram(m_program);
 
     connect(m_testController, &TestController::startMainRequested,
-            m_program, &Program::startMainTest);
+            m_program, &Domain::Program::startMainTest);
 
     connect(m_testController, &TestController::startStrokeRequested,
-            m_program, &Program::startStrokeTest);
+            m_program, &Domain::Program::startStrokeTest);
 
     connect(m_testController, &TestController::startResponseRequested,
-            m_program, &Program::startResponseTest);
+            m_program, &Domain::Program::startResponseTest);
 
     connect(m_testController, &TestController::startResolutionRequested,
-            m_program, &Program::startResolutionTest);
+            m_program, &Domain::Program::startResolutionTest);
 
     connect(m_testController, &TestController::startStepRequested,
-            m_program, &Program::startStepTest);
+            m_program, &Domain::Program::startStepTest);
 
     connect(m_testController, &TestController::startCyclicRequested,
-            m_program, &Program::startCyclicTest);
+            m_program, &Domain::Program::startCyclicTest);
 
     // kоговое окно
     // logOutput = new QPlainTextEdit(this);
@@ -170,23 +170,23 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_durationTimer, &QTimer::timeout,
             this, &MainWindow::onCountdownTimeout);
 
-    connect(m_program, &Program::totalTestTimeMs,
+    connect(m_program, &Domain::Program::totalTestTimeMs,
             this, &MainWindow::onTotalTestTimeMs);
 
     connect(this, &MainWindow::initialized,
-            m_program, &Program::initialization);
+            m_program, &Domain::Program::initialization);
 
     connect(this, &MainWindow::doInitStatesSelected,
-            m_program, &Program::setInitDoStates);
+            m_program, &Domain::Program::setInitDoStates);
 
     connect(ui->pushButton_set, &QPushButton::clicked,
-            m_program, &Program::button_set_position);
+            m_program, &Domain::Program::button_set_position);
 
     connect(ui->checkBox_autoinit, &QCheckBox::checkStateChanged,
-            m_program, &Program::checkbox_autoInit);
+            m_program, &Domain::Program::checkbox_autoInit);
 
     connect(this, &MainWindow::setDo,
-            m_program, &Program::button_DO);
+            m_program, &Domain::Program::button_DO);
 
     QPushButton* buttons[] = {
         ui->pushButton_DO0,
@@ -205,20 +205,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::stopTest,
             m_testController, &TestController::stop);
 
-    connect(m_program, &Program::testFinished,
+    connect(m_program, &Domain::Program::testFinished,
             this, &MainWindow::endTest);
 
-    connect(m_program, &Program::setText,
+    connect(m_program, &Domain::Program::setText,
             this, &MainWindow::setText);
 
-    connect(m_program, &Program::setDoButtonsChecked,
+    connect(m_program, &Domain::Program::setDoButtonsChecked,
             this, &MainWindow::setDoButtonsChecked);
 
-    connect(m_program, &Program::setDiCheckboxesChecked,
+    connect(m_program, &Domain::Program::setDiCheckboxesChecked,
             this, &MainWindow::setDiCheckboxesChecked);
 
     connect(this, &MainWindow::dacValueRequested,
-            m_program, &Program::setDacReal);
+            m_program, &Domain::Program::setDacReal);
 
     connect(ui->doubleSpinBox_task,
             qOverload<double>(&QDoubleSpinBox::valueChanged),
@@ -240,27 +240,27 @@ MainWindow::MainWindow(QWidget *parent)
             });
 
     connect(this, &MainWindow::patternChanged,
-            m_program, &Program::setPattern);
+            m_program, &Domain::Program::setPattern);
 
-    connect(m_program, &Program::setTask,
+    connect(m_program, &Domain::Program::setTask,
             this, &MainWindow::setTask);
 
-    connect(m_program, &Program::setSensorNumber,
+    connect(m_program, &Domain::Program::setSensorNumber,
             this, &MainWindow::setSensorsNumber);
 
-    connect(m_program, &Program::setSensorsMask,
+    connect(m_program, &Domain::Program::setSensorsMask,
             this, &MainWindow::setSensorsMask);
 
-    connect(m_program, &Program::setButtonInitEnabled,
+    connect(m_program, &Domain::Program::setButtonInitEnabled,
             this, &MainWindow::setButtonInitEnabled);
 
-    connect(m_program, &Program::setTaskControlsEnabled,
+    connect(m_program, &Domain::Program::setTaskControlsEnabled,
             this, &MainWindow::setTaskControlsEnabled);
 
-    connect(m_program, &Program::setStepResults,
+    connect(m_program, &Domain::Program::setStepResults,
             this, &MainWindow::setStepTestResults);
 
-    connect(m_program, &Program::question,
+    connect(m_program, &Domain::Program::question,
             this, &MainWindow::askQuestion,
             Qt::BlockingQueuedConnection);
 
@@ -291,11 +291,11 @@ MainWindow::MainWindow(QWidget *parent)
                      ":/Src/Img/arrowDownHover.png",
                      -0.05);
 
-    connect(m_program, &Program::telemetryUpdated,
+    connect(m_program, &Domain::Program::telemetryUpdated,
             this, &MainWindow::onTelemetryUpdated,
             Qt::QueuedConnection);
 
-    connect(m_program, &Program::cyclicCycleCompleted,
+    connect(m_program, &Domain::Program::cyclicCycleCompleted,
             this, [this](int completed){
                 int remaining = completed;
                 ui->label_cyclicTest_completedCyclesValue->setText(QString::number(remaining));
@@ -783,7 +783,7 @@ void MainWindow::setTask(qreal task)
     }
 }
 
-void MainWindow::setStepTestResults(const QVector<StepTest::TestResult> &results, quint32 T_value)
+void MainWindow::setStepTestResults(const QVector<Domain::Tests::Option::Step::Result> &results, quint32 T_value)
 {
     ui->tableWidget_stepResults->setHorizontalHeaderLabels(
         {tr(("T%1")).arg(T_value), tr("Перерегулирование")});
@@ -1399,19 +1399,19 @@ void MainWindow::initCharts()
         cyclic->setSeriesMarkersOnly(3, true);
     }
 
-    connect(m_program, &Program::addPoints,
+    connect(m_program, &Domain::Program::addPoints,
             m_chartManager.get(), &ChartManager::addPoints);
 
-    connect(m_program, &Program::clearPoints,
+    connect(m_program, &Domain::Program::clearPoints,
             m_chartManager.get(), &ChartManager::clearPoints);
 
-    connect(m_program, &Program::duplicateMainChartsSeries,
+    connect(m_program, &Domain::Program::duplicateMainChartsSeries,
             m_chartManager.get(), &ChartManager::duplicateMainChartsSeries);
 
-    connect(m_program, &Program::setVisible,
+    connect(m_program, &Domain::Program::setVisible,
             m_chartManager.get(), &ChartManager::setVisible);
 
-    connect(m_program, &Program::setRegressionEnable,
+    connect(m_program, &Domain::Program::setRegressionEnable,
             this, &MainWindow::setRegressionEnabled);
 
     connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged,
@@ -1444,19 +1444,19 @@ void MainWindow::initCharts()
                 m_chartManager->chart(Charts::Pressure)->visible(1, state != 0);
             });
 
-    connect(m_program, &Program::getPoints_strokeTest,
+    connect(m_program, &Domain::Program::getPoints_strokeTest,
             this, &MainWindow::onStrokeTestPointsRequested,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::getPoints_mainTest,
+    connect(m_program, &Domain::Program::getPoints_mainTest,
             this, &MainWindow::onMainTestPointsRequested,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::getPoints_stepTest,
+    connect(m_program, &Domain::Program::getPoints_stepTest,
             this, &MainWindow::onStepTestPointsRequested,
             Qt::BlockingQueuedConnection);
 
-    connect(m_program, &Program::getPoints_cyclicTest,
+    connect(m_program, &Domain::Program::getPoints_cyclicTest,
             this, &MainWindow::onCyclicTestPointsRequested,
             Qt::QueuedConnection);
 }

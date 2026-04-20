@@ -1,220 +1,276 @@
-# CMakeLists.txt for QXlsx Library
-
 cmake_minimum_required(VERSION 3.16)
+project(YourTestSystem VERSION 1.0.0 LANGUAGES CXX)
 
-project(QXlsx
-    VERSION 1.4.4
-    LANGUAGES CXX
-)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOMOC ON)
-
-include(GNUInstallDirs)
-
-if(NOT DEFINED QT_VERSION_MAJOR)
-    find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Gui REQUIRED)
-endif()
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui REQUIRED)
-set(EXPORT_NAME QXlsxQt${QT_VERSION_MAJOR})
-
-if (QT_VERSION_MAJOR EQUAL 6)
-    set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
-else()
-    set(CMAKE_CXX_STANDARD 11 CACHE STRING "")
-endif()
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+# Отдельные директории для сгенерированных файлов
+set(CMAKE_AUTOMOC_MOC_DIR ${CMAKE_CURRENT_BINARY_DIR}/moc)
+set(CMAKE_AUTORCC_RCC_DIR ${CMAKE_CURRENT_BINARY_DIR}/rcc)
+set(CMAKE_AUTOUIC_UI_DIR ${CMAKE_CURRENT_BINARY_DIR}/ui)
 
-if(NOT DEFINED ${QXLSX_PARENTPATH})
-	set(QXLSX_PARENTPATH ${CMAKE_CURRENT_SOURCE_DIR}/../)
-endif(NOT DEFINED ${QXLSX_PARENTPATH})
+# Решение проблемы с одинаковыми именами файлов
+set(CMAKE_CXX_OBJECT_PATH_SEP "_")
+set_property(GLOBAL PROPERTY TARGET_OBJECT_PATH_MAX 256)
 
-if(NOT DEFINED ${QXLSX_HEADERPATH})
-	set(QXLSX_HEADERPATH ${CMAKE_CURRENT_SOURCE_DIR}/../QXlsx/header/)
-endif(NOT DEFINED ${QXLSX_HEADERPATH})
-
-if(NOT DEFINED ${QXLSX_SOURCEPATH})
-	set(QXLSX_SOURCEPATH ${CMAKE_CURRENT_SOURCE_DIR}/../QXlsx/source/)
-endif(NOT DEFINED ${QXLSX_SOURCEPATH})
-
-message("Current Path of QXlsx")
-message(${QXLSX_PARENTPATH})
-message(${QXLSX_HEADERPATH})
-message(${QXLSX_SOURCEPATH})
-
-# Due historical reasons this value is kept off
-option(BUILD_SHARED_LIBS "Build in shared lib mode" OFF)
-
-set(SRC_FILES
-    source/xlsxcellrange.cpp
-    source/xlsxcellrange.cpp
-    source/xlsxcontenttypes.cpp
-    source/xlsxdrawinganchor.cpp
-    source/xlsxrichstring.cpp
-    source/xlsxworkbook.cpp
-    source/xlsxabstractooxmlfile.cpp
-    source/xlsxcellreference.cpp
-    source/xlsxdatavalidation.cpp
-    source/xlsxdrawing.cpp
-    source/xlsxsharedstrings.cpp
-    source/xlsxworksheet.cpp
-    source/xlsxabstractsheet.cpp
-    source/xlsxchart.cpp
-    source/xlsxdatetype.cpp
-    source/xlsxformat.cpp
-    source/xlsxsimpleooxmlfile.cpp
-    source/xlsxzipreader.cpp
-    source/xlsxcell.cpp
-    source/xlsxchartsheet.cpp
-    source/xlsxdocpropsapp.cpp
-    source/xlsxmediafile.cpp
-    source/xlsxstyles.cpp
-    source/xlsxzipwriter.cpp
-    source/xlsxcellformula.cpp
-    source/xlsxcolor.cpp
-    source/xlsxdocpropscore.cpp
-    source/xlsxnumformatparser.cpp
-    source/xlsxtheme.cpp
-    source/xlsxcelllocation.cpp
-    source/xlsxconditionalformatting.cpp
-    source/xlsxdocument.cpp
-    source/xlsxrelationships.cpp
-    source/xlsxutility.cpp
-    header/xlsxabstractooxmlfile_p.h
-    header/xlsxchartsheet_p.h
-    header/xlsxdocpropsapp_p.h
-    header/xlsxformat_p.h
-    header/xlsxsharedstrings_p.h
-    header/xlsxworkbook_p.h
-    header/xlsxabstractsheet_p.h
-    header/xlsxcolor_p.h
-    header/xlsxdocpropscore_p.h
-    header/xlsxmediafile_p.h
-    header/xlsxsimpleooxmlfile_p.h
-    header/xlsxworksheet_p.h
-    header/xlsxcellformula_p.h
-    header/xlsxconditionalformatting_p.h
-    header/xlsxdocument_p.h
-    header/xlsxnumformatparser_p.h
-    header/xlsxstyles_p.h
-    header/xlsxzipreader_p.h
-    header/xlsxcell_p.h
-    header/xlsxcontenttypes_p.h
-    header/xlsxdrawinganchor_p.h
-    header/xlsxrelationships_p.h
-    header/xlsxtheme_p.h
-    header/xlsxzipwriter_p.h
-    header/xlsxchart_p.h
-    header/xlsxdatavalidation_p.h
-    header/xlsxdrawing_p.h
-    header/xlsxrichstring_p.h
-    header/xlsxutility_p.h
+# Поиск Qt6 с приватными модулями
+find_package(Qt6 REQUIRED COMPONENTS
+    Core
+    CorePrivate      # Добавьте это
+    Gui
+    GuiPrivate       # Добавьте это
+    Widgets
+    SerialPort
+    Charts
 )
 
-set(QXLSX_PUBLIC_HEADERS
-    header/xlsxabstractooxmlfile.h
-    header/xlsxabstractsheet.h
-    header/xlsxabstractsheet_p.h
-    header/xlsxcellformula.h
-    header/xlsxcell.h
-    header/xlsxcelllocation.h
-    header/xlsxcellrange.h
-    header/xlsxcellreference.h
-    header/xlsxchart.h
-    header/xlsxchartsheet.h
-    header/xlsxconditionalformatting.h
-    header/xlsxdatavalidation.h
-    header/xlsxdatetype.h
-    header/xlsxdocument.h
-    header/xlsxformat.h
-    header/xlsxglobal.h
-    header/xlsxrichstring.h
-    header/xlsxworkbook.h
-    header/xlsxworksheet.h
-)
-
-add_library(QXlsx
-    ${SRC_FILES}
-    ${QXLSX_PUBLIC_HEADERS}
-)
-
-add_library(QXlsx::QXlsx ALIAS QXlsx)
-
-target_compile_definitions(QXlsx PRIVATE
-    QT_NO_KEYWORDS
-    QT_NO_CAST_TO_ASCII
-    QT_NO_CAST_FROM_ASCII
-    QT_NO_URL_CAST_FROM_STRING
-    QT_NO_CAST_FROM_BYTEARRAY
-    QT_USE_QSTRINGBUILDER
-    QT_NO_SIGNALS_SLOTS_KEYWORDS
-    QT_USE_FAST_OPERATOR_PLUS
-    QT_DISABLE_DEPRECATED_BEFORE=0x060200
-)
-
-if (NOT WIN32)
-    # Strict iterators can't be used on Windows, they lead to a link error
-    # when application code iterates over a QVector<QPoint> for instance, unless
-    # Qt itself was also built with strict iterators.
-    # See example at https://bugreports.qt.io/browse/AUTOSUITE-946
-    target_compile_definitions(QXlsx PRIVATE QT_STRICT_ITERATORS)
-endif()
-
-target_compile_features(QXlsx INTERFACE cxx_std_11)
-
-if (BUILD_SHARED_LIBS)
-    target_compile_definitions(QXlsx PUBLIC QXlsx_SHAREDLIB)
-endif()
-
+# Затем в target_link_libraries добавьте:
 target_link_libraries(${PROJECT_NAME}
-   Qt${QT_VERSION_MAJOR}::Core
-   Qt${QT_VERSION_MAJOR}::GuiPrivate
+    Qt6::Core
+    Qt6::CorePrivate    # Добавьте это
+    Qt6::Gui
+    Qt6::GuiPrivate     # Добавьте это
+    Qt6::Widgets
+    Qt6::SerialPort
+    Qt6::Charts
+    QXlsx
 )
 
-target_include_directories(QXlsx
-PRIVATE
-    ${QXLSX_HEADERPATH}
-PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/header>
-    $<INSTALL_INTERFACE:include/QXlsxQt${QT_VERSION_MAJOR}>
+# ============= ПРОСТОЙ СПОСОБ ПОДКЛЮЧЕНИЯ QXlsx =============
+# Вместо add_subdirectory, просто добавляем исходники QXlsx напрямую
+set(QXLSX_HEADERPATH ${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/header)
+set(QXLSX_SOURCEPATH ${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/source)
+
+# Проверяем существование папок
+if(EXISTS ${QXLSX_SOURCEPATH} AND EXISTS ${QXLSX_HEADERPATH})
+    message(STATUS "Found QXlsx at ${QXLSX_SOURCEPATH}")
+
+    # Собираем все .cpp файлы QXlsx
+    file(GLOB_RECURSE QXLSX_SOURCES "${QXLSX_SOURCEPATH}/*.cpp")
+    file(GLOB_RECURSE QXLSX_HEADERS "${QXLSX_HEADERPATH}/*.h")
+
+    message(STATUS "Found ${CMAKE_CURRENT_SOURCE_DIR}/QXlsx")
+else()
+    message(WARNING "QXlsx not found, building without Excel support")
+    set(QXLSX_SOURCES "")
+    set(QXLSX_HEADERS "")
+endif()
+
+# ВАШИ ИСХОДНЫЕ ФАЙЛЫ - замените на полный список из вашего .pro файла
+set(SOURCES
+    main.cpp
+    Src/CustomChart/ChartImageService.cpp
+    Src/CustomChart/ChartManager.cpp
+    Src/Domain/DeviceInitializer.cpp
+    Src/Domain/Mpi/Device.cpp
+    Src/Domain/Mpi/Settings.cpp
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAlgorithm.cpp
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAnalyzer.cpp
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryRunner.cpp
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAlgorithm.cpp
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAnalyzer.cpp
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffRunner.cpp
+    Src/Domain/Tests/Main/MainAlgorithm.cpp
+    Src/Domain/Tests/Main/MainAnalyzer.cpp
+    Src/Domain/Tests/Main/MainRunner.cpp
+    Src/Domain/Tests/Option/OptionAlgorithm.cpp
+    Src/Domain/Tests/Option/Step/StepAlgorithm.cpp
+    Src/Domain/Tests/Option/Step/StepAnalyzer.cpp
+    Src/Domain/Tests/Option/Step/StepRunner.cpp
+    Src/Domain/Tests/Stroke/StrokeAlgorithm.cpp
+    Src/Domain/Tests/Stroke/StrokeAnalyzer.cpp
+    Src/Domain/Tests/Stroke/StrokeRunner.cpp
+    Src/Domain/Uart/Message.cpp
+    Src/Domain/Uart/Port.cpp
+    Src/Domain/Uart/Reader.cpp
+    Src/Report/Patterns/B_CVT.cpp
+    Src/Report/Patterns/B_SACVT.cpp
+    Src/Report/Patterns/C_CVT.cpp
+    Src/Report/Patterns/C_SACVT.cpp
+    Src/Report/Patterns/C_SOVT.cpp
+    Src/Report/Blocks/TechnicalResults.cpp
+    Src/Report/Saver.cpp
+    Src/Storage/AppSettings.cpp
+    Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp
+    Src/Ui/MainWindow/TelemetryUiMapper.cpp
+    Src/Ui/MainWindow/TestController.cpp
+    Src/Ui/Setup/ValveWindow/Logic.cpp
+    Src/Ui/Setup/ValveWindow/Mapper.cpp
+    Src/Utils/NumberUtils.cpp
+    Src/Ui/Setup/ObjectWindow.cpp
+    Src/Ui/Setup/ValveWindow/ValveWindow.cpp
+    Src/Ui/Setup/SelectTests.cpp
+    Src/Ui/MainWindow/MainWindow.cpp
+    Src/Ui/TestSettings/CyclicTestSettings.cpp
+    Src/Ui/TestSettings/OtherTestSettings.cpp
+    Src/Ui/TestSettings/StepTestSettings.cpp
+    Src/Ui/TestSettings/MainTestSettings.cpp
+    Src/CustomChart/MyChart.cpp
+    Src/CustomChart/MySeries.cpp
+    Src/LabeledSlider/LabeledSlider.cpp
+    Src/Domain/Tests/BaseRunner.cpp
+    Src/Domain/Tests/Test.cpp
+    Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.cpp
+    Src/Domain/Tests/Option/Response/ResponseRunner.cpp
+    Src/Domain/Tests/Option/Resolution/ResolutionRunner.cpp
+    Src/ValidatorFactory/ValidatorFactory.cpp
+    Src/Domain/Program.cpp
+    Src/Storage/Registry.cpp
+    Src/Domain/Sensor.cpp
+    ${QXLSX_SOURCES}  # Добавляем исходники QXlsx
 )
 
-set_target_properties(QXlsx PROPERTIES
-    OUTPUT_NAME ${EXPORT_NAME}
-    VERSION ${PROJECT_VERSION}
-    SOVERSION 0.${PROJECT_VERSION}
-    PUBLIC_HEADER "${QXLSX_PUBLIC_HEADERS}"
+set(HEADERS
+    Src/CustomChart/ChartImageService.h
+    Src/CustomChart/ChartManager.h
+    Src/Domain/DeviceInitializer.h
+    Src/Domain/Measurement/Sample.h
+    Src/Domain/Measurement/TestDataBuffer.h
+    Src/Domain/Mpi/Device.h
+    Src/Domain/Mpi/Settings.h
+    Src/Domain/Tests/AnalyzerFactory.h
+    Src/Domain/Tests/Cyclic/CyclicParams.h
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAlgorithm.h
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAnalyzer.h
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryParams.h
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryResult.h
+    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryRunner.h
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAlgorithm.h
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAnalyzer.h
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffParams.h
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffResult.h
+    Src/Domain/Tests/Cyclic/Shutoff/ShutoffRunner.h
+    Src/Domain/Tests/IAnalyzer.h
+    Src/Domain/Tests/Main/MainAlgorithm.h
+    Src/Domain/Tests/Main/MainAnalyzer.h
+    Src/Domain/Tests/Main/MainParams.h
+    Src/Domain/Tests/Main/MainResult.h
+    Src/Domain/Tests/Main/MainRunner.h
+    Src/Domain/Tests/Option/OptionAlgorithm.h
+    Src/Domain/Tests/Option/Step/StepAlgorithm.h
+    Src/Domain/Tests/Option/Step/StepAnalyzer.h
+    Src/Domain/Tests/Option/Step/StepParams.h
+    Src/Domain/Tests/Option/Step/StepResult.h
+    Src/Domain/Tests/Option/Step/StepRunner.h
+    Src/Domain/Tests/Stroke/StrokeAlgorithm.h
+    Src/Domain/Tests/Stroke/StrokeAnalyzer.h
+    Src/Domain/Tests/Stroke/StrokeResult.h
+    Src/Domain/Tests/Stroke/StrokeRunner.h
+    Src/Domain/Uart/Message.h
+    Src/Domain/Uart/Port.h
+    Src/Domain/Uart/Reader.h
+    Src/Report/Builder.h
+    Src/Report/BuilderFactory.h
+    Src/Report/Patterns/B_CVT.h
+    Src/Report/Patterns/B_SACVT.h
+    Src/Report/Patterns/C_CVT.h
+    Src/Report/Patterns/C_SACVT.h
+    Src/Report/Patterns/C_SOVT.h
+    Src/Report/Blocks/CyclicRanges.h
+    Src/Report/Blocks/CyclicSummary.h
+    Src/Report/Blocks/IBlock.h
+    Src/Report/Blocks/ObjectInfo.h
+    Src/Report/Blocks/SolenoidDetails.h
+    Src/Report/Blocks/StepReaction.h
+    Src/Report/Blocks/TechnicalResults.h
+    Src/Report/Blocks/ValveSpec.h
+    Src/Report/Saver.h
+    Src/Report/Writer.h
+    Src/Storage/AppSettings.h
+    Src/Storage/SettingsGroup.h
+    Src/Storage/Telemetry.h
+    Src/Ui/MainWindow/CrossingIndicatorsPresenter.h
+    Src/Ui/MainWindow/TelemetryUiMapper.h
+    Src/Ui/MainWindow/TestController.h
+    Src/Ui/Setup/ObjectWindow.h
+    Src/Ui/Setup/ValveWindow/Logic.h
+    Src/Ui/Setup/ValveWindow/ValveEnums.h
+    Src/Ui/Setup/ValveWindow/ValveWindow.h
+    Src/Ui/Setup/SelectTests.h
+    Src/Ui/Setup/ValveWindow/Mapper.h
+    Src/Ui/TestSettings/AbstractTestSettings.h
+    Src/Ui/TestSettings/CyclicTestSettings.h
+    Src/Ui/TestSettings/OtherTestSettings.h
+    Src/Ui/TestSettings/StepTestSettings.h
+    Src/Ui/TestSettings/MainTestSettings.h
+    Src/Ui/MainWindow/MainWindow.h
+    Src/Domain/Program.h
+    Src/Storage/Registry.h
+    Src/Domain/Sensor.h
+    Src/CustomChart/MyChart.h
+    Src/CustomChart/MySeries.h
+    Src/LabeledSlider/LabeledSlider.h
+    Src/Domain/Tests/Test.h
+    Src/Domain/Tests/BaseRunner.h
+    Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.h
+    Src/Domain/Tests/Option/OptionTestParams.h
+    Src/Domain/Tests/Option/Response/ResponseRunner.h
+    Src/Domain/Tests/Option/Resolution/ResolutionRunner.h
+    Src/Utils/NumberUtils.h
+    Src/Utils/Shortcuts/TabActionRouter.h
+    Src/Utils/Shortcuts/TabBinder.h
+    Src/Utils/SignalUtils.h
+    Src/ValidatorFactory/RegexPatterns.h
+    Src/ValidatorFactory/ValidatorFactory.h
+    ${QXLSX_HEADERS}
 )
 
-install(TARGETS QXlsx
-    EXPORT ${EXPORT_NAME}Targets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QXlsxQt${QT_VERSION_MAJOR} COMPONENT devel
+set(UI_FORMS
+    Src/Ui/Setup/ObjectWindow.ui
+    Src/Ui/Setup/SelectTests.ui
+    Src/Ui/Setup/ValveWindow/ValveWindow.ui
+    Src/Ui/MainWindow/MainWindow.ui
+    Src/Ui/TestSettings/CyclicTestSettings.ui
+    Src/Ui/TestSettings/MainTestSettings.ui
+    Src/Ui/TestSettings/OtherTestSettings.ui
+    Src/Ui/TestSettings/StepTestSettings.ui
 )
 
-install(EXPORT ${EXPORT_NAME}Targets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${EXPORT_NAME}/
-    FILE ${EXPORT_NAME}Targets.cmake
-    NAMESPACE QXlsx::
-    COMPONENT devel
+set(RESOURCES
+    excel.qrc
+    img.qrc
+    translations.qrc
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/qxlsx-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_NAME}Config.cmake
-    @ONLY
+# Добавляем пути для include
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/CustomChart
+    ${QXLSX_HEADERPATH}  # Путь к заголовкам QXlsx
 )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/qxlsx-config-version.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_NAME}ConfigVersion.cmake
-    @ONLY
+
+# Определяем макросы для QXlsx
+add_definitions(-DQXLSX_LIBRARY)
+
+# Создаем исполняемый файл
+add_executable(${PROJECT_NAME}
+    ${SOURCES}
+    ${HEADERS}
+    ${UI_FORMS}
+    ${RESOURCES}
 )
-install(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_NAME}Config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_NAME}ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${EXPORT_NAME}/
+
+# Линкуем библиотеки
+target_link_libraries(${PROJECT_NAME}
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::SerialPort
+    Qt6::Charts
 )
-include(CPack)
+
+# Настройки для правильного маппинга объектных файлов
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    AUTOMOC TRUE
+    AUTORCC TRUE
+    AUTOUIC TRUE
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin
+)
+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY UNITY_BUILD OFF)
+endif()

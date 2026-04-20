@@ -2,7 +2,7 @@
 
 #include "AbstractTestSettings.h"
 #include "Src/Storage/Registry.h"
-#include "Src/Domain/Tests/Option/Step/StepTestParams.h"
+#include "Src/Domain/Tests/Option/Step/StepParams.h"
 
 namespace Ui {
 class StepTestSettings;
@@ -19,11 +19,11 @@ public:
     void applyPattern(SelectTests::PatternType pattern) override;
 
     ~StepTestSettings();
-    StepTestParams parameters() const;
+    Domain::Tests::Option::Step::Params parameters() const;
 
 private:
     Ui::StepTestSettings *ui;
-    StepTestParams readParamsFromUi() const;
+    Domain::Tests::Option::Step::Params readParamsFromUi() const;
 
     inline static const QTime m_maxTime = QTime(0, 4, 0, 0);
     inline static const QTime m_minTime = QTime(0, 0, 5, 0);

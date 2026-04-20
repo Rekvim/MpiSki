@@ -1,28 +1,29 @@
 #include "ResolutionRunner.h"
 #include "Src/Domain/Program.h"
 #include "Src/Storage/Registry.h"
-#include "Src/Domain/Tests/Option/OptionTest.h"
+#include "Src/Domain/Tests/Option/OptionAlgorithm.h"
 
-RunnerConfig ResolutionRunner::buildConfig()
+namespace Domain::Tests::Option::Resolution {
+RunnerConfig Runner::buildConfig()
 {
     const auto& p = m_params;
 
     if (p.points.empty())
         return {};
 
-    auto worker = std::make_unique<OptionTest>();
-    OptionTest::Task task;
+    auto worker = std::make_unique<Algorithm>();
+    Algorithm::Task task;
     task.delay = p.delay;
 
     const bool normalOpen = isNormallyOpen();
 
-    task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
+    task.value.push_back(m_device.dac()->rawFromValue(4.0));
 
     for (auto it = p.points.begin(); it != p.points.end(); ++it)
     {
         const qreal basePercent = normalOpen ? (100.0 - *it) : *it;
         const qreal baseCurrent = 16.0 * basePercent / 100.0 + 4.0;
-        const qreal baseRaw = m_mpi.dac()->rawFromValue(baseCurrent);
+        const qreal baseRaw = m_device.dac()->rawFromValue(baseCurrent);
         task.value.push_back(baseRaw);
 
         for (auto it_s = p.steps.begin(); it_s < p.steps.end(); ++it_s)
@@ -31,17 +32,17 @@ RunnerConfig ResolutionRunner::buildConfig()
 
             // вверх
             const qreal stepUpCurrent = baseCurrent + stepValue;
-            task.value.push_back(m_mpi.dac()->rawFromValue(stepUpCurrent));
+            task.value.push_back(m_device.dac()->rawFromValue(stepUpCurrent));
             task.value.push_back(baseRaw);
 
             // вниз
             const qreal stepDownCurrent = baseCurrent - stepValue;
-            task.value.push_back(m_mpi.dac()->rawFromValue(stepDownCurrent));
+            task.value.push_back(m_device.dac()->rawFromValue(stepDownCurrent));
             task.value.push_back(baseRaw);
         }
     }
 
-    task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
+    task.value.push_back(m_device.dac()->rawFromValue(4.0));
 
     worker->setTask(task);
 
@@ -58,7 +59,8 @@ RunnerConfig ResolutionRunner::buildConfig()
     return makeConfig(std::move(worker), totalMs, Charts::Resolution);
 }
 
-void ResolutionRunner::wireSpecificSignals(Test& base) {
-    auto& t = static_cast<OptionTest&>(base);
+void Runner::wireSpecificSignals(Test& base) {
+    auto& t = static_cast<Algorithm&>(base);
     auto* owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
+}
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Src/Domain/Mpi/Mpi.h"
+#include "Src/Domain/Mpi/Device.h"
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
 
@@ -8,7 +8,7 @@ class DeviceInitializer
 {
 public:
     DeviceInitializer(
-        Mpi& mpi,
+        Domain::Mpi::Device& device,
         Registry& registry,
         Telemetry& telemetry);
 
@@ -30,7 +30,7 @@ public:
     void recordStrokeRange(bool normalClosed);
 
 private:
-    Mpi& m_mpi;
+    Domain::Mpi::Device& m_device;
     Registry& m_registry;
     Telemetry& m_telemetry;
 };

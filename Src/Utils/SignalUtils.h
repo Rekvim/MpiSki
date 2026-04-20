@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QVector>
-#include "Src/Domain/Mpi/Mpi.h"
+#include "Src/Domain/Mpi/Device.h"
 
 namespace SignalUtils
 {
@@ -14,14 +14,14 @@ calcPercent(qreal value, bool invert = false)
     return invert ? (100.0 - percent) : percent;
 }
 inline QVector<quint16>
-makeRawValues(const QVector<qreal>& seq, Mpi& mpi, bool normalOpen)
+makeRawValues(const QVector<qreal>& seq, Domain::Mpi::Device& device, bool normalOpen)
 {
     QVector<quint16> raw;
     raw.reserve(seq.size());
 
     for (quint16 pct : seq) {
         const qreal current = 16.0 * (normalOpen ? (100 - pct) : pct) / 100.0 + 4.0;
-        raw.push_back(mpi.dac()->rawFromValue(current));
+        raw.push_back(device.dac()->rawFromValue(current));
     }
     return raw;
 }

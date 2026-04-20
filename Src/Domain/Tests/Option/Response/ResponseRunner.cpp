@@ -1,21 +1,22 @@
 #include "ResponseRunner.h"
 #include "Src/Domain/Program.h"
-#include "Src/Domain/Tests/Option/OptionTest.h"
+#include "Src/Domain/Tests/Option/OptionAlgorithm.h"
 
-RunnerConfig ResponseRunner::buildConfig()
+namespace Domain::Tests::Option::Response {
+RunnerConfig Runner::buildConfig()
 {
     const auto& p = m_params;
 
     if (p.points.empty())
         return {};
 
-    auto worker = std::make_unique<OptionTest>();
-    OptionTest::Task task;
+    auto worker = std::make_unique<Algorithm>();
+    Algorithm::Task task;
     task.delay = p.delay;
 
     const bool normalOpen = isNormallyOpen();
 
-    task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
+    task.value.push_back(m_device.dac()->rawFromValue(4.0));
 
     for (auto it = p.points.begin(); it != p.points.end(); ++it)
     {
@@ -26,7 +27,7 @@ RunnerConfig ResponseRunner::buildConfig()
         {
             qreal current = baseCurrent;
 
-            task.value.push_back(m_mpi.dac()->rawFromValue(current));
+            task.value.push_back(m_device.dac()->rawFromValue(current));
 
             const qreal dir = (phase == 0 ? +1.0 : -1.0);
 
@@ -34,12 +35,12 @@ RunnerConfig ResponseRunner::buildConfig()
             {
                 const qreal stepValue = 16.0 * (*it_s) / 100.0;
                 current += dir * stepValue;
-                task.value.push_back(m_mpi.dac()->rawFromValue(current));
+                task.value.push_back(m_device.dac()->rawFromValue(current));
             }
         }
     }
 
-    task.value.push_back(m_mpi.dac()->rawFromValue(4.0));
+    task.value.push_back(m_device.dac()->rawFromValue(4.0));
 
     worker->setTask(task);
 
@@ -52,7 +53,8 @@ RunnerConfig ResponseRunner::buildConfig()
     return makeConfig(std::move(worker), totalMs, Charts::Response);
 }
 
-void ResponseRunner::wireSpecificSignals(Test& base) {
-    auto& t = static_cast<OptionTest&>(base);
+void Runner::wireSpecificSignals(Test& base) {
+    auto& t = static_cast<Algorithm&>(base);
     auto* owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
+}
 }

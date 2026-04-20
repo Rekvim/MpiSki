@@ -4,10 +4,10 @@
 #include <QString>
 #include <QColor>
 
-#include "Src/Domain/Tests/Stroke/StrokeTestResult.h"
-#include "Src/Domain/Tests/Main/Result.h"
-#include "Src/Domain/Tests/Option/Step/StepTestResult.h"
-#include "Src/Domain/Tests/Cyclic/Regulatory/Result.h"
+#include "Src/Domain/Tests/Stroke/StrokeResult.h"
+#include "Src/Domain/Tests/Main/MainResult.h"
+#include "Src/Domain/Tests/Option/Step/StepResult.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/RegulatoryResult.h"
 
 struct InitState {
     QString deviceStatusText = "";
@@ -116,9 +116,9 @@ public:
     MainTestRecord mainTestRecord;
     CrossingStatus crossingStatus;
 
-    std::optional<StrokeTestResult> stroke;
+    std::optional<Domain::Tests::Stroke::Result> stroke;
     std::optional<Domain::Tests::Main::Result> main;
-    QVector<StepTestResult> step;
+    QVector<Domain::Tests::Option::Step::Result> step;
     Domain::Tests::Cyclic::Regulatory::Result regulatory;
 
     Telemetry() = default;

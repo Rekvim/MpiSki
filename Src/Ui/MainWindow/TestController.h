@@ -19,14 +19,14 @@ class TestController : public QObject
 public:
     explicit TestController(QObject* parent = nullptr);
 
-    void setProgram(Program* program);
+    void setProgram(Domain::Program* program);
 
 public slots:
     void runMainTest(const Domain::Tests::Main::Params& params);
     void runStrokeTest();
-    void runResponseTest(const OptionTestParams& params);
-    void runResolutionTest(const OptionTestParams& params);
-    void runStepTest(const StepTestParams& params);
+    void runResponseTest(const Domain::Tests::Option::Params& params);
+    void runResolutionTest(const Domain::Tests::Option::Params& params);
+    void runStepTest(const Domain::Tests::Option::Step::Params& params);
     void runCyclicTest(const Domain::Tests::Cyclic::Params& params);
 
     void stop();
@@ -36,9 +36,9 @@ signals:
 
     void startMainRequested(const Domain::Tests::Main::Params& params);
     void startStrokeRequested();
-    void startResponseRequested(const OptionTestParams& params);
-    void startResolutionRequested(const OptionTestParams& params);
-    void startStepRequested(const StepTestParams& params);
+    void startResponseRequested(const Domain::Tests::Option::Params& params);
+    void startResolutionRequested(const Domain::Tests::Option::Params& params);
+    void startStepRequested(const Domain::Tests::Option::Step::Params& params);
     void startCyclicRequested(const Domain::Tests::Cyclic::Params& params);
 
 private slots:
@@ -50,7 +50,7 @@ private:
     void setState(TestState s);
 
 private:
-    Program* m_program = nullptr;
+    Domain::Program* m_program = nullptr;
     TestState m_state = TestState::Idle;
     bool m_stopRequested = false;
 };

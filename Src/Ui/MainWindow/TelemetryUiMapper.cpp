@@ -109,7 +109,7 @@ void TelemetryUiMapper::updateMainTest(const Telemetry& t)
         );
 }
 
-void TelemetryUiMapper::updateStrokeTest(const StrokeTestResult& r)
+void TelemetryUiMapper::updateStrokeTest(const Domain::Tests::Stroke::Result& r)
 {
     m_ui->lineEdit_strokeTest_forwardTime->setText(r.timeForwardMs);
     m_ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(r.timeForwardMs);

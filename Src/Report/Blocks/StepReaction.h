@@ -43,8 +43,6 @@ namespace Report::Blocks {
                             QString::number(sr.overshoot, 'f', 2));
             };
 
-            quint16 row = m_layout.startRow;
-
             for (int i = 0; i < results.size() && i < 20; ++i)
             {
                 const bool firstBlock = i < 10;

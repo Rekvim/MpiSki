@@ -18,7 +18,7 @@ public:
     void applyValveInfo(const ValveInfo& info) override;
     void applyPattern(SelectTests::PatternType pattern) override;
 
-    OptionTestParams parameters() const;
+    Domain::Tests::Option::Params parameters() const;
 
 private:
     Ui::OtherTestSettings *ui = nullptr;
@@ -33,7 +33,7 @@ private:
     void initDefaults();
     void initConnections();
 
-    OptionTestParams readParamsFromUi() const;
+    Domain::Tests::Option::Params readParamsFromUi() const;
 
     QVector<double> readList(QListWidget* list) const;
 
