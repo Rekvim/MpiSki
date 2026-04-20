@@ -5,7 +5,7 @@
 
 #include "AbstractTestSettings.h"
 #include "Src/Ui/Setup/SelectTests.h"
-#include "Src/Domain/Tests/Cyclic/CyclicTestParams.h"
+#include "Src/Domain/Tests/Cyclic/Params.h"
 
 namespace Ui {
 class CyclicTestSettings;
@@ -23,7 +23,7 @@ public:
     void applyPattern(SelectTests::PatternType pattern) override;
     void applyValveInfo(const ValveInfo& info) override;
 
-    CyclicTestParams parameters() const { return m_params; }
+    Domain::Tests::Cyclic::Params parameters() const { return m_params; }
 
 private slots:
     void onTestSelectionChanged();
@@ -43,7 +43,7 @@ private slots:
 
 private:
     Ui::CyclicTestSettings* ui = nullptr;
-    CyclicTestParams m_params;
+    Domain::Tests::Cyclic::Params m_params;
     SelectTests::PatternType m_pattern = SelectTests::Pattern_None;
 
 private:
@@ -58,9 +58,9 @@ private:
     void fillDefaultShutOffPresets();
     void bindRegulatoryPresetEditor();
 
-    bool readParamsFromUi(CyclicTestParams& outParams);
-    bool readRegulatoryParams(CyclicTestParams& outParams);
-    bool readShutoffParams(CyclicTestParams& outParams);
+    bool readParamsFromUi(Domain::Tests::Cyclic::Params& outParams);
+    bool readRegulatoryParams(Domain::Tests::Cyclic::Params& outParams);
+    bool readShutoffParams(Domain::Tests::Cyclic::Params& outParams);
 
     bool validatePositiveInt(const QString& text,
                              int& value,

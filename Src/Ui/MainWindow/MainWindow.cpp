@@ -6,7 +6,7 @@
 #include "Src/Utils/Shortcuts/TabBinder.h"
 #include "Src/Utils/NumberUtils.h"
 
-#include "Src/ReportBuilders/ReportBuilderFactory.h"
+#include "Src/Report/BuilderFactory.h"
 #include "Src/Ui/TestSettings/AbstractTestSettings.h"
 
 namespace {
@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
         m_cyclicTestSettings
     };
 
-    m_reportSaver = new ReportSaver(this);
+    m_reportSaver = new Report::Saver(this);
     m_chartImages = new ChartImageService(
         m_chartManager.get(),
         m_reportSaver);
@@ -264,11 +264,11 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::askQuestion,
             Qt::BlockingQueuedConnection);
 
-    connect(m_reportSaver, &ReportSaver::question,
+    connect(m_reportSaver, &Report::Saver::question,
             this, &MainWindow::askQuestion,
             Qt::DirectConnection);
 
-    connect(m_reportSaver, &ReportSaver::setDirectoryToSave,
+    connect(m_reportSaver, &Report::Saver::setDirectoryToSave,
             this, &MainWindow::directoryToSave,
             Qt::DirectConnection);
 
@@ -950,7 +950,7 @@ static QString seqToString(const QVector<qreal>& seq)
     return parts.join('-');
 }
 
-void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
+void MainWindow::onCyclicTestParametersRequested(Domain::Tests::Cyclic::Params &parameters)
 {
     if (m_cyclicTestSettings->exec() != QDialog::Accepted) {
         parameters = {};
@@ -961,7 +961,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
 
     switch (parameters.type)
     {
-    case CyclicTestParams::Regulatory:
+    case Domain::Tests::Cyclic::Params::Regulatory:
     {
         const auto& p = parameters.regulatory;
 
@@ -974,7 +974,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
         break;
     }
 
-    case CyclicTestParams::Shutoff:
+    case Domain::Tests::Cyclic::Params::Shutoff:
     {
         const auto& p = parameters.shutoff;
 
@@ -994,7 +994,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
 
     switch (parameters.type)
     {
-    case CyclicTestParams::Regulatory:
+    case Domain::Tests::Cyclic::Params::Regulatory:
     {
         const auto& p = parameters.regulatory;
 
@@ -1005,7 +1005,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
         break;
     }
 
-    case CyclicTestParams::Shutoff:
+    case Domain::Tests::Cyclic::Params::Shutoff:
     {
         const auto& p = parameters.shutoff;
 
@@ -1016,7 +1016,7 @@ void MainWindow::onCyclicTestParametersRequested(CyclicTestParams &parameters)
         break;
     }
 
-    case CyclicTestParams::Combined:
+    case Domain::Tests::Cyclic::Params::Combined:
     {
         const auto& r = parameters.regulatory;
         const auto& s = parameters.shutoff;
@@ -1599,15 +1599,14 @@ void MainWindow::generateReportClicked()
 
     collectRegistryOverrides(objectInfo, valveInfo, otherParameters);
 
-    auto reportBuilder = ReportBuilderFactory::create(m_patternType);
+    auto reportBuilder = Report::BuilderFactory::create(m_patternType);
 
-    if (!reportBuilder)
-    {
+    if (!reportBuilder) {
         QMessageBox::warning(this, tr("Ошибка"), tr("Не выбран корректный паттерн отчёта!"));
         return;
     }
 
-    ReportSaver::Report report;
+    Report::Saver::Report report;
     reportBuilder->buildReport(report,
                                m_telemetry,
                                m_registry->objectInfo(),

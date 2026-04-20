@@ -11,8 +11,8 @@
 
 #include "Src/CustomChart/ChartManager.h"
 
-#include "Src/Domain/Tests/Main/MainTestParams.h"
-#include "Src/Domain/Tests/Cyclic/CyclicTestParams.h"
+#include "Src/Domain/Tests/Main/Params.h"
+#include "Src/Domain/Tests/Cyclic/Params.h"
 #include "Src/Domain/Tests/Option/Step/StepTestParams.h"
 #include "Src/Domain/Tests/Option/OptionTestParams.h"
 
@@ -26,8 +26,8 @@
 #include "Src/Domain/Tests/BaseRunner.h"
 
 #include "Src/Domain/Tests/Option/Step/StepTest.h"
-#include "Src/Domain/Tests/Main/MainTest.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/CyclicTestsShutoff.h"
+#include "Src/Domain/Tests/Main/Algorithm.h"
+#include "Src/Domain/Tests/Cyclic/Shutoff/Algorithm.h"
 #include "Src/Ui/Setup/SelectTests.h"
 
 enum class TextObjects
@@ -172,8 +172,8 @@ private:
 
     template<typename Runner, typename... Args>
     void runTest(Args&&... args);
-    void prepareShutoffTelemetry(const CyclicTestParams& params);
-    void prepareRegulatoryTelemetry(const CyclicTestParams& params);
+    void prepareShutoffTelemetry(const Domain::Tests::Cyclic::Params& params);
+    void prepareRegulatoryTelemetry(const Domain::Tests::Cyclic::Params& params);
 
     QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
     QString seqToString(const QVector<quint16> &seq);
@@ -220,14 +220,14 @@ public slots:
     void updateCyclicChart(const Sample& s, Charts chart);
     void updateTimeChart(const Sample& s, Charts chart, qint64 time);
     //
-    void results_mainTest(const MainTest::TestResults& results);
+    void results_mainTest(const Domain::Tests::Main::Algorithm::TestResults& results);
     void results_strokeTest();
     void results_stepTest(const QVector<StepTest::TestResult>& results, const quint32 T_value);
 
     void results_cyclicRegulatoryTests();
-    void results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results);
+    void results_cyclicShutoffTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& results);
 
-    void results_cyclicCombinedTests(const CyclicTestsShutoff::TestResults& shutoffResults);
+    void results_cyclicCombinedTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& shutoffResults);
 
     void setInitDoStates(const QVector<bool>& states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
@@ -243,13 +243,13 @@ public slots:
     void setDacReal(qreal value);
 
     void startStrokeTest();
-    void startMainTest(const MainTestParams& params);
+    void startMainTest(const Domain::Tests::Main::Params& params);
     void startResponseTest(const OptionTestParams& params);
     void startResolutionTest(const OptionTestParams& params);
     void startStepTest(const StepTestParams& params);
-    void startCyclicTest(const CyclicTestParams& params);
+    void startCyclicTest(const Domain::Tests::Cyclic::Params& params);
 
-    void runCombinedCyclicTest(const CyclicTestParams& params);
+    void runCombinedCyclicTest(const Domain::Tests::Cyclic::Params& params);
 
     void endTest();
     void terminateTest();

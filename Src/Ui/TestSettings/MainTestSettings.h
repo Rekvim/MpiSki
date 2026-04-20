@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AbstractTestSettings.h"
-#include "Src/Domain/Tests/Main/MainTestParams.h"
+#include "Src/Domain/Tests/Main/Params.h"
 
 namespace Ui {
 class MainTestSettings;
@@ -18,10 +18,10 @@ public:
     void applyValveInfo(const ValveInfo& info) override;
     void applyPattern(SelectTests::PatternType pattern) override;
 
-    MainTestParams parameters() const;
+    Domain::Tests::Main::Params parameters() const;
 private:
     Ui::MainTestSettings *ui;
-    MainTestParams readParamsFromUi() const;
+    Domain::Tests::Main::Params readParamsFromUi() const;
 
 protected:
     virtual QVector<qreal>& sequence() {

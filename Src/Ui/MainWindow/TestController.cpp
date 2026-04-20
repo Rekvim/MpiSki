@@ -42,7 +42,7 @@ void TestController::runStrokeTest()
     });
 }
 
-void TestController::runMainTest(const MainTestParams& params)
+void TestController::runMainTest(const Domain::Tests::Main::Params& params)
 {
     run([this, params] {
         emit startMainRequested(params);
@@ -70,7 +70,7 @@ void TestController::runStepTest(const StepTestParams& params)
     });
 }
 
-void TestController::runCyclicTest(const CyclicTestParams& params)
+void TestController::runCyclicTest(const Domain::Tests::Cyclic::Params& params)
 {
     run([this, params] {
         emit startCyclicRequested(params);

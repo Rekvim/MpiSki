@@ -1,7 +1,7 @@
 #include "CyclicTestPositioner.h"
 
 CyclicTestPositioner::CyclicTestPositioner(QObject *parent)
-    : MainTest(parent, false)
+    : Domain::Tests::Main::Algorithm(parent, false)
 {}
 
 void CyclicTestPositioner::run()

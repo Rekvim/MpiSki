@@ -21,7 +21,22 @@ SOURCES += \
     Src/CustomChart/ChartImageService.cpp \
     Src/CustomChart/ChartManager.cpp \
     Src/Domain/DeviceInitializer.cpp \
-    Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.cpp \
+    Src/Domain/Tests/Cyclic/Regulatory/Algorithm.cpp \
+    Src/Domain/Tests/Cyclic/Regulatory/Analyzer.cpp \
+    Src/Domain/Tests/Cyclic/Regulatory/Runner.cpp \
+    Src/Domain/Tests/Cyclic/Shutoff/Algorithm.cpp \
+    Src/Domain/Tests/Cyclic/Shutoff/Analyzer.cpp \
+    Src/Domain/Tests/Cyclic/Shutoff/Runner.cpp \
+    Src/Domain/Tests/Main/Algorithm.cpp \
+    Src/Domain/Tests/Main/Analyzer.cpp \
+    Src/Domain/Tests/Main/Runner.cpp \
+    Src/Report/Patterns/B_CVT.cpp \
+    Src/Report/Patterns/B_SACVT.cpp \
+    Src/Report/Patterns/C_CVT.cpp \
+    Src/Report/Patterns/C_SACVT.cpp \
+    Src/Report/Patterns/C_SOVT.cpp \
+    Src/Report/Blocks/TechnicalResults.cpp \
+    Src/Report/Saver.cpp \
     Src/Storage/AppSettings.cpp \
     Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
     Src/Ui/MainWindow/TelemetryUiMapper.cpp \
@@ -43,20 +58,11 @@ SOURCES += \
     Src/LabeledSlider/LabeledSlider.cpp \
     Src/Domain/Mpi/Mpi.cpp \
     Src/Domain/Mpi/MpiSettings.cpp \
-    Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.cpp \
-    Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.cpp \
-    Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.cpp \
-    Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.cpp \
-    Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.cpp \
-    Src/ReportBuilders/ReportSaver.cpp \
     Src/Domain/Tests/BaseRunner.cpp \
     Src/Domain/Tests/Test.cpp \
     Src/Domain/Tests/Stroke/StrokeTestRunner.cpp \
     Src/Domain/Tests/Stroke/StrokeTest.cpp \
     Src/Domain/Tests/Stroke/StrokeTestAnalyzer.cpp \
-    Src/Domain/Tests/Main/MainTestRunner.cpp \
-    Src/Domain/Tests/Main/MainTest.cpp \
-    Src/Domain/Tests/Main/MainTestAnalyzer.cpp \
     Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.cpp \
     Src/Domain/Tests/Option/OptionTest.cpp \
     Src/Domain/Tests/Option/Response/ResponseRunner.cpp \
@@ -64,12 +70,6 @@ SOURCES += \
     Src/Domain/Tests/Option/Step/StepTestRunner.cpp \
     Src/Domain/Tests/Option/Step/StepTest.cpp \
     Src/Domain/Tests/Option/Step/StepTestAnalyzer.cpp \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryRunner.cpp \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicTestsRegulatory.cpp \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryAnalyzer.cpp \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffAnalyzer.cpp \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffRunner.cpp \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicTestsShutoff.cpp \
     Src/Domain/Uart/Uart.cpp \
     Src/Domain/Uart/UartMessage.cpp \
     Src/Domain/Uart/UartReader.cpp \
@@ -85,22 +85,40 @@ HEADERS += \
     Src/Domain/Measurement/Sample.h \
     Src/Domain/Measurement/TestDataBuffer.h \
     Src/Domain/Tests/AnalyzerFactory.h \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryParams.h \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffAnalyzer.h \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffParams.h \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffResult.h \
+    Src/Domain/Tests/Cyclic/Params.h \
+    Src/Domain/Tests/Cyclic/Regulatory/Algorithm.h \
+    Src/Domain/Tests/Cyclic/Regulatory/Analyzer.h \
+    Src/Domain/Tests/Cyclic/Regulatory/Params.h \
+    Src/Domain/Tests/Cyclic/Regulatory/Result.h \
+    Src/Domain/Tests/Cyclic/Regulatory/Runner.h \
+    Src/Domain/Tests/Cyclic/Shutoff/Algorithm.h \
+    Src/Domain/Tests/Cyclic/Shutoff/Analyzer.h \
+    Src/Domain/Tests/Cyclic/Shutoff/Params.h \
+    Src/Domain/Tests/Cyclic/Shutoff/Result.h \
+    Src/Domain/Tests/Cyclic/Shutoff/Runner.h \
     Src/Domain/Tests/IAnalyzer.h \
-    Src/Domain/Tests/ITestRunner.h \
-    Src/ReportBuilders/ReportBlocks/CyclicRangesBlock.h \
-    Src/ReportBuilders/ReportBlocks/CyclicSummaryBlock.h \
-    Src/ReportBuilders/ReportBlocks/IReportBlock.h \
-    Src/ReportBuilders/ReportBlocks/ObjectInfoBlock.h \
-    Src/ReportBuilders/ReportBlocks/SolenoidDetailsBlock.h \
-    Src/ReportBuilders/ReportBlocks/StepReactionBlock.h \
-    Src/ReportBuilders/ReportBlocks/TechnicalResultsBlock.h \
-    Src/ReportBuilders/ReportBlocks/ValveSpecBlock.h \
-    Src/ReportBuilders/ReportBuilderFactory.h \
-    Src/ReportBuilders/ReportWriter.h \
+    Src/Domain/Tests/Main/Algorithm.h \
+    Src/Domain/Tests/Main/Analyzer.h \
+    Src/Domain/Tests/Main/Params.h \
+    Src/Domain/Tests/Main/Result.h \
+    Src/Domain/Tests/Main/Runner.h \
+    Src/Report/Builder.h \
+    Src/Report/BuilderFactory.h \
+    Src/Report/Patterns/B_CVT.h \
+    Src/Report/Patterns/B_SACVT.h \
+    Src/Report/Patterns/C_CVT.h \
+    Src/Report/Patterns/C_SACVT.h \
+    Src/Report/Patterns/C_SOVT.h \
+    Src/Report/Blocks/CyclicRanges.h \
+    Src/Report/Blocks/CyclicSummary.h \
+    Src/Report/Blocks/IBlock.h \
+    Src/Report/Blocks/ObjectInfo.h \
+    Src/Report/Blocks/SolenoidDetails.h \
+    Src/Report/Blocks/StepReaction.h \
+    Src/Report/Blocks/TechnicalResults.h \
+    Src/Report/Blocks/ValveSpec.h \
+    Src/Report/Saver.h \
+    Src/Report/Writer.h \
     Src/Storage/AppSettings.h \
     Src/Storage/SettingsGroup.h \
     Src/Storage/Telemetry.h \
@@ -127,15 +145,7 @@ HEADERS += \
     Src/LabeledSlider/LabeledSlider.h \
     Src/Domain/Mpi/Mpi.h \
     Src/Domain/Mpi/MpiSettings.h \
-    Src/ReportBuilders/ReportBuilder.h \
-    Src/ReportBuilders/Patterns/ReportBuilder_B_CVT.h \
-    Src/ReportBuilders/Patterns/ReportBuilder_B_SACVT.h \
-    Src/ReportBuilders/Patterns/ReportBuilder_C_CVT.h \
-    Src/ReportBuilders/Patterns/ReportBuilder_C_SACVT.h \
-    Src/ReportBuilders/Patterns/ReportBuilder_C_SOVT.h \
-    Src/ReportBuilders/ReportSaver.h \
     Src/Domain/Tests/Test.h \
-    Src/Domain/Tests/Main/MainTestAnalyzer.h \
     Src/Domain/Tests/AbstractTestRunner.h \
     Src/Domain/Tests/BaseRunner.h \
     Src/Domain/Tests/Stroke/StrokeTestRunner.h \
@@ -144,17 +154,6 @@ HEADERS += \
     Src/Domain/Tests/Stroke/StrokeTestResult.h \
     Src/Domain/Tests/CyclicTestPositioner.h \
     Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.h \
-    Src/Domain/Tests/Cyclic/CyclicTestParams.h \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryRunner.h \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicTestsRegulatory.h \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryAnalyzer.h \
-    Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryTestResult.h \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffRunner.h \
-    Src/Domain/Tests/Cyclic/Shutoff/CyclicTestsShutoff.h \
-    Src/Domain/Tests/Main/MainTestParams.h \
-    Src/Domain/Tests/Main/MainTestRunner.h \
-    Src/Domain/Tests/Main/MainTest.h \
-    Src/Domain/Tests/Main/MainTestResult.h \
     Src/Domain/Tests/Option/OptionTest.h \
     Src/Domain/Tests/Option/OptionTestParams.h \
     Src/Domain/Tests/Option/Response/ResponseRunner.h \
@@ -163,7 +162,7 @@ HEADERS += \
     Src/Domain/Tests/Option/Step/StepTest.h \
     Src/Domain/Tests/Option/Step/StepTestRunner.h \
     Src/Domain/Tests/Option/Step/StepTestAnalyzer.h \
-    Src/Domain/Tests/Option/Step//StepTestResult.h \
+    Src/Domain/Tests/Option/Step/StepTestResult.h \
     Src/Domain/Uart/Uart.h \
     Src/Domain/Uart/UartMessage.h \
     Src/Domain/Uart/UartReader.h \

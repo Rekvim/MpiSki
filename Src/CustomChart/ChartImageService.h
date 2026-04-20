@@ -2,10 +2,10 @@
 
 #include <QImage>
 #include <optional>
+#include "Src/Report/Saver.h"
 
 class QLabel;
 class ChartManager;
-class ReportSaver;
 class MyChart;
 
 enum class Charts;
@@ -19,7 +19,7 @@ public:
     };
 
     ChartImageService(ChartManager* charts,
-                      ReportSaver* saver);
+                      Report::Saver* saver);
 
     QImage captureChart(Charts chart);
 
@@ -31,5 +31,5 @@ private:
     void restoreSeries(Charts chart, const SeriesVisibilityBackup& backup);
 
     ChartManager* m_charts;
-    ReportSaver* m_saver;
+    Report::Saver* m_saver;
 };

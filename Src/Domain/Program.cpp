@@ -1,16 +1,16 @@
 #include "Program.h"
 
 #include "Src/Domain/Tests/Option/Step/StepTest.h"
-#include "Src/Domain/Tests/Main/MainTest.h"
+#include "Src/Domain/Tests/Main/Algorithm.h"
 
 #include "Src/Domain/Tests/AnalyzerFactory.h"
 #include "Src/Domain/Tests/Stroke/StrokeTestRunner.h"
-#include "Src/Domain/Tests/Main/MainTestRunner.h"
+#include "Src/Domain/Tests/Main/Runner.h"
 #include "Src/Domain/Tests/Option/Step/StepTestRunner.h"
 #include "Src/Domain/Tests/Option/Response/ResponseRunner.h"
 #include "Src/Domain/Tests/Option/Resolution/ResolutionRunner.h"
-#include "Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryRunner.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/CyclicShutoffRunner.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/Runner.h"
+#include "Src/Domain/Tests/Cyclic/Shutoff/Runner.h"
 
 #include "Src/Domain/DeviceInitializer.h"
 
@@ -535,10 +535,10 @@ void Program::runTest(Args&&... args)
     startRunner(std::move(r));
 }
 
-void Program::startMainTest(const MainTestParams& params)
+void Program::startMainTest(const Domain::Tests::Main::Params& params)
 {
     m_testWorker = TestWorker::Main;
-    runTest<MainTestRunner>(params);
+    runTest<Domain::Tests::Main::Runner>(params);
 }
 
 void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
@@ -634,8 +634,8 @@ void Program::updateCrossingStatus()
 }
 
 static void debugCompareMainTest(
-    const MainTest::TestResults& oldR,
-    const MainTestResult& newR)
+    const Domain::Tests::Main::Algorithm::TestResults& oldR,
+    const Domain::Tests::Main::Result& newR)
 {
     qDebug() << "\n===== MAIN TEST COMPARISON =====";
 
@@ -682,9 +682,9 @@ static void debugCompareMainTest(
     qDebug() << "===============================\n";
 }
 
-void Program::results_mainTest(const MainTest::TestResults &results)
+void Program::results_mainTest(const Domain::Tests::Main::Algorithm::TestResults &results)
 {
-    auto* analyzer = static_cast<MainTestAnalyzer*>(m_analyzer.get());
+    auto* analyzer = static_cast<Domain::Tests::Main::Analyzer*>(m_analyzer.get());
     analyzer->finish();
 
 
@@ -822,7 +822,7 @@ void Program::results_cyclicRegulatoryTests()
 
     // emit telemetryUpdated(m_telemetry);
 
-    auto* analyzer = dynamic_cast<CyclicRegulatoryAnalyzer*>(m_analyzer.get());
+    auto* analyzer = dynamic_cast<Domain::Tests::Cyclic::Regulatory::Analyzer*>(m_analyzer.get());
     analyzer->finish();
     m_telemetry.cyclicTestRecord.regulatoryResult = analyzer->result();
 
@@ -839,7 +839,7 @@ void Program::setMultipleDO(const QVector<bool>& states)
     //emit SetButtonsDOChecked(mask);
 }
 
-void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& results)
+void Program::results_cyclicShutoffTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& results)
 {
     auto &dst = m_telemetry.cyclicTestRecord;
 
@@ -853,7 +853,7 @@ void Program::results_cyclicShutoffTests(const CyclicTestsShutoff::TestResults& 
     emit telemetryUpdated(m_telemetry);
 }
 
-void Program::results_cyclicCombinedTests(const CyclicTestsShutoff::TestResults& shutoffResults)
+void Program::results_cyclicCombinedTests(const Domain::Tests::Cyclic::Shutoff::Algorithm::TestResults& shutoffResults)
 {
     // auto &dst = m_telemetry.cyclicTestRecord;
     // dst.sequence = dst.sequence;
@@ -877,7 +877,7 @@ void Program::results_cyclicCombinedTests(const CyclicTestsShutoff::TestResults&
     // emit telemetryUpdated(m_telemetry);
 }
 
-void Program::prepareRegulatoryTelemetry(const CyclicTestParams& params)
+void Program::prepareRegulatoryTelemetry(const Domain::Tests::Cyclic::Params& params)
 {
     auto& rec = m_telemetry.cyclicTestRecord;
     const auto& reg = params.regulatory;
@@ -897,7 +897,7 @@ void Program::prepareRegulatoryTelemetry(const CyclicTestParams& params)
     rec.regulatoryResult = {};
 }
 
-void Program::prepareShutoffTelemetry(const CyclicTestParams& params)
+void Program::prepareShutoffTelemetry(const Domain::Tests::Cyclic::Params& params)
 {
     auto& rec = m_telemetry.cyclicTestRecord;
     const auto& off = params.shutoff;
@@ -920,7 +920,7 @@ void Program::prepareShutoffTelemetry(const CyclicTestParams& params)
     rec.totalTimeSecShutoff = totalMs / 1000.0;
 }
 
-void Program::runCombinedCyclicTest(const CyclicTestParams& params)
+void Program::runCombinedCyclicTest(const Domain::Tests::Cyclic::Params& params)
 {
     const auto& regP = params.regulatory;
     const auto& off = params.shutoff;
@@ -941,15 +941,13 @@ void Program::runCombinedCyclicTest(const CyclicTestParams& params)
 
     emit totalTestTimeMs(regMs + offMs);
 
-    auto reg = std::make_unique<CyclicRegulatoryRunner>(
-        m_mpi, *m_registry, params, this);
+    auto reg = std::make_unique<Domain::Tests::Cyclic::Regulatory::Runner>(
+        m_mpi, *m_registry, params.regulatory, this);
 
     connect(this, &Program::testFinished,
-            this,
-            [this, params]()
-            {
-                auto shut = std::make_unique<CyclicShutoffRunner>(
-                    m_mpi, *m_registry, params, this);
+            this, [this, params]() {
+                auto shut = std::make_unique<Domain::Tests::Cyclic::Shutoff::Runner>(
+                    m_mpi, *m_registry, params.shutoff, this);
 
                 startRunner(std::move(shut));
             },
@@ -958,39 +956,39 @@ void Program::runCombinedCyclicTest(const CyclicTestParams& params)
     startRunner(std::move(reg));
 }
 
-void Program::startCyclicTest(const CyclicTestParams& params)
+void Program::startCyclicTest(const Domain::Tests::Cyclic::Params& params)
 {
     if (params.regulatory.sequence.isEmpty() && params.shutoff.sequence.isEmpty()) {
         emit testFinished();
         return;
     }
 
-    if (params.type == CyclicTestParams::Regulatory ||
-        params.type == CyclicTestParams::Combined) {
+    if (params.type == Domain::Tests::Cyclic::Params::Regulatory ||
+        params.type == Domain::Tests::Cyclic::Params::Combined) {
         prepareRegulatoryTelemetry(params);
     }
 
-    if (params.type == CyclicTestParams::Shutoff) {
+    if (params.type == Domain::Tests::Cyclic::Params::Shutoff) {
         prepareShutoffTelemetry(params);
     }
 
     switch (params.type)
     {
-    case CyclicTestParams::Regulatory: {
+    case Domain::Tests::Cyclic::Params::Regulatory: {
         m_testWorker = TestWorker::CyclicRegulatory;
         m_analyzer = AnalyzerFactory::create(m_testWorker);
 
-        auto* analyzer = dynamic_cast<CyclicRegulatoryAnalyzer*>(m_analyzer.get());
-        analyzer->configure(params);
+        auto* analyzer = dynamic_cast<Domain::Tests::Cyclic::Regulatory::Analyzer*>(m_analyzer.get());
+        analyzer->configure(params.regulatory);
         analyzer->start();
 
-        runTest<CyclicRegulatoryRunner>(params);
+        runTest<Domain::Tests::Cyclic::Regulatory::Runner>(params.regulatory);
         break;
-    } case CyclicTestParams::Shutoff: {
+    } case Domain::Tests::Cyclic::Params::Shutoff: {
         m_testWorker = TestWorker::CyclicShutOff;
-        runTest<CyclicShutoffRunner>(params);
+        runTest<Domain::Tests::Cyclic::Shutoff::Runner>(params.shutoff);
         break;
-    } case CyclicTestParams::Combined: {
+    } case Domain::Tests::Cyclic::Params::Combined: {
         runCombinedCyclicTest(params);
         break;
     } default:

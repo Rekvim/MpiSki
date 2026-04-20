@@ -64,10 +64,10 @@ void CyclicRegulatoryAnalyzerTest::testWithManyPoints()
 {
     printCaseHeader("Много точек");
 
-    CyclicRegulatoryAnalyzer analyzer;
+    Domain::Tests::Cyclic::Params analyzer;
 
-    CyclicTestParams params;
-    params.type = CyclicTestParams::Regulatory;
+    Domain::Tests::Cyclic::Params params;
+    params.type = Domain::Tests::Cyclic::Params::Regulatory;
     params.regulatory.sequence = {0, 50, 100};
 
     analyzer.start();

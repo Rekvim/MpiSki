@@ -4,9 +4,9 @@
 
 #include "Option/Step/StepTestAnalyzer.h"
 #include "Stroke/StrokeTestAnalyzer.h"
-#include "Main/MainTestAnalyzer.h"
-#include "Cyclic/Regulatory/CyclicRegulatoryAnalyzer.h"
-#include "Cyclic/Shutoff/CyclicShutoffAnalyzer.h"
+#include "Main/Analyzer.h"
+#include "Cyclic/Regulatory/Analyzer.h"
+#include "Cyclic/Shutoff/Analyzer.h"
 #include "Src/Domain/Program.h"
 
 class AnalyzerFactory
@@ -26,15 +26,15 @@ public:
             break;
 
         case Program::TestWorker::Main:
-            return std::make_unique<MainTestAnalyzer>();
+            return std::make_unique<Domain::Tests::Main::Analyzer>();
             break;
 
         case Program::TestWorker::CyclicRegulatory:
-            return std::make_unique<CyclicRegulatoryAnalyzer>();
+            return std::make_unique<Domain::Tests::Cyclic::Regulatory::Analyzer>();
             break;
 
         case Program::TestWorker::CyclicShutOff:
-            return std::make_unique<CyclicShutoffAnalyzer>();
+            return std::make_unique<Domain::Tests::Cyclic::Shutoff::Analyzer>();
             return nullptr;
             break;
         default:

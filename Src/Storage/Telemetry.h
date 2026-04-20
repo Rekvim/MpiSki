@@ -5,9 +5,9 @@
 #include <QColor>
 
 #include "Src/Domain/Tests/Stroke/StrokeTestResult.h"
-#include "Src/Domain/Tests/Main/MainTestResult.h"
+#include "Src/Domain/Tests/Main/Result.h"
 #include "Src/Domain/Tests/Option/Step/StepTestResult.h"
-#include "Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryTestResult.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/Result.h"
 
 struct InitState {
     QString deviceStatusText = "";
@@ -47,7 +47,7 @@ struct CyclicTestRecord {
     double totalTimeSecRegulatory = 0.0;
     double totalTimeSecShutoff = 0.0;
 
-    CyclicRegulatoryResult regulatoryResult;
+    Domain::Tests::Cyclic::Regulatory::Result regulatoryResult;
     int switch3to0Count = 0;
     int switch0to3Count = 0;
 
@@ -117,9 +117,9 @@ public:
     CrossingStatus crossingStatus;
 
     std::optional<StrokeTestResult> stroke;
-    std::optional<MainTestResult> main;
+    std::optional<Domain::Tests::Main::Result> main;
     QVector<StepTestResult> step;
-    CyclicRegulatoryResult regulatory;
+    Domain::Tests::Cyclic::Regulatory::Result regulatory;
 
     Telemetry() = default;
 

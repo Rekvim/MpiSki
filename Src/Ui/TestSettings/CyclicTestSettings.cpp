@@ -150,7 +150,7 @@ void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
     ui->comboBox_testSelection->clear();
     m_pattern = pattern;
 
-    auto add = [&](const QString& label, CyclicTestParams::Type type)
+    auto add = [&](const QString& label, Domain::Tests::Cyclic::Params::Type type)
     {
         ui->comboBox_testSelection->addItem(label, static_cast<int>(type));
     };
@@ -158,18 +158,18 @@ void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
     switch (m_pattern) {
     case SelectTests::Pattern_B_CVT:
     case SelectTests::Pattern_C_CVT:
-        add(QStringLiteral("Регулирующий"), CyclicTestParams::Regulatory);
+        add(QStringLiteral("Регулирующий"), Domain::Tests::Cyclic::Params::Regulatory);
         break;
 
     case SelectTests::Pattern_C_SOVT:
-        add(QStringLiteral("Отсечной"), CyclicTestParams::Shutoff);
+        add(QStringLiteral("Отсечной"), Domain::Tests::Cyclic::Params::Shutoff);
         break;
 
     case SelectTests::Pattern_B_SACVT:
     case SelectTests::Pattern_C_SACVT:
-        add(QStringLiteral("Запорно-регулирующий"), CyclicTestParams::Combined);
-        add(QStringLiteral("Регулирующий"), CyclicTestParams::Regulatory);
-        add(QStringLiteral("Отсечной"), CyclicTestParams::Shutoff);
+        add(QStringLiteral("Запорно-регулирующий"), Domain::Tests::Cyclic::Params::Combined);
+        add(QStringLiteral("Регулирующий"), Domain::Tests::Cyclic::Params::Regulatory);
+        add(QStringLiteral("Отсечной"), Domain::Tests::Cyclic::Params::Shutoff);
         break;
 
     default:
@@ -191,16 +191,16 @@ void CyclicTestSettings::updateVisibilityBySelectedTest()
     if (idx < 0)
         return;
 
-    const auto type = static_cast<CyclicTestParams::Type>(
+    const auto type = static_cast<Domain::Tests::Cyclic::Params::Type>(
         ui->comboBox_testSelection->itemData(idx).toInt());
 
     m_params.type = type;
 
-    const bool showReg = (type == CyclicTestParams::Regulatory ||
-                          type == CyclicTestParams::Combined);
+    const bool showReg = (type == Domain::Tests::Cyclic::Params::Regulatory ||
+                          type == Domain::Tests::Cyclic::Params::Combined);
 
-    const bool showOff = (type == CyclicTestParams::Shutoff ||
-                          type == CyclicTestParams::Combined);
+    const bool showOff = (type == Domain::Tests::Cyclic::Params::Shutoff ||
+                          type == Domain::Tests::Cyclic::Params::Combined);
 
     ui->widget_retentionTimeRegulatory->setVisible(showReg);
     ui->widget_shutOff->setVisible(showOff);
@@ -304,7 +304,7 @@ bool CyclicTestSettings::validatePositiveInt(const QString& text,
     return true;
 }
 
-bool CyclicTestSettings::readRegulatoryParams(CyclicTestParams& outParams)
+bool CyclicTestSettings::readRegulatoryParams(Domain::Tests::Cyclic::Params& outParams)
 {
     auto& p = outParams.regulatory;
 
@@ -345,7 +345,7 @@ bool CyclicTestSettings::readRegulatoryParams(CyclicTestParams& outParams)
     return true;
 }
 
-bool CyclicTestSettings::readShutoffParams(CyclicTestParams& outParams)
+bool CyclicTestSettings::readShutoffParams(Domain::Tests::Cyclic::Params& outParams)
 {
     auto& p = outParams.shutoff;
 
@@ -378,7 +378,7 @@ bool CyclicTestSettings::readShutoffParams(CyclicTestParams& outParams)
     return true;
 }
 
-bool CyclicTestSettings::readParamsFromUi(CyclicTestParams& outParams)
+bool CyclicTestSettings::readParamsFromUi(Domain::Tests::Cyclic::Params& outParams)
 {
     const int idx = ui->comboBox_testSelection->currentIndex();
     if (idx < 0) {
@@ -386,15 +386,15 @@ bool CyclicTestSettings::readParamsFromUi(CyclicTestParams& outParams)
         return false;
     }
 
-    outParams = CyclicTestParams{};
-    outParams.type = static_cast<CyclicTestParams::Type>(
+    outParams = Domain::Tests::Cyclic::Params{};
+    outParams.type = static_cast<Domain::Tests::Cyclic::Params::Type>(
         ui->comboBox_testSelection->itemData(idx).toInt());
 
-    const bool needReg = (outParams.type == CyclicTestParams::Regulatory ||
-                          outParams.type == CyclicTestParams::Combined);
+    const bool needReg = (outParams.type == Domain::Tests::Cyclic::Params::Regulatory ||
+                          outParams.type == Domain::Tests::Cyclic::Params::Combined);
 
-    const bool needOff = (outParams.type == CyclicTestParams::Shutoff ||
-                          outParams.type == CyclicTestParams::Combined);
+    const bool needOff = (outParams.type == Domain::Tests::Cyclic::Params::Shutoff ||
+                          outParams.type == Domain::Tests::Cyclic::Params::Combined);
 
     if (needReg) {
         if (!readRegulatoryParams(outParams))
@@ -415,7 +415,7 @@ bool CyclicTestSettings::readParamsFromUi(CyclicTestParams& outParams)
 
 void CyclicTestSettings::on_pushButton_start_clicked()
 {
-    CyclicTestParams params;
+    Domain::Tests::Cyclic::Params params;
     if (!readParamsFromUi(params))
         return;
 

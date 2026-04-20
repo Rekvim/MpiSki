@@ -19,7 +19,7 @@
 #include "Src/Ui/TestSettings/OtherTestSettings.h"
 #include "Src/Ui/TestSettings/StepTestSettings.h"
 
-#include "Src/ReportBuilders/ReportSaver.h"
+#include "Src/Report/Saver.h"
 #include "Src/Domain/Program.h"
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
@@ -93,7 +93,7 @@ private slots:
     void onStepTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
     void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
 
-    void onCyclicTestParametersRequested(CyclicTestParams& parameters);
+    void onCyclicTestParametersRequested(Domain::Tests::Cyclic::Params& parameters);
 
     void setupUiConnections();
     void startMainTestClicked();
@@ -133,8 +133,8 @@ private:
     QElapsedTimer m_elapsedTimer;
     quint64 m_totalTestMs;
 
-    ReportSaver::Report m_report;
-    ReportSaver *m_reportSaver = nullptr;
+    Report::Saver::Report m_report;
+    Report::Saver *m_reportSaver = nullptr;
 
     QPlainTextEdit* m_logOutput = nullptr;
 

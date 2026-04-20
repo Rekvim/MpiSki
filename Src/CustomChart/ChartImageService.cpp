@@ -1,11 +1,11 @@
 #include "ChartImageService.h"
 #include "ChartManager.h"
 #include "MyChart.h"
-#include "Src/ReportBuilders/ReportSaver.h"
+#include "Src/Report/Saver.h"
 
 ChartImageService::ChartImageService(
     ChartManager* charts,
-    ReportSaver* saver)
+    Report::Saver* saver)
     : m_charts(charts),
     m_saver(saver)
 {

@@ -22,24 +22,24 @@ public:
     void setProgram(Program* program);
 
 public slots:
-    void runMainTest(const MainTestParams& params);
+    void runMainTest(const Domain::Tests::Main::Params& params);
     void runStrokeTest();
     void runResponseTest(const OptionTestParams& params);
     void runResolutionTest(const OptionTestParams& params);
     void runStepTest(const StepTestParams& params);
-    void runCyclicTest(const CyclicTestParams& params);
+    void runCyclicTest(const Domain::Tests::Cyclic::Params& params);
 
     void stop();
 
 signals:
     void stateChanged(TestState state);
 
-    void startMainRequested(const MainTestParams& params);
+    void startMainRequested(const Domain::Tests::Main::Params& params);
     void startStrokeRequested();
     void startResponseRequested(const OptionTestParams& params);
     void startResolutionRequested(const OptionTestParams& params);
     void startStepRequested(const StepTestParams& params);
-    void startCyclicRequested(const CyclicTestParams& params);
+    void startCyclicRequested(const Domain::Tests::Cyclic::Params& params);
 
 private slots:
     void onProgramActuallyStarted();

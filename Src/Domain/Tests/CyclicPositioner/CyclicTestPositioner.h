@@ -3,9 +3,9 @@
 #include <QPointF>
 #include <QTimer>
 
-#include "Src/Domain/Tests/Main/MainTest.h"
+#include "Src/Domain/Tests/Main/Algorithm.h"
 
-class CyclicTestPositioner : public MainTest
+class CyclicTestPositioner : public Domain::Tests::Main::Algorithm
 {
     Q_OBJECT
 public:

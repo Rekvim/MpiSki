@@ -13,9 +13,10 @@ MainTestSettings::~MainTestSettings()
     delete ui;
 }
 
-MainTestParams MainTestSettings::readParamsFromUi() const
+Domain::Tests::Main::Params
+MainTestSettings::readParamsFromUi() const
 {
-    MainTestParams p;
+    Domain::Tests::Main::Params p;
     if (ui->tabWidget->currentIndex() == 0) {
         p.continuous = true;
         p.delay = 50;
@@ -35,7 +36,8 @@ MainTestParams MainTestSettings::readParamsFromUi() const
     return p;
 }
 
-MainTestParams MainTestSettings::parameters() const
+Domain::Tests::Main::Params
+MainTestSettings::parameters() const
 {
     return readParamsFromUi();
 }
