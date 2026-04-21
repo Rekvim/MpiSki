@@ -2,11 +2,11 @@
 
 #include "Src/Domain/Tests/IAnalyzer.h"
 
-#include "Option/Step/StepAnalyzer.h"
-#include "Stroke/StrokeAnalyzer.h"
-#include "Main/MainAnalyzer.h"
-#include "Cyclic/Regulatory/RegulatoryAnalyzer.h"
-#include "Cyclic/Shutoff/ShutoffAnalyzer.h"
+#include "Option/Step/Analyzer.h"
+#include "Stroke/Analyzer.h"
+#include "Main/Analyzer.h"
+#include "Cyclic/Regulatory/Analyzer.h"
+#include "Cyclic/Shutoff/Analyzer.h"
 #include "Src/Domain/Program.h"
 
 class AnalyzerFactory

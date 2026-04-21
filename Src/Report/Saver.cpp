@@ -18,6 +18,7 @@
 #include "xlsxdatavalidation.h"
 
 using namespace QXlsx;
+
 namespace Report {
     Saver::Saver(QObject *parent)
         : QObject(parent)
@@ -76,12 +77,29 @@ namespace Report {
         if (!m_isDirectoryCreated)
             createDir();
 
-        Document xlsx(templatePath);
+        qDebug() << "templatePath =" << templatePath;
+        qDebug() << "template exists in qrc =" << QFile::exists(templatePath);
 
-        // 1. Данные
+        const QString tempTemplatePath =
+            m_dir.filePath(QStringLiteral("_template_copy.xlsx"));
+
+        QFile::remove(tempTemplatePath);
+
+        if (!QFile::copy(templatePath, tempTemplatePath)) {
+            qWarning() << "Не удалось скопировать шаблон из ресурсов:" << templatePath
+                       << "->" << tempTemplatePath;
+            return false;
+        }
+
+        Document xlsx(tempTemplatePath);
+
+        qDebug() << "available sheets =" << xlsx.sheetNames();
+
+        // 1. Данныед
         for (const auto &item : report.data) {
             if (!xlsx.selectSheet(item.sheet)) {
-                qWarning() << "Не найден лист" << item.sheet << "для записи данных!";
+                qWarning() << "Не найден лист" << item.sheet
+                           << "для записи данных! Доступные листы:" << xlsx.sheetNames();
                 continue;
             }
 
@@ -102,7 +120,8 @@ namespace Report {
                 continue;
 
             if (!xlsx.selectSheet(img.sheet)) {
-                qWarning() << "Не найден лист" << img.sheet << "для вставки изображения!";
+                qWarning() << "Не найден лист" << img.sheet
+                           << "для вставки изображения! Доступные листы:" << xlsx.sheetNames();
                 continue;
             }
 
@@ -111,11 +130,12 @@ namespace Report {
                 continue;
             }
 
-            const QImage scaled =
-                img.image.scaled(targetWidth,
-                                 targetHeight,
-                                 Qt::IgnoreAspectRatio,
-                                 Qt::SmoothTransformation);
+            const QImage scaled = img.image.scaled(
+                targetWidth,
+                targetHeight,
+                Qt::IgnoreAspectRatio,
+                Qt::SmoothTransformation
+                );
 
             xlsx.insertImage(img.row, img.col, scaled);
         }
@@ -130,9 +150,13 @@ namespace Report {
         }
 
         const QString reportPath = m_dir.filePath(QStringLiteral("report.xlsx"));
-        xlsx.saveAs(reportPath);
 
-        return QFile::exists(reportPath);
+        const bool ok = xlsx.saveAs(reportPath);
+        qDebug() << "saveAs =" << ok << ", path =" << reportPath;
+
+        QFile::remove(tempTemplatePath);
+
+        return ok && QFile::exists(reportPath);
     }
 
     void Saver::createDir()

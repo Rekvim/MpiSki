@@ -4,7 +4,8 @@
 #include <QObject>
 #include <QSettings>
 #include <QColor>
-#include "./Src/Ui/Setup/ValveWindow/ValveEnums.h"
+
+#include "Src/Gui/Setup/ValveWindow/ValveEnums.h"
 
 struct SensorColors
 {

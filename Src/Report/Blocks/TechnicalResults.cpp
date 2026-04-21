@@ -1,6 +1,6 @@
 #include "TechnicalResults.h"
 
-#include "./Src/Ui/Setup/ValveWindow/ValveEnums.h"
+#include "./Src/Gui/Setup/ValveWindow/ValveEnums.h"
 
 namespace Report::Blocks {
     static QString f2(qreal v) { return QString::number(v, 'f', 2); }

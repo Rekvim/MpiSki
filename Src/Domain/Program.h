@@ -11,10 +11,10 @@
 
 #include "Src/CustomChart/ChartManager.h"
 
-#include "Src/Domain/Tests/Main/MainParams.h"
-#include "Src/Domain/Tests/Cyclic/CyclicParams.h"
-#include "Src/Domain/Tests/Option/Step/StepParams.h"
-#include "Src/Domain/Tests/Option/OptionTestParams.h"
+#include "Src/Domain/Tests/Main/Params.h"
+#include "Src/Domain/Tests/Cyclic/Params.h"
+#include "Src/Domain/Tests/Option/Step/Params.h"
+#include "Src/Domain/Tests/Option/Params.h"
 
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
@@ -25,10 +25,10 @@
 
 #include "Src/Domain/Tests/BaseRunner.h"
 
-#include "Src/Domain/Tests/Option/Step/StepAlgorithm.h"
-#include "Src/Domain/Tests/Main/MainAlgorithm.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/ShutoffAlgorithm.h"
-#include "Src/Ui/Setup/SelectTests.h"
+#include "Src/Domain/Tests/Option/Step/Algorithm.h"
+#include "Src/Domain/Tests/Main/Algorithm.h"
+#include "Src/Domain/Tests/Cyclic/Shutoff/Algorithm.h"
+#include "Src/Gui/Setup/SelectTests.h"
 
 enum class TextObjects
 {

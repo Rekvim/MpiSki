@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/db_valve_data">
-        <file>valve_data.json</file>
-    </qresource>
-</RCC>

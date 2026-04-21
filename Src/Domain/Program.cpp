@@ -1,16 +1,16 @@
 #include "Program.h"
 
-#include "Src/Domain/Tests/Option/Step/StepAlgorithm.h"
-#include "Src/Domain/Tests/Main/MainAlgorithm.h"
+#include "Src/Domain/Tests/Option/Step/Algorithm.h"
+#include "Src/Domain/Tests/Main/Algorithm.h"
 
 #include "Src/Domain/Tests/AnalyzerFactory.h"
-#include "Src/Domain/Tests/Stroke/StrokeRunner.h"
-#include "Src/Domain/Tests/Main/MainRunner.h"
-#include "Src/Domain/Tests/Option/Step/StepRunner.h"
-#include "Src/Domain/Tests/Option/Response/ResponseRunner.h"
-#include "Src/Domain/Tests/Option/Resolution/ResolutionRunner.h"
-#include "Src/Domain/Tests/Cyclic/Regulatory/RegulatoryRunner.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/ShutoffRunner.h"
+#include "Src/Domain/Tests/Stroke/Runner.h"
+#include "Src/Domain/Tests/Main/Runner.h"
+#include "Src/Domain/Tests/Option/Step/Runner.h"
+#include "Src/Domain/Tests/Option/Response/Runner.h"
+#include "Src/Domain/Tests/Option/Resolution/Runner.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/Runner.h"
+#include "Src/Domain/Tests/Cyclic/Shutoff/Runner.h"
 
 #include "Src/Domain/DeviceInitializer.h"
 

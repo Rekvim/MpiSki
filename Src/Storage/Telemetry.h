@@ -4,10 +4,10 @@
 #include <QString>
 #include <QColor>
 
-#include "Src/Domain/Tests/Stroke/StrokeResult.h"
-#include "Src/Domain/Tests/Main/MainResult.h"
-#include "Src/Domain/Tests/Option/Step/StepResult.h"
-#include "Src/Domain/Tests/Cyclic/Regulatory/RegulatoryResult.h"
+#include "Src/Domain/Tests/Stroke/Result.h"
+#include "Src/Domain/Tests/Main/Result.h"
+#include "Src/Domain/Tests/Option/Step/Result.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/Result.h"
 
 struct InitState {
     QString deviceStatusText = "";

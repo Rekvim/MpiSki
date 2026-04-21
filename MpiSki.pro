@@ -58,21 +58,20 @@ SOURCES += \
     Src/Report/Blocks/TechnicalResults.cpp \
     Src/Report/Saver.cpp \
     Src/Storage/AppSettings.cpp \
-    Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp \
-    Src/Ui/MainWindow/TelemetryUiMapper.cpp \
-    Src/Ui/MainWindow/TestController.cpp \
-    Src/Ui/Setup/ValveWindow/Logic.cpp \
-    Src/Ui/Setup/ValveWindow/Mapper.cpp \
+    Src/Gui/MainWindow/CrossingIndicatorsPresenter.cpp \
+    Src/Gui/MainWindow/TelemetryUiMapper.cpp \
+    Src/Gui/MainWindow/TestController.cpp \
+    Src/Gui/Setup/ValveWindow/Logic.cpp \
+    Src/Gui/Setup/ValveWindow/Mapper.cpp \
     Src/Utils/NumberUtils.cpp \
-    main.cpp \
-    Src/Ui/Setup/ObjectWindow.cpp \
-    Src/Ui/Setup/ValveWindow/ValveWindow.cpp \
-    Src/Ui/Setup/SelectTests.cpp \
-    Src/Ui/MainWindow/MainWindow.cpp \
-    Src/Ui/TestSettings/CyclicTestSettings.cpp \
-    Src/Ui/TestSettings/OtherTestSettings.cpp \
-    Src/Ui/TestSettings/StepTestSettings.cpp \
-    Src/Ui/TestSettings/MainTestSettings.cpp \
+    Src/Gui/Setup/ObjectWindow.cpp \
+    Src/Gui/Setup/ValveWindow/ValveWindow.cpp \
+    Src/Gui/Setup/SelectTests.cpp \
+    Src/Gui/MainWindow/MainWindow.cpp \
+    Src/Gui/TestSettings/CyclicTestSettings.cpp \
+    Src/Gui/TestSettings/OtherTestSettings.cpp \
+    Src/Gui/TestSettings/StepTestSettings.cpp \
+    Src/Gui/TestSettings/MainTestSettings.cpp \
     Src/CustomChart/MyChart.cpp \
     Src/CustomChart/MySeries.cpp \
     Src/LabeledSlider/LabeledSlider.cpp \
@@ -85,6 +84,7 @@ SOURCES += \
     Src/Domain/Program.cpp \
     Src/Storage/Registry.cpp \
     Src/Domain/Measurement/Sensor.cpp \
+    main.cpp \
 
 HEADERS += \
     Src/CustomChart/ChartImageService.h \
@@ -146,24 +146,23 @@ HEADERS += \
     Src/Storage/AppSettings.h \
     Src/Storage/SettingsGroup.h \
     Src/Storage/Telemetry.h \
-    Src/Ui/MainWindow/CrossingIndicatorsPresenter.h \
-    Src/Ui/MainWindow/TelemetryUiMapper.h \
-    Src/Ui/MainWindow/TestController.h \
-    Src/Ui/Setup/ObjectWindow.h \
-    Src/Ui/Setup/ValveWindow/Logic.h \
-    Src/Ui/Setup/ValveWindow/ValveEnums.h \
-    Src/Ui/Setup/ValveWindow/ValveWindow.h \
-    Src/Ui/Setup/SelectTests.h \
-    Src/Ui/Setup/ValveWindow/Mapper.h \
-    Src/Ui/TestSettings/AbstractTestSettings.h \
-    Src/Ui/TestSettings/CyclicTestSettings.h \
-    Src/Ui/TestSettings/OtherTestSettings.h \
-    Src/Ui/TestSettings/StepTestSettings.h \
-    Src/Ui/TestSettings/MainTestSettings.h \
-    Src/Ui/MainWindow/MainWindow.h \
+    Src/Gui/MainWindow/CrossingIndicatorsPresenter.h \
+    Src/Gui/MainWindow/TelemetryUiMapper.h \
+    Src/Gui/MainWindow/TestController.h \
+    Src/Gui/Setup/ObjectWindow.h \
+    Src/Gui/Setup/ValveWindow/Logic.h \
+    Src/Gui/Setup/ValveWindow/ValveEnums.h \
+    Src/Gui/Setup/ValveWindow/ValveWindow.h \
+    Src/Gui/Setup/SelectTests.h \
+    Src/Gui/Setup/ValveWindow/Mapper.h \
+    Src/Gui/TestSettings/AbstractTestSettings.h \
+    Src/Gui/TestSettings/CyclicTestSettings.h \
+    Src/Gui/TestSettings/OtherTestSettings.h \
+    Src/Gui/TestSettings/StepTestSettings.h \
+    Src/Gui/TestSettings/MainTestSettings.h \
+    Src/Gui/MainWindow/MainWindow.h \
     Src/Domain/Program.h \
     Src/Storage/Registry.h \
-    Src/Domain/Sensor.h \
     Src/CustomChart/MyChart.h \
     Src/CustomChart/MySeries.h \
     Src/LabeledSlider/LabeledSlider.h \
@@ -181,14 +180,14 @@ HEADERS += \
     Src/ValidatorFactory/ValidatorFactory.h
 
 FORMS += \
-    Src/Ui/Setup/ObjectWindow.ui \
-    Src/Ui/Setup/SelectTests.ui \
-    Src/Ui/Setup/ValveWindow/ValveWindow.ui \
-    Src/Ui/MainWindow/MainWindow.ui \
-    Src/Ui/TestSettings/CyclicTestSettings.ui \
-    Src/Ui/TestSettings/MainTestSettings.ui \
-    Src/Ui/TestSettings/OtherTestSettings.ui \
-    Src/Ui/TestSettings/StepTestSettings.ui
+    Src/Gui/Setup/ObjectWindow.ui \
+    Src/Gui/Setup/SelectTests.ui \
+    Src/Gui/Setup/ValveWindow/ValveWindow.ui \
+    Src/Gui/MainWindow/MainWindow.ui \
+    Src/Gui/TestSettings/CyclicTestSettings.ui \
+    Src/Gui/TestSettings/MainTestSettings.ui \
+    Src/Gui/TestSettings/OtherTestSettings.ui \
+    Src/Gui/TestSettings/StepTestSettings.ui
 
 
 # Default rules for deployment.

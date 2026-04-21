@@ -5,7 +5,7 @@
 #include "Src/Report/Patterns/C_CVT.h"
 #include "Src/Report/Patterns/C_SACVT.h"
 #include "Src/Report/Patterns/C_SOVT.h"
-#include "Src/Ui/Setup/SelectTests.h"
+#include "Src/Gui/Setup/SelectTests.h"
 
 namespace Report {
     class BuilderFactory

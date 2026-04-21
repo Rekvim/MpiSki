@@ -1,88 +1,85 @@
-cmake_minimum_required(VERSION 3.16)
-project(YourTestSystem VERSION 1.0.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.21)
+
+project(MpiSki VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
-# Отдельные директории для сгенерированных файлов
-set(CMAKE_AUTOMOC_MOC_DIR ${CMAKE_CURRENT_BINARY_DIR}/moc)
-set(CMAKE_AUTORCC_RCC_DIR ${CMAKE_CURRENT_BINARY_DIR}/rcc)
-set(CMAKE_AUTOUIC_UI_DIR ${CMAKE_CURRENT_BINARY_DIR}/ui)
-
-# Решение проблемы с одинаковыми именами файлов
-set(CMAKE_CXX_OBJECT_PATH_SEP "_")
-set_property(GLOBAL PROPERTY TARGET_OBJECT_PATH_MAX 256)
-
-# Поиск Qt6 с приватными модулями
 find_package(Qt6 REQUIRED COMPONENTS
     Core
-    CorePrivate      # Добавьте это
     Gui
-    GuiPrivate       # Добавьте это
     Widgets
     SerialPort
     Charts
 )
 
-# Затем в target_link_libraries добавьте:
-target_link_libraries(${PROJECT_NAME}
-    Qt6::Core
-    Qt6::CorePrivate    # Добавьте это
-    Qt6::Gui
-    Qt6::GuiPrivate     # Добавьте это
-    Qt6::Widgets
-    Qt6::SerialPort
-    Qt6::Charts
-    QXlsx
+qt_standard_project_setup()
+
+# ------------------------------------------------------------
+# QXlsx
+# ------------------------------------------------------------
+# Для сторонней библиотеки на этапе миграции допустимо использовать GLOB.
+# Позже лучше заменить на явный список файлов или отдельный CMakeLists.txt внутри QXlsx.
+
+file(GLOB QXLSX_HEADERS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/header/*.h"
 )
 
-# ============= ПРОСТОЙ СПОСОБ ПОДКЛЮЧЕНИЯ QXlsx =============
-# Вместо add_subdirectory, просто добавляем исходники QXlsx напрямую
-set(QXLSX_HEADERPATH ${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/header)
-set(QXLSX_SOURCEPATH ${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/source)
+file(GLOB QXLSX_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/source/*.cpp"
+)
 
-# Проверяем существование папок
-if(EXISTS ${QXLSX_SOURCEPATH} AND EXISTS ${QXLSX_HEADERPATH})
-    message(STATUS "Found QXlsx at ${QXLSX_SOURCEPATH}")
+add_library(QXlsx STATIC
+    ${QXLSX_HEADERS}
+    ${QXLSX_SOURCES}
+)
 
-    # Собираем все .cpp файлы QXlsx
-    file(GLOB_RECURSE QXLSX_SOURCES "${QXLSX_SOURCEPATH}/*.cpp")
-    file(GLOB_RECURSE QXLSX_HEADERS "${QXLSX_HEADERPATH}/*.h")
+target_include_directories(QXlsx
+    PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/header"
+        "${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/source"
+)
 
-    message(STATUS "Found ${CMAKE_CURRENT_SOURCE_DIR}/QXlsx")
-else()
-    message(WARNING "QXlsx not found, building without Excel support")
-    set(QXLSX_SOURCES "")
-    set(QXLSX_HEADERS "")
-endif()
+target_link_libraries(QXlsx
+    PUBLIC
+        Qt6::Core
+        Qt6::Gui
+)
 
-# ВАШИ ИСХОДНЫЕ ФАЙЛЫ - замените на полный список из вашего .pro файла
-set(SOURCES
+# Иногда QXlsx требует это определение, если собирается как shared.
+# У тебя раньше оно было закомментировано, поэтому пока не включаю.
+# target_compile_definitions(QXlsx PRIVATE QXLSX_SHAREDLIB QXLSX_EXPORTS)
+
+# ------------------------------------------------------------
+# Main application
+# ------------------------------------------------------------
+qt_add_executable(${PROJECT_NAME}
     main.cpp
+
+    # Sources
     Src/CustomChart/ChartImageService.cpp
     Src/CustomChart/ChartManager.cpp
     Src/Domain/DeviceInitializer.cpp
     Src/Domain/Mpi/Device.cpp
     Src/Domain/Mpi/Settings.cpp
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAlgorithm.cpp
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAnalyzer.cpp
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryRunner.cpp
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAlgorithm.cpp
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAnalyzer.cpp
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffRunner.cpp
-    Src/Domain/Tests/Main/MainAlgorithm.cpp
-    Src/Domain/Tests/Main/MainAnalyzer.cpp
-    Src/Domain/Tests/Main/MainRunner.cpp
-    Src/Domain/Tests/Option/OptionAlgorithm.cpp
-    Src/Domain/Tests/Option/Step/StepAlgorithm.cpp
-    Src/Domain/Tests/Option/Step/StepAnalyzer.cpp
-    Src/Domain/Tests/Option/Step/StepRunner.cpp
-    Src/Domain/Tests/Stroke/StrokeAlgorithm.cpp
-    Src/Domain/Tests/Stroke/StrokeAnalyzer.cpp
-    Src/Domain/Tests/Stroke/StrokeRunner.cpp
+    Src/Domain/Tests/Cyclic/Regulatory/Algorithm.cpp
+    Src/Domain/Tests/Cyclic/Regulatory/Analyzer.cpp
+    Src/Domain/Tests/Cyclic/Regulatory/Runner.cpp
+    Src/Domain/Tests/Cyclic/Shutoff/Algorithm.cpp
+    Src/Domain/Tests/Cyclic/Shutoff/Analyzer.cpp
+    Src/Domain/Tests/Cyclic/Shutoff/Runner.cpp
+    Src/Domain/Tests/Main/Algorithm.cpp
+    Src/Domain/Tests/Main/Analyzer.cpp
+    Src/Domain/Tests/Main/Runner.cpp
+    Src/Domain/Tests/Option/Algorithm.cpp
+    Src/Domain/Tests/Option/Step/Algorithm.cpp
+    Src/Domain/Tests/Option/Step/Analyzer.cpp
+    Src/Domain/Tests/Option/Step/Runner.cpp
+    Src/Domain/Tests/Stroke/Algorithm.cpp
+    Src/Domain/Tests/Stroke/Analyzer.cpp
+    Src/Domain/Tests/Stroke/Runner.cpp
     Src/Domain/Uart/Message.cpp
     Src/Domain/Uart/Port.cpp
     Src/Domain/Uart/Reader.cpp
@@ -94,71 +91,70 @@ set(SOURCES
     Src/Report/Blocks/TechnicalResults.cpp
     Src/Report/Saver.cpp
     Src/Storage/AppSettings.cpp
-    Src/Ui/MainWindow/CrossingIndicatorsPresenter.cpp
-    Src/Ui/MainWindow/TelemetryUiMapper.cpp
-    Src/Ui/MainWindow/TestController.cpp
-    Src/Ui/Setup/ValveWindow/Logic.cpp
-    Src/Ui/Setup/ValveWindow/Mapper.cpp
+    Src/Gui/MainWindow/CrossingIndicatorsPresenter.cpp
+    Src/Gui/MainWindow/TelemetryUiMapper.cpp
+    Src/Gui/MainWindow/TestController.cpp
+    Src/Gui/Setup/ValveWindow/Logic.cpp
+    Src/Gui/Setup/ValveWindow/Mapper.cpp
     Src/Utils/NumberUtils.cpp
-    Src/Ui/Setup/ObjectWindow.cpp
-    Src/Ui/Setup/ValveWindow/ValveWindow.cpp
-    Src/Ui/Setup/SelectTests.cpp
-    Src/Ui/MainWindow/MainWindow.cpp
-    Src/Ui/TestSettings/CyclicTestSettings.cpp
-    Src/Ui/TestSettings/OtherTestSettings.cpp
-    Src/Ui/TestSettings/StepTestSettings.cpp
-    Src/Ui/TestSettings/MainTestSettings.cpp
+    Src/Gui/Setup/ObjectWindow.cpp
+    Src/Gui/Setup/ValveWindow/ValveWindow.cpp
+    Src/Gui/Setup/SelectTests.cpp
+    Src/Gui/MainWindow/MainWindow.cpp
+    Src/Gui/TestSettings/CyclicTestSettings.cpp
+    Src/Gui/TestSettings/OtherTestSettings.cpp
+    Src/Gui/TestSettings/StepTestSettings.cpp
+    Src/Gui/TestSettings/MainTestSettings.cpp
     Src/CustomChart/MyChart.cpp
     Src/CustomChart/MySeries.cpp
     Src/LabeledSlider/LabeledSlider.cpp
     Src/Domain/Tests/BaseRunner.cpp
     Src/Domain/Tests/Test.cpp
     Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.cpp
-    Src/Domain/Tests/Option/Response/ResponseRunner.cpp
-    Src/Domain/Tests/Option/Resolution/ResolutionRunner.cpp
+    Src/Domain/Tests/Option/Response/Runner.cpp
+    Src/Domain/Tests/Option/Resolution/Runner.cpp
     Src/ValidatorFactory/ValidatorFactory.cpp
     Src/Domain/Program.cpp
     Src/Storage/Registry.cpp
-    Src/Domain/Sensor.cpp
-    ${QXLSX_SOURCES}  # Добавляем исходники QXlsx
-)
+    Src/Domain/Measurement/Sensor.cpp
 
-set(HEADERS
+    # Headers (не обязательны для сборки, но удобны для IDE)
     Src/CustomChart/ChartImageService.h
     Src/CustomChart/ChartManager.h
     Src/Domain/DeviceInitializer.h
     Src/Domain/Measurement/Sample.h
+    Src/Domain/Measurement/Sensor.h
     Src/Domain/Measurement/TestDataBuffer.h
     Src/Domain/Mpi/Device.h
     Src/Domain/Mpi/Settings.h
     Src/Domain/Tests/AnalyzerFactory.h
-    Src/Domain/Tests/Cyclic/CyclicParams.h
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAlgorithm.h
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryAnalyzer.h
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryParams.h
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryResult.h
-    Src/Domain/Tests/Cyclic/Regulatory/RegulatoryRunner.h
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAlgorithm.h
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffAnalyzer.h
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffParams.h
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffResult.h
-    Src/Domain/Tests/Cyclic/Shutoff/ShutoffRunner.h
+    Src/Domain/Tests/Cyclic/Params.h
+    Src/Domain/Tests/Cyclic/Regulatory/Algorithm.h
+    Src/Domain/Tests/Cyclic/Regulatory/Analyzer.h
+    Src/Domain/Tests/Cyclic/Regulatory/Params.h
+    Src/Domain/Tests/Cyclic/Regulatory/Result.h
+    Src/Domain/Tests/Cyclic/Regulatory/Runner.h
+    Src/Domain/Tests/Cyclic/Shutoff/Algorithm.h
+    Src/Domain/Tests/Cyclic/Shutoff/Analyzer.h
+    Src/Domain/Tests/Cyclic/Shutoff/Params.h
+    Src/Domain/Tests/Cyclic/Shutoff/Result.h
+    Src/Domain/Tests/Cyclic/Shutoff/Runner.h
     Src/Domain/Tests/IAnalyzer.h
-    Src/Domain/Tests/Main/MainAlgorithm.h
-    Src/Domain/Tests/Main/MainAnalyzer.h
-    Src/Domain/Tests/Main/MainParams.h
-    Src/Domain/Tests/Main/MainResult.h
-    Src/Domain/Tests/Main/MainRunner.h
-    Src/Domain/Tests/Option/OptionAlgorithm.h
-    Src/Domain/Tests/Option/Step/StepAlgorithm.h
-    Src/Domain/Tests/Option/Step/StepAnalyzer.h
-    Src/Domain/Tests/Option/Step/StepParams.h
-    Src/Domain/Tests/Option/Step/StepResult.h
-    Src/Domain/Tests/Option/Step/StepRunner.h
-    Src/Domain/Tests/Stroke/StrokeAlgorithm.h
-    Src/Domain/Tests/Stroke/StrokeAnalyzer.h
-    Src/Domain/Tests/Stroke/StrokeResult.h
-    Src/Domain/Tests/Stroke/StrokeRunner.h
+    Src/Domain/Tests/Main/Algorithm.h
+    Src/Domain/Tests/Main/Analyzer.h
+    Src/Domain/Tests/Main/Params.h
+    Src/Domain/Tests/Main/Result.h
+    Src/Domain/Tests/Main/Runner.h
+    Src/Domain/Tests/Option/Algorithm.h
+    Src/Domain/Tests/Option/Step/Algorithm.h
+    Src/Domain/Tests/Option/Step/Analyzer.h
+    Src/Domain/Tests/Option/Step/Params.h
+    Src/Domain/Tests/Option/Step/Result.h
+    Src/Domain/Tests/Option/Step/Runner.h
+    Src/Domain/Tests/Stroke/Algorithm.h
+    Src/Domain/Tests/Stroke/Analyzer.h
+    Src/Domain/Tests/Stroke/Result.h
+    Src/Domain/Tests/Stroke/Runner.h
     Src/Domain/Uart/Message.h
     Src/Domain/Uart/Port.h
     Src/Domain/Uart/Reader.h
@@ -182,95 +178,100 @@ set(HEADERS
     Src/Storage/AppSettings.h
     Src/Storage/SettingsGroup.h
     Src/Storage/Telemetry.h
-    Src/Ui/MainWindow/CrossingIndicatorsPresenter.h
-    Src/Ui/MainWindow/TelemetryUiMapper.h
-    Src/Ui/MainWindow/TestController.h
-    Src/Ui/Setup/ObjectWindow.h
-    Src/Ui/Setup/ValveWindow/Logic.h
-    Src/Ui/Setup/ValveWindow/ValveEnums.h
-    Src/Ui/Setup/ValveWindow/ValveWindow.h
-    Src/Ui/Setup/SelectTests.h
-    Src/Ui/Setup/ValveWindow/Mapper.h
-    Src/Ui/TestSettings/AbstractTestSettings.h
-    Src/Ui/TestSettings/CyclicTestSettings.h
-    Src/Ui/TestSettings/OtherTestSettings.h
-    Src/Ui/TestSettings/StepTestSettings.h
-    Src/Ui/TestSettings/MainTestSettings.h
-    Src/Ui/MainWindow/MainWindow.h
+    Src/Gui/MainWindow/CrossingIndicatorsPresenter.h
+    Src/Gui/MainWindow/TelemetryUiMapper.h
+    Src/Gui/MainWindow/TestController.h
+    Src/Gui/Setup/ObjectWindow.h
+    Src/Gui/Setup/ValveWindow/Logic.h
+    Src/Gui/Setup/ValveWindow/ValveEnums.h
+    Src/Gui/Setup/ValveWindow/ValveWindow.h
+    Src/Gui/Setup/SelectTests.h
+    Src/Gui/Setup/ValveWindow/Mapper.h
+    Src/Gui/TestSettings/AbstractTestSettings.h
+    Src/Gui/TestSettings/CyclicTestSettings.h
+    Src/Gui/TestSettings/OtherTestSettings.h
+    Src/Gui/TestSettings/StepTestSettings.h
+    Src/Gui/TestSettings/MainTestSettings.h
+    Src/Gui/MainWindow/MainWindow.h
     Src/Domain/Program.h
     Src/Storage/Registry.h
-    Src/Domain/Sensor.h
     Src/CustomChart/MyChart.h
     Src/CustomChart/MySeries.h
     Src/LabeledSlider/LabeledSlider.h
     Src/Domain/Tests/Test.h
     Src/Domain/Tests/BaseRunner.h
     Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.h
-    Src/Domain/Tests/Option/OptionTestParams.h
-    Src/Domain/Tests/Option/Response/ResponseRunner.h
-    Src/Domain/Tests/Option/Resolution/ResolutionRunner.h
+    Src/Domain/Tests/Option/Params.h
+    Src/Domain/Tests/Option/Response/Runner.h
+    Src/Domain/Tests/Option/Resolution/Runner.h
     Src/Utils/NumberUtils.h
     Src/Utils/Shortcuts/TabActionRouter.h
     Src/Utils/Shortcuts/TabBinder.h
     Src/Utils/SignalUtils.h
     Src/ValidatorFactory/RegexPatterns.h
     Src/ValidatorFactory/ValidatorFactory.h
-    ${QXLSX_HEADERS}
-)
 
-set(UI_FORMS
-    Src/Ui/Setup/ObjectWindow.ui
-    Src/Ui/Setup/SelectTests.ui
-    Src/Ui/Setup/ValveWindow/ValveWindow.ui
-    Src/Ui/MainWindow/MainWindow.ui
-    Src/Ui/TestSettings/CyclicTestSettings.ui
-    Src/Ui/TestSettings/MainTestSettings.ui
-    Src/Ui/TestSettings/OtherTestSettings.ui
-    Src/Ui/TestSettings/StepTestSettings.ui
-)
+    # UI forms
+    Src/Gui/Setup/ObjectWindow.ui
+    Src/Gui/Setup/SelectTests.ui
+    Src/Gui/Setup/ValveWindow/ValveWindow.ui
+    Src/Gui/MainWindow/MainWindow.ui
+    Src/Gui/TestSettings/CyclicTestSettings.ui
+    Src/Gui/TestSettings/MainTestSettings.ui
+    Src/Gui/TestSettings/OtherTestSettings.ui
+    Src/Gui/TestSettings/StepTestSettings.ui
 
-set(RESOURCES
+    # Resources
     excel.qrc
     img.qrc
     translations.qrc
 )
 
-# Добавляем пути для include
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/CustomChart
-    ${QXLSX_HEADERPATH}  # Путь к заголовкам QXlsx
+
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Src"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Src/CustomChart"
 )
 
-# Определяем макросы для QXlsx
-add_definitions(-DQXLSX_LIBRARY)
+get_target_property(QT_CORE_INCDIR Qt6::Core INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(QT_GUI_INCDIR Qt6::Gui INTERFACE_INCLUDE_DIRECTORIES)
 
-# Создаем исполняемый файл
-add_executable(${PROJECT_NAME}
-    ${SOURCES}
-    ${HEADERS}
-    ${UI_FORMS}
-    ${RESOURCES}
+# Берем первый путь из списка
+list(GET QT_CORE_INCDIR 0 QT_CORE_INCLUDE_BASE)
+list(GET QT_GUI_INCDIR 0 QT_GUI_INCLUDE_BASE)
+
+set(QT_VER "${Qt6Core_VERSION_MAJOR}.${Qt6Core_VERSION_MINOR}.${Qt6Core_VERSION_PATCH}")
+
+target_include_directories(QXlsx
+    PRIVATE
+        "${QT_CORE_INCLUDE_BASE}/${QT_VER}"
+        "${QT_CORE_INCLUDE_BASE}/${QT_VER}/QtCore"
+        "${QT_GUI_INCLUDE_BASE}/${QT_VER}"
+        "${QT_GUI_INCLUDE_BASE}/${QT_VER}/QtGui"
 )
 
-# Линкуем библиотеки
 target_link_libraries(${PROJECT_NAME}
-    Qt6::Core
-    Qt6::Gui
-    Qt6::Widgets
-    Qt6::SerialPort
-    Qt6::Charts
+    PRIVATE
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        Qt6::SerialPort
+        Qt6::Charts
+        QXlsx
 )
 
-# Настройки для правильного маппинга объектных файлов
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    AUTOMOC TRUE
-    AUTORCC TRUE
-    AUTOUIC TRUE
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin
-)
+# Для Visual Studio удобно задать стартовый проект
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY UNITY_BUILD OFF)
-endif()
+# ------------------------------------------------------------
+# Install
+# ------------------------------------------------------------
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    BUNDLE DESTINATION .
+)
