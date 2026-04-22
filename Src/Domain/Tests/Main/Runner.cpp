@@ -18,7 +18,7 @@ namespace Domain::Tests::Main {
         auto worker = std::make_unique<Algorithm>();
         worker->setParameters(p);
 
-        return makeConfig(std::move(worker), totalMs, Charts::Task);
+        return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Task);
     }
 
     void Runner::wireSpecificSignals(Test& base) {

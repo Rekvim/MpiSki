@@ -7,7 +7,7 @@ RunnerConfig Runner::buildConfig()
 {
     auto worker = std::make_unique<Algorithm>();
 
-    return makeConfig(std::move(worker), 0, Charts::Stroke);
+    return makeConfig(std::move(worker), 0, Widgets::Chart::ChartType::Stroke);
 }
 
 void Runner::wireSpecificSignals(Test& base) {

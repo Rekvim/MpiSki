@@ -4,8 +4,8 @@
 #include <QDir>
 #include <QImage>
 
-class MyChart;
-class Registry;
+#include "Src/Widgets/Chart/ChartView.h"
+#include "Src/Storage/Registry.h"
 
 namespace Report {
     class Saver : public QObject
@@ -40,7 +40,7 @@ namespace Report {
         explicit Saver(QObject *parent = nullptr);
 
         void setRegistry(Registry *registry);
-        void saveImage(MyChart *chart);
+        void saveImage(Widgets::Chart::ChartView *chart);
 
         [[nodiscard]] const QDir &directory() const;
         void createDir();

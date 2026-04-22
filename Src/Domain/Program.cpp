@@ -30,6 +30,7 @@ namespace ResponseTest = Domain::Tests::Option::Response;
 namespace ResolutionTest = Domain::Tests::Option::Resolution;
 namespace CyclicReg = Domain::Tests::Cyclic::Regulatory;
 namespace CyclicShut = Domain::Tests::Cyclic::Shutoff;
+using ChartType = Widgets::Chart::ChartType;
 
 Program::Program(QObject *parent)
     : QObject{parent}
@@ -238,7 +239,7 @@ void Program::updateRealtimeTexts(const Domain::Measurement::Sample& s)
 
 void Program::updateMainCharts(const Domain::Measurement::Sample& s)
 {
-    QVector<Point> points;
+    QVector<Widgets::Chart::Point> points;
 
     if (auto* linear = m_device.sensorByAdc(0)) {
         const qreal x = s.dac;
@@ -257,20 +258,20 @@ void Program::updateMainCharts(const Domain::Measurement::Sample& s)
     if (!qIsNaN(s.pressure3))
         points.push_back({4, s.dac, s.pressure3});
 
-    emit addPoints(Charts::Task, points);
+    emit addPoints(ChartType::Task, points);
 
     if (auto* linear = m_device.sensorByAdc(0)) {
         if (!qIsNaN(s.pressure1)) {
-            QVector<Point> pressurePoints;
+            QVector<Widgets::Chart::Point> pressurePoints;
             pressurePoints.push_back({0, s.pressure1, linear->value()});
-            emit addPoints(Charts::Pressure, pressurePoints);
+            emit addPoints(ChartType::Pressure, pressurePoints);
         }
     }
 }
 
-void Program::updateCyclicChart(const Domain::Measurement::Sample& s, Charts chart)
+void Program::updateCyclicChart(const Domain::Measurement::Sample& s, ChartType chart)
 {
-    QVector<Point> points;
+    QVector<Widgets::Chart::Point> points;
     points.push_back({0, qreal(s.testTime), s.taskPercent});
     points.push_back({1, qreal(s.testTime), s.positionPercent});
 
@@ -283,7 +284,7 @@ void Program::updateCyclicChart(const Domain::Measurement::Sample& s, Charts cha
         quint8 di = m_device.digitalInputs();
 
         if (di != m_lastDiStatus) {
-            QVector<Point> diPts;
+            QVector<Widgets::Chart::Point> diPts;
 
             const bool lastClosed = (m_lastDiStatus & 0x01);
             const bool lastOpen = (m_lastDiStatus & 0x02);
@@ -326,9 +327,9 @@ void Program::updateSensors()
     updateChartsFromSample(s);
 }
 
-void Program::updateTimeChart(const Domain::Measurement::Sample& s, Charts chart, qint64 time)
+void Program::updateTimeChart(const Domain::Measurement::Sample& s, ChartType chart, qint64 time)
 {
-    QVector<Point> points;
+    QVector<Widgets::Chart::Point> points;
 
     points.push_back({0, qreal(time), s.taskPercent});
     points.push_back({1, qreal(time), s.positionPercent});
@@ -338,12 +339,12 @@ void Program::updateTimeChart(const Domain::Measurement::Sample& s, Charts chart
 
 void Program::updateChartsFromSample(const Domain::Measurement::Sample& s)
 {
-    updateTimeChart(s, Charts::Trend, s.systemTime);
+    updateTimeChart(s, ChartType::Trend, s.systemTime);
 
     switch (m_testWorker)
     {
     case TestWorker::Stroke:
-        updateTimeChart(s, Charts::Stroke, s.testTime);
+        updateTimeChart(s, ChartType::Stroke, s.testTime);
         break;
 
     case TestWorker::Main:
@@ -351,23 +352,23 @@ void Program::updateChartsFromSample(const Domain::Measurement::Sample& s)
         break;
 
     case TestWorker::CyclicRegulatory:
-        updateCyclicChart(s, Charts::Cyclic);
+        updateCyclicChart(s, ChartType::Cyclic);
         break;
 
     case TestWorker::CyclicShutOff:
-        updateCyclicChart(s, Charts::Cyclic);
+        updateCyclicChart(s, ChartType::Cyclic);
         break;
 
     case TestWorker::Step:
-        updateTimeChart(s, Charts::Step, s.testTime);
+        updateTimeChart(s, ChartType::Step, s.testTime);
         break;
 
     case TestWorker::Response:
-        updateTimeChart(s, Charts::Response, s.testTime);
+        updateTimeChart(s, ChartType::Response, s.testTime);
         break;
 
     case TestWorker::Resolution:
-        updateTimeChart(s, Charts::Resolution, s.testTime);
+        updateTimeChart(s, ChartType::Resolution, s.testTime);
         break;
 
     default:
@@ -512,7 +513,7 @@ void Program::waitForDacCycle()
 
 void Program::finalizeInitialization()
 {
-    emit clearPoints(Charts::Trend);
+    emit clearPoints(ChartType::Trend);
     m_initTime = QDateTime::currentMSecsSinceEpoch();
 
     quint8 mask = 0;
@@ -552,7 +553,7 @@ void Program::startMainTest(const MainTest::Params& params)
 
 void Program::receivedPoints_mainTest(QVector<QVector<QPointF>> &points)
 {
-    emit getPoints_mainTest(points, Charts::Task);
+    emit getPoints_mainTest(points, ChartType::Task);
 }
 
 static bool inRange(double value, double lower, double upper)
@@ -731,7 +732,7 @@ void Program::results_mainTest(const MainTest::Algorithm::TestResults &results)
 
 void Program::addFriction(const QVector<QPointF> &points)
 {
-    QVector<Point> chartPoints;
+    QVector<Widgets::Chart::Point> chartPoints;
 
     auto& valveInfo = m_registry->valveInfo();
 
@@ -740,16 +741,16 @@ void Program::addFriction(const QVector<QPointF> &points)
     for (QPointF point : points) {
         chartPoints.push_back({0, point.x(), point.y() * k});
     }
-    emit addPoints(Charts::Friction, chartPoints);
+    emit addPoints(ChartType::Friction, chartPoints);
 }
 
 void Program::addRegression(const QVector<QPointF> &points)
 {
-    QVector<Point> chartPoints;
+    QVector<Widgets::Chart::Point> chartPoints;
     for (QPointF point : points) {
         chartPoints.push_back({1, point.x(), point.y()});
     }
-    emit addPoints(Charts::Pressure, chartPoints);
+    emit addPoints(ChartType::Pressure, chartPoints);
 
     emit setRegressionEnable(true);
 }
@@ -776,7 +777,7 @@ void Program::startStrokeTest()
 
 void Program::receivedPoints_strokeTest(QVector<QVector<QPointF>> &points)
 {
-    emit getPoints_strokeTest(points, Charts::Stroke);
+    emit getPoints_strokeTest(points, ChartType::Stroke);
 }
 
 void Program::results_strokeTest()
@@ -809,7 +810,7 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
 
 void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
 {
-    emit getPoints_cyclicTest(points, Charts::Cyclic);
+    emit getPoints_cyclicTest(points, ChartType::Cyclic);
 }
 
 
@@ -1031,7 +1032,7 @@ void Program::startStepTest(const Tests::Option::Step::Params& params) {
 
 void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
 {
-    emit getPoints_stepTest(points, Charts::Step);
+    emit getPoints_stepTest(points, ChartType::Step);
 }
 
 void Program::results_stepTest(const QVector<StepTest::Result>& results, quint32 T_value)

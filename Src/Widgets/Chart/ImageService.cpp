@@ -1,21 +1,14 @@
-#include "ChartImageService.h"
-#include "ChartManager.h"
-#include "MyChart.h"
+#include "ImageService.h"
+#include "Manager.h"
+#include "ChartView.h"
 #include "Src/Report/Saver.h"
 
-ChartImageService::ChartImageService(
-    ChartManager* charts,
-    Report::Saver* saver)
-    : m_charts(charts),
-    m_saver(saver)
-{
-}
-
-QImage ChartImageService::captureChart(Charts chart)
+namespace Widgets::Chart {
+QImage ImageService::captureChart(ChartType chart)
 {
     auto backup = hideAuxSeries(chart);
 
-    MyChart* ch = m_charts->chart(chart);
+    ChartView* ch = m_charts->chart(chart);
     if (!ch)
         return {};
 
@@ -27,32 +20,31 @@ QImage ChartImageService::captureChart(Charts chart)
     return pix.toImage();
 }
 
-void ChartImageService::restoreSeries(Charts chart, const SeriesVisibilityBackup& b)
+void ImageService::restoreSeries(ChartType chart, const SeriesVisibilityBackup& b)
 {
     auto* ch = m_charts->chart(chart);
     if (!ch) return;
 
-    if (chart == Charts::Task && b.visible.size() == 3) {
+    if (chart == ChartType::Task && b.visible.size() == 3) {
         ch->visible(2, b.visible[0]);
         ch->visible(3, b.visible[1]);
         ch->visible(4, b.visible[2]);
     }
 
-    if (chart == Charts::Pressure && b.visible.size() == 1) {
+    if (chart == ChartType::Pressure && b.visible.size() == 1) {
         ch->visible(1, b.visible[0]);
     }
 }
 
-std::optional<ChartImageService::SeriesVisibilityBackup>
-ChartImageService::hideAuxSeries(Charts chart)
+std::optional<ImageService::SeriesVisibilityBackup>
+ImageService::hideAuxSeries(ChartType chart)
 {
     auto* ch = m_charts->chart(chart);
-    if (!ch)
-        return std::nullopt;
+    if (!ch) return std::nullopt;
 
     SeriesVisibilityBackup b;
 
-    if (chart == Charts::Task) {
+    if (chart == ChartType::Task) {
 
         b.visible = {
             ch->series()[2]->isVisible(),
@@ -65,24 +57,17 @@ ChartImageService::hideAuxSeries(Charts chart)
         ch->visible(4,false);
     }
 
-    if (chart == Charts::Pressure) {
+    if (chart == ChartType::Pressure) {
+        b.visible = {ch->series()[1]->isVisible()};
+        ch->visible(1,false);
+    }
 
-        b.visible = {
-            ch->series()[1]->isVisible()
-    };
-
-    ch->visible(1,false);
+    return b;
 }
 
-return b;
-}
-
-void ChartImageService::saveChart(
-    Charts chart,
-    QLabel* preview,
-    QImage& target)
+void ImageService::saveChart(ChartType chart, QLabel* preview, QImage& target)
 {
-    MyChart* ch = m_charts->chart(chart);
+    ChartView* ch = m_charts->chart(chart);
     if (!ch)
         return;
 
@@ -97,12 +82,13 @@ void ChartImageService::saveChart(
         preview->setPixmap(QPixmap::fromImage(img));
 }
 
-void ChartImageService::saveChart(Charts chart)
+void ImageService::saveChart(ChartType chart)
 {
-    MyChart* ch = m_charts->chart(chart);
+    ChartView* ch = m_charts->chart(chart);
     if (!ch)
         return;
 
     if (m_saver)
         m_saver->saveImage(ch);
+}
 }

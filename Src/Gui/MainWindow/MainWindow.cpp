@@ -1,13 +1,14 @@
 #include "MainWindow.h"
-#include "./Src/CustomChart/MyChart.h"
 #include "ui_MainWindow.h"
-#include "../Setup/ValveWindow/ValveWindow.h"
 
+#include <QDebug>
+
+#include "Src/Gui/Setup/ValveWindow/ValveWindow.h"
+#include "Src/Gui/TestSettings/AbstractTestSettings.h"
 #include "Src/Utils/Shortcuts/TabBinder.h"
 #include "Src/Utils/NumberUtils.h"
-
 #include "Src/Report/BuilderFactory.h"
-#include "Src/Gui/TestSettings/AbstractTestSettings.h"
+#include "Src/Widgets/Chart/ChartView.h"
 
 namespace {
 constexpr auto kArrowButtonStyle =
@@ -55,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupUiConnections();
 
     m_mapper = std::make_unique<TelemetryUiMapper>(ui);
-    m_chartManager = std::make_unique<ChartManager>(this);
+    m_chartManager = std::make_unique<Widgets::Chart::Manager>(this);
     m_crossingIndicators = std::make_unique<CrossingIndicatorsPresenter>(ui);
 
     QHash<QWidget*, QTabWidget*> innerTabs;
@@ -75,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupPrimaryActions();
     setupShortcuts();
 
-    auto* s = qobject_cast<LabeledSlider*>(ui->verticalSlider_task);
+    auto* s = qobject_cast<Widgets::Slider::SliderView*>(ui->verticalSlider_task);
 
     if (s) {
         QTimer::singleShot(0, s, [s]{
@@ -101,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent)
     };
 
     m_reportSaver = new Report::Saver(this);
-    m_chartImages = new ChartImageService(
+    m_chartImages = new Widgets::Chart::ImageService(
         m_chartManager.get(),
         m_reportSaver);
 
@@ -282,13 +283,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
     setupArrowButton(ui->toolButton_arrowUp,
-                     ":/Src/Img/arrowUp.png",
-                     ":/Src/Img/arrowUpHover.png",
+                     ":Src/Img/arrowUp.png",
+                     ":Src/Img/arrowUpHover.png",
                      +0.05);
 
     setupArrowButton(ui->toolButton_arrowDown,
-                     ":/Src/Img/arrowDown.png",
-                     ":/Src/Img/arrowDownHover.png",
+                     ":Src/Img/arrowDown.png",
+                     ":Src/Img/arrowDownHover.png",
                      -0.05);
 
     connect(m_program, &Domain::Program::telemetryUpdated,
@@ -750,7 +751,8 @@ void MainWindow::setRegistry(Registry *registry)
         ui->lineEdit_crossingLimits_dynamicError_upperLimit->setText(valveInfo.dinamicErrorRecomend);
     }
 
-    for (AbstractTestSettings* s : m_testSettings)
+    const auto& testSettings = m_testSettings;
+    for (AbstractTestSettings* s : testSettings)
         s->applyValveInfo(valveInfo);
 
     if (!m_chartsInitialized) {
@@ -880,7 +882,7 @@ void MainWindow::setButtonInitEnabled(bool enable)
     ui->pushButton_init->setEnabled(enable);
 }
 
-void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
+void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
 {
     points.clear();
 
@@ -891,19 +893,19 @@ void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, 
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
 
-void MainWindow::onMainTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
+void MainWindow::onMainTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
 {
     points.clear();
 
     QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_chartManager->getPoints(Charts::Pressure, 0);
+    QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_chartManager->getPoints(ChartType::Pressure, 0);
 
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
     points.push_back({pointsPressure.first.begin(), pointsPressure.first.end()});
     points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
 }
-void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
+void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
 {
     points.clear();
 
@@ -914,7 +916,7 @@ void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Ch
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
-void MainWindow::onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, Charts chart)
+void MainWindow::onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
 {
     points.clear();
 
@@ -1136,11 +1138,11 @@ void MainWindow::saveMainTestChartClicked()
 {
     const auto *w = ui->tabWidget_mainTests->currentWidget();
     if (w == ui->tab_mainTests_task) {
-        saveChart(Charts::Task);
+        saveChart(ChartType::Task);
     } else if (w == ui->tab_mainTests_pressure) {
-        saveChart(Charts::Pressure);
+        saveChart(ChartType::Pressure);
     } else if (w == ui->tab_mainTests_friction) {
-        saveChart(Charts::Friction);
+        saveChart(ChartType::Friction);
     }
 }
 
@@ -1160,37 +1162,37 @@ void MainWindow::promptSaveChartsAfterTest()
     if (answer != QMessageBox::Yes)
         return;
 
-    for (Charts c : charts)
+    for (ChartType c : charts)
         saveChart(c);
 }
 
-QVector<Charts> MainWindow::chartsForCurrentTest() const
+QVector<ChartType> MainWindow::chartsForCurrentTest() const
 {
     QWidget* top = ui->tabWidget_main->currentWidget();
 
     if (top == ui->tab_strokeTest) {
-        return { Charts::Stroke };
+        return { ChartType::Stroke };
     }
 
     if (top == ui->tab_mainTests) {
-        return { Charts::Task, Charts::Pressure, Charts::Friction };
+        return { ChartType::Task, ChartType::Pressure, ChartType::Friction };
     }
 
     if (top == ui->tab_optionalTests) {
         QWidget* w = ui->tabWidget_optionalTests->currentWidget();
 
         if (w == ui->tab_optionalTests_response)
-            return { Charts::Response };
+            return { ChartType::Response };
 
         if (w == ui->tab_optionalTests_resolution)
-            return { Charts::Resolution };
+            return { ChartType::Resolution };
 
         if (w == ui->tab_optionalTests_step)
-            return { Charts::Step };
+            return { ChartType::Step };
     }
 
     if (top == ui->tab_cyclicTests) {
-        return { Charts::Cyclic };
+        return { ChartType::Cyclic };
     }
 
     return {};
@@ -1205,7 +1207,7 @@ void MainWindow::startStrokeTestClicked()
 }
 void MainWindow::saveStrokeChartClicked()
 {
-    saveChart(Charts::Stroke);
+    saveChart(ChartType::Stroke);
 }
 
 void MainWindow::startOptionalTestClicked()
@@ -1242,11 +1244,11 @@ void MainWindow::saveOptionalTestChartClicked()
     const auto *w = ui->tabWidget_optionalTests->currentWidget();
 
     if (w == ui->tab_optionalTests_response) {
-        saveChart(Charts::Response);
+        saveChart(ChartType::Response);
     } else if (w == ui->tab_optionalTests_resolution) {
-        saveChart(Charts::Resolution);
+        saveChart(ChartType::Resolution);
     } else if (w == ui->tab_optionalTests_step) {
-        saveChart(Charts::Step);
+        saveChart(ChartType::Step);
     }
 }
 
@@ -1266,7 +1268,7 @@ void MainWindow::startCyclicTestClicked()
 
 void MainWindow::saveCyclicChartClicked()
 {
-    saveChart(Charts::Cyclic);
+    saveChart(ChartType::Cyclic);
 }
 
 void MainWindow::setDoButtonsChecked(quint8 bitmask)
@@ -1317,7 +1319,7 @@ void MainWindow::setSensorsMask(quint8 mask)
 
 void MainWindow::syncTaskChartSeriesVisibility(quint8 mask)
 {
-    auto *ch = m_chartManager->chart(Charts::Task);
+    auto *ch = m_chartManager->chart(ChartType::Task);
     if (!ch) return;
 
     const bool hasLinear = mask & (1 << 0);
@@ -1400,48 +1402,48 @@ void MainWindow::initCharts()
     }
 
     connect(m_program, &Domain::Program::addPoints,
-            m_chartManager.get(), &ChartManager::addPoints);
+            m_chartManager.get(), &Widgets::Chart::Manager::addPoints);
 
     connect(m_program, &Domain::Program::clearPoints,
-            m_chartManager.get(), &ChartManager::clearPoints);
+            m_chartManager.get(), &Widgets::Chart::Manager::clearPoints);
 
     connect(m_program, &Domain::Program::duplicateMainChartsSeries,
-            m_chartManager.get(), &ChartManager::duplicateMainChartsSeries);
+            m_chartManager.get(), &Widgets::Chart::Manager::duplicateMainChartsSeries);
 
     connect(m_program, &Domain::Program::setVisible,
-            m_chartManager.get(), &ChartManager::setVisible);
+            m_chartManager.get(), &Widgets::Chart::Manager::setVisible);
 
     connect(m_program, &Domain::Program::setRegressionEnable,
             this, &MainWindow::setRegressionEnabled);
 
     connect(ui->checkBox_showCurve_task, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_chartManager->chart(Charts::Task)->visible(0, state != 0);
+                m_chartManager->chart(ChartType::Task)->visible(0, state != 0);
             });
 
     connect(ui->checkBox_showCurve_moving, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_chartManager->chart(Charts::Task)->visible(1, state != 0);
+                m_chartManager->chart(ChartType::Task)->visible(1, state != 0);
             });
 
     connect(ui->checkBox_showCurve_pressure_1, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_chartManager->chart(Charts::Task)->visible(2, state != 0);
+                m_chartManager->chart(ChartType::Task)->visible(2, state != 0);
             });
 
     connect(ui->checkBox_showCurve_pressure_2, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_chartManager->chart(Charts::Task)->visible(3, state != 0);
+                m_chartManager->chart(ChartType::Task)->visible(3, state != 0);
             });
 
     connect(ui->checkBox_showCurve_pressure_3, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_chartManager->chart(Charts::Task)->visible(4, state != 0);
+                m_chartManager->chart(ChartType::Task)->visible(4, state != 0);
             });
 
     connect(ui->checkBox_regression, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_chartManager->chart(Charts::Pressure)->visible(1, state != 0);
+                m_chartManager->chart(ChartType::Pressure)->visible(1, state != 0);
             });
 
     connect(m_program, &Domain::Program::getPoints_strokeTest,
@@ -1491,44 +1493,44 @@ void MainWindow::initClicked()
     emit patternChanged(m_patternType);
 }
 
-void MainWindow::restoreSeries(Charts chart, const SeriesVisibilityBackup& b)
+void MainWindow::restoreSeries(ChartType chart, const SeriesVisibilityBackup& b)
 {
     auto* ch = m_chartManager->chart(chart);
     if (!ch) return;
 
-    if (chart == Charts::Task && b.visible.size() == 3) {
+    if (chart == ChartType::Task && b.visible.size() == 3) {
         ch->visible(2, b.visible[0]);
         ch->visible(3, b.visible[1]);
         ch->visible(4, b.visible[2]);
     }
 
-    if (chart == Charts::Pressure && b.visible.size() == 1) {
+    if (chart == ChartType::Pressure && b.visible.size() == 1) {
         ch->visible(1, b.visible[0]);
     }
 }
 
-void MainWindow::saveChart(Charts chart)
+void MainWindow::saveChart(ChartType chart)
 {
     switch (chart) {
-    case Charts::Task:
+    case ChartType::Task:
         m_chartImages->saveChart(
             chart,
             ui->label_imageChartTask,
             m_imageChartTask);
         break;
-    case Charts::Pressure:
+    case ChartType::Pressure:
         m_chartImages->saveChart(
             chart,
             ui->label_imageChartPressure,
             m_imageChartPressure);
         break;
-    case Charts::Friction:
+    case ChartType::Friction:
         m_chartImages->saveChart(
             chart,
             ui->label_imageChartFriction,
             m_imageChartFriction);
         break;
-    case Charts::Step:
+    case ChartType::Step:
         m_imageChartStep = m_chartImages->captureChart(chart);
         break;
     default:

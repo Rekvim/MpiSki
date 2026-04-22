@@ -5,7 +5,6 @@
 #include <QMainWindow>
 #include <QPointF>
 #include <QThread>
-#include <QDebug>
 #include <QPlainTextEdit>
 #include <QElapsedTimer>
 
@@ -13,21 +12,22 @@
 
 #include "Src/Gui/MainWindow/TelemetryUiMapper.h"
 #include "Src/Gui/MainWindow/CrossingIndicatorsPresenter.h"
-
 #include "Src/Gui/TestSettings/MainTestSettings.h"
 #include "Src/Gui/TestSettings/CyclicTestSettings.h"
 #include "Src/Gui/TestSettings/OtherTestSettings.h"
 #include "Src/Gui/TestSettings/StepTestSettings.h"
+#include "Src/Gui/TestSettings/AbstractTestSettings.h"
 
 #include "Src/Report/Saver.h"
 #include "Src/Domain/Program.h"
 #include "Src/Storage/Registry.h"
 #include "Src/Storage/Telemetry.h"
-#include "Src/Gui/TestSettings/AbstractTestSettings.h"
-#include "Src/CustomChart/ChartManager.h"
-#include "Src/CustomChart/ChartImageService.h"
+#include "Src/Widgets/Chart/Manager.h"
+#include "Src/Widgets/Chart/ImageService.h"
 
 #include "TestController.h"
+
+using ChartType = Widgets::Chart::ChartType;
 
 // QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -88,10 +88,10 @@ private slots:
 
     void endTest();
 
-    void onStrokeTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
-    void onMainTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
-    void onStepTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
-    void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Charts chart);
+    void onStrokeTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
+    void onMainTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
+    void onStepTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
+    void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
 
     void onCyclicTestParametersRequested(Domain::Tests::Cyclic::Params& parameters);
 
@@ -119,8 +119,8 @@ private:
     TabActionRouter m_tabActionRouter;
     std::unique_ptr<TelemetryUiMapper> m_mapper;
     std::unique_ptr<CrossingIndicatorsPresenter> m_crossingIndicators;
-    std::unique_ptr<ChartManager> m_chartManager;
-    ChartImageService* m_chartImages;
+    std::unique_ptr<Widgets::Chart::Manager> m_chartManager;
+    Widgets::Chart::ImageService* m_chartImages;
 
     Registry *m_registry = nullptr;
     Telemetry m_telemetry;
@@ -134,14 +134,14 @@ private:
     quint64 m_totalTestMs;
 
     Report::Saver::Report m_report;
-    Report::Saver *m_reportSaver = nullptr;
+    Report::Saver* m_reportSaver = nullptr;
 
     QPlainTextEdit* m_logOutput = nullptr;
 
     bool m_isInitialized = false;
     bool m_chartsInitialized = false;
 
-    void saveChart(Charts chart);
+    void saveChart(ChartType chart);
     bool tryStartTest();
 
     void setupShortcuts();
@@ -153,24 +153,20 @@ private:
     void setTestState(TestState state);
     void showInitializingState();
     void showIdleState();
-    void collectRegistryOverrides(
-        ObjectInfo& objectInfo,
-        ValveInfo& valveInfo,
-        OtherParameters& otherParameters
-    );
+    void collectRegistryOverrides(ObjectInfo& objectInfo, ValveInfo& valveInfo, OtherParameters& otherParameters);
 
     void collectReportOverrides();
 
     void lockTabsForPreInit();
     void updateAvailableTabs();
     void applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo);
-    QVector<Charts> chartsForCurrentTest() const;
+    QVector<Widgets::Chart::ChartType> chartsForCurrentTest() const;
 
     struct SeriesVisibilityBackup {
         QVector<bool> visible;
     };
 
-    void restoreSeries(Charts chart, const SeriesVisibilityBackup& b);
+    void restoreSeries(Widgets::Chart::ChartType chart, const SeriesVisibilityBackup& b);
 
     SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
 

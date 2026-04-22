@@ -3,11 +3,12 @@
 #include <QSlider>
 #include <QMap>
 
-class LabeledSlider : public QSlider
+namespace Widgets::Slider {
+class SliderView : public QSlider
 {
     Q_OBJECT
 public:
-    explicit LabeledSlider(QWidget* parent = nullptr);
+    explicit SliderView(QWidget* parent = nullptr);
 
     void setTickLabels(const QMap<int, QString>& labels);
     void setLabelOffset(int px);
@@ -33,8 +34,9 @@ private:
 private:
     QMap<int, QString> m_labels;
 
-    int m_labelOffset    = 6;
-    int m_tickLen        = 10;
-    int m_tickGap        = 4;
+    int m_labelOffset = 6;
+    int m_tickLen = 10;
+    int m_tickGap = 4;
     int m_labelPointSize = 10;
 };
+}

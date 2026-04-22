@@ -3,15 +3,18 @@
 #include <QtTest>
 #include <QDebug>
 
-#include "Src/Domain/Tests/Cyclic/Regulatory/CyclicRegulatoryAnalyzer.h"
+#include "Src/Domain/Tests/Cyclic/Regulatory/Analyzer.h"
 #include "SampleGenerator.h"
+
+
+namespace Test = Domain::Tests::Cyclic::Regulatory;
 
 namespace
 {
 // Создание одной точки измерения.
-Sample makeSample(double task, double position)
+Domain::Measurement::Sample makeSample(double task, double position)
 {
-    Sample s{};
+    Domain::Measurement::Sample s{};
     s.taskPercent = task;
     s.positionPercent = position;
     return s;
@@ -24,7 +27,7 @@ void printCaseHeader(const QString& title)
 }
 
 // Краткий вывод по всем диапазонам результата.
-void printRanges(const CyclicRegulatoryResult& result)
+void printRanges(const Test::Result& result)
 {
     qDebug() << "Количество диапазонов:" << result.ranges.size();
 
@@ -64,12 +67,10 @@ void CyclicRegulatoryAnalyzerTest::testWithManyPoints()
 {
     printCaseHeader("Много точек");
 
-    Domain::Tests::Cyclic::Params analyzer;
+    Test::Analyzer analyzer;
+    Test::Params params;
 
-    Domain::Tests::Cyclic::Params params;
-    params.type = Domain::Tests::Cyclic::Params::Regulatory;
-    params.regulatory.sequence = {0, 50, 100};
-
+    params.sequence = {0, 50, 100};
     analyzer.start();
     analyzer.configure(params);
 
@@ -102,12 +103,10 @@ void CyclicRegulatoryAnalyzerTest::testForwardMax()
 {
     printCaseHeader("Максимум на прямом ходе");
 
-    CyclicRegulatoryAnalyzer analyzer;
+    Test::Analyzer analyzer;
+    Test::Params params;
 
-    CyclicTestParams params;
-    params.type = CyclicTestParams::Regulatory;
-    params.regulatory.sequence = {0, 50, 100};
-
+    params.sequence = {0, 50, 100};
     analyzer.start();
     analyzer.configure(params);
 
@@ -134,11 +133,10 @@ void CyclicRegulatoryAnalyzerTest::testBackwardMin()
 {
     printCaseHeader("Минимум на обратном ходе");
 
-    CyclicRegulatoryAnalyzer analyzer;
+    Test::Analyzer analyzer;
+    Test::Params params;
 
-    CyclicTestParams params;
-    params.type = CyclicTestParams::Regulatory;
-    params.regulatory.sequence = {100, 50, 0};
+    params.sequence = {100, 50, 0};
 
     analyzer.start();
     analyzer.configure(params);
@@ -166,11 +164,10 @@ void CyclicRegulatoryAnalyzerTest::testOnlyForward()
 {
     printCaseHeader("Только прямой ход");
 
-    CyclicRegulatoryAnalyzer analyzer;
+    Test::Analyzer analyzer;
+    Test::Params params;
 
-    CyclicTestParams params;
-    params.type = CyclicTestParams::Regulatory;
-    params.regulatory.sequence = {0, 50, 100};
+    params.sequence = {0, 50, 100};
 
     analyzer.start();
     analyzer.configure(params);
@@ -196,11 +193,10 @@ void CyclicRegulatoryAnalyzerTest::testExtremumStability()
 {
     printCaseHeader("Устойчивость экстремума");
 
-    CyclicRegulatoryAnalyzer analyzer;
+    Test::Analyzer analyzer;
+    Test::Params params;
 
-    CyclicTestParams params;
-    params.type = CyclicTestParams::Regulatory;
-    params.regulatory.sequence = {0, 50, 100};
+    params.sequence = {0, 50, 100};
 
     analyzer.start();
     analyzer.configure(params);
@@ -208,8 +204,8 @@ void CyclicRegulatoryAnalyzerTest::testExtremumStability()
     // Несколько значений на одном шаге.
     analyzer.onSample(makeSample(0, 0.0));
     analyzer.onSample(makeSample(50, 49.0));
-    analyzer.onSample(makeSample(50, 51.0));  // максимум
-    analyzer.onSample(makeSample(50, 50.5));  // не должен заменить максимум
+    analyzer.onSample(makeSample(50, 51.0)); // максимум
+    analyzer.onSample(makeSample(50, 50.5)); // не должен заменить максимум
 
     analyzer.finish();
 

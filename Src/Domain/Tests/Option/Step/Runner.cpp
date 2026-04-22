@@ -43,7 +43,7 @@ RunnerConfig Runner::buildConfig() {
     worker->setTask(task);
     worker->setTValue(p.testValue);
 
-    return makeConfig(std::move(worker), totalMs, Charts::Step);
+    return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Step);
 }
 
 void Runner::wireSpecificSignals(Test& base) {

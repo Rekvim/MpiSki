@@ -4,14 +4,16 @@
 #include <QDebug>
 #include <limits>
 
-#include "Src/Domain/Tests/Option/Step/StepTestAnalyzer.h"
+#include "Src/Domain/Tests/Option/Step/Analyzer.h"
 #include "Src/Domain/Measurement/Sample.h"
+
+namespace Test = Domain::Tests::Option::Step;
 
 namespace
 {
-    Sample makeSample(double task, double position, quint64 time)
+    Domain::Measurement::Sample makeSample(double task, double position, quint64 time)
     {
-        Sample s{};
+        Domain::Measurement::Sample s{};
         s.taskPercent = task;
         s.positionPercent = position;
         s.testTime = time;
@@ -23,7 +25,7 @@ namespace
         qDebug().noquote() << "\n---" << title << "---";
     }
 
-    void printResults(const QVector<StepTestResult>& results)
+    void printResults(const QVector<Domain::Tests::Option::Step::Result>& results)
     {
         qDebug() << "Количество результатов:" << results.size();
 
@@ -45,7 +47,7 @@ void StepTestAnalyzerTest::testSingleUpStep_TValue()
 {
     printCaseHeader("Один шаг вверх: расчет T_value = 86%");
 
-    StepTestAnalyzer analyzer;
+    Domain::Tests::Option::Step::Analyzer analyzer;
     analyzer.start();
 
     quint64 t = 0;
@@ -73,7 +75,7 @@ void StepTestAnalyzerTest::testSingleDownStep_TValue()
 {
     printCaseHeader("Один шаг вниз: расчет T_value = 86%");
 
-    StepTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
     analyzer.start();
 
     quint64 t = 0;
@@ -101,7 +103,7 @@ void StepTestAnalyzerTest::testOvershootUp()
 {
     printCaseHeader("Перерегулирование на шаге вверх");
 
-    StepTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
     analyzer.start();
 
     quint64 t = 0;
@@ -129,7 +131,7 @@ void StepTestAnalyzerTest::testOvershootDown()
 {
     printCaseHeader("Перерегулирование на шаге вниз");
 
-    StepTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
     analyzer.start();
 
     quint64 t = 0;
@@ -157,7 +159,7 @@ void StepTestAnalyzerTest::testNoThresholdReached()
 {
     printCaseHeader("Порог 86% не достигнут");
 
-    StepTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
     analyzer.start();
 
     quint64 t = 0;
@@ -185,7 +187,7 @@ void StepTestAnalyzerTest::testTwoSteps()
 {
     printCaseHeader("Два шага подряд");
 
-    StepTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
     analyzer.start();
 
     quint64 t = 0;
@@ -226,7 +228,7 @@ void StepTestAnalyzerTest::testNaNInputIgnored()
 {
     printCaseHeader("NaN значения игнорируются");
 
-    StepTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
     analyzer.start();
 
     quint64 t = 0;
@@ -256,11 +258,10 @@ void StepTestAnalyzerTest::testFinishWithoutActiveStep()
 {
     printCaseHeader("finish без активного шага");
 
-    StepTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
+
     analyzer.start();
-
     analyzer.finish();
-
     const auto& r = analyzer.result();
     printResults(r);
 

@@ -97,7 +97,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="LabeledSlider" name="verticalSlider_task">
+            <widget class="Widgets::Slider::SliderView" name="verticalSlider_task">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -978,7 +978,7 @@
             </layout>
            </item>
            <item>
-            <widget class="MyChart" name="Chart_trend"/>
+            <widget class="Widgets::Chart::ChartView" name="Chart_trend"/>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_menuInit">
@@ -1120,7 +1120,7 @@
             <number>1</number>
            </property>
            <item>
-            <widget class="MyChart" name="Chart_stroke"/>
+            <widget class="Widgets::Chart::ChartView" name="Chart_stroke"/>
            </item>
           </layout>
          </widget>
@@ -1376,7 +1376,7 @@
                      <number>1</number>
                     </property>
                     <item>
-                     <widget class="MyChart" name="Chart_task"/>
+                     <widget class="Widgets::Chart::ChartView" name="Chart_task"/>
                     </item>
                    </layout>
                   </widget>
@@ -1531,7 +1531,7 @@
                   <number>1</number>
                  </property>
                  <item>
-                  <widget class="MyChart" name="Chart_friction"/>
+                  <widget class="Widgets::Chart::ChartView" name="Chart_friction"/>
                  </item>
                 </layout>
                </widget>
@@ -1574,7 +1574,7 @@
                   <number>1</number>
                  </property>
                  <item>
-                  <widget class="MyChart" name="Chart_pressure"/>
+                  <widget class="Widgets::Chart::ChartView" name="Chart_pressure"/>
                  </item>
                 </layout>
                </widget>
@@ -3261,7 +3261,7 @@ Border-radius: 10px;
                 <number>1</number>
                </property>
                <item>
-                <widget class="MyChart" name="Chart_response"/>
+                <widget class="Widgets::Chart::ChartView" name="Chart_response"/>
                </item>
               </layout>
              </widget>
@@ -3304,7 +3304,7 @@ Border-radius: 10px;
                 <number>1</number>
                </property>
                <item>
-                <widget class="MyChart" name="Chart_resolution"/>
+                <widget class="Widgets::Chart::ChartView" name="Chart_resolution"/>
                </item>
               </layout>
              </widget>
@@ -3347,7 +3347,7 @@ Border-radius: 10px;
                 <number>1</number>
                </property>
                <item>
-                <widget class="MyChart" name="Chart_step"/>
+                <widget class="Widgets::Chart::ChartView" name="Chart_step"/>
                </item>
               </layout>
              </widget>
@@ -3460,7 +3460,7 @@ Border-radius: 10px;
             <number>1</number>
            </property>
            <item>
-            <widget class="MyChart" name="Chart_cyclicTests"/>
+            <widget class="Widgets::Chart::ChartView" name="Chart_cyclicTests"/>
            </item>
           </layout>
          </widget>
@@ -5450,14 +5450,14 @@ Border-radius: 10px;
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyChart</class>
+   <class>Widgets::Chart::ChartView</class>
    <extends>QGraphicsView</extends>
-   <header>./Src/CustomChart/MyChart.h</header>
+   <header>Src/Widgets/Chart/ChartView.h</header>
   </customwidget>
   <customwidget>
-   <class>LabeledSlider</class>
+   <class>Widgets::Slider::SliderView</class>
    <extends>QSlider</extends>
-   <header>./Src/LabeledSlider/LabeledSlider.h</header>
+   <header>Src/Widgets/Slider/SliderView.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

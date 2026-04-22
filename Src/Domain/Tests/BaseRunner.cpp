@@ -45,7 +45,7 @@ void BaseRunner::start()
     if (cfg.totalMs > 0)
         emit totalTestTimeMs(cfg.totalMs);
 
-    if (cfg.chartToClear != Charts::None)
+    if (cfg.chartToClear != Widgets::Chart::ChartType::None)
         emit requestClearChart(cfg.chartToClear);
 
     QThread* thread = new QThread(this);

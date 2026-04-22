@@ -59,8 +59,8 @@ qt_add_executable(${PROJECT_NAME}
     main.cpp
 
     # Sources
-    Src/CustomChart/ChartImageService.cpp
-    Src/CustomChart/ChartManager.cpp
+    Src/Widgets/Chart/ImageService.cpp
+    Src/Widgets/Chart/Manager.cpp
     Src/Domain/DeviceInitializer.cpp
     Src/Domain/Mpi/Device.cpp
     Src/Domain/Mpi/Settings.cpp
@@ -105,9 +105,9 @@ qt_add_executable(${PROJECT_NAME}
     Src/Gui/TestSettings/OtherTestSettings.cpp
     Src/Gui/TestSettings/StepTestSettings.cpp
     Src/Gui/TestSettings/MainTestSettings.cpp
-    Src/CustomChart/MyChart.cpp
-    Src/CustomChart/MySeries.cpp
-    Src/LabeledSlider/LabeledSlider.cpp
+    Src/Widgets/Chart/ChartView.cpp
+    Src/Widgets/Chart/Series.cpp
+    Src/Widgets/Slider/SliderView.cpp
     Src/Domain/Tests/BaseRunner.cpp
     Src/Domain/Tests/Test.cpp
     Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.cpp
@@ -119,8 +119,8 @@ qt_add_executable(${PROJECT_NAME}
     Src/Domain/Measurement/Sensor.cpp
 
     # Headers (не обязательны для сборки, но удобны для IDE)
-    Src/CustomChart/ChartImageService.h
-    Src/CustomChart/ChartManager.h
+    Src/Widgets/Chart/ImageService.h
+    Src/Widgets/Chart/Manager.h
     Src/Domain/DeviceInitializer.h
     Src/Domain/Measurement/Sample.h
     Src/Domain/Measurement/Sensor.h
@@ -195,9 +195,9 @@ qt_add_executable(${PROJECT_NAME}
     Src/Gui/MainWindow/MainWindow.h
     Src/Domain/Program.h
     Src/Storage/Registry.h
-    Src/CustomChart/MyChart.h
-    Src/CustomChart/MySeries.h
-    Src/LabeledSlider/LabeledSlider.h
+    Src/Widgets/Chart/ChartView.h
+    Src/Widgets/Chart/Series.h
+    Src/Widgets/Slider/SliderView.h
     Src/Domain/Tests/Test.h
     Src/Domain/Tests/BaseRunner.h
     Src/Domain/Tests/CyclicPositioner/CyclicTestPositioner.h
@@ -232,8 +232,8 @@ qt_add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Src"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Src/CustomChart"
+        "${CMAKE_CURRENT_SOURCE_DIR}Src"
+        "${CMAKE_CURRENT_SOURCE_DIR}Src/Chart"
 )
 
 get_target_property(QT_CORE_INCDIR Qt6::Core INTERFACE_INCLUDE_DIRECTORIES)

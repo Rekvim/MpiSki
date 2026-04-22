@@ -1,12 +1,13 @@
-#include "LabeledSlider.h"
+#include "SliderView.h"
 
 #include <QStylePainter>
 #include <QStyleOptionSlider>
 #include <QFontMetrics>
 #include <QEvent>
 #include <algorithm>
+namespace Widgets::Slider {
 
-LabeledSlider::LabeledSlider(QWidget* parent)
+SliderView::SliderView(QWidget* parent)
     : QSlider(parent)
 {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -36,7 +37,7 @@ LabeledSlider::LabeledSlider(QWidget* parent)
     setLabelOffset(8);
 }
 
-void LabeledSlider::setTickLabels(const QMap<int, QString>& labels)
+void SliderView::setTickLabels(const QMap<int, QString>& labels)
 {
     m_labels = labels;
     updateWidthConstraints();
@@ -44,7 +45,7 @@ void LabeledSlider::setTickLabels(const QMap<int, QString>& labels)
     update();
 }
 
-void LabeledSlider::setLabelOffset(int px)
+void SliderView::setLabelOffset(int px)
 {
     m_labelOffset = std::max(0, px);
     updateWidthConstraints();
@@ -52,7 +53,7 @@ void LabeledSlider::setLabelOffset(int px)
     update();
 }
 
-void LabeledSlider::setTickLength(int px)
+void SliderView::setTickLength(int px)
 {
     m_tickLen = std::max(0, px);
     updateWidthConstraints();
@@ -60,7 +61,7 @@ void LabeledSlider::setTickLength(int px)
     update();
 }
 
-void LabeledSlider::setTickGap(int px)
+void SliderView::setTickGap(int px)
 {
     m_tickGap = std::max(0, px);
     updateWidthConstraints();
@@ -68,7 +69,7 @@ void LabeledSlider::setTickGap(int px)
     update();
 }
 
-void LabeledSlider::setLabelPointSize(int pt)
+void SliderView::setLabelPointSize(int pt)
 {
     m_labelPointSize = std::max(1, pt);
     updateWidthConstraints();
@@ -76,14 +77,14 @@ void LabeledSlider::setLabelPointSize(int pt)
     update();
 }
 
-QFont LabeledSlider::labelFont() const
+QFont SliderView::labelFont() const
 {
     QFont f = font();
     f.setPointSize(m_labelPointSize);
     return f;
 }
 
-int LabeledSlider::labelsMaxTextWidth() const
+int SliderView::labelsMaxTextWidth() const
 {
     if (m_labels.isEmpty()) return 0;
 
@@ -94,13 +95,13 @@ int LabeledSlider::labelsMaxTextWidth() const
     return w;
 }
 
-int LabeledSlider::leftAreaWidth() const
+int SliderView::leftAreaWidth() const
 {
     if (m_labels.isEmpty()) return 0;
     return labelsMaxTextWidth() + m_labelOffset + m_tickLen + m_tickGap + 2;
 }
 
-void LabeledSlider::updateWidthConstraints()
+void SliderView::updateWidthConstraints()
 {
     if (orientation() != Qt::Vertical) return;
 
@@ -109,7 +110,7 @@ void LabeledSlider::updateWidthConstraints()
     setMinimumWidth(minW);
 }
 
-QSize LabeledSlider::sizeHint() const
+QSize SliderView::sizeHint() const
 {
     QSize base = QSlider::sizeHint();
 
@@ -122,7 +123,7 @@ QSize LabeledSlider::sizeHint() const
     return base;
 }
 
-QSize LabeledSlider::minimumSizeHint() const
+QSize SliderView::minimumSizeHint() const
 {
     QSize base = QSlider::minimumSizeHint();
 
@@ -135,7 +136,7 @@ QSize LabeledSlider::minimumSizeHint() const
     return base;
 }
 
-bool LabeledSlider::event(QEvent* e)
+bool SliderView::event(QEvent* e)
 {
     switch (e->type()) {
     case QEvent::Polish:
@@ -149,7 +150,7 @@ bool LabeledSlider::event(QEvent* e)
     return QSlider::event(e);
 }
 
-void LabeledSlider::paintEvent(QPaintEvent*)
+void SliderView::paintEvent(QPaintEvent*)
 {
     QStylePainter p(this);
     p.setRenderHint(QPainter::TextAntialiasing, true);
@@ -224,4 +225,5 @@ void LabeledSlider::paintEvent(QPaintEvent*)
                 p.drawText(r, Qt::AlignLeft | Qt::AlignVCenter, text);
         }
     }
+}
 }

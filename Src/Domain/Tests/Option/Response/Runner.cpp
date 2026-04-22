@@ -50,7 +50,7 @@ RunnerConfig Runner::buildConfig()
     const quint64 N_values = 1ULL + 2ULL * P * (1ULL + S);
     const quint64 totalMs = 10000ULL + N_values * delay + 10000ULL;
 
-    return makeConfig(std::move(worker), totalMs, Charts::Response);
+    return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Response);
 }
 
 void Runner::wireSpecificSignals(Test& base) {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IBlock.h"
-#include "./Src/Gui/Setup/ValveWindow/ValveEnums.h"
+#include "Src/Gui/Setup/ValveWindow/ValveEnums.h"
 
 namespace Report::Blocks {
     class ValveSpec : public IBlock {

@@ -23,7 +23,7 @@ QXLSX_SOURCEPATH = $$PWD/QXlsx/source/
 
 include($$PWD/QXlsx/QXlsx.pri)
 
-INCLUDEPATH += $$PWD/Src/CustomChart
+INCLUDEPATH += $$PWDSrc/CustomChart
 
 SOURCES += \
     Src/CustomChart/ChartImageService.cpp \

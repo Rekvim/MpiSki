@@ -4,9 +4,11 @@
 #include <QVector>
 #include <QDebug>
 
-#include "Src/Domain/Tests/Stroke/StrokeTestAnalyzer.h"
+#include "Src/Domain/Tests/Stroke/Analyzer.h"
 #include "Src/Domain/Measurement/Sample.h"
 
+namespace Test = Domain::Tests::Stroke;
+using Sample = Domain::Measurement::Sample;
 namespace
 {
 // Создание одной точки измерения.
@@ -24,7 +26,7 @@ void printCaseHeader(const QString& title)
     qDebug().noquote() << "\n---" << title << "---";
 }
 
-void printResult(const StrokeTestResult& r)
+void printResult(const Test::Result& r)
 {
     qDebug() << "Результат:"
              << "прямой ход =" << r.forwardTimeMs << "мс,"
@@ -49,12 +51,12 @@ void printSamplesInfo(const QVector<Sample>& samples)
 }
 
 // Запуск анализатора на наборе точек.
-StrokeTestResult runAnalyzer(
+Test::Result runAnalyzer(
     const QVector<Sample>& samples,
     bool normalClosed = true)
 {
-    StrokeTestAnalyzer analyzer;
-    StrokeTestAnalyzer::Config cfg;
+    Test::Analyzer analyzer;
+    Test::Analyzer::Config cfg;
     cfg.normalClosed = normalClosed;
     analyzer.setConfig(cfg);
 
@@ -180,7 +182,7 @@ void StrokeTestAnalyzerTest::emptyInput_returnsZeroResult()
 {
     printCaseHeader("Пустой вход");
 
-    StrokeTestAnalyzer analyzer;
+    Test::Analyzer analyzer;
     analyzer.start();
     analyzer.finish();
 
@@ -321,8 +323,8 @@ void StrokeTestAnalyzerTest::start_resetsPreviousState()
 {
     printCaseHeader("Сброс состояния через start()");
 
-    StrokeTestAnalyzer analyzer;
-    StrokeTestAnalyzer::Config cfg;
+    Test::Analyzer analyzer;
+    Test::Analyzer::Config cfg;
     cfg.normalClosed = true;
     analyzer.setConfig(cfg);
 

@@ -26,11 +26,7 @@ namespace Domain::Tests::Cyclic::Shutoff {
         const quint64 totalSteps = stepsPerCycle * static_cast<quint64>(task.cycles);
         const quint64 totalMs = totalSteps * static_cast<quint64>(task.delayMsecs + task.holdMsecs);
 
-        RunnerConfig cfg;
-        cfg.worker = std::move(worker);
-        cfg.totalMs = totalMs;
-        cfg.chartToClear = Charts::Cyclic;
-        return makeConfig(std::move(worker), totalMs, Charts::Cyclic);
+        return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Cyclic);
     }
 
     void Runner::wireSpecificSignals(Test& base) {

@@ -1,8 +1,5 @@
 #include "Saver.h"
 
-#include "./Src/CustomChart/MyChart.h"
-#include "./Src/Storage/Registry.h"
-
 #include <QCoreApplication>
 #include <QDate>
 #include <QFile>
@@ -34,7 +31,7 @@ namespace Report {
         return m_dir;
     }
 
-    void Saver::saveImage(MyChart *chart)
+    void Saver::saveImage(Widgets::Chart::ChartView *chart)
     {
         if (!chart)
             return;

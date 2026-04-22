@@ -7,8 +7,7 @@
 class TelemetryUiMapper
 {
 public:
-    TelemetryUiMapper(Ui::MainWindow* ui)
-        : m_ui(ui) { }
+    TelemetryUiMapper(Ui::MainWindow* ui) : m_ui(ui) { }
 
     void updateInit(const InitState& init);
     void updateMainTest(const Telemetry& t);

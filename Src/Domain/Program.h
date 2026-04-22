@@ -9,7 +9,7 @@
 
 #include "Src/Domain/Mpi/Device.h"
 
-#include "Src/CustomChart/ChartManager.h"
+#include "Src/Widgets/Chart/Manager.h"
 
 #include "Src/Domain/Tests/Main/Params.h"
 #include "Src/Domain/Tests/Cyclic/Params.h"
@@ -85,22 +85,22 @@ signals:
     void setSensorNumber(quint8 num);
     void setButtonInitEnabled(bool enable);
     void setGroupDOVisible(bool visible);
-    void setVisible(Charts chart, quint16 series, bool visible);
+    void setVisible(Widgets::Chart::ChartType chart, quint16 series, bool visible);
     void setRegressionEnable(bool enable);
 
     void setStepResults(const QVector<Domain::Tests::Option::Step::Result>& results, quint32 T_value);
     void setDoButtonsChecked(quint8 status);
 
     void setDiCheckboxesChecked(quint8 status);
-    void getPoints(QVector<QVector<QPointF>>& points, Charts chart);
+    void getPoints(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
 
-    void getPoints_strokeTest(QVector<QVector<QPointF>>& points, Charts chart);
-    void getPoints_mainTest(QVector<QVector<QPointF>>& points, Charts chart);
-    void getPoints_stepTest(QVector<QVector<QPointF>>& points, Charts chart);
-    void getPoints_cyclicTest(QVector<QVector<QPointF>>& points, Charts chart);
+    void getPoints_strokeTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
+    void getPoints_mainTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
+    void getPoints_stepTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
+    void getPoints_cyclicTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
 
-    void addPoints(Charts chart, const QVector<Point> &points);
-    void clearPoints(Charts chart);
+    void addPoints(Widgets::Chart::ChartType chartType, const QVector<Widgets::Chart::Point> &points);
+    void clearPoints(Widgets::Chart::ChartType chartType);
 
     void stopTheTest();
     void setTaskControlsEnabled(bool enable);
@@ -133,8 +133,8 @@ private:
         m_activeRunner.reset();
 
         connect(r.get(), &BaseRunner::requestClearChart,
-                this, [this](Charts chart) {
-                    emit clearPoints(chart);
+                this, [this](Widgets::Chart::ChartType chartType) {
+                    emit clearPoints(chartType);
                 });
 
         connect(r.get(), &BaseRunner::testActuallyStarted,
@@ -217,8 +217,8 @@ public slots:
     // updateCharts
     void updateChartsFromSample(const Domain::Measurement::Sample& s);
     void updateMainCharts(const Domain::Measurement::Sample& s);
-    void updateCyclicChart(const Domain::Measurement::Sample& s, Charts chart);
-    void updateTimeChart(const Domain::Measurement::Sample& s, Charts chart, qint64 time);
+    void updateCyclicChart(const Domain::Measurement::Sample& s, Widgets::Chart::ChartType chartType);
+    void updateTimeChart(const Domain::Measurement::Sample& s, Widgets::Chart::ChartType chartType, qint64 time);
     //
     void results_strokeTest();
     void results_mainTest(const Domain::Tests::Main::Algorithm::TestResults& results);

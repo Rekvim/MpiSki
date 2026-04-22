@@ -1,6 +1,6 @@
 #include "StepTestSettings.h"
 #include "ui_StepTestSettings.h"
-#include "./Src/Gui/Setup/ValveWindow/ValveEnums.h"
+#include "Src/Gui/Setup/ValveWindow/ValveEnums.h"
 
 StepTestSettings::StepTestSettings(QWidget* parent)
     : AbstractTestSettings(parent)

@@ -5,14 +5,14 @@
 #include <memory>
 
 #include "Test.h"
-#include "Src/CustomChart/ChartManager.h"
+#include "Src/Widgets/Chart/Manager.h"
 #include "Src/Storage/Registry.h"
 #include "Src/Domain/Mpi/Device.h"
 
 struct RunnerConfig {
     std::unique_ptr<Test> worker = nullptr;
     quint64 totalMs = 0;
-    Charts chartToClear = Charts::None;
+    Widgets::Chart::ChartType chartToClear = Widgets::Chart::ChartType::None;
 };
 
 class BaseRunner : public QObject
@@ -29,7 +29,7 @@ public slots:
     void releaseBlock();
 
 signals:
-    void requestClearChart(Charts chartIndex);
+    void requestClearChart(Widgets::Chart::ChartType chartIndex);
     void totalTestTimeMs(quint64 totalMs);
     void endTest();
     void testActuallyStarted();
@@ -47,7 +47,7 @@ protected:
 
     RunnerConfig makeConfig(std::unique_ptr<Test> worker,
                             quint64 totalMs,
-                            Charts chart)
+                            Widgets::Chart::ChartType chart)
     {
         RunnerConfig cfg;
         cfg.worker = std::move(worker);

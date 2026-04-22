@@ -8,9 +8,9 @@
 #include <QFile>
 #include <QDebug>
 #include <QMessageBox>
-#include "./Src/Storage/Registry.h"
-#include "../SelectTests.h"
-#include "./Src/Storage/AppSettings.h"
+#include "Src/Storage/Registry.h"
+#include "Src/Gui/Setup/SelectTests.h"
+#include "Src/Storage/AppSettings.h"
 
 class Mapper;
 

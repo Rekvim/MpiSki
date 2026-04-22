@@ -1,21 +1,12 @@
-#include "ChartManager.h"
+#include "Manager.h"
 
-ChartManager::ChartManager(QObject* parent)
-    : QObject(parent)
-{
-}
-
-void ChartManager::registerChart(Charts type, MyChart* chart)
-{
-    m_charts[type] = chart;
-}
-
-MyChart* ChartManager::chart(Charts type)
+namespace Widgets::Chart {
+ChartView* Manager::chart(ChartType type)
 {
     return m_charts.value(type, nullptr);
 }
 
-void ChartManager::addPoints(Charts chart, const QVector<Point> &points)
+void Manager::addPoints(Widgets::Chart::ChartType chart, const QVector<Widgets::Chart::Point> &points)
 {
     if (!m_charts.contains(chart))
         return;
@@ -25,7 +16,7 @@ void ChartManager::addPoints(Charts chart, const QVector<Point> &points)
     }
 }
 
-void ChartManager::clearPoints(Charts chart)
+void Manager::clearPoints(Widgets::Chart::ChartType chart)
 {
     if (!m_charts.contains(chart))
         return;
@@ -33,7 +24,7 @@ void ChartManager::clearPoints(Charts chart)
     m_charts[chart]->clear();
 }
 
-void ChartManager::setVisible(Charts chart, quint16 series, bool visible)
+void Manager::setVisible(ChartType chart, quint16 series, bool visible)
 {
     if (!m_charts.contains(chart))
         return;
@@ -41,32 +32,32 @@ void ChartManager::setVisible(Charts chart, quint16 series, bool visible)
     m_charts[chart]->visible(series, visible);
 }
 
-void ChartManager::showDots(bool visible)
+void Manager::showDots(bool visible)
 {
-    m_charts[Charts::Task]->showDots(visible);
+    m_charts[ChartType::Task]->showDots(visible);
 
-    if (m_charts.contains(Charts::Pressure))
-        m_charts[Charts::Pressure]->showDots(visible);
+    if (m_charts.contains(ChartType::Pressure))
+        m_charts[ChartType::Pressure]->showDots(visible);
 }
 
-void ChartManager::duplicateMainChartsSeries()
+void Manager::duplicateMainChartsSeries()
 {
-    if (!m_charts.contains(Charts::Task))
+    if (!m_charts.contains(ChartType::Task))
         return;
 
-    auto* task = m_charts[Charts::Task];
+    auto* task = m_charts[ChartType::Task];
 
     task->duplicateChartSeries(1);
     task->duplicateChartSeries(2);
     task->duplicateChartSeries(3);
     task->duplicateChartSeries(4);
 
-    if (m_charts.contains(Charts::Pressure))
-        m_charts[Charts::Pressure]->duplicateChartSeries(0);
+    if (m_charts.contains(ChartType::Pressure))
+        m_charts[ChartType::Pressure]->duplicateChartSeries(0);
 }
 
 QPair<QList<QPointF>, QList<QPointF>>
-ChartManager::getPoints(Charts chart, int series)
+Manager::getPoints(ChartType chart, int series)
 {
     if (!m_charts.contains(chart))
         return {};
@@ -74,7 +65,7 @@ ChartManager::getPoints(Charts chart, int series)
     return m_charts[chart]->getPoints(series);
 }
 
-QPixmap ChartManager::grabChart(Charts chart)
+QPixmap Manager::grabChart(ChartType chart)
 {
     if (!m_charts.contains(chart))
         return {};
@@ -82,9 +73,9 @@ QPixmap ChartManager::grabChart(Charts chart)
     return m_charts[chart]->grab();
 }
 
-MyChart* ChartManager::createTrendChart(MyChart* chart, const QColor& linearColor)
+ChartView* Manager::createTrendChart(ChartView* chart, const QColor& linearColor)
 {
-    m_charts[Charts::Trend] = chart;
+    m_charts[ChartType::Trend] = chart;
 
     chart->useTimeaxis(true);
     chart->addAxis(QStringLiteral("%.2f%%"));
@@ -95,9 +86,9 @@ MyChart* ChartManager::createTrendChart(MyChart* chart, const QColor& linearColo
     return chart;
 }
 
-MyChart* ChartManager::createStrokeChart(MyChart* chart, const QColor& linearColor)
+ChartView* Manager::createStrokeChart(ChartView* chart, const QColor& linearColor)
 {
-    m_charts[Charts::Stroke] = chart;
+    m_charts[ChartType::Stroke] = chart;
 
     chart->setName(QStringLiteral("Stroke"));
     chart->useTimeaxis(true);
@@ -108,16 +99,15 @@ MyChart* ChartManager::createStrokeChart(MyChart* chart, const QColor& linearCol
     return chart;
 }
 
-
-MyChart* ChartManager::createTaskChart(
-    MyChart* chart,
+ChartView* Manager::createTaskChart(
+    ChartView* chart,
     const QString& strokeAxisFormat,
     const QColor& linearColor,
     const QColor& pressure1Color,
     const QColor& pressure2Color,
     const QColor& pressure3Color
     ) {
-    m_charts[Charts::Task] = chart;
+    m_charts[ChartType::Task] = chart;
 
     chart->setName(QStringLiteral("Task"));
     chart->useTimeaxis(false);
@@ -132,12 +122,12 @@ MyChart* ChartManager::createTaskChart(
     return chart;
 }
 
-MyChart* ChartManager::createFrictionChart(
-    MyChart* chart,
+ChartView* Manager::createFrictionChart(
+    ChartView* chart,
     const QString& strokeAxisFormat,
     const QColor& linearColor
     ) {
-    m_charts[Charts::Friction] = chart;
+    m_charts[ChartType::Friction] = chart;
 
     chart->setName(QStringLiteral("Friction"));
     chart->addAxis(QStringLiteral("%.2f N"));
@@ -147,12 +137,12 @@ MyChart* ChartManager::createFrictionChart(
     return chart;
 }
 
-MyChart* ChartManager::createPressureChart(
-    MyChart* chart,
+ChartView* Manager::createPressureChart(
+    ChartView* chart,
     const QString& strokeAxisFormat,
     const QColor& linearColor
     ) {
-    m_charts[Charts::Pressure] = chart;
+    m_charts[ChartType::Pressure] = chart;
 
     chart->setName(QStringLiteral("Pressure"));
     chart->useTimeaxis(false);
@@ -165,11 +155,11 @@ MyChart* ChartManager::createPressureChart(
     return chart;
 }
 
-MyChart* ChartManager::createResponseChart(
-    MyChart* chart,
+ChartView* Manager::createResponseChart(
+    ChartView* chart,
     const QColor& linearColor
     ) {
-    m_charts[Charts::Response] = chart;
+    m_charts[ChartType::Response] = chart;
 
     chart->setName(QStringLiteral("Response"));
     chart->useTimeaxis(true);
@@ -180,11 +170,11 @@ MyChart* ChartManager::createResponseChart(
     return chart;
 }
 
-MyChart* ChartManager::createResolutionChart(
-    MyChart* chart,
+ChartView* Manager::createResolutionChart(
+    ChartView* chart,
     const QColor& linearColor
     ) {
-    m_charts[Charts::Resolution] = chart;
+    m_charts[ChartType::Resolution] = chart;
 
     chart->setName(QStringLiteral("Resolution"));
     chart->useTimeaxis(true);
@@ -195,9 +185,9 @@ MyChart* ChartManager::createResolutionChart(
     return chart;
 }
 
-MyChart* ChartManager::createStepChart(MyChart* chart, const QColor& linearColor)
+ChartView* Manager::createStepChart(ChartView* chart, const QColor& linearColor)
 {
-    m_charts[Charts::Step] = chart;
+    m_charts[ChartType::Step] = chart;
 
     chart->setName(QStringLiteral("Step"));
     chart->useTimeaxis(true);
@@ -208,10 +198,10 @@ MyChart* ChartManager::createStepChart(MyChart* chart, const QColor& linearColor
     return chart;
 }
 
-MyChart* ChartManager::createCyclicChart(MyChart* chart,
+ChartView* Manager::createCyclicChart(ChartView* chart,
                                          const QColor& linearColor)
 {
-    m_charts[Charts::Cyclic] = chart;
+    m_charts[ChartType::Cyclic] = chart;
 
     chart->setName("Cyclic");
     chart->useTimeaxis(true);
@@ -223,4 +213,5 @@ MyChart* ChartManager::createCyclicChart(MyChart* chart,
     chart->setMaxRange(240000);
 
     return chart;
+}
 }
