@@ -1,7 +1,7 @@
 #include "OtherTestSettings.h"
 #include "ui_OtherTestSettings.h"
 
-#include "Src/Storage/Registry.h"
+#include "Storage/Registry.h"
 
 #include <QInputDialog>
 

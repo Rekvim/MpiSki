@@ -5,8 +5,8 @@
 #include <QEventLoop>
 #include <QThread>
 
-#include "Src/Domain/Measurement/Sensor.h"
-#include "Src/Domain/Uart/Reader.h"
+#include "Domain/Measurement/Sensor.h"
+#include "Domain/Uart/Reader.h"
 
 namespace Domain::Mpi {
     class Device : public QObject

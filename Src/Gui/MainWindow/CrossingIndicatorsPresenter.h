@@ -1,12 +1,16 @@
 #pragma once
 
-#include "ui_MainWindow.h"
-#include "Src/Storage/Telemetry.h"
+#include "Storage/Telemetry.h"
+#include <QWidget>
+
+namespace Ui {
+class MainWindow;
+}
 
 class CrossingIndicatorsPresenter
 {
 public:
-    explicit CrossingIndicatorsPresenter(Ui::MainWindow* ui);
+    explicit CrossingIndicatorsPresenter(Ui::MainWindow* ui) : m_ui(ui) { }
 
     void update(const CrossingStatus& status);
 

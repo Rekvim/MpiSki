@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Src/Report/Builder.h"
+#include "Report/Builder.h"
 
 namespace Report::Patterns {
     class C_SACVT : public Builder

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Saver.h"
-#include "Src/Storage/Telemetry.h"
-#include "Src/Storage/Registry.h"
+#include "Storage/Telemetry.h"
+#include "Storage/Registry.h"
 
 namespace Report {
     struct Context {

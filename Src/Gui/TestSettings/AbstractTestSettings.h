@@ -8,7 +8,7 @@
 
 struct ValveInfo;
 
-#include "Src/Gui/Setup/SelectTests.h"
+#include "Gui/Setup/SelectTests.h"
 
 class AbstractTestSettings : public QDialog
 {

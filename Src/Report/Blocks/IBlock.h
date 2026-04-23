@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Writer.h"
-#include "../Builder.h"
+#include "Report/Writer.h"
+#include "Report/Builder.h"
 
 namespace Report::Blocks {
     class IBlock {

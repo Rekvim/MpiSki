@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Src/Domain/Tests/IAnalyzer.h"
+#include "Domain/Tests/IAnalyzer.h"
 
 #include "Option/Step/Analyzer.h"
 #include "Stroke/Analyzer.h"
 #include "Main/Analyzer.h"
 #include "Cyclic/Regulatory/Analyzer.h"
 #include "Cyclic/Shutoff/Analyzer.h"
-#include "Src/Domain/Program.h"
+#include "Domain/Program.h"
 
 class AnalyzerFactory
 {

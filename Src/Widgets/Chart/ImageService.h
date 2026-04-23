@@ -2,7 +2,7 @@
 
 #include <QImage>
 #include <optional>
-#include "Src/Report/Saver.h"
+#include "Report/Saver.h"
 #include "ChartView.h"
 #include "Manager.h"
 

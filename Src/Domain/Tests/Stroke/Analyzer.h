@@ -1,10 +1,9 @@
 #pragma once
 
 #include <QVector>
-#include "Result.h"
 
-#include "Src/Domain/Measurement/Sample.h"
-#include "Src/Domain/Tests/IAnalyzer.h"
+#include "Result.h"
+#include "Domain/Tests/IAnalyzer.h"
 
 namespace Domain::Tests::Stroke {
     class Analyzer : public IAnalyzer

@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QtCharts>
 
-#include "Src/Widgets/Chart/Series.h"
+#include "Widgets/Chart/Series.h"
 
 namespace Widgets::Chart {
 class ChartView : public QChartView

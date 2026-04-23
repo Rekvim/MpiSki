@@ -3,8 +3,8 @@
 #include "Logic.h"
 
 #include "ui_ValveWindow.h"
-#include "Src/ValidatorFactory/ValidatorFactory.h"
-#include "Src/Utils/Shortcuts/TabBinder.h"
+#include "ValidatorFactory/ValidatorFactory.h"
+#include "Utils/Shortcuts/TabBinder.h"
 
 #include <QDebug>
 #include <QTimer>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Src/Domain/Tests/Test.h"
+#include "Domain/Tests/Test.h"
 #include "Result.h"
 
 namespace Domain::Tests::Cyclic::Shutoff {

@@ -1,18 +1,11 @@
 #include "DeviceInitializer.h"
 #include <QtMath>
 
-DeviceInitializer::DeviceInitializer(Domain::Mpi::Device& device,
-                                     Registry& registry,
-                                     Telemetry& telemetry)
-    : m_device(device), m_registry(registry), m_telemetry(telemetry)
-{}
-
-static QString formatPosition(qreal value, const Registry& registry)
+static QString formatPosition(qreal value, StrokeMovement movement)
 {
-    const auto& valveInfo = registry.valveInfo();
-
-    QString unit =
-        (valveInfo.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
+    const QString unit = (movement == StrokeMovement::Rotary)
+                             ? QStringLiteral("°")
+                             : QStringLiteral("мм");
 
     return QString("%1 %2").arg(value, 0, 'f', 2).arg(unit);
 }
@@ -25,19 +18,14 @@ bool DeviceInitializer::connectAndInitDevice()
     m_telemetry.init.deviceStatusText =
         ok ? QString("Успешное подключение к порту %1").arg(m_device.portName())
            : "Ошибка подключения";
-
-    m_telemetry.init.deviceStatusColor =
-        ok ? Qt::darkGreen : Qt::red;
+    m_telemetry.init.deviceStatusColor = ok ? Qt::darkGreen : Qt::red;
 
     if (!ok) return false;
 
     ok = m_device.initialize();
 
-    m_telemetry.init.initStatusText =
-        ok ? "Успешная инициализация" : "Ошибка инициализации";
-
-    m_telemetry.init.initStatusColor =
-        ok ? Qt::darkGreen : Qt::red;
+    m_telemetry.init.initStatusText = ok ? "Успешная инициализация" : "Ошибка инициализации";
+    m_telemetry.init.initStatusColor = ok ? Qt::darkGreen : Qt::red;
 
     return ok;
 }
@@ -68,27 +56,25 @@ bool DeviceInitializer::detectSensors()
     return cnt > 0;
 }
 
-void DeviceInitializer::measureStartPosition(bool normalClosed)
+void DeviceInitializer::measureStartPosition()
 {
-    if (normalClosed)
+    if (m_config.normalClosed)
         m_device[0]->captureMin();
     else
         m_device[0]->captureMax();
 
     const qreal value = m_device[0]->value();
 
-    m_telemetry.init.startingPositionText =
-        formatPosition(value, m_registry);
-
+    m_telemetry.init.startingPositionText = formatPosition(value, m_config.strokeMovement);
     m_telemetry.init.startingPositionColor = Qt::darkGreen;
 
     m_telemetry.init.finalPositionText = "Измерение";
     m_telemetry.init.finalPositionColor = Qt::darkYellow;
 }
 
-void DeviceInitializer::measureEndPosition(bool normalClosed)
+void DeviceInitializer::measureEndPosition()
 {
-    if (normalClosed)
+    if (m_config.normalClosed)
         m_device[0]->captureMax();
     else
         m_device[0]->captureMin();
@@ -96,13 +82,12 @@ void DeviceInitializer::measureEndPosition(bool normalClosed)
     const qreal value = m_device[0]->value();
 
     m_telemetry.init.finalPositionText =
-        formatPosition(value, m_registry);
+        formatPosition(value, m_config.strokeMovement);
 
     m_telemetry.init.finalPositionColor = Qt::darkGreen;
 }
 
 void DeviceInitializer::measureStartPositionShutoff(
-    bool normalClosed,
     QVector<bool>& initialStates,
     const QVector<bool>& savedStates)
 {
@@ -116,7 +101,7 @@ void DeviceInitializer::measureStartPositionShutoff(
         }
     }
 
-    if (normalClosed)
+    if (m_config.normalClosed)
         m_device[0]->captureMin();
     else
         m_device[0]->captureMax();
@@ -124,13 +109,12 @@ void DeviceInitializer::measureStartPositionShutoff(
     const qreal value = m_device[0]->value();
 
     m_telemetry.init.startingPositionText =
-        formatPosition(value, m_registry);
+        formatPosition(value, m_config.strokeMovement);
 
     m_telemetry.init.startingPositionColor = Qt::darkGreen;
 }
 
 void DeviceInitializer::measureEndPositionShutoff(
-    bool normalClosed,
     QVector<bool>& initialStates,
     const QVector<bool>& savedStates)
 {
@@ -144,38 +128,35 @@ void DeviceInitializer::measureEndPositionShutoff(
         }
     }
 
-    if (normalClosed)
+    if (m_config.normalClosed)
         m_device[0]->captureMax();
     else
         m_device[0]->captureMin();
 
     const qreal value = m_device[0]->value();
 
-    m_telemetry.init.finalPositionText =
-        formatPosition(value, m_registry);
-
+    m_telemetry.init.finalPositionText = formatPosition(value, m_config.strokeMovement);
     m_telemetry.init.finalPositionColor = Qt::darkGreen;
 }
 
 void DeviceInitializer::calculateCoefficients()
 {
-    const auto& valveInfo = m_registry.valveInfo();
-
     qreal coeff = 1.0;
 
-    if (valveInfo.strokeMovement == StrokeMovement::Rotary) {
-        coeff = qRadiansToDegrees(2.0 / valveInfo.diameterPulley);
+    if (m_config.strokeMovement == StrokeMovement::Rotary &&
+        !qFuzzyIsNull(m_config.diameterPulley)) {
+        coeff = qRadiansToDegrees(2.0 / m_config.diameterPulley);
     }
 
     m_device[0]->correctCoefficients(coeff);
 }
 
-void DeviceInitializer::recordStrokeRange(bool normalClosed)
+void DeviceInitializer::recordStrokeRange()
 {
     const qreal value = m_device[0]->value();
 
     m_telemetry.valveStrokeRecord.range =
-        formatPosition(value, m_registry);
+        formatPosition(value, m_config.strokeMovement);
 
     m_telemetry.valveStrokeRecord.real = value;
 }

@@ -4,55 +4,63 @@
 #include <QDir>
 #include <QImage>
 
-#include "Src/Widgets/Chart/ChartView.h"
-#include "Src/Storage/Registry.h"
+#include "Widgets/Chart/ChartView.h"
 
 namespace Report {
-    class Saver : public QObject
-    {
-        Q_OBJECT
-    public:
-        struct Data {
-            QString sheet;
-            quint16 row = 0;
-            quint16 col = 0;
-            QString value;
-        };
+class Saver : public QObject
+{
+    Q_OBJECT
 
-        struct ValidationData {
-            QString formula;
-            QString range;
-        };
-
-        struct ImageCell {
-            QString sheet;
-            int row = 0;
-            int col = 0;
-            QImage image;
-        };
-
-        struct Report {
-            QVector<Data> data;
-            QVector<ValidationData> validation;
-            QVector<ImageCell> images;
-        };
-
-        explicit Saver(QObject *parent = nullptr);
-
-        void setRegistry(Registry *registry);
-        void saveImage(Widgets::Chart::ChartView *chart);
-
-        [[nodiscard]] const QDir &directory() const;
-        void createDir();
-        bool saveReport(const Report &report, const QString &templatePath);
-
-    private:
-        QDir m_dir;
-        bool m_isDirectoryCreated = false;
-        Registry *m_registry = nullptr;
-
-    signals:
-        bool question(const QString &title, const QString &text);
-        void setDirectoryToSave(const QString &currentPath, QString &result);
+public:
+    struct Data {
+        QString sheet;
+        quint16 row = 0;
+        quint16 col = 0;
+        QString value;
     };
+
+    struct ValidationData {
+        QString formula;
+        QString range;
+    };
+
+    struct ImageCell {
+        QString sheet;
+        int row = 0;
+        int col = 0;
+        QImage image;
+    };
+
+    struct Report {
+        QVector<Data> data;
+        QVector<ValidationData> validation;
+        QVector<ImageCell> images;
+    };
+
+    explicit Saver(QObject* parent = nullptr);
+    ~Saver() override;
+
+    [[nodiscard]] const QDir& directory() const;
+
+    void setBasePath(const QString& basePath);
+
+    void saveImage(Widgets::Chart::ChartView* chart);
+    bool saveReport(const Report& report, const QString& templatePath);
+
+private:
+    bool ensureDirectory();
+    bool createAutoDirectory();
+    bool chooseDirectoryManually();
+    void cleanupEmptyDirectory();
+
+private:
+    QDir m_dir;
+    QString m_basePath;
+    bool m_isDirectoryCreated = false;
+    QHash<QString, quint16> m_chartCounter;
+
+signals:
+    bool question(const QString& title, const QString& text);
+    void setDirectoryToSave(const QString& currentPath, QString& result);
+};
 }

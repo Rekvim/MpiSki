@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Src/Domain/Tests/BaseRunner.h"
+#include "Domain/Tests/BaseRunner.h"
 
 namespace Domain::Tests::Stroke {
     class Runner : public BaseRunner {

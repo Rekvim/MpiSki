@@ -1,15 +1,15 @@
 #include "Runner.h"
-#include "Src/Domain/Program.h"
 #include "Algorithm.h"
-#include "Src/Utils/SignalUtils.h"
+
+#include "Domain/Program.h"
+#include "Utils/SignalUtils.h"
 
 namespace Domain::Tests::Cyclic::Regulatory {
 RunnerConfig Runner::buildConfig()
 {
     auto p = m_params;
 
-    const bool normalOpen = isNormallyOpen();
-    const auto raw = SignalUtils::makeRawValues(p.sequence, m_device, normalOpen);
+    const auto raw = SignalUtils::makeRawValues(p.sequence, m_device, m_normalOpen);
 
     Algorithm::Task task;
     task.delayMsecs = p.delayMs;

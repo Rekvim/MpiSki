@@ -105,7 +105,6 @@ void SelectTests::setPattern(const PatternSetup& setup) {
     }
 
     onCheckBoxChanged();
-    qDebug() << "[setPattern] После выставления паттерна: m_currentPattern =" << m_currentPattern;
 }
 
 bool SelectTests::isValidPattern() {
@@ -213,29 +212,6 @@ void SelectTests::onCheckBoxChanged()
         ui->entry_testing->setEnabled(true);
     } else {
         ui->entry_testing->setEnabled(false);
-    }
-
-    if (!m_suppressDebugOutput) {
-        switch (m_currentPattern) {
-        case Pattern_C_SOVT:
-            qDebug() << "Текущий паттерн: Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический";
-            break;
-        case Pattern_B_SACVT:
-            qDebug() << "Текущий паттерн: Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический";
-            break;
-        case Pattern_C_SACVT:
-            qDebug() << "Текущий паттерн: Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический";
-            break;
-        case Pattern_B_CVT:
-            qDebug() << "Текущий паттерн: Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический";
-            break;
-        case Pattern_C_CVT:
-            qDebug() << "Текущий паттерн: Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический";
-            break;
-        default:
-            qDebug() << "Текущий паттерн: (кастомная/неизвестная комбинация)";
-            break;
-        }
     }
 }
 

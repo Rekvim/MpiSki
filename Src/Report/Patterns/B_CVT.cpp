@@ -1,9 +1,9 @@
 #include "B_CVT.h"
-#include "Src/Report/Writer.h"
-#include "Src/Report/Blocks/ObjectInfo.h"
-#include "Src/Report/Blocks/ValveSpec.h"
-#include "Src/Report/Blocks/CyclicSummary.h"
-#include "Src/Report/Blocks/CyclicRanges.h"
+#include "Report/Writer.h"
+#include "Report/Blocks/ObjectInfo.h"
+#include "Report/Blocks/ValveSpec.h"
+#include "Report/Blocks/CyclicSummary.h"
+#include "Report/Blocks/CyclicRanges.h"
 
 namespace Report::Patterns {
 void B_CVT::buildReport(

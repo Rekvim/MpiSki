@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <limits>
 
-#include "Src/Domain/Tests/Option/Step/Analyzer.h"
-#include "Src/Domain/Measurement/Sample.h"
+#include "Domain/Tests/Option/Step/Analyzer.h"
+#include "Domain/Measurement/Sample.h"
 
 namespace Test = Domain::Tests::Option::Step;
 

@@ -3,12 +3,12 @@
 
 #include <QDebug>
 
-#include "Src/Gui/Setup/ValveWindow/ValveWindow.h"
-#include "Src/Gui/TestSettings/AbstractTestSettings.h"
-#include "Src/Utils/Shortcuts/TabBinder.h"
-#include "Src/Utils/NumberUtils.h"
-#include "Src/Report/BuilderFactory.h"
-#include "Src/Widgets/Chart/ChartView.h"
+#include "Gui/Setup/ValveWindow/ValveWindow.h"
+#include "Gui/TestSettings/AbstractTestSettings.h"
+#include "Utils/Shortcuts/TabBinder.h"
+#include "Utils/NumberUtils.h"
+#include "Report/BuilderFactory.h"
+#include "Widgets/Chart/ChartView.h"
 
 namespace {
 constexpr auto kArrowButtonStyle =
@@ -283,13 +283,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
     setupArrowButton(ui->toolButton_arrowUp,
-                     ":Src/Img/arrowUp.png",
-                     ":Src/Img/arrowUpHover.png",
+                     ":Img/arrowUp.png",
+                     ":Img/arrowUpHover.png",
                      +0.05);
 
     setupArrowButton(ui->toolButton_arrowDown,
-                     ":Src/Img/arrowDown.png",
-                     ":Src/Img/arrowDownHover.png",
+                     ":Img/arrowDown.png",
+                     ":Img/arrowDownHover.png",
                      -0.05);
 
     connect(m_program, &Domain::Program::telemetryUpdated,
@@ -675,7 +675,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QMainWindow::eventFilter(watched, event);
 }
 
-void MainWindow::setRegistry(Registry *registry)
+void MainWindow::setRegistry(Registry* registry)
 {
     m_registry = registry;
 
@@ -683,6 +683,28 @@ void MainWindow::setRegistry(Registry *registry)
     const auto& valveInfo = m_registry->valveInfo();
     const auto& otherParameters = m_registry->otherParameters();
     const CrossingLimits &limits = valveInfo.crossingLimits;
+
+    const QString basePath =
+        QStringLiteral("%1/%2/%3/%4")
+            .arg(objectInfo.object,
+                 objectInfo.manufactory,
+                 objectInfo.department,
+                 valveInfo.positionNumber);
+
+    m_reportSaver->setBasePath(basePath);
+
+    Domain::Program::Config cfg;
+    cfg.safePosition = valveInfo.safePosition;
+    cfg.driveDiameter = valveInfo.driveDiameter;
+    cfg.valveStroke = valveInfo.valveStroke;
+    cfg.crossingLimits = valveInfo.crossingLimits;
+    cfg.strokeMovement = valveInfo.strokeMovement;
+    cfg.diameterPulley = valveInfo.diameterPulley;
+    cfg.dinamicErrorRecomend = valveInfo.dinamicErrorRecomend.toDouble();
+    cfg.driveRangeLow = valveInfo.driveRangeLow;
+    cfg.driveRangeHigh = valveInfo.driveRangeHigh;
+
+    m_program->setConfig(cfg);
 
     ui->lineEdit_date->setText(otherParameters.date);
 
@@ -759,10 +781,6 @@ void MainWindow::setRegistry(Registry *registry)
         initCharts();
         m_chartsInitialized = true;
     }
-
-    m_program->setRegistry(registry);
-
-    m_reportSaver->setRegistry(registry);
 }
 
 void MainWindow::setText(TextObjects object, const QString &text)

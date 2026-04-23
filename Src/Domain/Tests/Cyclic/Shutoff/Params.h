@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QVector>
 #include <QMetaType>
+#include <QVector>
 
 namespace Domain::Tests::Cyclic::Shutoff {
     struct Params

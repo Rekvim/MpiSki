@@ -14,9 +14,9 @@ find_package(Qt6 REQUIRED COMPONENTS Core Test)
 get_filename_component(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
 
 add_executable(AnalyzerTests
-    ${ROOT_DIR}/Src/Domain/Tests/Cyclic/Regulatory/Analyzer.cpp
-    ${ROOT_DIR}/Src/Domain/Tests/Option/Step/Analyzer.cpp
-    ${ROOT_DIR}/Src/Domain/Tests/Stroke/Analyzer.cpp
+    ${ROOT_DIR}/Domain/Tests/Cyclic/Regulatory/Analyzer.cpp
+    ${ROOT_DIR}/Domain/Tests/Option/Step/Analyzer.cpp
+    ${ROOT_DIR}/Domain/Tests/Stroke/Analyzer.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/analyzers/StepTestAnalyzerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/analyzers/StrokeTestAnalyzerTest.cpp

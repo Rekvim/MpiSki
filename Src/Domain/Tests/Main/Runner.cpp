@@ -1,6 +1,7 @@
 #include "Runner.h"
-#include "Src/Domain/Tests/Main/Algorithm.h"
-#include "Src/Domain/Program.h"
+#include "Algorithm.h"
+
+#include "Domain/Program.h"
 
 namespace Domain::Tests::Main {
     RunnerConfig Runner::buildConfig() {

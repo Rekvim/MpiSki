@@ -4,8 +4,8 @@
 #include <QTime>
 
 #include "AbstractTestSettings.h"
-#include "Src/Gui/Setup/SelectTests.h"
-#include "Src/Domain/Tests/Cyclic/Params.h"
+#include "Gui/Setup/SelectTests.h"
+#include "Domain/Tests/Cyclic/Params.h"
 
 namespace Ui {
 class CyclicTestSettings;

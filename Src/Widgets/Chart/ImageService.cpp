@@ -1,7 +1,7 @@
 #include "ImageService.h"
 #include "Manager.h"
 #include "ChartView.h"
-#include "Src/Report/Saver.h"
+#include "Report/Saver.h"
 
 namespace Widgets::Chart {
 QImage ImageService::captureChart(ChartType chart)

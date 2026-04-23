@@ -1,8 +1,8 @@
 #include "CyclicTestSettings.h"
 #include "ui_CyclicTestSettings.h"
 
-#include "Src/Storage/Registry.h"
-#include "Src/ValidatorFactory/RegexPatterns.h"
+#include "Storage/Registry.h"
+#include "ValidatorFactory/RegexPatterns.h"
 
 #include <QInputDialog>
 #include <QMessageBox>

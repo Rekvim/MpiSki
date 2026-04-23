@@ -8,22 +8,22 @@
 #include <QPlainTextEdit>
 #include <QElapsedTimer>
 
-#include "Src/Utils/Shortcuts/TabActionRouter.h"
+#include "Utils/Shortcuts/TabActionRouter.h"
 
-#include "Src/Gui/MainWindow/TelemetryUiMapper.h"
-#include "Src/Gui/MainWindow/CrossingIndicatorsPresenter.h"
-#include "Src/Gui/TestSettings/MainTestSettings.h"
-#include "Src/Gui/TestSettings/CyclicTestSettings.h"
-#include "Src/Gui/TestSettings/OtherTestSettings.h"
-#include "Src/Gui/TestSettings/StepTestSettings.h"
-#include "Src/Gui/TestSettings/AbstractTestSettings.h"
+#include "Gui/MainWindow/TelemetryUiMapper.h"
+#include "Gui/MainWindow/CrossingIndicatorsPresenter.h"
+#include "Gui/TestSettings/MainTestSettings.h"
+#include "Gui/TestSettings/CyclicTestSettings.h"
+#include "Gui/TestSettings/OtherTestSettings.h"
+#include "Gui/TestSettings/StepTestSettings.h"
+#include "Gui/TestSettings/AbstractTestSettings.h"
 
-#include "Src/Report/Saver.h"
-#include "Src/Domain/Program.h"
-#include "Src/Storage/Registry.h"
-#include "Src/Storage/Telemetry.h"
-#include "Src/Widgets/Chart/Manager.h"
-#include "Src/Widgets/Chart/ImageService.h"
+#include "Report/Saver.h"
+#include "Domain/Program.h"
+#include "Storage/Registry.h"
+#include "Storage/Telemetry.h"
+#include "Widgets/Chart/Manager.h"
+#include "Widgets/Chart/ImageService.h"
 
 #include "TestController.h"
 

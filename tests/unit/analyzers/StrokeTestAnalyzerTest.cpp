@@ -4,8 +4,8 @@
 #include <QVector>
 #include <QDebug>
 
-#include "Src/Domain/Tests/Stroke/Analyzer.h"
-#include "Src/Domain/Measurement/Sample.h"
+#include "Domain/Tests/Stroke/Analyzer.h"
+#include "Domain/Measurement/Sample.h"
 
 namespace Test = Domain::Tests::Stroke;
 using Sample = Domain::Measurement::Sample;

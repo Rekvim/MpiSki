@@ -1,21 +1,22 @@
 #include "Program.h"
 
-#include "Src/Domain/Tests/Option/Step/Algorithm.h"
-#include "Src/Domain/Tests/Main/Algorithm.h"
+#include "Domain/Tests/Option/Step/Algorithm.h"
+#include "Domain/Tests/Main/Algorithm.h"
 
-#include "Src/Domain/Tests/AnalyzerFactory.h"
-#include "Src/Domain/Tests/Stroke/Runner.h"
-#include "Src/Domain/Tests/Main/Runner.h"
-#include "Src/Domain/Tests/Option/Step/Runner.h"
-#include "Src/Domain/Tests/Option/Response/Runner.h"
-#include "Src/Domain/Tests/Option/Resolution/Runner.h"
-#include "Src/Domain/Tests/Cyclic/Regulatory/Runner.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/Runner.h"
+#include "Domain/Tests/AnalyzerFactory.h"
+#include "Domain/Tests/Stroke/Runner.h"
+#include "Domain/Tests/Main/Runner.h"
+#include "Domain/Tests/Option/Step/Runner.h"
+#include "Domain/Tests/Option/Response/Runner.h"
+#include "Domain/Tests/Option/Resolution/Runner.h"
+#include "Domain/Tests/Cyclic/Regulatory/Runner.h"
+#include "Domain/Tests/Cyclic/Shutoff/Runner.h"
 
-#include "Src/Domain/DeviceInitializer.h"
+#include "Domain/DeviceInitializer.h"
 
-#include "Src/Utils/NumberUtils.h"
-#include "Src/Utils/SignalUtils.h"
+#include "Utils/NumberUtils.h"
+#include "Utils/SignalUtils.h"
+
 #include <QRegularExpression>
 #include <QLocale>
 #include <utility>
@@ -49,11 +50,6 @@ Program::Program(QObject *parent)
         quint8 DI = m_device.digitalInputs();
         emit setDiCheckboxesChecked(DI);
     });
-}
-
-void Program::setRegistry(Registry *registry)
-{
-    m_registry = registry;
 }
 
 void Program::onRunnerActuallyStarted()
@@ -141,10 +137,10 @@ void Program::setDacRaw(quint16 dac, quint32 sleepMs, bool waitForStop, bool wai
     emit releaseBlock();
 }
 
-Domain::Measurement::Sample
+Measurement::Sample
 Program::makeSample() const
 {
-    Domain::Measurement::Sample s;
+    Measurement::Sample s;
 
     const auto& v = m_registry->valveInfo();
     const qint64 now = QDateTime::currentMSecsSinceEpoch();
@@ -154,10 +150,9 @@ Program::makeSample() const
 
     s.dac = m_device.dac()->value();
 
-    s.taskPercent = SignalUtils::calcPercent(
-        s.dac,
-        v.safePosition == SafePosition::NormallyOpen
-    );
+    const bool normalOpen = m_config.safePosition == SafePosition::NormallyOpen;
+
+    s.taskPercent = SignalUtils::calcPercent(s.dac, normalOpen);
 
     s.diMask = m_device.digitalInputs();
     s.doMask = m_device.digitalOutputs();
@@ -165,7 +160,7 @@ Program::makeSample() const
     if (auto* linear = m_device.sensorByAdc(0)) {
         s.positionValue = linear->value();
         s.positionPercent = linear->percent();
-        s.positionUnit = (v.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
+        s.positionUnit = (m_config.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
     }
 
     if (auto* p1 = m_device.sensorByAdc(1))
@@ -418,10 +413,16 @@ void Program::initialization()
 
     emit setButtonInitEnabled(false);
 
+    QString positionUnit = (m_config.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
+
     DeviceInitializer initializer(
         m_device,
-        *m_registry,
-        m_telemetry
+        m_telemetry,
+        {
+            .normalClosed = m_config.safePosition == SafePosition::NormallyClosed,
+            .strokeMovement = m_config.strokeMovement,
+            .diameterPulley = m_config.diameterPulley
+        }
     );
 
     if (!initializer.connectAndInitDevice()) {
@@ -436,8 +437,7 @@ void Program::initialization()
         return;
     } emit telemetryUpdated(m_telemetry);
 
-    bool normalClosed =
-        m_registry->valveInfo().safePosition == SafePosition::NormallyClosed;
+    const bool normalClosed = m_config.safePosition == SafePosition::NormallyClosed;
 
     if (m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT ||
@@ -453,7 +453,6 @@ void Program::initialization()
         setDacRaw(65535, 10000, true);
         waitForDacCycle();
         initializer.measureEndPositionShutoff(
-            normalClosed,
             m_initialDoStates,
             m_savedInitialDoStates);
 
@@ -462,7 +461,6 @@ void Program::initialization()
         setDacRaw(0, 10000, true);
         waitForDacCycle();
         initializer.measureStartPositionShutoff(
-            normalClosed,
             m_initialDoStates,
             m_savedInitialDoStates);
 
@@ -474,12 +472,12 @@ void Program::initialization()
 
         setDacRaw(0, 10000, true);
         waitForDacCycle();
-        initializer.measureStartPosition(normalClosed);
+        initializer.measureStartPosition();
         emit telemetryUpdated(m_telemetry);
 
         setDacRaw(65535, 10000, true);
         waitForDacCycle();
-        initializer.measureEndPosition(normalClosed);
+        initializer.measureEndPosition();
         emit telemetryUpdated(m_telemetry);
     }
 
@@ -489,7 +487,7 @@ void Program::initialization()
         m_patternType == SelectTests::Pattern_C_CVT ||
         m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT) {
-        initializer.recordStrokeRange(normalClosed);
+        initializer.recordStrokeRange();
 
         setDacRaw(0, 10000, true);
 
@@ -529,15 +527,12 @@ void Program::finalizeInitialization()
     m_timerSensors->start();
 }
 
-bool Program::isInitialized() const {
-    return m_isInitialized;
-}
-
 template<typename Runner, typename... Args>
 void Program::runTest(Args&&... args)
 {
+    const bool normalOpen = (m_config.safePosition == SafePosition::NormallyOpen);
     auto r = std::make_unique<Runner>(
-        m_device, *m_registry,
+        m_device, normalOpen,
         std::forward<Args>(args)...,
         this
     );
@@ -566,8 +561,8 @@ static bool inRange(double value, double lower, double upper)
 void Program::updateCrossingStatus()
 {
     auto &ts = m_telemetry;
-    const auto& valveInfo = m_registry->valveInfo();
-    const auto& limits = valveInfo.crossingLimits;
+    const QString& valveStroke = m_config.valveStroke;
+    const auto& limits = m_config.crossingLimits;
     using State = CrossingStatus::State;
 
     if (limits.frictionEnabled) {
@@ -582,7 +577,7 @@ void Program::updateCrossingStatus()
 
     if (limits.valveStrokeEnabled) {
         bool ok = false;
-        const double recStroke = NumberUtils::toDouble(valveInfo.valveStroke, &ok);
+        const double recStroke = NumberUtils::toDouble(valveStroke, &ok);
         if (ok) {
             const double d = std::abs(recStroke) * (limits.valveStroke / 100.0); // rangeUpperLimit как %
             const double lo = recStroke - d;
@@ -600,21 +595,20 @@ void Program::updateCrossingStatus()
     if (limits.dynamicErrorEnabled) {
         ts.crossingStatus.dynamicError =
             inRange(ts.mainTestRecord.dynamicErrorReal,
-                    0.0,
-                    QString(valveInfo.dinamicErrorRecomend).toDouble())
+                    0.0, m_config.dinamicErrorRecomend)
                 ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.dynamicError = State::Unknown;
     }
 
     if (limits.springEnabled) {
-        double recLow  = valveInfo.driveRangeLow;
-        double recHigh = valveInfo.driveRangeHigh;
+        double recLow = m_config.driveRangeLow;
+        double recHigh = m_config.driveRangeHigh;
 
         if (recLow > recHigh)
             std::swap(recLow, recHigh);
 
-        const double lowD  = std::abs(recLow) * (limits.springLower / 100.0);
+        const double lowD = std::abs(recLow) * (limits.springLower / 100.0);
         const double highD = std::abs(recHigh) * (limits.springUpper / 100.0);
 
         const double lowLo = recLow - lowD;
@@ -623,7 +617,7 @@ void Program::updateCrossingStatus()
         const double highLo = recHigh - highD;
         const double highHi = recHigh + highD;
 
-        const bool okLow  = inRange(ts.mainTestRecord.springLow,  lowLo,  lowHi);
+        const bool okLow = inRange(ts.mainTestRecord.springLow, lowLo, lowHi);
         const bool okHigh = inRange(ts.mainTestRecord.springHigh, highLo, highHi);
 
         ts.crossingStatus.spring = (okLow && okHigh)
@@ -697,12 +691,10 @@ void Program::results_mainTest(const MainTest::Algorithm::TestResults &results)
     auto* analyzer = static_cast<MainTest::Analyzer*>(m_analyzer.get());
     analyzer->finish();
 
-
     const auto& newResult = analyzer->result();
     debugCompareMainTest(results, newResult);
 
-    const auto& valveInfo = m_registry->valveInfo();
-    qreal k = 5 * M_PI * valveInfo.driveDiameter * valveInfo.driveDiameter / 4;
+    qreal k = 5 * M_PI * m_config.driveDiameter * m_config.driveDiameter / 4;
 
     auto &s = m_telemetry.mainTestRecord;
 
@@ -734,9 +726,7 @@ void Program::addFriction(const QVector<QPointF> &points)
 {
     QVector<Widgets::Chart::Point> chartPoints;
 
-    auto& valveInfo = m_registry->valveInfo();
-
-    qreal k = 5 * M_PI * valveInfo.driveDiameter * valveInfo.driveDiameter / 4;
+    qreal k = 5 * M_PI * m_config.driveDiameter * m_config.driveDiameter / 4;
 
     for (QPointF point : points) {
         chartPoints.push_back({0, point.x(), point.y() * k});
@@ -759,11 +749,9 @@ void Program::startStrokeTest()
 {
     m_testWorker = TestWorker::Stroke;
 
-    const auto& valveInfo = m_registry->valveInfo();
-
     Tests::Stroke::Analyzer::Config cfg;
 
-    cfg.normalClosed = (valveInfo.safePosition == SafePosition::NormallyClosed);
+    cfg.normalClosed = (m_config.safePosition == SafePosition::NormallyClosed);
 
     m_analyzer = AnalyzerFactory::create(m_testWorker);
 
@@ -951,13 +939,17 @@ void Program::runCombinedCyclicTest(const Domain::Tests::Cyclic::Params& params)
 
     emit totalTestTimeMs(regMs + offMs);
 
+    const bool normalOpen = (m_config.safePosition == SafePosition::NormallyOpen);
+
     auto reg = std::make_unique<CyclicReg::Runner>(
-        m_device, *m_registry, params.regulatory, this);
+        m_device, normalOpen, params.regulatory, this);
 
     connect(this, &Program::testFinished,
             this, [this, params]() {
+                const bool normalOpen = (m_config.safePosition == SafePosition::NormallyOpen);
+
                 auto shut = std::make_unique<CyclicShut::Runner>(
-                    m_device, *m_registry, params.shutoff, this);
+                    m_device, normalOpen, params.shutoff, this);
 
                 startRunner(std::move(shut));
             },

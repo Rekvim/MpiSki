@@ -11,21 +11,16 @@ namespace Report::Blocks {
             quint16 imageRow;
             quint16 imageCol;
 
-            quint16 startRow;      // 55
-            quint16 firstBaseCol;  // 3
-            quint16 secondBaseCol; // 10
+            quint16 startRow;
+            quint16 firstBaseCol;
+            quint16 secondBaseCol;
         };
 
-        explicit StepReaction(Layout layout)
-            : m_layout(std::move(layout)) {}
+        explicit StepReaction(Layout layout) : m_layout(std::move(layout)) {}
 
-        void build(Writer& writer,
-                   const Context& ctx) override
+        void build(Writer& writer, const Context& ctx) override
         {
-            writer.image(m_layout.sheet,
-                         m_layout.imageRow,
-                         m_layout.imageCol,
-                         ctx.chartStep);
+            writer.image(m_layout.sheet, m_layout.imageRow, m_layout.imageCol, ctx.chartStep);
 
             const auto& results = ctx.telemetry.stepResults;
 
@@ -46,13 +41,10 @@ namespace Report::Blocks {
             for (int i = 0; i < results.size() && i < 20; ++i)
             {
                 const bool firstBlock = i < 10;
-                const quint16 baseCol =
-                    firstBlock ? m_layout.firstBaseCol
-                               : m_layout.secondBaseCol;
+                const quint16 baseCol = firstBlock ? m_layout.firstBaseCol
+                                                   : m_layout.secondBaseCol;
 
-                quint16 currentRow =
-                    m_layout.startRow + (firstBlock ? i : i - 10);
-
+                quint16 currentRow =  m_layout.startRow + (firstBlock ? i : i - 10);
                 writeRow(currentRow, baseCol, results[i]);
             }
         }

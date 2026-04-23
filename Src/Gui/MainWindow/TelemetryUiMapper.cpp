@@ -1,6 +1,5 @@
 #include "TelemetryUiMapper.h"
-
-
+#include "ui_MainWindow.h"
 
 void TelemetryUiMapper::updateInit(const InitState& init)
 {

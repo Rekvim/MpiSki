@@ -1,11 +1,8 @@
 #pragma once
 
-#include <QtGlobal>
 #include <QVector>
 
-#include "Src/Domain/Tests/IAnalyzer.h"
-
-#include "Src/Domain/Measurement/Sample.h"
+#include "Domain/Tests/IAnalyzer.h"
 #include "Result.h"
 
 namespace Domain::Tests::Option::Step {

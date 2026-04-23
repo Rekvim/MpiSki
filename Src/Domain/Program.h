@@ -7,28 +7,28 @@
 #include <QMessageBox>
 #include <QTimer>
 
-#include "Src/Domain/Mpi/Device.h"
+#include "Domain/Mpi/Device.h"
 
-#include "Src/Widgets/Chart/Manager.h"
+#include "Widgets/Chart/Manager.h"
 
-#include "Src/Domain/Tests/Main/Params.h"
-#include "Src/Domain/Tests/Cyclic/Params.h"
-#include "Src/Domain/Tests/Option/Step/Params.h"
-#include "Src/Domain/Tests/Option/Params.h"
+#include "Domain/Tests/Main/Params.h"
+#include "Domain/Tests/Cyclic/Params.h"
+#include "Domain/Tests/Option/Step/Params.h"
+#include "Domain/Tests/Option/Params.h"
 
-#include "Src/Storage/Registry.h"
-#include "Src/Storage/Telemetry.h"
+#include "Storage/Registry.h"
+#include "Storage/Telemetry.h"
 
-#include "Src/Domain/Measurement/Sample.h"
-#include "Src/Domain/Measurement/TestDataBuffer.h"
-#include "Src/Domain/Tests/IAnalyzer.h"
+#include "Domain/Measurement/Sample.h"
+#include "Domain/Measurement/TestDataBuffer.h"
+#include "Domain/Tests/IAnalyzer.h"
 
-#include "Src/Domain/Tests/BaseRunner.h"
+#include "Domain/Tests/BaseRunner.h"
 
-#include "Src/Domain/Tests/Option/Step/Algorithm.h"
-#include "Src/Domain/Tests/Main/Algorithm.h"
-#include "Src/Domain/Tests/Cyclic/Shutoff/Algorithm.h"
-#include "Src/Gui/Setup/SelectTests.h"
+#include "Domain/Tests/Option/Step/Algorithm.h"
+#include "Domain/Tests/Main/Algorithm.h"
+#include "Domain/Tests/Cyclic/Shutoff/Algorithm.h"
+#include "Gui/Setup/SelectTests.h"
 
 enum class TextObjects
 {
@@ -39,18 +39,30 @@ enum class TextObjects
     LineEdit_pressureSensor_3,
     LineEdit_feedback_4_20mA,
 };
+
 namespace Domain {
 class Program : public QObject
 {
     Q_OBJECT
 public:
     explicit Program(QObject *parent = nullptr);
-    void setRegistry(Registry *registry);
-    bool isInitialized() const;
+
+    struct Config {
+        SafePosition safePosition;
+        qreal driveDiameter = 0.0;
+        QString valveStroke;
+        CrossingLimits crossingLimits;
+        StrokeMovement strokeMovement = StrokeMovement::Linear;
+        double diameterPulley = 0.0;
+        double driveRangeLow = 0.0;
+        double driveRangeHigh = 0.0;
+        double dinamicErrorRecomend = 0.0;
+    };
+
+    void setConfig(const Config& config) { m_config = config; }
+
     quint8 getDIStatus() { return m_device.digitalInputs(); }
     quint8 getDOStatus() { return m_device.digitalOutputs(); }
-
-    const Registry* registry() const { return m_registry; }
 
     enum class TestWorker
     {
@@ -63,7 +75,6 @@ public:
         CyclicRegulatory,
         CyclicShutOff
     };
-    void debugAnalyzer();
 
 
 signals:
@@ -114,6 +125,9 @@ signals:
     void totalTestTimeMs(quint64 totalMs);
 
 private:
+    Config m_config;
+    SelectTests::PatternType m_patternType;
+
     // Sample
     Domain::Measurement::Sample makeSample() const;
     void updateRealtimeTexts(const Domain::Measurement::Sample& s);
@@ -123,7 +137,6 @@ private:
     TestWorker m_testWorker = TestWorker::None;
     //
 
-    SelectTests::PatternType m_patternType;
 
     std::unique_ptr<BaseRunner> m_activeRunner;
     void onRunnerActuallyStarted();

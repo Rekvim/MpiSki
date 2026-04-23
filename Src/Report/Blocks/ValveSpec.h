@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IBlock.h"
-#include "Src/Gui/Setup/ValveWindow/ValveEnums.h"
+#include "Gui/Setup/ValveWindow/ValveEnums.h"
 
 namespace Report::Blocks {
     class ValveSpec : public IBlock {
@@ -13,11 +13,10 @@ namespace Report::Blocks {
             bool positionerModel = false;
             bool includeSolenoid = false;
         };
-        explicit ValveSpec(Layout layout)
-            : m_layout(layout) {}
 
-        void build(Writer& writer,
-                   const Context& ctx) override
+        explicit ValveSpec(Layout layout) : m_layout(layout) {}
+
+        void build(Writer& writer, const Context& ctx) override
         {
             quint16 row = m_layout.rowStart;
             const auto& valve = ctx.valve;

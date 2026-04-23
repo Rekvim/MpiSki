@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <functional>
-#include "Src/Domain/Program.h"
+#include "Domain/Program.h"
 
 enum class TestState {
     Idle,

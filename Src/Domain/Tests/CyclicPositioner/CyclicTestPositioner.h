@@ -3,7 +3,7 @@
 #include <QPointF>
 #include <QTimer>
 
-#include "Src/Domain/Tests/Main/Algorithm.h"
+#include "Domain/Tests/Main/Algorithm.h"
 
 class CyclicTestPositioner : public Domain::Tests::Main::Algorithm
 {

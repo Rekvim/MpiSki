@@ -11,11 +11,9 @@ namespace Report::Blocks {
             quint16 column;
         };
 
-        explicit ObjectInfo(Layout layout)
-            : m_layout(std::move(layout)) {}
+        explicit ObjectInfo(Layout layout) : m_layout(std::move(layout)) {}
 
-        void build(Writer& writer,
-                   const Context& ctx) override
+        void build(Writer& writer, const Context& ctx) override
         {
             writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.object);
             writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.manufactory);

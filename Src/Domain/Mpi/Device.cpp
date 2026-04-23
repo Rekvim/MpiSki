@@ -1,6 +1,6 @@
 #include "Device.h"
 #include <utility>
-#include "Src/Domain/Mpi/Settings.h"
+#include "Domain/Mpi/Settings.h"
 
 namespace Domain::Mpi {
 namespace {

@@ -6,9 +6,8 @@
 #include <QtMath>
 #include <cmath>
 
-#include "Src/Domain/Measurement/Sample.h"
 #include "Result.h"
-#include "../IAnalyzer.h"
+#include "Domain/Tests/IAnalyzer.h"
 
 namespace Domain::Tests::Main {
     class Analyzer : public IAnalyzer

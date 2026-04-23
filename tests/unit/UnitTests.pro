@@ -5,9 +5,9 @@ ROOT_DIR = $$clean_path($$_PRO_FILE_PWD_/../..)
 INCLUDEPATH += $$ROOT_DIR
 
 SOURCES += \
-    $$ROOT_DIR/Src/Domain/Tests/Cyclic/Regulatory/Analyzer.cpp \
-    $$ROOT_DIR/Src/Domain/Tests/Option/Step/Analyzer.cpp \
-    $$ROOT_DIR/Src/Domain/Tests/Stroke/Analyzer.cpp \
+    $$ROOT_DIR/Domain/Tests/Cyclic/Regulatory/Analyzer.cpp \
+    $$ROOT_DIR/Domain/Tests/Option/Step/Analyzer.cpp \
+    $$ROOT_DIR/Domain/Tests/Stroke/Analyzer.cpp \
     analyzers/StepTestAnalyzerTest.cpp \
     analyzers/StrokeTestAnalyzerTest.cpp \
     main.cpp \

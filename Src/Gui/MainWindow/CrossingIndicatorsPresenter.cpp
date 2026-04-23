@@ -1,9 +1,5 @@
 #include "CrossingIndicatorsPresenter.h"
-
-CrossingIndicatorsPresenter::CrossingIndicatorsPresenter(Ui::MainWindow* ui)
-    : m_ui(ui)
-{
-}
+#include "ui_MainWindow.h"
 
 void CrossingIndicatorsPresenter::setIndicatorColor(QWidget* widget,
                                                     const QString& color,

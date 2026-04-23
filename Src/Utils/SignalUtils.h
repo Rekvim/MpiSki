@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QVector>
-#include "Src/Domain/Mpi/Device.h"
+#include "Domain/Mpi/Device.h"
 
 namespace SignalUtils
 {

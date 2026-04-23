@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Src/Domain/Tests/Option/Algorithm.h"
+#include "Domain/Tests/Option/Algorithm.h"
 #include "Result.h"
 
 #include <QPointF>
@@ -17,7 +17,7 @@ namespace Domain::Tests::Option::Step {
         void setTValue(quint32 T_value);
 
     private:
-        QVector<Result> calculateResult(const QVector<QVector<QPointF>> &points) const;
+        QVector<Result> calculateResult(const QVector<QVector<QPointF>>& points) const;
         quint32 m_TValue;
     signals:
         void getPoints(QVector<QVector<QPointF>> &points);

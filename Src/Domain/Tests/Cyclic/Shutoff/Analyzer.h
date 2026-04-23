@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Src/Domain/Measurement/Sample.h"
-#include "Src/Domain/Tests/IAnalyzer.h"
+#include "Domain/Tests/IAnalyzer.h"
 #include "Result.h"
 
 #include <QVector>

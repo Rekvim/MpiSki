@@ -18,8 +18,7 @@ namespace Report::Blocks {
             quint16 rowStep;
         };
 
-        CyclicSummary(Layout layout,
-                      CyclicMode mode)
+        CyclicSummary(Layout layout, CyclicMode mode)
             : m_layout(std::move(layout)), m_mode(mode) {}
 
         void build(Writer& writer,
@@ -39,7 +38,6 @@ namespace Report::Blocks {
             writer.cell(m_layout.sheet, row, m_layout.column, backward);
             row += m_layout.rowStep;
 
-            // Различающиеся поля
             if (m_mode == CyclicMode::Regulatory) {
                 writer.cell(m_layout.sheet, row, m_layout.column,
                             cyclic.numCyclesRegulatory);
@@ -53,8 +51,7 @@ namespace Report::Blocks {
                             QTime(0,0)
                                 .addSecs(cyclic.totalTimeSecRegulatory)
                                 .toString("mm:ss.zzz"));
-            }
-            else { // Shutoff
+            } else {
                 writer.cell(m_layout.sheet, row, m_layout.column,
                             cyclic.numCyclesShutoff);
                 row += m_layout.rowStep;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Src/Domain/Tests/Test.h"
+#include "Domain/Tests/Test.h"
 
 namespace Domain::Tests::Stroke {
     class Algorithm : public Test

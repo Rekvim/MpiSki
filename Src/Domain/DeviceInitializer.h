@@ -1,36 +1,38 @@
 #pragma once
 
-#include "Src/Domain/Mpi/Device.h"
-#include "Src/Storage/Registry.h"
-#include "Src/Storage/Telemetry.h"
+#include "Domain/Mpi/Device.h"
+#include "Gui/Setup/ValveWindow/ValveEnums.h"
+#include "Storage/Telemetry.h"
 
 class DeviceInitializer
 {
 public:
-    DeviceInitializer(
-        Domain::Mpi::Device& device,
-        Registry& registry,
-        Telemetry& telemetry);
+    struct Config {
+        bool normalClosed = false;
+        StrokeMovement strokeMovement = StrokeMovement::Linear;
+        double diameterPulley = 0.0;
+    };
+
+    DeviceInitializer(Domain::Mpi::Device& device, Telemetry& telemetry, const Config& config)
+        : m_device(device), m_telemetry(telemetry), m_config(config) {}
 
     bool connectAndInitDevice();
     bool detectSensors();
 
-    void measureStartPosition(bool normalClosed);
-    void measureEndPosition(bool normalClosed);
+    void measureStartPosition();
+    void measureEndPosition();
 
-    void measureStartPositionShutoff(bool normalClosed,
-                                     QVector<bool>& initialStates,
+    void measureStartPositionShutoff(QVector<bool>& initialStates,
                                      const QVector<bool>& savedStates);
 
-    void measureEndPositionShutoff(bool normalClosed,
-                                   QVector<bool>& initialStates,
+    void measureEndPositionShutoff(QVector<bool>& initialStates,
                                    const QVector<bool>& savedStates);
 
     void calculateCoefficients();
-    void recordStrokeRange(bool normalClosed);
+    void recordStrokeRange();
 
 private:
     Domain::Mpi::Device& m_device;
-    Registry& m_registry;
     Telemetry& m_telemetry;
+    Config m_config;
 };

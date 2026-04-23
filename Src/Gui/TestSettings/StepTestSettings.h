@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AbstractTestSettings.h"
-#include "Src/Storage/Registry.h"
-#include "Src/Domain/Tests/Option/Step/Params.h"
+#include "Storage/Registry.h"
+#include "Domain/Tests/Option/Step/Params.h"
 
 namespace Ui {
 class StepTestSettings;

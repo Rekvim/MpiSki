@@ -1,9 +1,9 @@
 #include "Runner.h"
-#include "Src/Domain/Program.h"
+#include "Domain/Program.h"
 
 namespace Domain::Tests::Option::Step {
 static QVector<quint16> buildSequence(const Params& p,
-                                      Domain::Mpi::Device& device, bool normalOpen)
+                                      Mpi::Device& device, bool normalOpen)
 {
     QVector<quint16> seq;
     auto rawFromPct = [&](quint16 pct){
@@ -38,8 +38,7 @@ RunnerConfig Runner::buildConfig() {
     Algorithm::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = isNormallyOpen();
-    task.value = buildSequence(p, m_device, normalOpen);
+    task.value = buildSequence(p, m_device, m_normalOpen);
     worker->setTask(task);
     worker->setTValue(p.testValue);
 

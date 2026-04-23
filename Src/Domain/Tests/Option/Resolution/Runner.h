@@ -1,18 +1,16 @@
 #pragma once
 
-#include "Src/Domain/Tests/BaseRunner.h"
-#include "Src/Domain/Tests/Option/Params.h"
+#include "Domain/Tests/BaseRunner.h"
+#include "Domain/Tests/Option/Params.h"
 
 namespace Domain::Tests::Option::Resolution {
     class Runner : public BaseRunner
     {
         Q_OBJECT
     public:
-        Runner(Domain::Mpi::Device& device,
-               Registry& reg,
-               const Params& params,
+        Runner(Mpi::Device& device, bool normalOpen, const Params& params,
                QObject* parent = nullptr)
-            : BaseRunner(device, reg, parent), m_params(params) {}
+            : BaseRunner(device, normalOpen, parent), m_params(params) {}
 
     protected:
         RunnerConfig buildConfig() override;

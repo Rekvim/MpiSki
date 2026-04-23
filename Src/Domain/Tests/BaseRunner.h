@@ -5,9 +5,8 @@
 #include <memory>
 
 #include "Test.h"
-#include "Src/Widgets/Chart/Manager.h"
-#include "Src/Storage/Registry.h"
-#include "Src/Domain/Mpi/Device.h"
+#include "Widgets/Chart/Manager.h"
+#include "Domain/Mpi/Device.h"
 
 struct RunnerConfig {
     std::unique_ptr<Test> worker = nullptr;
@@ -20,7 +19,9 @@ class BaseRunner : public QObject
     Q_OBJECT
 
 public:
-    BaseRunner(Domain::Mpi::Device& device, Registry& reg, QObject* parent = nullptr);
+    BaseRunner(Domain::Mpi::Device& device, bool normalOpen, QObject* parent = nullptr)
+        : QObject(parent), m_device(device), m_normalOpen(normalOpen) { }
+
     ~BaseRunner() override;
 
 public slots:
@@ -40,11 +41,6 @@ protected:
     virtual void wireSpecificSignals(Test& t) = 0;
 
 protected:
-    bool isNormallyOpen() const
-    {
-        return m_reg.valveInfo().safePosition == SafePosition::NormallyOpen;
-    }
-
     RunnerConfig makeConfig(std::unique_ptr<Test> worker,
                             quint64 totalMs,
                             Widgets::Chart::ChartType chart)
@@ -57,7 +53,7 @@ protected:
     }
 
     Domain::Mpi::Device& m_device;
-    Registry& m_reg;
+    bool m_normalOpen = false;
 
 private:
     void cleanupThread();

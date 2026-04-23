@@ -1,7 +1,6 @@
 #include "Runner.h"
-#include "Src/Domain/Program.h"
-#include "Src/Storage/Registry.h"
-#include "Src/Domain/Tests/Option/Algorithm.h"
+#include "Domain/Program.h"
+#include "Domain/Tests/Option/Algorithm.h"
 
 namespace Domain::Tests::Option::Resolution {
 RunnerConfig Runner::buildConfig()
@@ -15,13 +14,11 @@ RunnerConfig Runner::buildConfig()
     Algorithm::Task task;
     task.delay = p.delay;
 
-    const bool normalOpen = isNormallyOpen();
-
     task.value.push_back(m_device.dac()->rawFromValue(4.0));
 
     for (auto it = p.points.begin(); it != p.points.end(); ++it)
     {
-        const qreal basePercent = normalOpen ? (100.0 - *it) : *it;
+        const qreal basePercent = m_normalOpen ? (100.0 - *it) : *it;
         const qreal baseCurrent = 16.0 * basePercent / 100.0 + 4.0;
         const qreal baseRaw = m_device.dac()->rawFromValue(baseCurrent);
         task.value.push_back(baseRaw);

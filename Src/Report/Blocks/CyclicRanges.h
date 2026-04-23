@@ -11,8 +11,7 @@ namespace Report::Blocks {
             quint16 rowStep;
         };
 
-        explicit CyclicRanges(Layout layout)
-            : m_layout(std::move(layout)) {}
+        explicit CyclicRanges(Layout layout) : m_layout(std::move(layout)) {}
 
         void build(Writer& w,
                    const Context& ctx) override

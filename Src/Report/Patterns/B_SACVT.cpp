@@ -1,9 +1,9 @@
 #include "B_SACVT.h"
-#include "Src/Report/Writer.h"
-#include "Src/Report/Blocks/ObjectInfo.h"
-#include "Src/Report/Blocks/ValveSpec.h"
-#include "Src/Report/Blocks/SolenoidDetails.h"
-#include "Src/Report/Blocks/CyclicSummary.h"
+#include "Report/Writer.h"
+#include "Report/Blocks/ObjectInfo.h"
+#include "Report/Blocks/ValveSpec.h"
+#include "Report/Blocks/SolenoidDetails.h"
+#include "Report/Blocks/CyclicSummary.h"
 
 namespace Report::Patterns {
     void B_SACVT::buildReport(

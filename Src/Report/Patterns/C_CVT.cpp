@@ -1,12 +1,12 @@
 #include "C_CVT.h"
 
-#include "Src/Report/Writer.h"
-#include "Src/Report/Blocks/ObjectInfo.h"
-#include "Src/Report/Blocks/ValveSpec.h"
-#include "Src/Report/Blocks/CyclicSummary.h"
-#include "Src/Report/Blocks/CyclicRanges.h"
-#include "Src/Report/Blocks/StepReaction.h"
-#include "Src/Report/Blocks/TechnicalResults.h"
+#include "Report/Writer.h"
+#include "Report/Blocks/ObjectInfo.h"
+#include "Report/Blocks/ValveSpec.h"
+#include "Report/Blocks/CyclicSummary.h"
+#include "Report/Blocks/CyclicRanges.h"
+#include "Report/Blocks/StepReaction.h"
+#include "Report/Blocks/TechnicalResults.h"
 
 namespace Report::Patterns {
 void C_CVT::buildReport(

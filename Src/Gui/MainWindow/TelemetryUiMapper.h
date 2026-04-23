@@ -1,8 +1,11 @@
 #pragma once
 
-#include "ui_MainWindow.h"
-#include "Src/Storage/Telemetry.h"
-#include "Src/Domain/Tests/Stroke/Result.h"
+#include "Storage/Telemetry.h"
+#include "Domain/Tests/Stroke/Result.h"
+
+namespace Ui {
+class MainWindow;
+}
 
 class TelemetryUiMapper
 {

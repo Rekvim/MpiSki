@@ -3,7 +3,7 @@
 #include <QtTest>
 #include <QDebug>
 
-#include "Src/Domain/Tests/Cyclic/Regulatory/Analyzer.h"
+#include "Domain/Tests/Cyclic/Regulatory/Analyzer.h"
 #include "SampleGenerator.h"
 
 

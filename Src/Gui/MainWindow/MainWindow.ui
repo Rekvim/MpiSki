@@ -53,7 +53,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <attribute name="title">
@@ -5452,12 +5452,12 @@ Border-radius: 10px;
   <customwidget>
    <class>Widgets::Chart::ChartView</class>
    <extends>QGraphicsView</extends>
-   <header>Src/Widgets/Chart/ChartView.h</header>
+   <header>Widgets/Chart/ChartView.h</header>
   </customwidget>
   <customwidget>
    <class>Widgets::Slider::SliderView</class>
    <extends>QSlider</extends>
-   <header>Src/Widgets/Slider/SliderView.h</header>
+   <header>Widgets/Slider/SliderView.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

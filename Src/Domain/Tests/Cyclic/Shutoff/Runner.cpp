@@ -1,14 +1,13 @@
 #include "Runner.h"
-#include "Src/Domain/Program.h"
-#include "Src/Utils/SignalUtils.h"
+#include "Domain/Program.h"
+#include "Utils/SignalUtils.h"
 
 namespace Domain::Tests::Cyclic::Shutoff {
     RunnerConfig Runner::buildConfig()
     {
         const auto& p = m_params;
 
-        const bool normalOpen = isNormallyOpen();
-        const auto rawCycle = SignalUtils::makeRawValues(p.sequence, m_device, normalOpen);
+        const auto rawCycle = SignalUtils::makeRawValues(p.sequence, m_device, m_normalOpen);
         if (rawCycle.isEmpty() || p.numCycles <= 0) return {};
 
         Algorithm::Task task;

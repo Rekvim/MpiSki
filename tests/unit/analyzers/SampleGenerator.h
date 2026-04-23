@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Src/Domain/Measurement/Sample.h"
+#include "Domain/Measurement/Sample.h"
 
 class SampleGenerator {
 public:

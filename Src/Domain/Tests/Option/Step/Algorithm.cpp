@@ -19,7 +19,7 @@ void Algorithm::setTValue(quint32 T_value)
     m_TValue = T_value;
 }
 
-QVector<Result> Algorithm::calculateResult(const QVector<QVector<QPointF>> &points) const
+QVector<Result> Algorithm::calculateResult(const QVector<QVector<QPointF>>& points) const
 {
     QVector<Result> result;
     const QVector<QPointF> &line = points.at(0);

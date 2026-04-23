@@ -2,7 +2,7 @@
 
 #include <QPointF>
 
-#include "../Test.h"
+#include "Domain/Tests/Test.h"
 #include "Params.h"
 
 namespace Domain::Tests::Main {
@@ -11,7 +11,7 @@ namespace Domain::Tests::Main {
         Q_OBJECT
     public:
         explicit Algorithm(QObject *parent = nullptr, bool endTestAfterProcess = false)
-            : Test(parent) , m_endTestAfterProcess(endTestAfterProcess) {}
+            : Test(parent), m_endTestAfterProcess(endTestAfterProcess) {}
 
         virtual void run() override;
         void setParameters(Params &parameters);

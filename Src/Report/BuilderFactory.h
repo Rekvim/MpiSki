@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Src/Report/Patterns/B_CVT.h"
-#include "Src/Report/Patterns/B_SACVT.h"
-#include "Src/Report/Patterns/C_CVT.h"
-#include "Src/Report/Patterns/C_SACVT.h"
-#include "Src/Report/Patterns/C_SOVT.h"
-#include "Src/Gui/Setup/SelectTests.h"
+#include "Report/Patterns/B_CVT.h"
+#include "Report/Patterns/B_SACVT.h"
+#include "Report/Patterns/C_CVT.h"
+#include "Report/Patterns/C_SACVT.h"
+#include "Report/Patterns/C_SOVT.h"
+#include "Gui/Setup/SelectTests.h"
 
 namespace Report {
     class BuilderFactory

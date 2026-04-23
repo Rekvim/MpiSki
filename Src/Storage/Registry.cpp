@@ -114,7 +114,7 @@ bool Registry::loadValveInfo(const QString& position)
         m_settings.value("crossing_frictionEnabled", false).toBool();
     v.crossingLimits.linearCharacteristicEnabled =
         m_settings.value("crossing_linearCharacteristicEnabled", false).toBool();
-    v.crossingLimits.valveStroke =
+    v.crossingLimits.valveStrokeEnabled =
         m_settings.value("crossing_valveStrokeEnabled", false).toBool();
     v.crossingLimits.springEnabled =
         m_settings.value("crossing_springEnabled", false).toBool();
@@ -133,11 +133,6 @@ bool Registry::loadValveInfo(const QString& position)
 
     v.crossingLimits.springLower = m_settings.value("crossing_springLower", 0.0).toDouble();
     v.crossingLimits.springUpper = m_settings.value("crossing_springUpper", 0.0).toDouble();
-
-    m_settings.endGroup();
-    m_settings.endGroup();
-    m_settings.endGroup();
-    m_settings.endGroup();
 
     return true;
 }
@@ -240,11 +235,9 @@ bool Registry::checkObject(const QString &object)
 
 bool Registry::checkManufactory(const QString &manufactory)
 {
-    m_settings.beginGroup(m_objectInfo.object);
+    SettingsGroup g1(m_settings, m_objectInfo.object);
 
     bool result = m_settings.childGroups().contains(manufactory);
-
-    m_settings.endGroup();
 
     return result;
 }
