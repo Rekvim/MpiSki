@@ -9,7 +9,7 @@
 
 #include "Domain/Mpi/Device.h"
 
-#include "Widgets/Chart/Manager.h"
+#include "Widgets/Chart/ChartType.h"
 
 #include "Domain/Tests/Main/Params.h"
 #include "Domain/Tests/Cyclic/Params.h"
@@ -25,9 +25,7 @@
 
 #include "Domain/Tests/BaseRunner.h"
 
-#include "Domain/Tests/Option/Step/Algorithm.h"
 #include "Domain/Tests/Main/Algorithm.h"
-#include "Domain/Tests/Cyclic/Shutoff/Algorithm.h"
 #include "Gui/Setup/SelectTests.h"
 
 enum class TextObjects
@@ -99,7 +97,7 @@ signals:
     void setVisible(Widgets::Chart::ChartType chart, quint16 series, bool visible);
     void setRegressionEnable(bool enable);
 
-    void setStepResults(const QVector<Domain::Tests::Option::Step::Result>& results, quint32 T_value);
+    void setStepResults(const Domain::Tests::Option::Step::Result& result);
     void setDoButtonsChecked(quint8 status);
 
     void setDiCheckboxesChecked(quint8 status);
@@ -235,10 +233,10 @@ public slots:
     //
     void results_strokeTest();
     void results_mainTest(const Domain::Tests::Main::Algorithm::TestResults& results);
-    void results_stepTest(const QVector<Tests::Option::Step::Result>& results, const quint32 T_value);
+    void results_stepTest(const Domain::Tests::Option::Step::Result& result);
     void results_cyclicRegulatoryTests();
-    void results_cyclicShutoffTests(const Tests::Cyclic::Shutoff::Result& results);
-    void results_cyclicCombinedTests(const Tests::Cyclic::Shutoff::Result& shutoffResults);
+    void results_cyclicShutoffTests(const Domain::Tests::Cyclic::Shutoff::Result& result);
+    void results_cyclicCombinedTests(const Domain::Tests::Cyclic::Shutoff::Result& shutoffResult);
 
     void setInitDoStates(const QVector<bool>& states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }

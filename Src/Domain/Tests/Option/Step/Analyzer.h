@@ -23,7 +23,7 @@ public:
     void onSample(const Domain::Measurement::Sample& s) override;
     void finish() override;
 
-    const QVector<Result>& result() const;
+    const Result& result() const;
 
 private:
     struct StepState
@@ -45,7 +45,7 @@ private:
 
     Config m_cfg;
 
-    QVector<Result> m_results;
+    Result m_result;
 
     StepState m_state;
 

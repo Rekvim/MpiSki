@@ -13,36 +13,28 @@ namespace Report::Blocks {
 
         explicit CyclicRanges(Layout layout) : m_layout(std::move(layout)) {}
 
-        void build(Writer& w,
-                   const Context& ctx) override
-        {
-            const auto& ranges =
-                ctx.telemetry.cyclicTestRecord.regulatoryResult.ranges;
+        void build(Writer& w, const Context& ctx) override {
+            if (ctx.telemetry.testСyclicRegulatory) {
+                const auto& ranges = ctx.telemetry.testСyclicRegulatory->ranges;
 
-            quint16 row = m_layout.rowStart;
+                quint16 row = m_layout.rowStart;
 
-            for (int i = 0; i < ranges.size() && i < 10; ++i) {
+                for (int i = 0; i < ranges.size() && i < 10; ++i) {
+                    const auto& r = ranges[i];
+                    w.cell(m_layout.sheet, row, 2, r.rangePercent);
 
-                const auto& r = ranges[i];
+                    if (r.maxForwardCycle >= 0) {
+                        w.cell(m_layout.sheet, row, 8, r.maxForwardPosition);
+                        w.cell(m_layout.sheet, row, 11, r.maxForwardCycle + 1);
+                    } if (r.minBackwardCycle >= 0) {
+                        w.cell(m_layout.sheet, row, 12, r.minBackwardPosition);
+                        w.cell(m_layout.sheet, row, 15, r.minBackwardCycle + 1);
+                    }
 
-                w.cell(m_layout.sheet, row, 2,
-                       QString::number(r.rangePercent));
-
-                if (r.maxForwardCycle >= 0) {
-                    w.cell(m_layout.sheet, row, 8,
-                           QString::number(r.maxForwardPosition, 'f', 2));
-                    w.cell(m_layout.sheet, row, 11,
-                           QString::number(r.maxForwardCycle + 1));
+                    row += m_layout.rowStep;
                 }
-
-                if (r.minBackwardCycle >= 0) {
-                    w.cell(m_layout.sheet, row, 12,
-                           QString::number(r.minBackwardPosition, 'f', 2));
-                    w.cell(m_layout.sheet, row, 15,
-                           QString::number(r.minBackwardCycle + 1));
-                }
-
-                row += m_layout.rowStep;
+            } else {
+                qWarning() << "Report block skipped: ctx.telemetry.testСyclicRegulatory";
             }
         }
 

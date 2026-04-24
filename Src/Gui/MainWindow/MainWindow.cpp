@@ -620,20 +620,14 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
 }
 
 void MainWindow::onTelemetryUpdated(const Telemetry &t) {
-    qDebug() << "UPDATED telemetry ranges:"
-             << t.cyclicTestRecord.regulatoryResult.ranges.size();
-
     m_telemetry = t;
-
-    qDebug() << "STORED telemetry ranges:"
-             << m_telemetry.cyclicTestRecord.regulatoryResult.ranges.size();
     m_mapper->updateInit(t.init);
-
     m_mapper->updateMainTest(t);
     m_mapper->updateCrossing(t);
     m_crossingIndicators->update(m_telemetry.crossingStatus);
-    if (t.stroke)
-        m_mapper->updateStrokeTest(*t.stroke);
+
+    if (t.testStroke)
+        m_mapper->updateStrokeTest(*t.testStroke);
 }
 
 void MainWindow::appendLog(const QString& text) {
@@ -803,28 +797,48 @@ void MainWindow::setTask(qreal task)
     }
 }
 
-void MainWindow::setStepTestResults(const QVector<Domain::Tests::Option::Step::Result> &results, quint32 T_value)
+void MainWindow::setStepTestResults(const Domain::Tests::Option::Step::Result& result)
 {
-    ui->tableWidget_stepResults->setHorizontalHeaderLabels(
-        {tr(("T%1")).arg(T_value), tr("Перерегулирование")});
+    const auto& steps = result.steps;
 
-    ui->tableWidget_stepResults->setRowCount(results.size());
+    ui->tableWidget_stepResults->clearContents();
+
+    ui->tableWidget_stepResults->setColumnCount(2);
+    ui->tableWidget_stepResults->setHorizontalHeaderLabels({
+        tr("T%1").arg(result.testValue),
+        tr("Перерегулирование")
+    });
+
+    ui->tableWidget_stepResults->setRowCount(steps.size());
+
     QStringList rowNames;
-    for (int i = 0; i < results.size(); ++i) {
+    rowNames.reserve(steps.size());
 
-        QString time = results.at(i).T_value == 0
-                           ? tr("Ошибка")
-                           : QTime(0, 0).addMSecs(results.at(i).T_value).toString("m:ss.zzz");
+    for (int i = 0; i < steps.size(); ++i)
+    {
+        const auto& step = steps.at(i);
 
-        ui->tableWidget_stepResults->setItem(i, 0, new QTableWidgetItem(time));
+        const QString time = step.T_value == 0
+                                 ? tr("Ошибка")
+                                 : QTime(0, 0)
+                                       .addMSecs(step.T_value)
+                                       .toString("m:ss.zzz");
 
-        QString overshoot = QString("%1%").arg(results.at(i).overshoot, 4, 'f', 2);
-        ui->tableWidget_stepResults->setItem(i, 1, new QTableWidgetItem(overshoot));
+        const QString overshoot =
+            QString("%1%").arg(step.overshoot, 4, 'f', 2);
 
-        QString rowName = QString("%1-%2").arg(results.at(i).from)
-                              .arg(results.at(i).to);
+        const QString rowName =
+            QString("%1-%2").arg(step.from).arg(step.to);
+
+        ui->tableWidget_stepResults->setItem(
+            i, 0, new QTableWidgetItem(time));
+
+        ui->tableWidget_stepResults->setItem(
+            i, 1, new QTableWidgetItem(overshoot));
+
         rowNames << rowName;
     }
+
     ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
     ui->tableWidget_stepResults->resizeColumnsToContents();
 }
@@ -1559,35 +1573,35 @@ void MainWindow::saveChart(ChartType chart)
 
 void MainWindow::collectReportOverrides()
 {
-    // ===== MainTestRecord =====
-    NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionForceValue,
-               m_telemetry.mainTestRecord.frictionForce);
+    // MainTestRecord
+    if (m_telemetry.testMain) {
+        NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionForceValue,
+                                m_telemetry.testMain->frictionForce);
 
-    NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionPercentValue,
-               m_telemetry.mainTestRecord.frictionPercent);
+        NumberUtils::readDouble(ui->lineEdit_resultsTable_frictionPercentValue,
+                                m_telemetry.testMain->frictionPercent);
 
-    NumberUtils::readDouble(ui->lineEdit_resultsTable_dynamicErrorReal,
-               m_telemetry.mainTestRecord.dynamicErrorReal);
+        NumberUtils::readDouble(ui->lineEdit_resultsTable_dynamicErrorReal,
+                                m_telemetry.testMain->dynamicErrorReal);
 
-    NumberUtils::readRange(ui->lineEdit_resultsTable_rangePressure,
-              m_telemetry.mainTestRecord.lowLimitPressure,
-              m_telemetry.mainTestRecord.highLimitPressure);
+        NumberUtils::readRange(ui->lineEdit_resultsTable_rangePressure,
+                               m_telemetry.testMain->lowLimitPressure,
+                               m_telemetry.testMain->highLimitPressure);
 
-    NumberUtils::readRange(ui->lineEdit_resultsTable_driveRangeReal,
-              m_telemetry.mainTestRecord.springLow,
-              m_telemetry.mainTestRecord.springHigh);
+        NumberUtils::readRange(ui->lineEdit_resultsTable_driveRangeReal,
+                               m_telemetry.testMain->springLow,
+                               m_telemetry.testMain->springHigh);
+    }
 
-    // ===== Stroke =====
+    // Stroke
     NumberUtils::readDouble(ui->lineEdit_resultsTable_strokeReal,
                m_telemetry.valveStrokeRecord.real);
 
-    // ===== Stroke test =====
-    if (m_telemetry.stroke)
-    {
-        m_telemetry.stroke->timeForwardMs =
+    // Stroke test
+    if (m_telemetry.testStroke) {
+        m_telemetry.testStroke->timeForwardMs =
             ui->lineEdit_resultsTable_strokeTest_forwardTime->text();
-
-        m_telemetry.stroke->timeBackwardMs =
+        m_telemetry.testStroke->timeBackwardMs =
             ui->lineEdit_resultsTable_strokeTest_backwardTime->text();
     }
 

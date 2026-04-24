@@ -163,10 +163,10 @@ DocumentPrivate::DocumentPrivate(Document *p) :
 void DocumentPrivate::init()
 {
     if (!contentTypes)
-        contentTypes = std::make_shared<ContentTypes>(ContentTypes::F_NewFromScratch);
+        contentTypes = std::make_shared<ContentTypes>(ContentTypes::CreateFlag::F_NewFromScratch);
 
     if (workbook.isNull())
-        workbook = QSharedPointer<Workbook>(new Workbook(Workbook::F_NewFromScratch));
+        workbook = QSharedPointer<Workbook>(new Workbook(Workbook::CreateFlag::F_NewFromScratch));
 }
 
 bool DocumentPrivate::loadPackage(QIODevice *device)
@@ -178,7 +178,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
 	//Load the Content_Types file
 	if (!filePaths.contains(QLatin1String("[Content_Types].xml")))
 		return false;
-    contentTypes = std::make_shared<ContentTypes>(ContentTypes::F_LoadFromExists);
+    contentTypes = std::make_shared<ContentTypes>(ContentTypes::CreateFlag::F_LoadFromExists);
 	contentTypes->loadFromXmlData(zipReader.fileData(QStringLiteral("[Content_Types].xml")));
 
 	//Load root rels file
@@ -194,7 +194,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
 		//In normal case, this should be "docProps/core.xml"
 		QString docPropsCore_Name = rels_core[0].target;
 
-		DocPropsCore props(DocPropsCore::F_LoadFromExists);
+        DocPropsCore props(DocPropsCore::CreateFlag::F_LoadFromExists);
 		props.loadFromXmlData(zipReader.fileData(docPropsCore_Name));
         const auto propNames = props.propertyNames();
         for (const QString &name : propNames)
@@ -208,7 +208,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
 		//In normal case, this should be "docProps/app.xml"
 		QString docPropsApp_Name = rels_app[0].target;
 
-		DocPropsApp props(DocPropsApp::F_LoadFromExists);
+        DocPropsApp props(DocPropsApp::CreateFlag::F_LoadFromExists);
 		props.loadFromXmlData(zipReader.fileData(docPropsApp_Name));
         const auto propNames = props.propertyNames();
         for (const QString &name : propNames)
@@ -217,7 +217,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
 
 	//load workbook now, Get the workbook file path from the root rels file
 	//In normal case, this should be "xl/workbook.xml"
-    workbook = QSharedPointer<Workbook>(new Workbook(Workbook::F_LoadFromExists));
+    workbook = QSharedPointer<Workbook>(new Workbook(Workbook::CreateFlag::F_LoadFromExists));
 	QList<XlsxRelationship> rels_xl = rootRels.documentRelationships(QStringLiteral("/officeDocument"));
 	if (rels_xl.isEmpty())
 		return false;
@@ -247,7 +247,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
             path = xlworkbook_Dir + QLatin1String("/") + name;
         }
 
-		QSharedPointer<Styles> styles (new Styles(Styles::F_LoadFromExists));
+        QSharedPointer<Styles> styles (new Styles(Styles::CreateFlag::F_LoadFromExists));
 		styles->loadFromXmlData(zipReader.fileData(path));
 		workbook->d_func()->styles = styles;
 	}
@@ -329,8 +329,8 @@ bool DocumentPrivate::savePackage(QIODevice *device) const
 
 	contentTypes->clearOverrides();
 
-	DocPropsApp docPropsApp(DocPropsApp::F_NewFromScratch);
-	DocPropsCore docPropsCore(DocPropsCore::F_NewFromScratch);
+    DocPropsApp docPropsApp(DocPropsApp::CreateFlag::F_NewFromScratch);
+    DocPropsCore docPropsCore(DocPropsCore::CreateFlag::F_NewFromScratch);
 
 	// save worksheet xml files
 	QList<QSharedPointer<AbstractSheet> > worksheets = workbook->getSheetsByTypes(AbstractSheet::ST_WorkSheet);

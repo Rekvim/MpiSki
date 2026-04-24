@@ -37,7 +37,12 @@ void B_CVT::buildReport(
     Blocks::ValveSpec({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
     Blocks::CyclicSummary({m_sheetCyclicTests, 19, 8, 2}, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
 
-    const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
+    if (!ctx.telemetry.testСyclicRegulatory) {
+        qWarning() << "Report block skipped: ctx.telemetry.testСyclicRegulatory";
+        return;
+    }
+
+    const auto& ranges = telemetryStore.testСyclicRegulatory->ranges;
 
     struct Agg {
         qreal rangePercent;

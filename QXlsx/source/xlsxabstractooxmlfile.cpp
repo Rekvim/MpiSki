@@ -9,7 +9,7 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
-AbstractOOXmlFilePrivate::AbstractOOXmlFilePrivate(AbstractOOXmlFile *q, AbstractOOXmlFile::CreateFlag flag=AbstractOOXmlFile::F_NewFromScratch)
+AbstractOOXmlFilePrivate::AbstractOOXmlFilePrivate(AbstractOOXmlFile *q, AbstractOOXmlFile::CreateFlag flag=AbstractOOXmlFile::CreateFlag::F_NewFromScratch)
     : relationships(new Relationships), flag(flag), q_ptr(q)
 {
 

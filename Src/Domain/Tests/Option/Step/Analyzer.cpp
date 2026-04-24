@@ -3,7 +3,7 @@
 namespace Domain::Tests::Option::Step {
 void Analyzer::start()
 {
-    m_results.clear();
+    m_result = {};
 
     m_prevTask = qQNaN();
     m_hasStep = false;
@@ -85,14 +85,14 @@ void Analyzer::finishStep()
 {
     if (!m_hasStep) return;
 
-    Result r;
+    StepResult r;
 
     r.from = qRound(m_state.from);
     r.to = qRound(m_state.to);
     r.T_value = m_state.tReached ? m_state.tTime : 0;
     r.overshoot = m_state.overshoot;
 
-    m_results.push_back(r);
+    m_result.steps.push_back(r);
 
     m_hasStep = false;
 }
@@ -102,8 +102,8 @@ void Analyzer::finish()
     finishStep();
 }
 
-const QVector<Result>& Analyzer::result() const
+const Result& Analyzer::result() const
 {
-    return m_results;
+    return m_result;
 }
 }

@@ -69,7 +69,7 @@ private slots:
     void setText(TextObjects object, const QString &text);
     void setTask(qreal task);
 
-    void setStepTestResults(const QVector<Domain::Tests::Option::Step::Result> &results, quint32 T_value);
+    void setStepTestResults(const Domain::Tests::Option::Step::Result& result);
 
     void setSensorsNumber(quint8 sensorCount);
 

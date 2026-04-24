@@ -22,31 +22,33 @@ namespace Report::Blocks {
 
         void build(Writer& w, const Context& ctx) override
         {
-            const auto& cyclic = ctx.telemetry.cyclicTestRecord;
+            if (const auto& cyclic = ctx.telemetry.testСyclicShutoff) {
+                w.cell(m_layout.sheet, m_layout.rowBase, m_layout.colCount, cyclic->numCycles);
+                w.cell(m_layout.sheet, m_layout.rowBase + m_layout.rowStep, m_layout.colCount, cyclic->numCycles);
 
-            w.cell(m_layout.sheet, m_layout.rowBase, m_layout.colCount, cyclic.numCyclesShutoff);
-            w.cell(m_layout.sheet, m_layout.rowBase + m_layout.rowStep, m_layout.colCount, cyclic.numCyclesShutoff);
+                const auto& ons = cyclic->doOnCounts;
+                const auto& offs = cyclic->doOffCounts;
 
-            const auto& ons = cyclic.doOnCounts;
-            const auto& offs = cyclic.doOffCounts;
+                for (int i = 0; i < ons.size(); ++i) {
+                    if (ons[i] == 0 && offs.value(i, 0) == 0)
+                        continue;
 
-            for (int i = 0; i < ons.size(); ++i) {
-                if (ons[i] == 0 && offs.value(i, 0) == 0)
-                    continue;
+                    quint16 row = m_layout.rowBase + quint16(i) * m_layout.rowStep;
 
-                quint16 row = m_layout.rowBase + quint16(i) * m_layout.rowStep;
+                    w.cell(m_layout.sheet, row, m_layout.colOn,  ons[i]);
+                    w.cell(m_layout.sheet, row, m_layout.colOff, offs.value(i, 0));
+                }
 
-                w.cell(m_layout.sheet, row, m_layout.colOn,  ons[i]);
-                w.cell(m_layout.sheet, row, m_layout.colOff, offs.value(i, 0));
+                w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colCount, cyclic->numCycles);
+                w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colOn, cyclic->switch3to0Count);
+                w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colOff, cyclic->switch0to3Count);
+
+                w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colCount, cyclic->numCycles);
+                w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colOn, cyclic->switch0to3Count);
+                w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colOff, cyclic->switch3to0Count);
+            } else {
+                qWarning() << "Report block skipped: ctx.telemetry.testСyclicShutoff";
             }
-
-            w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colCount, cyclic.numCyclesShutoff);
-            w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colOn, cyclic.switch3to0Count);
-            w.cell(m_layout.sheet, m_layout.rowSwitch1, m_layout.colOff, cyclic.switch0to3Count);
-
-            w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colCount, cyclic.numCyclesShutoff);
-            w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colOn, cyclic.switch0to3Count);
-            w.cell(m_layout.sheet, m_layout.rowSwitch2, m_layout.colOff, cyclic.switch3to0Count);
         }
 
     private:

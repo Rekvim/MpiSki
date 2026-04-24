@@ -1,6 +1,5 @@
 #include "Program.h"
 
-#include "Domain/Tests/Option/Step/Algorithm.h"
 #include "Domain/Tests/Main/Algorithm.h"
 
 #include "Domain/Tests/AnalyzerFactory.h"
@@ -24,13 +23,14 @@
 namespace Domain {
 constexpr quint8 VersionFlag = 0x40;
 
-namespace MainTest = Domain::Tests::Main;
-namespace StrokeTest = Domain::Tests::Stroke;
-namespace StepTest = Domain::Tests::Option::Step;
-namespace ResponseTest = Domain::Tests::Option::Response;
-namespace ResolutionTest = Domain::Tests::Option::Resolution;
-namespace CyclicReg = Domain::Tests::Cyclic::Regulatory;
-namespace CyclicShut = Domain::Tests::Cyclic::Shutoff;
+namespace MainTest = Tests::Main;
+namespace StrokeTest = Tests::Stroke;
+namespace StepTest = Tests::Option::Step;
+namespace ResponseTest = Tests::Option::Response;
+namespace ResolutionTest = Tests::Option::Resolution;
+namespace CyclicReg = Tests::Cyclic::Regulatory;
+namespace CyclicShut = Tests::Cyclic::Shutoff;
+
 using ChartType = Widgets::Chart::ChartType;
 
 Program::Program(QObject *parent)
@@ -232,7 +232,7 @@ void Program::updateRealtimeTexts(const Domain::Measurement::Sample& s)
     }
 }
 
-void Program::updateMainCharts(const Domain::Measurement::Sample& s)
+void Program::updateMainCharts(const Measurement::Sample& s)
 {
     QVector<Widgets::Chart::Point> points;
 
@@ -264,7 +264,7 @@ void Program::updateMainCharts(const Domain::Measurement::Sample& s)
     }
 }
 
-void Program::updateCyclicChart(const Domain::Measurement::Sample& s, ChartType chart)
+void Program::updateCyclicChart(const Measurement::Sample& s, ChartType chart)
 {
     QVector<Widgets::Chart::Point> points;
     points.push_back({0, qreal(s.testTime), s.taskPercent});
@@ -287,14 +287,14 @@ void Program::updateCyclicChart(const Domain::Measurement::Sample& s, ChartType 
             const bool nowOpen = (di & 0x02);
 
             if (nowClosed && !lastClosed) {
-                ++m_telemetry.cyclicTestRecord.switch3to0Count;
+                ++m_telemetry.testСyclicShutoff->switch3to0Count;
                 diPts.push_back({2, qreal(s.testTime), 0.0});
             } else if (!nowClosed && lastClosed) {
                 diPts.push_back({2, qreal(s.testTime), 0.0});
             }
 
             if (nowOpen && !lastOpen) {
-                ++m_telemetry.cyclicTestRecord.switch0to3Count;
+                ++m_telemetry.testСyclicShutoff->switch0to3Count;
                 diPts.push_back({3, qreal(s.testTime), 100.0});
             } else if (!nowOpen && lastOpen) {
                 diPts.push_back({3, qreal(s.testTime), 100.0});
@@ -310,7 +310,7 @@ void Program::updateCyclicChart(const Domain::Measurement::Sample& s, ChartType 
 
 void Program::updateSensors()
 {
-    const Domain::Measurement::Sample s = makeSample();
+    const Measurement::Sample s = makeSample();
 
     emit sampleReady(s);
 
@@ -322,7 +322,7 @@ void Program::updateSensors()
     updateChartsFromSample(s);
 }
 
-void Program::updateTimeChart(const Domain::Measurement::Sample& s, ChartType chart, qint64 time)
+void Program::updateTimeChart(const Measurement::Sample& s, ChartType chart, qint64 time)
 {
     QVector<Widgets::Chart::Point> points;
 
@@ -332,7 +332,7 @@ void Program::updateTimeChart(const Domain::Measurement::Sample& s, ChartType ch
     emit addPoints(chart, points);
 }
 
-void Program::updateChartsFromSample(const Domain::Measurement::Sample& s)
+void Program::updateChartsFromSample(const Measurement::Sample& s)
 {
     updateTimeChart(s, ChartType::Trend, s.systemTime);
 
@@ -436,8 +436,6 @@ void Program::initialization()
         emit setButtonInitEnabled(true);
         return;
     } emit telemetryUpdated(m_telemetry);
-
-    const bool normalClosed = m_config.safePosition == SafePosition::NormallyClosed;
 
     if (m_patternType == SelectTests::Pattern_B_SACVT ||
         m_patternType == SelectTests::Pattern_C_SACVT ||
@@ -565,9 +563,11 @@ void Program::updateCrossingStatus()
     const auto& limits = m_config.crossingLimits;
     using State = CrossingStatus::State;
 
+    if (!ts.testMain) return;
+
     if (limits.frictionEnabled) {
         ts.crossingStatus.frictionPercent =
-            inRange(ts.mainTestRecord.frictionPercent,
+            inRange(ts.testMain->frictionPercent,
                     limits.frictionCoefLower,
                     limits.frictionCoefUpper)
                 ? State::Ok : State::Fail;
@@ -594,7 +594,7 @@ void Program::updateCrossingStatus()
 
     if (limits.dynamicErrorEnabled) {
         ts.crossingStatus.dynamicError =
-            inRange(ts.mainTestRecord.dynamicErrorReal,
+            inRange(ts.testMain->dynamicErrorReal,
                     0.0, m_config.dinamicErrorRecomend)
                 ? State::Ok : State::Fail;
     } else {
@@ -617,8 +617,8 @@ void Program::updateCrossingStatus()
         const double highLo = recHigh - highD;
         const double highHi = recHigh + highD;
 
-        const bool okLow = inRange(ts.mainTestRecord.springLow, lowLo, lowHi);
-        const bool okHigh = inRange(ts.mainTestRecord.springHigh, highLo, highHi);
+        const bool okLow = inRange(ts.testMain->springLow, lowLo, lowHi);
+        const bool okHigh = inRange(ts.testMain->springHigh, highLo, highHi);
 
         ts.crossingStatus.spring = (okLow && okHigh)
                                        ? State::Ok
@@ -630,7 +630,7 @@ void Program::updateCrossingStatus()
     // --- linearCharacteristic ---
     if (limits.linearCharacteristicEnabled) {
         ts.crossingStatus.linearCharacteristic =
-            inRange(ts.mainTestRecord.linearityError, 0.0, limits.linearCharacteristic)
+            inRange(ts.testMain->linearityError, 0.0, limits.linearCharacteristic)
                 ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.linearCharacteristic = State::Unknown;
@@ -638,85 +638,105 @@ void Program::updateCrossingStatus()
 }
 
 static void debugCompareMainTest(
-    const MainTest::Algorithm::TestResults& oldR,
-    const MainTest::Result& newR)
+    const MainTest::Result& algorithmResult,
+    const MainTest::Result& analyzerResult)
 {
-    qDebug() << "\n===== MAIN TEST COMPARISON =====";
+    qDebug() << "\n Результаты основного теста";
 
     qDebug() << "pressureDiff:"
-             << "old =" << oldR.pressureDiff
-             << "new =" << newR.pressureDiff;
+             << "algorithm =" << algorithmResult.pressureDiff
+             << "analyzer =" << analyzerResult.pressureDiff;
 
-    qDebug() << "friction:"
-             << "old =" << oldR.friction
-             << "new =" << newR.frictionPercent;
+    qDebug() << "frictionForce:"
+             << "algorithm =" << algorithmResult.frictionForce
+             << "analyzer =" << analyzerResult.frictionForce;
+
+    qDebug() << "frictionPercent:"
+             << "algorithm =" << algorithmResult.frictionPercent
+             << "analyzer =" << analyzerResult.frictionPercent;
 
     qDebug() << "dynamicErrorMean:"
-             << "old =" << oldR.dynamicErrorMean
-             << "new =" << newR.dynamicErrorMean;
+             << "algorithm =" << algorithmResult.dynamicErrorMean
+             << "analyzer =" << analyzerResult.dynamicErrorMean;
+
+    qDebug() << "dynamicErrorMeanPercent:"
+             << "algorithm =" << algorithmResult.dynamicErrorMeanPercent
+             << "analyzer =" << analyzerResult.dynamicErrorMeanPercent;
 
     qDebug() << "dynamicErrorMax:"
-             << "old =" << oldR.dynamicErrorMax
-             << "new =" << newR.dynamicErrorMax;
+             << "algorithm =" << algorithmResult.dynamicErrorMax
+             << "analyzer =" << analyzerResult.dynamicErrorMax;
+
+    qDebug() << "dynamicErrorMaxPercent:"
+             << "algorithm =" << algorithmResult.dynamicErrorMaxPercent
+             << "analyzer =" << analyzerResult.dynamicErrorMaxPercent;
+
+    qDebug() << "dynamicErrorReal:"
+             << "algorithm =" << algorithmResult.dynamicErrorReal
+             << "analyzer =" << analyzerResult.dynamicErrorReal;
 
     qDebug() << "lowLimitPressure:"
-             << "old =" << oldR.lowLimitPressure
-             << "new =" << newR.lowLimitPressure;
+             << "algorithm =" << algorithmResult.lowLimitPressure
+             << "analyzer =" << analyzerResult.lowLimitPressure;
 
     qDebug() << "highLimitPressure:"
-             << "old =" << oldR.highLimitPressure
-             << "new =" << newR.highLimitPressure;
+             << "algorithm =" << algorithmResult.highLimitPressure
+             << "analyzer =" << analyzerResult.highLimitPressure;
 
     qDebug() << "springLow:"
-             << "old =" << oldR.springLow
-             << "new =" << newR.springLow;
+             << "algorithm =" << algorithmResult.springLow
+             << "analyzer =" << analyzerResult.springLow;
 
     qDebug() << "springHigh:"
-             << "old =" << oldR.springHigh
-             << "new =" << newR.springHigh;
+             << "algorithm =" << algorithmResult.springHigh
+             << "analyzer =" << analyzerResult.springHigh;
 
     qDebug() << "linearityError:"
-             << "old =" << oldR.linearityError
-             << "new =" << newR.linearityError;
+             << "algorithm =" << algorithmResult.linearityError
+             << "analyzer =" << analyzerResult.linearityError;
 
     qDebug() << "linearity:"
-             << "old =" << oldR.linearity
-             << "new =" << newR.linearity;
+             << "algorithm =" << algorithmResult.linearity
+             << "analyzer =" << analyzerResult.linearity;
 
     qDebug() << "===============================\n";
 }
 
-void Program::results_mainTest(const MainTest::Algorithm::TestResults &results)
+void Program::results_mainTest(const MainTest::Algorithm::TestResults& results)
 {
-    auto* analyzer = static_cast<MainTest::Analyzer*>(m_analyzer.get());
-    analyzer->finish();
+    auto& main = m_telemetry.testMain.emplace();
 
-    const auto& newResult = analyzer->result();
-    debugCompareMainTest(results, newResult);
+    const qreal k = 5 * M_PI * m_config.driveDiameter * m_config.driveDiameter / 4;
 
-    qreal k = 5 * M_PI * m_config.driveDiameter * m_config.driveDiameter / 4;
+    main.pressureDiff = results.pressureDiff;
 
-    auto &s = m_telemetry.mainTestRecord;
+    main.frictionForce = results.pressureDiff * k;
+    main.frictionPercent = results.friction;
 
-    s.pressureDifference = results.pressureDiff;
+    main.dynamicErrorMean = results.dynamicErrorMean;
+    main.dynamicErrorMeanPercent = results.dynamicErrorMean / 0.16;
 
-    s.frictionForce = results.pressureDiff * k;
-    s.frictionPercent = results.friction;
+    main.dynamicErrorMax = results.dynamicErrorMax;
+    main.dynamicErrorMaxPercent = results.dynamicErrorMax / 0.16;
 
-    s.dynamicError_mean = results.dynamicErrorMean;
-    s.dynamicError_meanPercent = results.dynamicErrorMean / 0.16;
-    s.dynamicError_max = results.dynamicErrorMax;
-    s.dynamicError_maxPercent = results.dynamicErrorMean / 0.16;
-    s.dynamicErrorReal = results.dynamicErrorMean / 0.16;
+    main.dynamicErrorReal = results.dynamicErrorMean / 0.16;
 
-    s.lowLimitPressure = results.lowLimitPressure;
-    s.highLimitPressure = results.highLimitPressure;
+    main.lowLimitPressure = results.lowLimitPressure;
+    main.highLimitPressure = results.highLimitPressure;
 
-    s.springLow = results.springLow;
-    s.springHigh = results.springHigh;
+    main.springLow = results.springLow;
+    main.springHigh = results.springHigh;
 
-    s.linearityError = results.linearityError;
-    s.linearity = results.linearity;
+    main.linearityError = results.linearityError;
+    main.linearity = results.linearity;
+
+    if (auto* analyzer = dynamic_cast<MainTest::Analyzer*>(m_analyzer.get())) {
+        analyzer->finish();
+
+        const auto& analyzerResult = analyzer->result();
+
+        debugCompareMainTest(*m_telemetry.testMain, analyzerResult);
+    }
 
     updateCrossingStatus();
     emit telemetryUpdated(m_telemetry);
@@ -773,13 +793,13 @@ void Program::results_strokeTest()
     auto* analyzer = dynamic_cast<Tests::Stroke::Analyzer*>(m_analyzer.get());
 
     auto result = analyzer->result();
-    m_telemetry.stroke = result;
+    m_telemetry.testStroke = result;
 
     QString forwardText = QTime(0,0).addMSecs(result.forwardTimeMs).toString("mm:ss.zzz");
     QString backwardText = QTime(0,0).addMSecs(result.backwardTimeMs).toString("mm:ss.zzz");
 
-    m_telemetry.stroke->timeForwardMs = forwardText;
-    m_telemetry.stroke->timeBackwardMs = backwardText;
+    m_telemetry.testStroke->timeForwardMs = forwardText;
+    m_telemetry.testStroke->timeBackwardMs = backwardText;
 
     emit telemetryUpdated(m_telemetry);
 }
@@ -822,7 +842,7 @@ void Program::results_cyclicRegulatoryTests()
 
     auto* analyzer = dynamic_cast<CyclicReg::Analyzer*>(m_analyzer.get());
     analyzer->finish();
-    m_telemetry.cyclicTestRecord.regulatoryResult = analyzer->result();
+    m_telemetry.testСyclicRegulatory = analyzer->result();
 
     emit telemetryUpdated(m_telemetry);
 }
@@ -839,14 +859,14 @@ void Program::setMultipleDO(const QVector<bool>& states)
 
 void Program::results_cyclicShutoffTests(const CyclicShut::Result& results)
 {
-    auto &dst = m_telemetry.cyclicTestRecord;
+    auto &dst = m_telemetry.testСyclicShutoff;
 
-    dst.numCyclesShutoff = results.numCycles;
-    dst.doOnCounts = results.doOnCounts;
-    dst.doOffCounts = results.doOffCounts;
+    dst->numCycles = results.numCycles;
+    dst->doOnCounts = results.doOnCounts;
+    dst->doOffCounts = results.doOffCounts;
 
-    dst.switch3to0Count = results.switch3to0Count;
-    dst.switch0to3Count = results.switch0to3Count;
+    dst->switch3to0Count = results.switch3to0Count;
+    dst->switch0to3Count = results.switch0to3Count;
 
     emit telemetryUpdated(m_telemetry);
 }
@@ -875,50 +895,50 @@ void Program::results_cyclicCombinedTests(const CyclicShut::Result& shutoffResul
     // emit telemetryUpdated(m_telemetry);
 }
 
-void Program::prepareRegulatoryTelemetry(const Domain::Tests::Cyclic::Params& params)
+void Program::prepareRegulatoryTelemetry(const Tests::Cyclic::Params& params)
 {
-    auto& rec = m_telemetry.cyclicTestRecord;
-    const auto& reg = params.regulatory;
+    auto& result = m_telemetry.testСyclicRegulatory;
+    const auto& paramsRegulatory = params.regulatory;
     QStringList parts;
-    parts.reserve(reg.sequence.size());
+    parts.reserve(paramsRegulatory.sequence.size());
 
-    for (const quint16 v : std::as_const(reg.sequence))
+    for (const quint16 v : std::as_const(paramsRegulatory.sequence))
         parts << QString::number(v);
 
-    rec.sequenceRegulatory = parts.join('-');
-    rec.numCyclesRegulatory = reg.numCycles;
+    result->sequence = parts.join('-');
+    result->numCycles = paramsRegulatory.numCycles;
 
-    const quint64 stepsPerCycle = reg.sequence.size();
-    const quint64 totalSteps = stepsPerCycle * reg.numCycles;
-    const quint64 totalMs = totalSteps * (reg.delayMs + reg.holdMs);
-    rec.totalTimeSecRegulatory = totalMs / 1000.0;
-    rec.regulatoryResult = {};
+    const quint64 stepsPerCycle = paramsRegulatory.sequence.size();
+    const quint64 totalSteps = stepsPerCycle * paramsRegulatory.numCycles;
+    const quint64 totalMs = totalSteps * (paramsRegulatory.delayMs + paramsRegulatory.holdMs);
+    result->totalTimeSec = totalMs / 1000.0;
+    result = {};
 }
 
-void Program::prepareShutoffTelemetry(const Domain::Tests::Cyclic::Params& params)
+void Program::prepareShutoffTelemetry(const Tests::Cyclic::Params& params)
 {
-    auto& rec = m_telemetry.cyclicTestRecord;
-    const auto& off = params.shutoff;
+    auto& result = m_telemetry.testСyclicShutoff;
+    const auto& paramsShutoff = params.shutoff;
     QStringList parts;
-    parts.reserve(off.sequence.size());
+    parts.reserve(paramsShutoff.sequence.size());
 
-    for (const quint16 v : std::as_const(off.sequence))
+    for (const quint16 v : std::as_const(paramsShutoff.sequence))
         parts << QString::number(v);
 
-    rec.sequenceShutoff = parts.join('-');
+    result->sequence = parts.join('-');
 
-    rec.numCyclesShutoff = off.numCycles;
+    result->numCycles = paramsShutoff.numCycles;
 
-    const quint64 stepsPerCycle = off.sequence.size();
-    const quint64 totalSteps = stepsPerCycle * off.numCycles;
+    const quint64 stepsPerCycle = paramsShutoff.sequence.size();
+    const quint64 totalSteps = stepsPerCycle * paramsShutoff.numCycles;
 
     const quint64 totalMs =
-        totalSteps * (off.numCycles + off.numCycles);
+        totalSteps * (paramsShutoff.numCycles + paramsShutoff.numCycles);
 
-    rec.totalTimeSecShutoff = totalMs / 1000.0;
+    result->totalTimeSec = totalMs / 1000.0;
 }
 
-void Program::runCombinedCyclicTest(const Domain::Tests::Cyclic::Params& params)
+void Program::runCombinedCyclicTest(const Tests::Cyclic::Params& params)
 {
     const auto& regP = params.regulatory;
     const auto& off = params.shutoff;
@@ -958,15 +978,15 @@ void Program::runCombinedCyclicTest(const Domain::Tests::Cyclic::Params& params)
     startRunner(std::move(reg));
 }
 
-void Program::startCyclicTest(const Domain::Tests::Cyclic::Params& params)
+void Program::startCyclicTest(const Tests::Cyclic::Params& params)
 {
     if (params.regulatory.sequence.isEmpty() && params.shutoff.sequence.isEmpty()) {
         emit testFinished();
         return;
     }
 
-    if (params.type == Domain::Tests::Cyclic::Params::Regulatory ||
-        params.type == Domain::Tests::Cyclic::Params::Combined) {
+    if (params.type == Tests::Cyclic::Params::Regulatory ||
+        params.type == Tests::Cyclic::Params::Combined) {
         prepareRegulatoryTelemetry(params);
     }
 
@@ -976,7 +996,7 @@ void Program::startCyclicTest(const Domain::Tests::Cyclic::Params& params)
 
     switch (params.type)
     {
-    case Domain::Tests::Cyclic::Params::Regulatory: {
+    case Tests::Cyclic::Params::Regulatory: {
         m_testWorker = TestWorker::CyclicRegulatory;
         m_analyzer = AnalyzerFactory::create(m_testWorker);
 
@@ -986,11 +1006,11 @@ void Program::startCyclicTest(const Domain::Tests::Cyclic::Params& params)
 
         runTest<CyclicReg::Runner>(params.regulatory);
         break;
-    } case Domain::Tests::Cyclic::Params::Shutoff: {
+    } case Tests::Cyclic::Params::Shutoff: {
         m_testWorker = TestWorker::CyclicShutOff;
         runTest<CyclicShut::Runner>(params.shutoff);
         break;
-    } case Domain::Tests::Cyclic::Params::Combined: {
+    } case Tests::Cyclic::Params::Combined: {
         runCombinedCyclicTest(params);
         break;
     } default:
@@ -1027,18 +1047,18 @@ void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
     emit getPoints_stepTest(points, ChartType::Step);
 }
 
-void Program::results_stepTest(const QVector<StepTest::Result>& results, quint32 T_value)
+void Program::results_stepTest(const StepTest::Result& result)
 {
     auto* analyzer =
         static_cast<Tests::Option::Step::Analyzer*>(m_analyzer.get());
 
     analyzer->finish();
 
-    const auto& resultsAnalyzer = analyzer->result();
+    const auto& analyzerResult = analyzer->result();
 
-    qDebug() << "\n===== STEP TEST =====";
+    qDebug() << "\n===== STEP TEST ANALYZER =====";
 
-    for (const auto& r : resultsAnalyzer)
+    for (const auto& r : analyzerResult.steps)
     {
         qDebug() << "from:" << r.from
                  << "to:" << r.to
@@ -1046,21 +1066,12 @@ void Program::results_stepTest(const QVector<StepTest::Result>& results, quint32
                  << "overshoot:" << r.overshoot;
     }
 
-    qDebug() << "=====================\n";
+    qDebug() << "=============================\n";
 
-    m_telemetry.stepResults.clear();
-    for (auto &r : results) {
-        StepTestRecord rec;
-        rec.from = r.from;
-        rec.to = r.to;
-        rec.T_value = r.T_value;
-        rec.overshoot = r.overshoot;
-        m_telemetry.stepResults.push_back(rec);
-    }
+    m_telemetry.testStep = result;
 
     emit telemetryUpdated(m_telemetry);
-
-    emit setStepResults(results, T_value);
+    emit setStepResults(result);
 }
 
 void Program::button_set_position()

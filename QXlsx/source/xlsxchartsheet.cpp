@@ -39,7 +39,7 @@ Chartsheet::Chartsheet(const QString &name, int id, Workbook *workbook, CreateFl
 {
     setSheetType(ST_ChartSheet);
 
-    if (flag == Chartsheet::F_NewFromScratch)
+    if (flag == Chartsheet::CreateFlag::F_NewFromScratch)
     {
         d_func()->drawing = std::make_shared<Drawing>(this, flag);
 
@@ -130,7 +130,7 @@ bool Chartsheet::loadFromXmlFile(QIODevice *device)
                 const auto parts = splitPath(filePath());
                 QString path = QDir::cleanPath(parts.first() + QLatin1String("/") + name);
 
-                d->drawing = std::make_shared<Drawing>(this, F_LoadFromExists);
+                d->drawing = std::make_shared<Drawing>(this, CreateFlag::F_LoadFromExists);
                 d->drawing->setFilePath(path);
             }
         }

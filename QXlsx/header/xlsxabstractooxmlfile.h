@@ -15,7 +15,7 @@ class QXLSX_EXPORT AbstractOOXmlFile
     Q_DECLARE_PRIVATE(AbstractOOXmlFile)
 
 public:
-    enum CreateFlag
+    enum class CreateFlag
     {
         F_NewFromScratch,
         F_LoadFromExists

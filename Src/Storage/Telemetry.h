@@ -8,6 +8,7 @@
 #include "Domain/Tests/Main/Result.h"
 #include "Domain/Tests/Option/Step/Result.h"
 #include "Domain/Tests/Cyclic/Regulatory/Result.h"
+#include "Domain/Tests/Cyclic/Shutoff/Result.h"
 
 struct InitState {
     QString deviceStatusText = "";
@@ -20,13 +21,6 @@ struct InitState {
     QColor startingPositionColor = QColor();
     QString finalPositionText = "";
     QColor finalPositionColor = QColor();
-};
-
-struct StepTestRecord {
-    quint16 from = 0;
-    quint16 to = 0;
-    quint32 T_value = 0;
-    qreal overshoot = 0.0;
 };
 
 struct RangeDeviationRecord {
@@ -53,11 +47,6 @@ struct CyclicTestRecord {
 
     QVector<quint16> doOnCounts = {};
     QVector<quint16> doOffCounts = {};
-
-    int pos_0to3_hits = 0;
-    int pos_0to3_errors = 0;
-    int pos_3to0_hits = 0;
-    int pos_3to0_errors = 0;
 };
 
 struct CrossingStatus {
@@ -74,29 +63,6 @@ struct CrossingStatus {
     State linearCharacteristic = State::Unknown;
 };
 
-struct MainTestRecord {
-    qreal dynamicError_mean = 0.0;
-    qreal dynamicError_meanPercent = 0.0; // %
-
-    qreal dynamicError_max = 0.0;   // %
-    qreal dynamicError_maxPercent = 0.0;   // %
-
-    qreal dynamicErrorReal = 0.0;   // %
-
-    qreal lowLimitPressure = 0.0;  // бар
-    qreal highLimitPressure = 0.0;  // бар
-
-    qreal springLow = 0.0;  // Н
-    qreal springHigh = 0.0;  // Н
-
-    qreal pressureDifference = 0.0;  // бар
-    qreal frictionForce = 0.0;  //
-    qreal frictionPercent = 0.0;  // %
-
-    qreal linearityError = 0.0;
-    qreal linearity = 0.0;
-};
-
 struct ValveStrokeRecord {
     QString range = "";
     qreal real= 0.0;
@@ -109,26 +75,29 @@ struct SupplyRecord {
 class Telemetry {
 public:
     InitState init;
-    QVector<StepTestRecord> stepResults;
-    CyclicTestRecord cyclicTestRecord;
+    // CyclicTestRecord cyclicTestRecord;
     ValveStrokeRecord valveStrokeRecord;
     SupplyRecord supplyRecord;
-    MainTestRecord mainTestRecord;
     CrossingStatus crossingStatus;
 
-    std::optional<Domain::Tests::Stroke::Result> stroke;
-    std::optional<Domain::Tests::Main::Result> main;
-    QVector<Domain::Tests::Option::Step::Result> step;
-    Domain::Tests::Cyclic::Regulatory::Result regulatory;
+    std::optional<Domain::Tests::Stroke::Result> testStroke;
+    std::optional<Domain::Tests::Main::Result> testMain;
+    // TODO: После проверки Анализатра сделать результат уже готовым вектором
+    std::optional<Domain::Tests::Option::Step::Result> testStep;
+
+    std::optional<Domain::Tests::Cyclic::Regulatory::Result> testСyclicRegulatory;
+    std::optional<Domain::Tests::Cyclic::Shutoff::Result> testСyclicShutoff;
 
     Telemetry() = default;
 
     void clearAll() {
         init = {};
-        stepResults.clear();
-        cyclicTestRecord = {};
+        testMain.reset();
+        testStroke.reset();
+        testStep.reset();
+        testСyclicRegulatory.reset();
+        testСyclicShutoff.reset();
         valveStrokeRecord = {};
         supplyRecord = {};
-        mainTestRecord = {};
     }
 };

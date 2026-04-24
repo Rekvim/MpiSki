@@ -7,6 +7,9 @@ namespace Domain::Tests::Cyclic::Shutoff {
     struct Result
     {
         quint16 numCycles = 0;
+        QString sequence;
+
+        double totalTimeSec = 0.0;
 
         QVector<quint16> doOnCounts;
         QVector<quint16> doOffCounts;

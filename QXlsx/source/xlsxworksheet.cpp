@@ -186,7 +186,7 @@ Worksheet::Worksheet(const QString &name, int id, Workbook *workbook, CreateFlag
 Worksheet *Worksheet::copy(const QString &distName, int distId) const
 {
 	Q_D(const Worksheet);
-	Worksheet *sheet = new Worksheet(distName, distId, d->workbook, F_NewFromScratch);
+    Worksheet *sheet = new Worksheet(distName, distId, d->workbook, CreateFlag::F_NewFromScratch);
 	WorksheetPrivate *sheet_d = sheet->d_func();
 
 	sheet_d->dimension = d->dimension;
@@ -1094,7 +1094,7 @@ int Worksheet::insertImage(int row, int column, const QImage &image)
 
 	if (!d->drawing)
     {
-        d->drawing = std::make_shared<Drawing>(this, F_NewFromScratch);
+        d->drawing = std::make_shared<Drawing>(this, CreateFlag::F_NewFromScratch);
     }
 
     DrawingOneCellAnchor* anchor = new DrawingOneCellAnchor(d->drawing.get(), DrawingAnchor::Picture);
@@ -1194,7 +1194,7 @@ Chart *Worksheet::insertChart(int row, int column, const QSize &size)
 	Q_D(Worksheet);
 
 	if (!d->drawing)
-        d->drawing = std::make_shared<Drawing>(this, F_NewFromScratch);
+        d->drawing = std::make_shared<Drawing>(this, CreateFlag::F_NewFromScratch);
 
     DrawingOneCellAnchor *anchor = new DrawingOneCellAnchor(d->drawing.get(), DrawingAnchor::Picture);
 
@@ -1206,7 +1206,7 @@ Chart *Worksheet::insertChart(int row, int column, const QSize &size)
 	anchor->from = XlsxMarker(row, column, 0, 0);
 	anchor->ext = size * 9525;
 
-	QSharedPointer<Chart> chart = QSharedPointer<Chart>(new Chart(this, F_NewFromScratch));
+    QSharedPointer<Chart> chart = QSharedPointer<Chart>(new Chart(this, CreateFlag::F_NewFromScratch));
 	anchor->setObjectGraphicFrame(chart);
 
 	return chart.data();
@@ -2949,7 +2949,7 @@ bool Worksheet::loadFromXmlFile(QIODevice *device)
                 const auto parts = splitPath(filePath());
                 QString path = QDir::cleanPath(parts.first() + QLatin1String("/") + name);
 
-                d->drawing = std::make_shared<Drawing>(this, F_LoadFromExists);
+                d->drawing = std::make_shared<Drawing>(this, CreateFlag::F_LoadFromExists);
 				d->drawing->setFilePath(path);
             }
             else if (reader.name() == QLatin1String("extLst"))

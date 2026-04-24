@@ -5,29 +5,10 @@
 #include <QPointF>
 
 #include "ChartView.h"
+#include "ChartType.h"
+#include "Point.h"
 
 namespace Widgets::Chart {
-enum class ChartType
-{
-    None,
-    Task,
-    Pressure,
-    Friction,
-    Response,
-    Resolution,
-    Stroke,
-    Step,
-    Trend,
-    Cyclic
-};
-
-struct Point
-{
-    quint8 seriesNum;
-    qreal X;
-    qreal Y;
-};
-
 class Manager : public QObject
 {
     Q_OBJECT

@@ -19,9 +19,10 @@ void Algorithm::setTValue(quint32 T_value)
     m_TValue = T_value;
 }
 
-QVector<Result> Algorithm::calculateResult(const QVector<QVector<QPointF>>& points) const
+Result Algorithm::calculateResult(const QVector<QVector<QPointF>>& points) const
 {
-    QVector<Result> result;
+    Result result;
+    result.testValue = m_TValue;
     const QVector<QPointF> &line = points.at(0);
     const QVector<QPointF> &task = points.at(1);
 
@@ -40,7 +41,7 @@ QVector<Result> Algorithm::calculateResult(const QVector<QVector<QPointF>>& poin
             if (first) {
                 first = false;
             } else {
-                result.push_back({static_cast<quint16>(qRound(from)),
+                result.steps.push_back({static_cast<quint16>(qRound(from)),
                                   static_cast<quint16>(qRound(prevTask)),
                                   t86Have ? t86Time : 0,
                                   overshoot});
@@ -65,7 +66,7 @@ QVector<Result> Algorithm::calculateResult(const QVector<QVector<QPointF>>& poin
             }
         }
     }
-    result.push_back({static_cast<quint16>(qRound(from)),
+    result.steps.push_back({static_cast<quint16>(qRound(from)),
                       static_cast<quint16>(qRound(prevTask)),
                       t86Have ? t86Time : 0,
                       overshoot});

@@ -196,12 +196,12 @@ AbstractSheet *Workbook::addSheet(const QString &name, int sheetId, AbstractShee
     if (type == AbstractSheet::ST_WorkSheet)
     {
         // create work sheet (value sheet)
-        sheet = new Worksheet(name, sheetId, this, F_LoadFromExists);
+        sheet = new Worksheet(name, sheetId, this, CreateFlag::F_LoadFromExists);
     }
     else if (type == AbstractSheet::ST_ChartSheet)
     {
         // create chart sheet
-        sheet = new Chartsheet(name, sheetId, this, F_LoadFromExists);
+        sheet = new Chartsheet(name, sheetId, this, CreateFlag::F_LoadFromExists);
     }
     else
     {
@@ -249,11 +249,11 @@ AbstractSheet *Workbook::insertSheet(int index, const QString &name, AbstractShe
     AbstractSheet *sheet = NULL;
     if ( type == AbstractSheet::ST_WorkSheet )
     {
-        sheet = new Worksheet(sheetName, d->last_sheet_id, this, F_NewFromScratch);
+        sheet = new Worksheet(sheetName, d->last_sheet_id, this, CreateFlag::F_NewFromScratch);
     }
     else if ( type == AbstractSheet::ST_ChartSheet )
     {
-        sheet = new Chartsheet(sheetName, d->last_sheet_id, this, F_NewFromScratch);
+        sheet = new Chartsheet(sheetName, d->last_sheet_id, this, CreateFlag::F_NewFromScratch);
     }
     else
     {
@@ -656,7 +656,7 @@ bool Workbook::loadFromXmlFile(QIODevice *device)
                  const QString rId = attributes.value(QLatin1String("r:id")).toString();
                  XlsxRelationship relationship = d->relationships->getRelationshipById(rId);
 
-                 QSharedPointer<SimpleOOXmlFile> link(new SimpleOOXmlFile(F_LoadFromExists));
+                 QSharedPointer<SimpleOOXmlFile> link(new SimpleOOXmlFile(CreateFlag::F_LoadFromExists));
 
                  const auto parts = splitPath(filePath());
                  QString fullPath = QDir::cleanPath(parts.first() + QLatin1String("/") + relationship.target);

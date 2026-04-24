@@ -1,6 +1,3 @@
-#ifndef REGEXPATTERNS_H
-#define REGEXPATTERNS_H
-
 #pragma once
 
 #include <QRegularExpression>
@@ -60,6 +57,3 @@ inline const QRegularExpression& floatSequence() {
     return re;
 }
 }
-
-
-#endif // REGEXPATTERNS_H

@@ -1,6 +1,3 @@
-#ifndef VALIDATORFACTORY_H
-#define VALIDATORFACTORY_H
-
 #pragma once
 
 #include <QValidator>
@@ -28,5 +25,3 @@ public:
 private:
     ValidatorFactory() = delete;
 };
-
-#endif // VALIDATORFACTORY_H

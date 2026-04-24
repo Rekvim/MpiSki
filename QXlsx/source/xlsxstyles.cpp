@@ -54,7 +54,7 @@ Styles::Styles(CreateFlag flag)
 #endif
     }
 
-    if (flag == F_NewFromScratch) {
+    if (flag == CreateFlag::F_NewFromScratch) {
         //Add default Format
         Format defaultFmt;
         addXfFormat(defaultFmt);

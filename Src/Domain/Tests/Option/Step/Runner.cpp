@@ -1,5 +1,8 @@
 #include "Runner.h"
+#include "Algorithm.h"
+
 #include "Domain/Program.h"
+#include "Utils/SignalUtils.h"
 
 namespace Domain::Tests::Option::Step {
 static QVector<quint16> buildSequence(const Params& p,

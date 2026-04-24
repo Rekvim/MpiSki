@@ -126,8 +126,6 @@ set(REPORT_HEADERS
 )
 
 set(GUI_CPP
-    Widgets/Chart/ImageService.cpp
-    Widgets/Chart/Manager.cpp
     Gui/MainWindow/CrossingIndicatorsPresenter.cpp
     Gui/MainWindow/TelemetryUiMapper.cpp
     Gui/MainWindow/TestController.cpp
@@ -143,12 +141,12 @@ set(GUI_CPP
     Gui/TestSettings/MainTestSettings.cpp
     Widgets/Chart/ChartView.cpp
     Widgets/Chart/Series.cpp
+    Widgets/Chart/ImageService.cpp
+    Widgets/Chart/Manager.cpp
     Widgets/Slider/SliderView.cpp
 )
 
 set(GUI_HEADERS
-    Widgets/Chart/ImageService.h
-    Widgets/Chart/Manager.h
     Gui/MainWindow/CrossingIndicatorsPresenter.h
     Gui/MainWindow/TelemetryUiMapper.h
     Gui/MainWindow/TestController.h
@@ -166,6 +164,10 @@ set(GUI_HEADERS
     Gui/MainWindow/MainWindow.h
     Widgets/Chart/ChartView.h
     Widgets/Chart/Series.h
+    Widgets/Chart/ChartType.h
+    Widgets/Chart/Point.h
+    Widgets/Chart/ImageService.h
+    Widgets/Chart/Manager.h
     Widgets/Slider/SliderView.h
 )
 
@@ -183,6 +185,7 @@ set(GUI_UI
 add_library(Domain STATIC
     ${DOMAIN_CPP}
     ${DOMAIN_HEADERS}
+    Report/Blocks/CyclicRegulatoryRanges.h
 )
 
 target_include_directories(Domain

@@ -1,4 +1,6 @@
 #include "Runner.h"
+#include "Algorithm.h"
+
 #include "Domain/Program.h"
 #include "Utils/SignalUtils.h"
 

@@ -6,6 +6,7 @@
 #include "Report/Blocks/CyclicRanges.h"
 #include "Report/Blocks/StepReaction.h"
 #include "Report/Blocks/TechnicalResults.h"
+#include "Report/Blocks/CyclicRegulatoryRanges.h"
 
 namespace Report::Patterns {
     void C_SACVT::buildReport(
@@ -43,98 +44,9 @@ namespace Report::Patterns {
                                2
                            }, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
 
-        // Лист: Отчет ЦТ; Страница: 1 Блок: Циклические испытания позиционера
-        const auto& ranges = telemetryStore.cyclicTestRecord.regulatoryResult.ranges;
-
-        struct Agg {
-            qreal rangePercent;
-
-            qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
-            int   maxFwdCycle = -1;
-
-            qreal minRevVal = std::numeric_limits<qreal>::max();
-            int   minRevCycle = -1;
-        };
-
-        QMap<qreal, Agg> aggMap;
-
-        // --- агрегация ---
-        for (const auto& r : ranges)
-        {
-            auto it = aggMap.find(r.rangePercent);
-
-            if (it == aggMap.end())
-            {
-                Agg a;
-                a.rangePercent = r.rangePercent;
-
-                if (r.maxForwardCycle >= 0) {
-                    a.maxFwdVal = r.maxForwardPosition;
-                    a.maxFwdCycle = r.maxForwardCycle;
-                }
-
-                if (r.minBackwardCycle >= 0) {
-                    a.minRevVal = r.minBackwardPosition;
-                    a.minRevCycle = r.minBackwardCycle;
-                }
-
-                aggMap.insert(r.rangePercent, a);
-            }
-            else
-            {
-                Agg& a = it.value();
-
-                // максимум прямого
-                if (r.maxForwardCycle >= 0 &&
-                    r.maxForwardPosition > a.maxFwdVal)
-                {
-                    a.maxFwdVal = r.maxForwardPosition;
-                    a.maxFwdCycle = r.maxForwardCycle;
-                }
-
-                // минимум обратного
-                if (r.minBackwardCycle >= 0 &&
-                    r.minBackwardPosition < a.minRevVal)
-                {
-                    a.minRevVal = r.minBackwardPosition;
-                    a.minRevCycle = r.minBackwardCycle;
-                }
-            }
-        }
-
-        constexpr quint16 rowStart = 35, rowStep = 2;
-
-        int i = 0;
-        for (auto it = aggMap.begin(); it != aggMap.end(); ++it, ++i)
-        {
-            quint16 row = rowStart + i * rowStep;
-            const Agg& a = it.value();
-
-            writer.cell(m_sheetCyclicTests, row, 2,
-                        QString::number(a.rangePercent));
-
-            // forward
-            if (a.maxFwdVal != std::numeric_limits<qreal>::lowest()) {
-                writer.cell(m_sheetCyclicTests, row, 8,
-                            QString::number(a.maxFwdVal, 'f', 2));
-                writer.cell(m_sheetCyclicTests, row, 11,
-                            QString::number(a.maxFwdCycle + 1));
-            } else {
-                writer.cell(m_sheetCyclicTests, row, 8, "");
-                writer.cell(m_sheetCyclicTests, row, 11, "");
-            }
-
-            // reverse
-            if (a.minRevVal != std::numeric_limits<qreal>::max()) {
-                writer.cell(m_sheetCyclicTests, row, 12,
-                            QString::number(a.minRevVal, 'f', 2));
-                writer.cell(m_sheetCyclicTests, row, 15,
-                            QString::number(a.minRevCycle + 1));
-            } else {
-                writer.cell(m_sheetCyclicTests, row, 12, "");
-                writer.cell(m_sheetCyclicTests, row, 15, "");
-            }
-        }
+        Report::Blocks::CyclicRegulatoryRanges({m_sheetCyclicTests,
+                                                   35, 2, 2, 8, 11, 12, 15
+                                               }).build(writer, ctx);
 
         // CyclicRangesBlock({m_sheetCyclicTests,
         //                              35,
