@@ -14,7 +14,7 @@ namespace Domain::Tests::Option::Step {
             : BaseRunner(device, normalOpen, parent), m_params(params) {}
 
     signals:
-        void getPoints(QVector<QVector<QPointF>>& points);
+        void points(QVector<QVector<QPointF>>& points);
         void results(const Domain::Tests::Option::Step::Result& result);
 
     protected:

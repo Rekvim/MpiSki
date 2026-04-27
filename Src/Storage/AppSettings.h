@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QSettings>
-#include <QCoreApplication>
 
 class AppSettings
 {

@@ -11,7 +11,7 @@ class Device;
 }
 
 #include "Widgets/Chart/ChartType.h"
-#include "Test.h"
+#include "AbstractTestAlgorithm.h"
 
 struct RunnerConfig {
     std::unique_ptr<Test> worker = nullptr;

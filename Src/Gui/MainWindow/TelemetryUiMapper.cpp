@@ -1,6 +1,9 @@
 #include "TelemetryUiMapper.h"
 #include "ui_MainWindow.h"
 
+#include <QTableWidgetItem>
+#include <QTime>
+
 void TelemetryUiMapper::updateInit(const InitState& init)
 {
     m_ui->label_deviceStatusValue->setText(init.deviceStatusText);
@@ -24,94 +27,6 @@ void TelemetryUiMapper::updateInit(const InitState& init)
         "color:" + init.finalPositionColor.name(QColor::HexRgb));
 }
 
-void TelemetryUiMapper::updateMainTest(const Telemetry& t)
-{
-    if (!t.testMain) return;
-
-    m_ui->label_pressureDifferenceValue->setText(
-        QString("%1")
-            .arg(t.testMain->pressureDiff, 0, 'f', 3)
-        );
-    m_ui->label_frictionForceValue->setText(
-        QString("%1")
-            .arg(t.testMain->frictionForce, 0, 'f', 3)
-        );
-    m_ui->label_frictionPercentValue->setText(
-        QString("%1")
-            .arg(t.testMain->frictionPercent, 0, 'f', 2)
-        );
-    m_ui->lineEdit_resultsTable_frictionForceValue->setText(
-        QString("%1")
-            .arg(t.testMain->frictionForce, 0, 'f', 3)
-        );
-    m_ui->lineEdit_resultsTable_frictionPercentValue->setText(
-        QString("%1")
-            .arg(t.testMain->frictionPercent, 0, 'f', 2)
-        );
-
-    m_ui->label_dynamicErrorMeanPercent->setText(
-        QString("%1 %")
-            .arg(t.testMain->dynamicErrorMeanPercent, 0, 'f', 2)
-        );
-    m_ui->label_dynamicErrorMean->setText(
-        QString("%1 мА")
-            .arg(t.testMain->dynamicErrorMean, 0, 'f', 3)
-        );
-    m_ui->label_dynamicErrorMaxPercent->setText(
-        QString("%1 %")
-            .arg(t.testMain->dynamicErrorMaxPercent, 0, 'f', 2)
-        );
-
-    m_ui->label_dynamicErrorMax->setText(
-        QString("%1 мА")
-            .arg(t.testMain->dynamicErrorMax, 0, 'f', 3)
-        );
-    m_ui->lineEdit_resultsTable_dynamicErrorReal->setText(
-        QString("%1")
-            .arg(t.testMain->dynamicErrorReal, 0, 'f', 2)
-        );
-
-    m_ui->label_dynamicErrorMax->setText(
-        QString("%1 бар")
-            .arg(t.testMain->lowLimitPressure, 0, 'f', 2)
-        );
-    m_ui->label_dynamicErrorMax->setText(
-        QString("%1 бар")
-            .arg(t.testMain->highLimitPressure, 0, 'f', 2)
-        );
-
-    m_ui->lineEdit_resultsTable_strokeReal->setText(
-        QString("%1").arg(t.valveStrokeRecord.real, 0, 'f', 2));
-
-    m_ui->label_lowLimitValue->setText(
-        QString("%1")
-            .arg(t.testMain->lowLimitPressure)
-        );
-    m_ui->label_highLimitValue->setText(
-        QString("%1")
-            .arg(t.testMain->highLimitPressure)
-        );
-
-    m_ui->lineEdit_resultsTable_rangePressure->setText(
-        QString("%1–%2")
-            .arg(t.testMain->lowLimitPressure, 0, 'f', 2)
-            .arg(t.testMain->highLimitPressure, 0, 'f', 2)
-        );
-
-    m_ui->lineEdit_resultsTable_driveRangeReal->setText(
-        QString("%1–%2")
-            .arg(t.testMain->springLow, 0, 'f', 2)
-            .arg(t.testMain->springHigh, 0, 'f', 2)
-        );
-
-    m_ui->label_valveStroke_range->setText(
-        QString("%1")
-            .arg(t.valveStrokeRecord.range)
-        );
-
-
-}
-
 void TelemetryUiMapper::updateStrokeTest(const Domain::Tests::Stroke::Result& r)
 {
     m_ui->lineEdit_strokeTest_forwardTime->setText(r.timeForwardMs);
@@ -121,22 +36,160 @@ void TelemetryUiMapper::updateStrokeTest(const Domain::Tests::Stroke::Result& r)
     m_ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(r.timeBackwardMs);
 }
 
-void TelemetryUiMapper::updateCrossing(const Telemetry& t)
+void TelemetryUiMapper::updateMainTest(
+    const Domain::Tests::Main::Result& mainResult,
+    const ValveStrokeRecord& strokeResult)
+{
+    m_ui->label_pressureDifferenceValue->setText(
+        QString("%1")
+            .arg(mainResult.pressureDiff, 0, 'f', 3)
+        );
+    m_ui->label_frictionForceValue->setText(
+        QString("%1")
+            .arg(mainResult.frictionForce, 0, 'f', 3)
+        );
+    m_ui->label_frictionPercentValue->setText(
+        QString("%1")
+            .arg(mainResult.frictionPercent, 0, 'f', 2)
+        );
+    m_ui->lineEdit_resultsTable_frictionForceValue->setText(
+        QString("%1")
+            .arg(mainResult.frictionForce, 0, 'f', 3)
+        );
+    m_ui->lineEdit_resultsTable_frictionPercentValue->setText(
+        QString("%1")
+            .arg(mainResult.frictionPercent, 0, 'f', 2)
+        );
+
+    m_ui->label_dynamicErrorMeanPercent->setText(
+        QString("%1 %")
+            .arg(mainResult.dynamicErrorMeanPercent, 0, 'f', 2)
+        );
+    m_ui->label_dynamicErrorMean->setText(
+        QString("%1 мА")
+            .arg(mainResult.dynamicErrorMean, 0, 'f', 3)
+        );
+    m_ui->label_dynamicErrorMaxPercent->setText(
+        QString("%1 %")
+            .arg(mainResult.dynamicErrorMaxPercent, 0, 'f', 2)
+        );
+
+    m_ui->label_dynamicErrorMax->setText(
+        QString("%1 мА")
+            .arg(mainResult.dynamicErrorMax, 0, 'f', 3)
+        );
+    m_ui->lineEdit_resultsTable_dynamicErrorReal->setText(
+        QString("%1")
+            .arg(mainResult.dynamicErrorReal, 0, 'f', 2)
+        );
+
+    m_ui->lineEdit_resultsTable_strokeReal->setText(
+        QString("%1").arg(strokeResult.real, 0, 'f', 2));
+
+    m_ui->label_lowLimitValue->setText(
+        QString("%1")
+            .arg(mainResult.lowLimitPressure)
+        );
+    m_ui->label_highLimitValue->setText(
+        QString("%1")
+            .arg(mainResult.highLimitPressure)
+        );
+
+    m_ui->lineEdit_resultsTable_rangePressure->setText(
+        QString("%1–%2")
+            .arg(mainResult.lowLimitPressure, 0, 'f', 2)
+            .arg(mainResult.highLimitPressure, 0, 'f', 2)
+        );
+
+    m_ui->lineEdit_resultsTable_driveRangeReal->setText(
+        QString("%1–%2")
+            .arg(mainResult.springLow, 0, 'f', 2)
+            .arg(mainResult.springHigh, 0, 'f', 2)
+        );
+
+    m_ui->label_valveStroke_range->setText(
+        QString("%1")
+            .arg(strokeResult.range)
+        );
+}
+
+void TelemetryUiMapper::updateCrossingValues(
+    const Domain::Tests::Main::Result& mainResult,
+    const ValveStrokeRecord& strokeResult)
 {
     m_ui->lineEdit_crossingLimits_dynamicError_value->setText(
-        QString::number(t.testMain->dynamicErrorReal, 'f', 2));
+        QString::number(mainResult.dynamicErrorReal, 'f', 2));
 
     m_ui->lineEdit_crossingLimits_linearCharacteristic_value->setText(
-        QString::number(t.testMain->linearityError, 'f', 2));
+        QString::number(mainResult.linearityError, 'f', 2));
 
     m_ui->lineEdit_crossingLimits_range_value->setText(
-        QString::number(t.valveStrokeRecord.real, 'f', 2));
+        QString::number(strokeResult.real, 'f', 2));
 
     m_ui->lineEdit_crossingLimits_spring_value->setText(
         QString("%1–%2")
-            .arg(t.testMain->springLow, 0, 'f', 2)
-            .arg(t.testMain->springHigh, 0, 'f', 2));
+            .arg(mainResult.springLow, 0, 'f', 2)
+            .arg(mainResult.springHigh, 0, 'f', 2));
 
     m_ui->lineEdit_crossingLimits_coefficientFriction_value->setText(
-        QString::number(t.testMain->frictionPercent, 'f', 2));
+        QString::number(mainResult.frictionPercent, 'f', 2));
+}
+
+void TelemetryUiMapper::updateStepTest(
+    const Domain::Tests::Option::Step::Result& result)
+{
+    const auto& steps = result.steps;
+
+    m_ui->tableWidget_stepResults->clearContents();
+
+    m_ui->tableWidget_stepResults->setColumnCount(2);
+    m_ui->tableWidget_stepResults->setHorizontalHeaderLabels({
+        QObject::tr("T%1").arg(result.testValue),
+        QObject::tr("Перерегулирование")
+    });
+
+    m_ui->tableWidget_stepResults->setRowCount(steps.size());
+
+    QStringList rowNames;
+    rowNames.reserve(steps.size());
+
+    for (int i = 0; i < steps.size(); ++i)
+    {
+        const auto& step = steps.at(i);
+
+        const QString time = step.T_value == 0
+                                 ? QObject::tr("Ошибка")
+                                 : QTime(0, 0)
+                                       .addMSecs(step.T_value)
+                                       .toString("m:ss.zzz");
+
+        const QString overshoot =
+            QString("%1%").arg(step.overshoot, 4, 'f', 2);
+
+        const QString rowName =
+            QString("%1-%2").arg(step.from).arg(step.to);
+
+        m_ui->tableWidget_stepResults->setItem(
+            i, 0, new QTableWidgetItem(time));
+
+        m_ui->tableWidget_stepResults->setItem(
+            i, 1, new QTableWidgetItem(overshoot));
+
+        rowNames << rowName;
+    }
+
+    m_ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
+    m_ui->tableWidget_stepResults->resizeColumnsToContents();
+}
+
+void TelemetryUiMapper::updateCyclicRegulatoryTest(
+    const Domain::Tests::Cyclic::Regulatory::Result& result)
+{
+    Q_UNUSED(result);
+}
+
+void TelemetryUiMapper::updateCyclicShutoffTest(
+    const Domain::Tests::Cyclic::Shutoff::Result& result)
+{
+    Q_UNUSED(result);
 }

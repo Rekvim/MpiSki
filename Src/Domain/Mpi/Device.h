@@ -5,8 +5,6 @@
 #include <QVector>
 #include <QSerialPort>
 
-#include <array>
-
 namespace Domain::Measurement {
 class Sensor;
 }

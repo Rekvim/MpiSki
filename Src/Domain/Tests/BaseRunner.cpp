@@ -2,6 +2,7 @@
 
 #include <QMetaObject>
 #include <QThread>
+#include <QDebug>
 #include "Domain/Mpi/Device.h"
 
 BaseRunner::~BaseRunner()
@@ -30,6 +31,7 @@ void BaseRunner::start()
 
     RunnerConfig cfg = buildConfig();
     if (!cfg.worker) {
+        qWarning() << "[BaseRunner] Cannot start: worker was not created";
         emit endTest();
         return;
     }
@@ -40,7 +42,7 @@ void BaseRunner::start()
     if (cfg.chartToClear != Widgets::Chart::ChartType::None)
         emit requestClearChart(cfg.chartToClear);
 
-    QThread* thread = new QThread(this);
+    QThread* thread = new QThread();
     Test* worker = cfg.worker.release();
 
     m_thread = thread;
@@ -85,12 +87,28 @@ void BaseRunner::start()
 
 void BaseRunner::stop()
 {
-    if (!m_worker) return;
-    QMetaObject::invokeMethod(m_worker, "StoppingTheTest", Qt::QueuedConnection);
+    if (!m_worker)
+        return;
+
+    QMetaObject::invokeMethod(
+        m_worker,
+        [worker = m_worker] {
+            worker->requestStop();
+        },
+        Qt::QueuedConnection
+        );
 }
 
 void BaseRunner::releaseBlock()
 {
-    if (!m_worker) return;
-    QMetaObject::invokeMethod(m_worker, "ReleaseBlock", Qt::QueuedConnection);
+    if (!m_worker)
+        return;
+
+    QMetaObject::invokeMethod(
+        m_worker,
+        [worker = m_worker] {
+            worker->releaseWait();
+        },
+        Qt::QueuedConnection
+        );
 }

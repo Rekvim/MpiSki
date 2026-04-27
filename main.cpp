@@ -12,8 +12,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    qRegisterMetaType<Telemetry>("Telemetry");
-    
     QTranslator qtTranslator;
 
     if (qtTranslator.load("qt_ru.qm", ":/translations"))

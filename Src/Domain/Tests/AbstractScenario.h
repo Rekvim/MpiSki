@@ -13,17 +13,17 @@
 
 namespace Domain::Tests {
 
-class TestScenario : public QObject
+class AbstractScenario : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit TestScenario(QObject* parent = nullptr)
+    explicit AbstractScenario(QObject* parent = nullptr)
         : QObject(parent)
     {
     }
 
-    ~TestScenario() override = default;
+    ~AbstractScenario() override = default;
 
     virtual std::unique_ptr<BaseRunner> createRunner(QObject* parent) = 0;
 
@@ -34,9 +34,13 @@ public:
 signals:
     void telemetryUpdated(const Telemetry& telemetry);
 
-    void pointsRequested(
-        QVector<QVector<QPointF>>& points,
-        Widgets::Chart::ChartType chartType);
+    void pointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
+    void mainResultUpdated(const Domain::Tests::Main::Result& result);
+    void strokeResultUpdated(const Domain::Tests::Stroke::Result& result);
+    void stepResultUpdated(const Domain::Tests::Option::Step::Result& result);
+    void cyclicRegulatoryResultUpdated(const Domain::Tests::Cyclic::Regulatory::Result& result);
+    void cyclicShutoffResultUpdated(const Domain::Tests::Cyclic::Shutoff::Result& result);
+    void crossingStatusUpdated(const CrossingStatus& status);
 
     void addRegressionRequested(const QVector<QPointF>& points);
     void addFrictionRequested(const QVector<QPointF>& points);

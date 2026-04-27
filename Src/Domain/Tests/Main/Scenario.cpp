@@ -87,10 +87,10 @@ static void debugCompareMainTest(
 
 }
 
-Scenario::Scenario(Tests::TestContext context,
+Scenario::Scenario(Tests::Context context,
                    const Params& params,
                    QObject* parent)
-    : Tests::TestScenario(parent)
+    : Tests::AbstractScenario(parent)
     , m_context(context)
     , m_params(params)
 {
@@ -142,11 +142,9 @@ std::unique_ptr<BaseRunner> Scenario::createRunner(QObject* parent)
     connect(runner.get(), &Runner::points,
             this, [this](QVector<QVector<QPointF>>& points) {
                 emit pointsRequested(
-                    points,
-                    Widgets::Chart::ChartType::Task
+                    points, Widgets::Chart::ChartType::Task
                     );
-            },
-            Qt::BlockingQueuedConnection);
+            }, Qt::DirectConnection);
 
     return runner;
 }
@@ -155,8 +153,8 @@ void Scenario::onResults(const Algorithm::TestResults& results)
 {
     auto& main = m_context.telemetry.testMain.emplace();
 
-    const qreal k =
-        5 * M_PI * m_context.config.driveDiameter * m_context.config.driveDiameter / 4;
+    const qreal k = 5 * M_PI * m_context.config.driveDiameter
+                    * m_context.config.driveDiameter / 4;
 
     main.pressureDiff = results.pressureDiff;
 
@@ -190,6 +188,8 @@ void Scenario::onResults(const Algorithm::TestResults& results)
 
     updateCrossingStatus();
 
+    emit mainResultUpdated(main);
+    emit crossingStatusUpdated(m_context.telemetry.crossingStatus);
     emit telemetryUpdated(m_context.telemetry);
 }
 

@@ -1,4 +1,4 @@
-#include "TestScenarioFactory.h"
+#include "ScenarioFactory.h"
 
 #include "Domain/Tests/Stroke/Scenario.h"
 #include "Domain/Tests/Main/Scenario.h"
@@ -9,16 +9,16 @@
 #include "Domain/Tests/Cyclic/Shutoff/Scenario.h"
 
 namespace Domain::Tests {
-    std::unique_ptr<TestScenario>
-    TestScenarioFactory::createStroke(TestContext context, QObject* parent) {
+    std::unique_ptr<AbstractScenario>
+    ScenarioFactory::createStroke(Context context, QObject* parent) {
         return std::make_unique<Stroke::Scenario>(
             context,
             parent
         );
     }
 
-    std::unique_ptr<TestScenario>
-    TestScenarioFactory::createMain(TestContext context, const Main::Params& params, QObject* parent) {
+    std::unique_ptr<AbstractScenario>
+    ScenarioFactory::createMain(Context context, const Main::Params& params, QObject* parent) {
         return std::make_unique<Main::Scenario>(
             context,
             params,
@@ -26,8 +26,8 @@ namespace Domain::Tests {
         );
     }
 
-    std::unique_ptr<TestScenario>
-    TestScenarioFactory::createStep(TestContext context, const Option::Step::Params& params, QObject* parent) {
+    std::unique_ptr<AbstractScenario>
+    ScenarioFactory::createStep(Context context, const Option::Step::Params& params, QObject* parent) {
         return std::make_unique<Option::Step::Scenario>(
             context,
             params,
@@ -35,8 +35,8 @@ namespace Domain::Tests {
         );
     }
 
-    std::unique_ptr<TestScenario>
-    TestScenarioFactory::createResponse(TestContext context, const Option::Params& params, QObject* parent)
+    std::unique_ptr<AbstractScenario>
+    ScenarioFactory::createResponse(Context context, const Option::Params& params, QObject* parent)
     {
         return std::make_unique<Option::Response::Scenario>(
             context,
@@ -45,8 +45,8 @@ namespace Domain::Tests {
         );
     }
 
-    std::unique_ptr<TestScenario>
-    TestScenarioFactory::createResolution(TestContext context, const Option::Params& params, QObject* parent) {
+    std::unique_ptr<AbstractScenario>
+    ScenarioFactory::createResolution(Context context, const Option::Params& params, QObject* parent) {
         return std::make_unique<Option::Resolution::Scenario>(
             context,
             params,
@@ -54,8 +54,8 @@ namespace Domain::Tests {
         );
     }
 
-    std::unique_ptr<TestScenario>
-    TestScenarioFactory::createCyclicRegulatory(TestContext context, const Cyclic::Regulatory::Params& params, QObject* parent) {
+    std::unique_ptr<AbstractScenario>
+    ScenarioFactory::createCyclicRegulatory(Context context, const Cyclic::Regulatory::Params& params, QObject* parent) {
         return std::make_unique<Cyclic::Regulatory::Scenario>(
             context,
             params,
@@ -63,8 +63,8 @@ namespace Domain::Tests {
         );
     }
 
-    std::unique_ptr<TestScenario>
-    TestScenarioFactory::createCyclicShutoff(TestContext context, const Cyclic::Shutoff::Params& params, QObject* parent) {
+    std::unique_ptr<AbstractScenario>
+    ScenarioFactory::createCyclicShutoff(Context context, const Cyclic::Shutoff::Params& params, QObject* parent) {
         return std::make_unique<Cyclic::Shutoff::Scenario>(
             context,
             params,

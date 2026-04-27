@@ -3,7 +3,7 @@
 #include <QDialog>
 #include <QTime>
 
-#include "AbstractTestSettings.h"
+#include "BaseSequenceSettingsDialog.h"
 #include "Gui/Setup/SelectTests.h"
 #include "Domain/Tests/Cyclic/Params.h"
 
@@ -11,7 +11,7 @@ namespace Ui {
 class CyclicTestSettings;
 }
 
-class CyclicTestSettings : public AbstractTestSettings
+class CyclicTestSettings : public BaseSequenceSettingsDialog
 {
     Q_OBJECT
 

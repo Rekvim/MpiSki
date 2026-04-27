@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Domain/Tests/TestScenario.h"
-#include "Domain/TestContext.h"
+#include "Domain/Tests/AbstractScenario.h"
+#include "Domain/Tests/Context.h"
 #include "Params.h"
 #include "Result.h"
 
@@ -10,12 +10,12 @@ namespace Domain::Tests::Option::Step {
 class Runner;
 class Analyzer;
 
-class Scenario : public Tests::TestScenario
+class Scenario : public Tests::AbstractScenario
 {
     Q_OBJECT
 
 public:
-    Scenario(Tests::TestContext context,
+    Scenario(Tests::Context context,
              const Params& params,
              QObject* parent = nullptr);
 
@@ -25,14 +25,11 @@ public:
     void startAnalyzer() override;
     void onSample(const Measurement::Sample& sample) override;
 
-signals:
-    void setStepResults(const Domain::Tests::Option::Step::Result& result);
-
 private slots:
     void onResults(const Domain::Tests::Option::Step::Result& result);
 
 private:
-    Tests::TestContext m_context;
+    Tests::Context m_context;
     Params m_params;
     std::unique_ptr<Analyzer> m_analyzer;
 };

@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Domain/Tests/Test.h"
+#include "Domain/Tests/AbstractTestAlgorithm.h"
 #include "Result.h"
 
 namespace Domain::Tests::Cyclic::Shutoff {
-    class Algorithm : public Test
+    class Algorithm : public AbstractTestAlgorithm
     {
         Q_OBJECT
     public:
-        explicit Algorithm(QObject* parent = nullptr) : Test(parent) {}
+        explicit Algorithm(QObject* parent = nullptr)
+            : AbstractTestAlgorithm(parent) {}
 
         struct Task {
             int delayMsecs = 0;

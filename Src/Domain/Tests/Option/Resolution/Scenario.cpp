@@ -3,8 +3,8 @@
 #include "Runner.h"
 
 namespace Domain::Tests::Option::Resolution {
-    Scenario::Scenario(Tests::TestContext context, const Option::Params& params, QObject* parent)
-        : Tests::TestScenario(parent), m_context(context), m_params(params) { }
+    Scenario::Scenario(Tests::Context context, const Option::Params& params, QObject* parent)
+        : Tests::AbstractScenario(parent), m_context(context), m_params(params) { }
 
     Scenario::~Scenario() = default;
 

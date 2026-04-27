@@ -4,7 +4,7 @@
 #include <QDebug>
 
 #include "Gui/Setup/ValveWindow/ValveWindow.h"
-#include "Gui/TestSettings/AbstractTestSettings.h"
+#include "Gui/TestSettings/BaseSequenceSettingsDialog.h"
 #include "Utils/Shortcuts/TabBinder.h"
 #include "Utils/NumberUtils.h"
 #include "Report/BuilderFactory.h"
@@ -129,24 +129,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_testController = new TestController(this);
     m_testController->setProgram(m_program);
 
-    connect(m_testController, &TestController::startMainRequested,
-            m_program, &Domain::Program::startMainTest);
-
-    connect(m_testController, &TestController::startStrokeRequested,
-            m_program, &Domain::Program::startStrokeTest);
-
-    connect(m_testController, &TestController::startResponseRequested,
-            m_program, &Domain::Program::startResponseTest);
-
-    connect(m_testController, &TestController::startResolutionRequested,
-            m_program, &Domain::Program::startResolutionTest);
-
-    connect(m_testController, &TestController::startStepRequested,
-            m_program, &Domain::Program::startStepTest);
-
-    connect(m_testController, &TestController::startCyclicRequested,
-            m_program, &Domain::Program::startCyclicTest);
-
     // kоговое окно
     // logOutput = new QPlainTextEdit(this);
     // logOutput->setReadOnly(true);
@@ -260,8 +242,29 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Domain::Program::setTaskControlsEnabled,
             this, &MainWindow::setTaskControlsEnabled);
 
-    connect(m_program, &Domain::Program::setStepResults,
-            this, &MainWindow::setStepTestResults);
+    connect(m_program, &Domain::Program::mainResultUpdated,
+            this, &MainWindow::onMainResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(m_program, &Domain::Program::strokeResultUpdated,
+            this, &MainWindow::onStrokeResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(m_program, &Domain::Program::stepResultUpdated,
+            this, &MainWindow::onStepResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(m_program, &Domain::Program::cyclicRegulatoryResultUpdated,
+            this, &MainWindow::onCyclicRegulatoryResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(m_program, &Domain::Program::cyclicShutoffResultUpdated,
+            this, &MainWindow::onCyclicShutoffResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(m_program, &Domain::Program::crossingStatusUpdated,
+            this, &MainWindow::onCrossingStatusUpdated,
+            Qt::QueuedConnection);
 
     connect(m_program, &Domain::Program::question,
             this, &MainWindow::askQuestion,
@@ -621,15 +624,70 @@ void MainWindow::applyCrossingLimitsFromRecommend(const ValveInfo& valveInfo)
     }
 }
 
-void MainWindow::onTelemetryUpdated(const Telemetry &t) {
+void MainWindow::onMainResultUpdated(const Domain::Tests::Main::Result& result)
+{
+    m_telemetry.testMain = result;
+
+    m_mapper->updateMainTest(result, m_telemetry.valveStrokeRecord);
+    m_mapper->updateCrossingValues(result, m_telemetry.valveStrokeRecord);
+}
+
+void MainWindow::onStrokeResultUpdated(const Domain::Tests::Stroke::Result& result)
+{
+    m_telemetry.testStroke = result;
+    m_mapper->updateStrokeTest(result);
+}
+
+void MainWindow::onStepResultUpdated(const Domain::Tests::Option::Step::Result& result)
+{
+    m_telemetry.testStep = result;
+    m_mapper->updateStepTest(result);
+}
+
+void MainWindow::onCyclicRegulatoryResultUpdated(
+    const Domain::Tests::Cyclic::Regulatory::Result& result)
+{
+    m_telemetry.testСyclicRegulatory = result;
+    m_mapper->updateCyclicRegulatoryTest(result);
+}
+
+void MainWindow::onCyclicShutoffResultUpdated(
+    const Domain::Tests::Cyclic::Shutoff::Result& result)
+{
+    m_telemetry.testСyclicShutoff = result;
+    m_mapper->updateCyclicShutoffTest(result);
+}
+
+void MainWindow::onCrossingStatusUpdated(const CrossingStatus& status)
+{
+    m_telemetry.crossingStatus = status;
+    m_crossingIndicators->update(status);
+}
+
+void MainWindow::onTelemetryUpdated(const Telemetry& t)
+{
     m_telemetry = t;
+
     m_mapper->updateInit(t.init);
-    m_mapper->updateMainTest(t);
-    m_mapper->updateCrossing(t);
-    m_crossingIndicators->update(m_telemetry.crossingStatus);
+
+    if (t.testMain) {
+        m_mapper->updateMainTest(*t.testMain, t.valveStrokeRecord);
+        m_mapper->updateCrossingValues(*t.testMain, t.valveStrokeRecord);
+    }
 
     if (t.testStroke)
         m_mapper->updateStrokeTest(*t.testStroke);
+
+    if (t.testStep)
+        m_mapper->updateStepTest(*t.testStep);
+
+    if (t.testСyclicRegulatory)
+        m_mapper->updateCyclicRegulatoryTest(*t.testСyclicRegulatory);
+
+    if (t.testСyclicShutoff)
+        m_mapper->updateCyclicShutoffTest(*t.testСyclicShutoff);
+
+    m_crossingIndicators->update(t.crossingStatus);
 }
 
 void MainWindow::appendLog(const QString& text) {
@@ -770,7 +828,7 @@ void MainWindow::setRegistry(Registry* registry)
     }
 
     const auto& testSettings = m_testSettings;
-    for (AbstractTestSettings* s : testSettings)
+    for (BaseSequenceSettingsDialog* s : testSettings)
         s->applyValveInfo(valveInfo);
 
     if (!m_chartsInitialized) {
@@ -797,52 +855,6 @@ void MainWindow::setTask(qreal task)
     if (ui->verticalSlider_task->value() != i_task) {
         ui->verticalSlider_task->setSliderPosition(i_task);
     }
-}
-
-void MainWindow::setStepTestResults(const Domain::Tests::Option::Step::Result& result)
-{
-    const auto& steps = result.steps;
-
-    ui->tableWidget_stepResults->clearContents();
-
-    ui->tableWidget_stepResults->setColumnCount(2);
-    ui->tableWidget_stepResults->setHorizontalHeaderLabels({
-        tr("T%1").arg(result.testValue),
-        tr("Перерегулирование")
-    });
-
-    ui->tableWidget_stepResults->setRowCount(steps.size());
-
-    QStringList rowNames;
-    rowNames.reserve(steps.size());
-
-    for (int i = 0; i < steps.size(); ++i)
-    {
-        const auto& step = steps.at(i);
-
-        const QString time = step.T_value == 0
-                                 ? tr("Ошибка")
-                                 : QTime(0, 0)
-                                       .addMSecs(step.T_value)
-                                       .toString("m:ss.zzz");
-
-        const QString overshoot =
-            QString("%1%").arg(step.overshoot, 4, 'f', 2);
-
-        const QString rowName =
-            QString("%1-%2").arg(step.from).arg(step.to);
-
-        ui->tableWidget_stepResults->setItem(
-            i, 0, new QTableWidgetItem(time));
-
-        ui->tableWidget_stepResults->setItem(
-            i, 1, new QTableWidgetItem(overshoot));
-
-        rowNames << rowName;
-    }
-
-    ui->tableWidget_stepResults->setVerticalHeaderLabels(rowNames);
-    ui->tableWidget_stepResults->resizeColumnsToContents();
 }
 
 void MainWindow::displayDependingPattern() {
@@ -916,6 +928,32 @@ void MainWindow::setButtonInitEnabled(bool enable)
     ui->pushButton_init->setEnabled(enable);
 }
 
+void MainWindow::onPointsRequested(QVector<QVector<QPointF>>& points,
+                                   ChartType chart)
+{
+    switch (chart)
+    {
+    case ChartType::Stroke:
+        onStrokeTestPointsRequested(points, chart);
+        break;
+
+    case ChartType::Task:
+        onMainTestPointsRequested(points, chart);
+        break;
+
+    case ChartType::Step:
+        onStepTestPointsRequested(points, chart);
+        break;
+
+    case ChartType::Cyclic:
+        onCyclicTestPointsRequested(points, chart);
+        break;
+
+    default:
+        points.clear();
+        break;
+    }
+}
 void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
 {
     points.clear();
@@ -1480,21 +1518,9 @@ void MainWindow::initCharts()
                 m_chartManager->chart(ChartType::Pressure)->visible(1, state != 0);
             });
 
-    connect(m_program, &Domain::Program::getPoints_strokeTest,
-            this, &MainWindow::onStrokeTestPointsRequested,
+    connect(m_program, &Domain::Program::points,
+            this, &MainWindow::onPointsRequested,
             Qt::BlockingQueuedConnection);
-
-    connect(m_program, &Domain::Program::getPoints_mainTest,
-            this, &MainWindow::onMainTestPointsRequested,
-            Qt::BlockingQueuedConnection);
-
-    connect(m_program, &Domain::Program::getPoints_stepTest,
-            this, &MainWindow::onStepTestPointsRequested,
-            Qt::BlockingQueuedConnection);
-
-    connect(m_program, &Domain::Program::getPoints_cyclicTest,
-            this, &MainWindow::onCyclicTestPointsRequested,
-            Qt::QueuedConnection);
 }
 
 void MainWindow::getImage(QLabel *label, QImage *image)

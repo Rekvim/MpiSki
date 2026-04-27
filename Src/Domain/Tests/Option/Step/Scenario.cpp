@@ -6,8 +6,8 @@
 #include <QDebug>
 
 namespace Domain::Tests::Option::Step {
-    Scenario::Scenario(Tests::TestContext context, const Params& params, QObject* parent)
-            : Tests::TestScenario(parent), m_context(context), m_params(params) {};
+    Scenario::Scenario(Tests::Context context, const Params& params, QObject* parent)
+            : Tests::AbstractScenario(parent), m_context(context), m_params(params) {};
 
     Scenario::~Scenario() = default;
 
@@ -35,14 +35,12 @@ namespace Domain::Tests::Option::Step {
             parent
         );
 
-        connect(runner.get(), &Runner::getPoints,
+        connect(runner.get(), &Runner::points,
                 this, [this](QVector<QVector<QPointF>>& points) {
                     emit pointsRequested(
-                        points,
-                        Widgets::Chart::ChartType::Step
+                        points, Widgets::Chart::ChartType::Step
                         );
-                },
-                Qt::BlockingQueuedConnection);
+                }, Qt::DirectConnection);
 
         connect(runner.get(), &Runner::results,
                 this, &Scenario::onResults,
@@ -72,7 +70,7 @@ namespace Domain::Tests::Option::Step {
 
         m_context.telemetry.testStep = result;
 
+        emit stepResultUpdated(result);
         emit telemetryUpdated(m_context.telemetry);
-        emit setStepResults(result);
     }
 }

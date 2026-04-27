@@ -5,7 +5,7 @@
 #include "Storage/Telemetry.h"
 
 namespace Domain::Tests {
-    struct TestContext {
+    struct Context {
         Mpi::Device& device;
         Telemetry& telemetry;
         const DeviceConfig& config;

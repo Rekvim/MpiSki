@@ -82,7 +82,7 @@ QString reverseSequenceString(const QString& src)
 } // namespace CyclicSequenceUtils
 
 CyclicTestSettings::CyclicTestSettings(QWidget* parent)
-    : AbstractTestSettings(parent)
+    : BaseSequenceSettingsDialog(parent)
     , ui(new Ui::CyclicTestSettings)
 {
     ui->setupUi(this);

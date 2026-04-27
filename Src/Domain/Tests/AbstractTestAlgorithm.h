@@ -3,15 +3,15 @@
 #include <QEventLoop>
 #include <QObject>
 
-class Test : public QObject
+class AbstractTestAlgorithm : public QObject
 {
     Q_OBJECT
 public:
-    explicit Test(QObject *parent = nullptr);
-    virtual ~Test() = default;
+    explicit AbstractTestAlgorithm(QObject *parent = nullptr);
+    virtual ~AbstractTestAlgorithm() = default;
 
 protected:
-    QEventLoop *m_eventLoop;
+    QEventLoop* m_eventLoop;
     bool m_terminate = false;
 
     void Sleep(quint16 msecs);

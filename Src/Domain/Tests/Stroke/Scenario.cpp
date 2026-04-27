@@ -7,9 +7,9 @@
 
 namespace Domain::Tests::Stroke {
 
-Scenario::Scenario(Tests::TestContext context,
+Scenario::Scenario(Tests::Context context,
                    QObject* parent)
-    : Tests::TestScenario(parent)
+    : Tests::AbstractScenario(parent)
     , m_context(context)
 {
 }
@@ -69,6 +69,7 @@ void Scenario::onResult()
 
     m_context.telemetry.testStroke = result;
 
+    emit strokeResultUpdated(result);
     emit telemetryUpdated(m_context.telemetry);
 }
 

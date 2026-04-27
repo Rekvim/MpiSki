@@ -5,8 +5,8 @@
 
 namespace Domain::Tests::Cyclic::Regulatory {
 
-Scenario::Scenario(Tests::TestContext context, const Params& params, QObject* parent)
-    : Tests::TestScenario(parent) , m_context(context) , m_params(params) { }
+Scenario::Scenario(Tests::Context context, const Params& params, QObject* parent)
+    : Tests::AbstractScenario(parent) , m_context(context) , m_params(params) { }
 
 Scenario::~Scenario() = default;
 
@@ -53,9 +53,11 @@ void Scenario::onResult()
 
     m_analyzer->finish();
 
-    m_context.telemetry.testСyclicRegulatory =
-        m_analyzer->result();
+    auto result = m_analyzer->result();
 
+    m_context.telemetry.testСyclicRegulatory = result;
+
+    emit cyclicRegulatoryResultUpdated(result);
     emit telemetryUpdated(m_context.telemetry);
 }
 

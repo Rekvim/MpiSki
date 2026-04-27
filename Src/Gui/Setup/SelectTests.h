@@ -2,7 +2,6 @@
 
 #include <QDialog>
 #include <QCheckBox>
-#include <QDebug>
 
 namespace Ui {
 class SelectTests;

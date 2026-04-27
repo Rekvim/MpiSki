@@ -6,6 +6,9 @@
 #include "Domain/Tests/Option/Step/Params.h"
 #include "Domain/Tests/Option/Params.h"
 
+#include <QMetaObject>
+#include <QDebug>
+
 void TestController::setProgram(Domain::Program* program)
 {
     if (m_program == program)
@@ -25,6 +28,9 @@ void TestController::setProgram(Domain::Program* program)
 
     connect(m_program, &Domain::Program::testFinished,
             this, &TestController::onProgramFinished);
+
+    connect(m_program, &Domain::Program::testStartRejected,
+            this, &TestController::onProgramStartRejected);
 }
 
 void TestController::setState(TestState s)
@@ -36,56 +42,128 @@ void TestController::setState(TestState s)
     emit stateChanged(s);
 }
 
+void TestController::run(const std::function<void()>& start)
+{
+    if (!m_program) {
+        qWarning() << "[TestController] Cannot start test: Program is null";
+        setState(TestState::Idle);
+        return;
+    }
+
+    if (m_state == TestState::Starting || m_state == TestState::Running) {
+        stop();
+        return;
+    }
+
+    m_stopRequested = false;
+    setState(TestState::Starting);
+
+    start();
+}
+
 void TestController::runStrokeTest()
 {
     run([this] {
-        emit startStrokeRequested();
+        auto* program = m_program;
+
+        QMetaObject::invokeMethod(
+            program,
+            [program] {
+                program->startStrokeTest();
+            },
+            Qt::QueuedConnection
+            );
     });
 }
 
 void TestController::runMainTest(const Domain::Tests::Main::Params& params)
 {
     run([this, params] {
-        emit startMainRequested(params);
+        auto* program = m_program;
+
+        QMetaObject::invokeMethod(
+            program,
+            [program, params] {
+                program->startMainTest(params);
+            },
+            Qt::QueuedConnection
+            );
     });
 }
 
 void TestController::runResponseTest(const Domain::Tests::Option::Params& params)
 {
     run([this, params] {
-        emit startResponseRequested(params);
+        auto* program = m_program;
+
+        QMetaObject::invokeMethod(
+            program,
+            [program, params] {
+                program->startResponseTest(params);
+            },
+            Qt::QueuedConnection
+            );
     });
 }
 
 void TestController::runResolutionTest(const Domain::Tests::Option::Params& params)
 {
     run([this, params] {
-        emit startResolutionRequested(params);
+        auto* program = m_program;
+
+        QMetaObject::invokeMethod(
+            program,
+            [program, params] {
+                program->startResolutionTest(params);
+            },
+            Qt::QueuedConnection
+            );
     });
 }
 
 void TestController::runStepTest(const Domain::Tests::Option::Step::Params& params)
 {
     run([this, params] {
-        emit startStepRequested(params);
+        auto* program = m_program;
+
+        QMetaObject::invokeMethod(
+            program,
+            [program, params] {
+                program->startStepTest(params);
+            },
+            Qt::QueuedConnection
+            );
     });
 }
 
 void TestController::runCyclicTest(const Domain::Tests::Cyclic::Params& params)
 {
     run([this, params] {
-        emit startCyclicRequested(params);
+        auto* program = m_program;
+
+        QMetaObject::invokeMethod(
+            program,
+            [program, params] {
+                program->startCyclicTest(params);
+            },
+            Qt::QueuedConnection
+            );
     });
 }
 
-void TestController::run(const std::function<void()>& start)
+void TestController::stop()
 {
-    if (m_state == TestState::Starting || m_state == TestState::Running)
+    if (!m_program)
         return;
 
-    m_stopRequested = false;
-    setState(TestState::Starting);
-    start();
+    if (m_state != TestState::Starting &&
+        m_state != TestState::Running)
+        return;
+
+    qDebug() << "[TestController] Stop requested";
+
+    m_stopRequested = true;
+    m_program->terminateTest();
 }
 
 void TestController::onProgramActuallyStarted()
@@ -104,15 +182,10 @@ void TestController::onProgramFinished()
         setState(TestState::Finished);
 }
 
-void TestController::stop()
+void TestController::onProgramStartRejected(const QString& reason)
 {
-    if (!m_program)
-        return;
+    qWarning().noquote() << "[TestController] Test start rejected:" << reason;
 
-    if (m_state != TestState::Starting &&
-        m_state != TestState::Running)
-        return;
-
-    m_stopRequested = true;
-    m_program->terminateTest();
+    m_stopRequested = false;
+    setState(TestState::Idle);
 }

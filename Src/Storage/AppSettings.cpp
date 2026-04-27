@@ -1,6 +1,6 @@
 #include "AppSettings.h"
+
 #include <QCoreApplication>
-#include <QDir>
 
 AppSettings::AppSettings()
     : m_settings(

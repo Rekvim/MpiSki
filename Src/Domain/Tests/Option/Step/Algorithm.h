@@ -16,8 +16,8 @@ namespace Domain::Tests::Option::Step {
         void setTValue(quint32 T_value);
 
     signals:
-        void getPoints(QVector<QVector<QPointF>> &points);
-        void results(const Result& result);
+        void points(QVector<QVector<QPointF>> &points);
+        void results(const Domain::Tests::Option::Step::Result& result);
 
     private:
         Result calculateResult(const QVector<QVector<QPointF>>& points) const;

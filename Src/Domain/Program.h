@@ -25,11 +25,11 @@
 #include "DeviceConfig.h"
 
 namespace Domain::Tests {
-class TestScenario;
+class AbstractScenario;
 }
 
 namespace Domain::Tests {
-class TestContext;
+class Context;
 }
 namespace Domain::Tests::Cyclic {
 struct Params;
@@ -105,7 +105,7 @@ public:
 
 signals:
     void sampleReady(const Domain::Measurement::Sample& sample);
-
+    void testStartRejected(const QString& reason);
     void telemetryUpdated(const Telemetry& telemetry);
 
     void errorOccured(const QString& error);
@@ -125,11 +125,18 @@ signals:
     void setVisible(Widgets::Chart::ChartType chart, quint16 series, bool visible);
     void setRegressionEnable(bool enable);
 
-    void setStepResults(const Domain::Tests::Option::Step::Result& result);
+    void mainResultUpdated(const Domain::Tests::Main::Result& result);
+    void strokeResultUpdated(const Domain::Tests::Stroke::Result& result);
+    void stepResultUpdated(const Domain::Tests::Option::Step::Result& result);
+    void cyclicRegulatoryResultUpdated(const Domain::Tests::Cyclic::Regulatory::Result& result);
+    void cyclicShutoffResultUpdated(const Domain::Tests::Cyclic::Shutoff::Result& result);
+    void crossingStatusUpdated(const CrossingStatus& status);
+
     void setDoButtonsChecked(quint8 status);
 
     void setDiCheckboxesChecked(quint8 status);
-    void getPoints(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
+
+    void points(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
 
     void getPoints_strokeTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
     void getPoints_mainTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
@@ -152,6 +159,8 @@ signals:
     void runnerFinished();
 
 private:
+    bool isDeviceReadyForTest() const;
+    void failToStartTest(const QString& reason);
     DeviceConfig m_deviceConfig;
     SelectTests::PatternType m_patternType;
 
@@ -162,48 +171,14 @@ private:
 
     std::unique_ptr<IAnalyzer> m_analyzer;
     TestWorker m_testWorker = TestWorker::None;
-    std::unique_ptr<Domain::Tests::TestScenario> m_currentScenario;
+    std::unique_ptr<Domain::Tests::AbstractScenario> m_currentScenario;
     //
 
 
     std::unique_ptr<BaseRunner> m_activeRunner;
     void onRunnerActuallyStarted();
-    template<typename RunnerT>
-    void startRunner(std::unique_ptr<RunnerT> r)
-    {
-        m_activeRunner.reset();
 
-        connect(r.get(), &BaseRunner::requestClearChart,
-                this, [this](Widgets::Chart::ChartType chartType) {
-                    emit clearPoints(chartType);
-                });
-
-        connect(r.get(), &BaseRunner::testActuallyStarted,
-                this, &Program::onRunnerActuallyStarted);
-
-        connect(r.get(), &BaseRunner::requestSetDAC,
-                this, &Program::setDacRaw);
-
-        connect(this, &Program::releaseBlock,
-                r.get(), &BaseRunner::releaseBlock);
-
-        connect(r.get(), &BaseRunner::totalTestTimeMs,
-                this, &Program::totalTestTimeMs);
-
-        connect(r.get(), &BaseRunner::endTest,
-                this, &Program::endTest);
-
-        connect(this, &Program::stopTheTest,
-                r.get(), &BaseRunner::stop);
-
-        emit setButtonInitEnabled(false);
-        emit setTaskControlsEnabled(false);
-
-        setDacRaw(0, 5000, true);
-
-        m_activeRunner = std::move(r);
-        m_activeRunner->start();
-    }
+    void startRunner(std::unique_ptr<BaseRunner> r);
 
     // init
     void waitForDacCycle();
@@ -213,10 +188,10 @@ private:
     void prepareRegulatoryTelemetry(const Tests::Cyclic::Params &params);
     bool m_suppressPublicTestFinished = false;
 
-    void startScenario(std::unique_ptr<Domain::Tests::TestScenario> scenario);
-    void connectScenario(Domain::Tests::TestScenario* scenario);
+    void startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> scenario);
+    void connectScenario(Domain::Tests::AbstractScenario* scenario);
 
-    Tests::TestContext makeTestContext();
+    Tests::Context makeContext();
     void startCyclicRegulatoryScenario(const Tests::Cyclic::Regulatory::Params& params);
     void startCyclicShutoffScenario(const Tests::Cyclic::Shutoff::Params& params);
 
@@ -270,10 +245,6 @@ public slots:
 
     void addRegression(const QVector<QPointF>& points);
     void addFriction(const QVector<QPointF>& points);
-
-    void receivedPoints_mainTest(QVector<QVector<QPointF>>& points);
-    void receivedPoints_stepTest(QVector<QVector<QPointF>>& points);
-    void receivedPoints_cyclicTest(QVector<QVector<QPointF>>& points);
 
     void setDacReal(qreal value);
 

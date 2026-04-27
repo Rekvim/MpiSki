@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QDate>
 #include <QObject>
 #include <QSettings>
 #include <QColor>

@@ -23,7 +23,7 @@ set(DOMAIN_CPP
     Domain/Uart/Port.cpp
     Domain/Uart/Reader.cpp
     Domain/Tests/BaseRunner.cpp
-    Domain/Tests/Test.cpp
+    Domain/Tests/AbstractTestAlgorithm.cpp
     Domain/Tests/CyclicPositioner/CyclicTestPositioner.cpp
     Domain/Tests/Option/Response/Runner.cpp
     Domain/Tests/Option/Resolution/Runner.cpp
@@ -74,12 +74,32 @@ set(DOMAIN_HEADERS
     Domain/Uart/Port.h
     Domain/Uart/Reader.h
     Domain/Program.h
-    Domain/Tests/Test.h
+    Domain/Tests/AbstractTestAlgorithm.h
     Domain/Tests/BaseRunner.h
     Domain/Tests/CyclicPositioner/CyclicTestPositioner.h
     Domain/Tests/Option/Params.h
     Domain/Tests/Option/Response/Runner.h
     Domain/Tests/Option/Resolution/Runner.h
+    Domain/DeviceConfig.h
+    Domain/Tests/Context.h
+
+
+    Domain/Tests/Option/Step/Scenario.h
+    Domain/Tests/Option/Step/Scenario.cpp
+    Domain/Tests/Stroke/Scenario.h
+    Domain/Tests/Stroke/Scenario.cpp
+    Domain/Tests/Option/Resolution/Scenario.h
+    Domain/Tests/Option/Resolution/Scenario.cpp
+    Domain/Tests/Option/Response/Scenario.h
+    Domain/Tests/Option/Response/Scenario.cpp
+    Domain/Tests/Main/Scenario.h
+    Domain/Tests/Main/Scenario.cpp
+    Domain/Tests/Cyclic/Regulatory/Scenario.h
+    Domain/Tests/Cyclic/Regulatory/Scenario.cpp
+    Domain/Tests/Cyclic/Shutoff/Scenario.h
+    Domain/Tests/Cyclic/Shutoff/Scenario.cpp
+    Domain/Tests/ScenarioFactory.h
+    Domain/Tests/ScenarioFactory.cpp
 
     Storage/AppSettings.h
     Storage/Registry.h
@@ -121,6 +141,7 @@ set(REPORT_HEADERS
     Report/Blocks/StepReaction.h
     Report/Blocks/TechnicalResults.h
     Report/Blocks/ValveSpec.h
+    Report/Blocks/CyclicRegulatoryRanges.h
     Report/Saver.h
     Report/Writer.h
 )
@@ -135,6 +156,7 @@ set(GUI_CPP
     Gui/Setup/ValveWindow/ValveWindow.cpp
     Gui/Setup/SelectTests.cpp
     Gui/MainWindow/MainWindow.cpp
+    Gui/TestSettings/BaseSequenceSettingsDialog.cpp
     Gui/TestSettings/CyclicTestSettings.cpp
     Gui/TestSettings/OtherTestSettings.cpp
     Gui/TestSettings/StepTestSettings.cpp
@@ -156,7 +178,7 @@ set(GUI_HEADERS
     Gui/Setup/ValveWindow/ValveWindow.h
     Gui/Setup/SelectTests.h
     Gui/Setup/ValveWindow/Mapper.h
-    Gui/TestSettings/AbstractTestSettings.h
+    Gui/TestSettings/BaseSequenceSettingsDialog.h
     Gui/TestSettings/CyclicTestSettings.h
     Gui/TestSettings/OtherTestSettings.h
     Gui/TestSettings/StepTestSettings.h
@@ -185,18 +207,7 @@ set(GUI_UI
 add_library(Domain STATIC
     ${DOMAIN_CPP}
     ${DOMAIN_HEADERS}
-    Report/Blocks/CyclicRegulatoryRanges.h
-    Domain/DeviceConfig.h
-    Domain/TestContext.h
-    Domain/Tests/TestScenario.h Domain/Tests/TestScenario.cpp
-    Domain/Tests/Option/Step/Scenario.h Domain/Tests/Option/Step/Scenario.cpp
-    Domain/Tests/Stroke/Scenario.h Domain/Tests/Stroke/Scenario.cpp
-    Domain/Tests/Option/Resolution/Scenario.h Domain/Tests/Option/Resolution/Scenario.cpp
-    Domain/Tests/Option/Response/Scenario.h Domain/Tests/Option/Response/Scenario.cpp
-    Domain/Tests/Main/Scenario.h Domain/Tests/Main/Scenario.cpp
-    Domain/Tests/Cyclic/Regulatory/Scenario.h Domain/Tests/Cyclic/Regulatory/Scenario.cpp
-    Domain/Tests/Cyclic/Shutoff/Scenario.h Domain/Tests/Cyclic/Shutoff/Scenario.cpp
-    Domain/TestScenarioFactory.h Domain/TestScenarioFactory.cpp
+    Domain/Tests/AbstractScenario.h
 )
 
 target_include_directories(Domain

@@ -6,7 +6,7 @@
 #include <QInputDialog>
 
 OtherTestSettings::OtherTestSettings(QWidget* parent)
-    : AbstractTestSettings(parent)
+    : BaseSequenceSettingsDialog(parent)
     , ui(new Ui::OtherTestSettings)
 {
     ui->setupUi(this);

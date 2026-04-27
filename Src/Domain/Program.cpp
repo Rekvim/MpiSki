@@ -1,10 +1,9 @@
 #include "Program.h"
 
-#include "Domain/TestContext.h"
+#include "Domain/Tests/Context.h"
 
-#include "Domain/Tests/TestScenario.h"
-#include "Domain/TestScenarioFactory.h" // !
-#include "Domain/Tests/Option/Step/Scenario.h"
+#include "Domain/Tests/AbstractScenario.h"
+#include "Domain/Tests/ScenarioFactory.h" // !
 
 #include "Domain/Tests/Main/Params.h"
 #include "Domain/Tests/Cyclic/Params.h"
@@ -17,7 +16,7 @@
 
 #include "Utils/SignalUtils.h"
 
-#include <QRegularExpression>
+#include <QDateTime>
 #include <QLocale>
 #include <utility>
 
@@ -172,23 +171,64 @@ Program::makeSample() const
     return s;
 }
 
-void Program::startScenario(std::unique_ptr<Domain::Tests::TestScenario> scenario)
+void Program::startRunner(std::unique_ptr<BaseRunner> r)
 {
+    m_activeRunner.reset();
+
+    connect(r.get(), &BaseRunner::requestClearChart,
+            this, [this](Widgets::Chart::ChartType chartType) {
+                emit clearPoints(chartType);
+            });
+
+    connect(r.get(), &BaseRunner::testActuallyStarted,
+            this, &Program::onRunnerActuallyStarted);
+
+    connect(r.get(), &BaseRunner::requestSetDAC,
+            this, &Program::setDacRaw);
+
+    connect(this, &Program::releaseBlock,
+            r.get(), &BaseRunner::releaseBlock);
+
+    connect(r.get(), &BaseRunner::totalTestTimeMs,
+            this, &Program::totalTestTimeMs);
+
+    connect(r.get(), &BaseRunner::endTest,
+            this, &Program::endTest);
+
+    connect(this, &Program::stopTheTest,
+            r.get(), &BaseRunner::stop);
+
+    emit setButtonInitEnabled(false);
+    emit setTaskControlsEnabled(false);
+
+    setDacRaw(0, 5000, true);
+
+    m_activeRunner = std::move(r);
+    m_activeRunner->start();
+}
+
+void Program::startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> scenario)
+{
+    if (!isDeviceReadyForTest()) {
+        failToStartTest("Нельзя запустить тест: устройство не инициализировано или не найдены датчики.");
+        return;
+    }
+
     if (!scenario) {
-        emit testFinished();
+        failToStartTest("Нельзя запустить тест: сценарий не создан.");
+        return;
+    }
+
+    auto runner = scenario->createRunner(this);
+
+    if (!runner) {
+        failToStartTest("Нельзя запустить тест: runner не создан.");
         return;
     }
 
     connectScenario(scenario.get());
 
     scenario->startAnalyzer();
-
-    auto runner = scenario->createRunner(this);
-
-    if (!runner) {
-        emit testFinished();
-        return;
-    }
 
     m_currentScenario = std::move(scenario);
 
@@ -434,6 +474,8 @@ void Program::initialization()
 {
     auto &ts = m_telemetry;
 
+    m_isInitialized = false;
+
     ts.init.initStatusText = "";
     ts.init.connectedSensorsText = "";
     ts.init.deviceStatusText = "";
@@ -553,7 +595,7 @@ void Program::finalizeInitialization()
     emit setSensorsMask(mask);
     emit setSensorNumber(m_device.sensorCount());
     emit setButtonInitEnabled(true);
-
+    m_isInitialized = true;
     m_timerSensors->start();
 }
 
@@ -566,18 +608,13 @@ void Program::startMainTest(const Tests::Main::Params& params)
     emit clearPoints(ChartType::Friction);
     emit setRegressionEnable(false);
 
-    auto scenario = Tests::TestScenarioFactory::createMain(
-        makeTestContext(),
+    auto scenario = Tests::ScenarioFactory::createMain(
+        makeContext(),
         params,
         this
     );
 
     startScenario(std::move(scenario));
-}
-
-void Program::receivedPoints_mainTest(QVector<QVector<QPointF>>& points)
-{
-    emit getPoints_mainTest(points, ChartType::Task);
 }
 
 void Program::addFriction(const QVector<QPointF> &points)
@@ -603,16 +640,48 @@ void Program::addRegression(const QVector<QPointF> &points)
     emit setRegressionEnable(true);
 }
 
+bool Program::isDeviceReadyForTest() const
+{
+    if (!m_isInitialized) {
+        qWarning() << "[Program] Cannot start test: device is not initialized";
+        return false;
+    }
+
+    if (m_device.sensorCount() == 0) {
+        qWarning() << "[Program] Cannot start test: no sensors detected";
+        return false;
+    }
+
+    return true;
+}
+
 void Program::startStrokeTest()
 {
     m_testWorker = TestWorker::Stroke;
 
-    auto scenario = Tests::TestScenarioFactory::createStroke(
-        makeTestContext(),
+    auto scenario = Tests::ScenarioFactory::createStroke(
+        makeContext(),
         this
     );
 
     startScenario(std::move(scenario));
+}
+
+void Program::failToStartTest(const QString& reason)
+{
+    qWarning().noquote() << "[Program] Test start rejected:" << reason;
+
+    // emit errorOccured(reason);
+    emit testStartRejected(reason);
+
+    m_isTestRunning = false;
+    m_testWorker = TestWorker::None;
+
+    m_currentScenario.reset();
+    m_activeRunner.reset();
+
+    emit setTaskControlsEnabled(true);
+    emit setButtonInitEnabled(true);
 }
 
 QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normalOpen)
@@ -627,11 +696,6 @@ QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normal
     return raw;
 }
 
-void Program::receivedPoints_cyclicTest(QVector<QVector<QPointF>> &points)
-{
-    emit getPoints_cyclicTest(points, ChartType::Cyclic);
-}
-
 void Program::setMultipleDO(const QVector<bool>& states)
 {
     quint8 mask = 0;
@@ -642,9 +706,9 @@ void Program::setMultipleDO(const QVector<bool>& states)
     //emit SetButtonsDOChecked(mask);
 }
 
-Tests::TestContext Program::makeTestContext()
+Tests::Context Program::makeContext()
 {
-    return Tests::TestContext {
+    return Tests::Context {
         .device = m_device,
         .telemetry = m_telemetry,
         .config = m_deviceConfig
@@ -697,8 +761,8 @@ void Program::startCyclicRegulatoryScenario(const Tests::Cyclic::Regulatory::Par
 {
     m_testWorker = TestWorker::CyclicRegulatory;
 
-    auto scenario = Tests::TestScenarioFactory::createCyclicRegulatory(
-        makeTestContext(),
+    auto scenario = Tests::ScenarioFactory::createCyclicRegulatory(
+        makeContext(),
         params,
         this
     );
@@ -710,8 +774,8 @@ void Program::startCyclicShutoffScenario(const Tests::Cyclic::Shutoff::Params& p
 {
     m_testWorker = TestWorker::CyclicShutOff;
 
-    auto scenario = Tests::TestScenarioFactory::createCyclicShutoff(
-        makeTestContext(),
+    auto scenario = Tests::ScenarioFactory::createCyclicShutoff(
+        makeContext(),
         params,
         this
     );
@@ -757,8 +821,32 @@ void Program::startCyclicTest(const Tests::Cyclic::Params& params)
 {
     if (params.regulatory.sequence.isEmpty() &&
         params.shutoff.sequence.isEmpty()) {
-        emit testFinished();
+        failToStartTest("Cyclic test: обе последовательности пустые.");
         return;
+    }
+
+    if (params.type == Tests::Cyclic::Params::Regulatory &&
+        params.regulatory.sequence.isEmpty()) {
+        failToStartTest("Cyclic regulatory test: последовательность пуста.");
+        return;
+    }
+
+    if (params.type == Tests::Cyclic::Params::Shutoff &&
+        params.shutoff.sequence.isEmpty()) {
+        failToStartTest("Cyclic shutoff test: последовательность пуста.");
+        return;
+    }
+
+    if (params.type == Tests::Cyclic::Params::Combined) {
+        if (params.regulatory.sequence.isEmpty()) {
+            failToStartTest("Combined cyclic test: regulatory-последовательность пуста.");
+            return;
+        }
+
+        if (params.shutoff.sequence.isEmpty()) {
+            failToStartTest("Combined cyclic test: shutoff-последовательность пуста.");
+            return;
+        }
     }
 
     if (params.type == Tests::Cyclic::Params::Regulatory ||
@@ -792,71 +880,73 @@ void Program::startCyclicTest(const Tests::Cyclic::Params& params)
     emit telemetryUpdated(m_telemetry);
 }
 
-void Program::connectScenario(Domain::Tests::TestScenario* scenario)
+void Program::connectScenario(Domain::Tests::AbstractScenario* scenario)
 {
     Q_ASSERT(scenario);
 
-    connect(scenario, &Domain::Tests::TestScenario::telemetryUpdated,
+    connect(scenario, &Domain::Tests::AbstractScenario::telemetryUpdated,
             this, &Program::telemetryUpdated,
             Qt::QueuedConnection);
 
-    connect(scenario, &Domain::Tests::TestScenario::pointsRequested,
-            this, [this](QVector<QVector<QPointF>>& points,
+    connect(scenario, &Domain::Tests::AbstractScenario::mainResultUpdated,
+            this, &Program::mainResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::strokeResultUpdated,
+            this, &Program::strokeResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::stepResultUpdated,
+            this, &Program::stepResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::cyclicRegulatoryResultUpdated,
+            this, &Program::cyclicRegulatoryResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::cyclicShutoffResultUpdated,
+            this, &Program::cyclicShutoffResultUpdated,
+            Qt::QueuedConnection);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::crossingStatusUpdated,
+            this, &Program::crossingStatusUpdated,
+            Qt::QueuedConnection);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::pointsRequested,
+            this, [this](QVector<QVector<QPointF>>& pointsF,
                    Widgets::Chart::ChartType chartType) {
-                switch (chartType)
-                {
-                case ChartType::Task:
-                    emit getPoints_mainTest(points, chartType);
-                    break;
+                points(pointsF, chartType);
+            }, Qt::DirectConnection);
 
-                case ChartType::Step:
-                    emit getPoints_stepTest(points, chartType);
-                    break;
-
-                case ChartType::Cyclic:
-                    emit getPoints_cyclicTest(points, chartType);
-                    break;
-
-                case ChartType::Stroke:
-                    emit getPoints_strokeTest(points, chartType);
-                    break;
-
-                default:
-                    emit getPoints(points, chartType);
-                    break;
-                }
-            },
-            Qt::BlockingQueuedConnection);
-
-    connect(scenario, &Domain::Tests::TestScenario::addRegressionRequested,
+    connect(scenario, &Domain::Tests::AbstractScenario::addRegressionRequested,
             this, &Program::addRegression,
             Qt::QueuedConnection);
 
-    connect(scenario, &Domain::Tests::TestScenario::addFrictionRequested,
+    connect(scenario, &Domain::Tests::AbstractScenario::addFrictionRequested,
             this, &Program::addFriction,
             Qt::QueuedConnection);
 
-    connect(scenario, &Domain::Tests::TestScenario::duplicateMainChartsSeriesRequested,
+    connect(scenario, &Domain::Tests::AbstractScenario::duplicateMainChartsSeriesRequested,
             this, [this] {
                 emit duplicateMainChartsSeries();
             },
             Qt::QueuedConnection);
 
-    connect(scenario, &Domain::Tests::TestScenario::cyclicCycleCompleted,
+    connect(scenario, &Domain::Tests::AbstractScenario::cyclicCycleCompleted,
             this, &Program::cyclicCycleCompleted,
             Qt::BlockingQueuedConnection);
 
-    connect(scenario, &Domain::Tests::TestScenario::setMultipleDORequested,
+    connect(scenario, &Domain::Tests::AbstractScenario::setMultipleDORequested,
             this, &Program::setMultipleDO,
             Qt::BlockingQueuedConnection);
 
-    connect(scenario, &Domain::Tests::TestScenario::diRequested,
+    connect(scenario, &Domain::Tests::AbstractScenario::diRequested,
             this, [this](quint8& status) {
                 status = getDIStatus();
             },
             Qt::DirectConnection);
 
-    connect(scenario, &Domain::Tests::TestScenario::doRequested,
+    connect(scenario, &Domain::Tests::AbstractScenario::doRequested,
             this, [this](quint8& status) {
                 status = getDOStatus();
             },
@@ -867,21 +957,41 @@ void Program::startResponseTest(const Tests::Option::Params& params)
 {
     m_testWorker = TestWorker::Response;
 
-    auto scenario = Tests::TestScenarioFactory::createResponse(
-        makeTestContext(),
+    if (params.points.isEmpty()) {
+        failToStartTest("Response test: список точек пуст.");
+        return;
+    }
+
+    if (params.steps.isEmpty()) {
+        failToStartTest("Response test: список шагов пуст.");
+        return;
+    }
+
+    auto scenario = Tests::ScenarioFactory::createResponse(
+        makeContext(),
         params,
         this
-        );
+    );
 
     startScenario(std::move(scenario));
 }
 
 void Program::startResolutionTest(const Tests::Option::Params& params)
 {
+    if (params.points.isEmpty()) {
+        failToStartTest("Resolution test: список точек пуст.");
+        return;
+    }
+
+    if (params.steps.isEmpty()) {
+        failToStartTest("Resolution test: список шагов пуст.");
+        return;
+    }
+
     m_testWorker = TestWorker::Resolution;
 
-    auto scenario = Tests::TestScenarioFactory::createResolution(
-        makeTestContext(),
+    auto scenario = Tests::ScenarioFactory::createResolution(
+        makeContext(),
         params,
         this
     );
@@ -893,27 +1003,18 @@ void Program::startStepTest(const Tests::Option::Step::Params& params)
 {
     m_testWorker = TestWorker::Step;
 
-    auto scenario =
-        Tests::TestScenarioFactory::createStep(
-            makeTestContext(),
-            params,
-            this
-            );
+    if (params.points.isEmpty()) {
+        failToStartTest("Step test: список точек пуст.");
+        return;
+    }
 
-    auto* stepScenario = qobject_cast<Tests::Option::Step::Scenario*>(scenario.get());
-
-    Q_ASSERT(stepScenario);
-
-    connect(stepScenario, &Tests::Option::Step::Scenario::setStepResults,
-            this, &Program::setStepResults,
-            Qt::QueuedConnection);
+    auto scenario = Tests::ScenarioFactory::createStep(
+        makeContext(),
+        params,
+        this
+    );
 
     startScenario(std::move(scenario));
-}
-
-void Program::receivedPoints_stepTest(QVector<QVector<QPointF>> &points)
-{
-    emit getPoints_stepTest(points, ChartType::Step);
 }
 
 void Program::button_set_position()

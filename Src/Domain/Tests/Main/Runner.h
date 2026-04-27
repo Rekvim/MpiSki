@@ -12,7 +12,6 @@ public:
     Runner(Mpi::Device& device, bool normalOpen, const Params& params, QObject* parent = nullptr)
         : BaseRunner(device, normalOpen, parent), m_params(params) {}
 signals:
-    void receivedPoints_mainTest(QVector<QVector<QPointF>>& points);
     void dublSeries();
     void points(QVector<QVector<QPointF>> &points);
     void addRegression(const QVector<QPointF> &points);

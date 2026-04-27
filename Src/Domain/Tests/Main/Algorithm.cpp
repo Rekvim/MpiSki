@@ -57,7 +57,23 @@ void Algorithm::run()
     }
 
     QVector<QVector<QPointF>> points;
+
     emit getPoints(points);
+
+    if (points.size() < 4) {
+        qWarning() << "[Main::Algorithm] Not enough point groups. Expected 4, got"
+                   << points.size();
+        emit finished();
+        return;
+    }
+
+    for (int i = 0; i < points.size(); ++i) {
+        if (points[i].isEmpty()) {
+            qWarning() << "[Main::Algorithm] Point group is empty. Index:" << i;
+            emit finished();
+            return;
+        }
+    }
 
     TestResults testResults;
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "AbstractTestSettings.h"
+#include "BaseSequenceSettingsDialog.h"
 #include "Domain/Tests/Option/Params.h"
 
 namespace Ui {
 class OtherTestSettings;
 }
 
-class OtherTestSettings : public AbstractTestSettings
+class OtherTestSettings : public BaseSequenceSettingsDialog
 {
     Q_OBJECT
 

@@ -1,18 +1,18 @@
 #pragma once
 
-#include "Domain/Tests/TestScenario.h"
-#include "Domain/TestContext.h"
+#include "Domain/Tests/AbstractScenario.h"
+#include "Domain/Tests/Context.h"
 
 namespace Domain::Tests::Stroke {
     class Runner;
     class Analyzer;
 
-    class Scenario : public Tests::TestScenario
+    class Scenario : public Tests::AbstractScenario
     {
         Q_OBJECT
 
     public:
-        Scenario(Tests::TestContext context,
+        Scenario(Tests::Context context,
                  QObject* parent = nullptr);
 
         ~Scenario() override;
@@ -28,7 +28,7 @@ namespace Domain::Tests::Stroke {
         void onResult();
 
     private:
-        Tests::TestContext m_context;
+        Tests::Context m_context;
         std::unique_ptr<Analyzer> m_analyzer;
     };
 }

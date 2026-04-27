@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AbstractTestSettings.h"
+#include "BaseSequenceSettingsDialog.h"
 #include "Storage/Registry.h"
 #include "Domain/Tests/Option/Step/Params.h"
 
@@ -8,7 +8,7 @@ namespace Ui {
 class StepTestSettings;
 }
 
-class StepTestSettings : public AbstractTestSettings
+class StepTestSettings : public BaseSequenceSettingsDialog
 {
     Q_OBJECT
 

@@ -8,9 +8,9 @@ void Algorithm::run()
         emit finished();
         return;
     }
-    QVector<QVector<QPointF>> points;
-    emit getPoints(points);
-    emit results(calculateResult(points));
+    QVector<QVector<QPointF>> pointsF;
+    emit points(pointsF);
+    emit results(calculateResult(pointsF));
     emit finished();
 }
 

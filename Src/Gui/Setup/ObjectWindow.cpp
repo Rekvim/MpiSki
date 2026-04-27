@@ -1,6 +1,8 @@
 #include "ObjectWindow.h"
 #include "ui_ObjectWindow.h"
-#include <QDesktopServices>
+
+#include <QMessageBox>
+#include <QScreen>
 
 ObjectWindow::ObjectWindow(QWidget *parent)
     : QDialog(parent)

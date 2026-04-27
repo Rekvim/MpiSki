@@ -26,7 +26,7 @@ namespace Domain::Tests::Main {
         auto& t = static_cast<Algorithm&>(base);
 
         connect(&t, &Algorithm::getPoints,
-                this, &Runner::receivedPoints_mainTest,
+                this, &Runner::points,
                 Qt::BlockingQueuedConnection);
 
         connect(&t, &Algorithm::dublSeries,

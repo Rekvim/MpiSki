@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Domain/Tests/TestScenario.h"
-#include "Domain/TestContext.h"
+#include "Domain/Tests/AbstractScenario.h"
+#include "Domain/Tests/Context.h"
 #include "Domain/Tests/Option/Params.h"
 
 namespace Domain::Tests::Option::Response {
 
 class Runner;
 
-class Scenario : public Tests::TestScenario
+class Scenario : public Tests::AbstractScenario
 {
     Q_OBJECT
 
 public:
-    Scenario(Tests::TestContext context,
+    Scenario(Tests::Context context,
              const Option::Params& params,
              QObject* parent = nullptr);
 
@@ -22,7 +22,7 @@ public:
     std::unique_ptr<BaseRunner> createRunner(QObject* parent) override;
 
 private:
-    Tests::TestContext m_context;
+    Tests::Context m_context;
     Option::Params m_params;
 };
 

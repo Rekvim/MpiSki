@@ -51,8 +51,8 @@ void Runner::wireSpecificSignals(Test& base)
 {
     auto& t = static_cast<Algorithm&>(base);
 
-    connect(&t, &Algorithm::getPoints,
-            this, &Runner::getPoints,
+    connect(&t, &Algorithm::points,
+            this, &Runner::points,
             Qt::BlockingQueuedConnection);
 
     connect(&t, &Algorithm::results,

@@ -2,16 +2,16 @@
 
 #include <QPointF>
 
-#include "Domain/Tests/Test.h"
+#include "Domain/Tests/AbstractTestAlgorithm.h"
 #include "Params.h"
 
 namespace Domain::Tests::Main {
-    class Algorithm : public Test
+    class Algorithm : public AbstractTestAlgorithm
     {
         Q_OBJECT
     public:
         explicit Algorithm(QObject *parent = nullptr, bool endTestAfterProcess = false)
-            : Test(parent), m_endTestAfterProcess(endTestAfterProcess) {}
+            : AbstractTestAlgorithm(parent), m_endTestAfterProcess(endTestAfterProcess) {}
 
         virtual void run() override;
         void setParameters(Params &parameters);

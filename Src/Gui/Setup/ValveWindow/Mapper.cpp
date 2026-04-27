@@ -1,8 +1,9 @@
-#include "Mapper.h"
-#include "ValveWindow.h"
 #include "ValveEnums.h"
 #include "ui_ValveWindow.h"
+
 #include "Utils/NumberUtils.h"
+#include "Mapper.h"
+#include "ValveWindow.h"
 
 namespace
 {

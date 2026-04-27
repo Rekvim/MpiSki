@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QDialog>
-#include <QMessageBox>
-#include <QScreen>
 #include "Storage/Registry.h"
 
 namespace Ui {

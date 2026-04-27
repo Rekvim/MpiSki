@@ -16,7 +16,7 @@
 #include "Gui/TestSettings/CyclicTestSettings.h"
 #include "Gui/TestSettings/OtherTestSettings.h"
 #include "Gui/TestSettings/StepTestSettings.h"
-#include "Gui/TestSettings/AbstractTestSettings.h"
+#include "Gui/TestSettings/BaseSequenceSettingsDialog.h"
 
 #include "Report/Saver.h"
 #include "Domain/Program.h"
@@ -72,8 +72,12 @@ private slots:
     void setText(TextObjects object, const QString &text);
     void setTask(qreal task);
 
-    void setStepTestResults(const Domain::Tests::Option::Step::Result& result);
-
+    void onMainResultUpdated(const Domain::Tests::Main::Result& result);
+    void onStrokeResultUpdated(const Domain::Tests::Stroke::Result& result);
+    void onStepResultUpdated(const Domain::Tests::Option::Step::Result& result);
+    void onCyclicRegulatoryResultUpdated(const Domain::Tests::Cyclic::Regulatory::Result& result);
+    void onCyclicShutoffResultUpdated(const Domain::Tests::Cyclic::Shutoff::Result& result);
+    void onCrossingStatusUpdated(const CrossingStatus& status);
     void setSensorsNumber(quint8 sensorCount);
 
     void setButtonInitEnabled(bool enabled);
@@ -91,6 +95,7 @@ private slots:
 
     void endTest();
 
+    void onPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onStrokeTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onMainTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onStepTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
@@ -175,7 +180,7 @@ private:
 
     QHash<TextObjects, QLineEdit *> m_lineEdits;
 
-    QVector<AbstractTestSettings*> m_testSettings;
+    QVector<BaseSequenceSettingsDialog*> m_testSettings;
     MainTestSettings *m_mainTestSettings;
     StepTestSettings *m_stepTestSettings;
     OtherTestSettings *m_responseTestSettings;

@@ -3,7 +3,7 @@
 #include "Gui/Setup/ValveWindow/ValveEnums.h"
 
 StepTestSettings::StepTestSettings(QWidget* parent)
-    : AbstractTestSettings(parent)
+    : BaseSequenceSettingsDialog(parent)
     , ui(new Ui::StepTestSettings)
 {
     ui->setupUi(this);

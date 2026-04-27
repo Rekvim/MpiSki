@@ -5,10 +5,10 @@
 
 namespace Domain::Tests::Cyclic::Shutoff {
 
-Scenario::Scenario(Tests::TestContext context,
+Scenario::Scenario(Tests::Context context,
                    const Params& params,
                    QObject* parent)
-    : Tests::TestScenario(parent)
+    : Tests::AbstractScenario(parent)
     , m_context(context)
     , m_params(params)
 {
@@ -83,6 +83,7 @@ void Scenario::onResult(const Result& result)
     dst.switch3to0Count = result.switch3to0Count;
     dst.switch0to3Count = result.switch0to3Count;
 
+    emit cyclicShutoffResultUpdated(dst);
     emit telemetryUpdated(m_context.telemetry);
 }
 

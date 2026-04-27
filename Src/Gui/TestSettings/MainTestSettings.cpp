@@ -2,7 +2,7 @@
 #include "ui_MainTestSettings.h"
 
 MainTestSettings::MainTestSettings(QWidget *parent) :
-    AbstractTestSettings(parent),
+    BaseSequenceSettingsDialog(parent),
     ui(new Ui::MainTestSettings)
 {
     ui->setupUi(this);
