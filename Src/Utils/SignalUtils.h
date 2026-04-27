@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QVector>
+
 #include "Domain/Mpi/Device.h"
+#include "Domain/Measurement/Sensor.h"
 
 namespace SignalUtils
 {

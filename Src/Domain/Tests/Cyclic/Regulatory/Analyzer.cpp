@@ -1,4 +1,5 @@
 #include "Analyzer.h"
+#include "Params.h"
 
 namespace Domain::Tests::Cyclic::Regulatory {
     void Analyzer::start()
@@ -12,6 +13,7 @@ namespace Domain::Tests::Cyclic::Regulatory {
 
         m_ranges.clear();
         m_result.ranges.clear();
+        m_prevTask.reset();
 
         if (seq.empty())
             return;
@@ -58,22 +60,21 @@ namespace Domain::Tests::Cyclic::Regulatory {
         if (qIsNaN(task))
             return;
 
-        if (qIsNaN(m_prevTask)) {
+        if (!m_prevTask.has_value()) {
             m_prevTask = task;
             m_step = findStep(task);
             return;
         }
 
-        if (!qFuzzyCompare(task, m_prevTask))
-        {
+        if (!qFuzzyCompare(task, m_prevTask.value())) {
             int newStep = findStep(task);
             if (newStep < 0)
                 return;
 
-            m_isForward = task > m_prevTask;
+            m_isForward = task > *m_prevTask;
 
             if (newStep < m_step)
-                m_cycle++;
+                ++m_cycle;
 
             m_step = newStep;
             m_prevTask = task;

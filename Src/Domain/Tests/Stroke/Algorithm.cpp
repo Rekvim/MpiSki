@@ -19,7 +19,7 @@ namespace Domain::Tests::Stroke {
         }
 
         setDacBlocked(0, 0, true, true);
-        emit results();
+        emit result();
 
         emit finished();
     }

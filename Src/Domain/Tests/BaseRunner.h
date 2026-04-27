@@ -1,12 +1,17 @@
 #pragma once
 
-#include <QThread>
 #include <QObject>
 #include <memory>
 
+class Test;
+class QThread;
+
+namespace Domain::Mpi {
+class Device;
+}
+
+#include "Widgets/Chart/ChartType.h"
 #include "Test.h"
-#include "Widgets/Chart/Manager.h"
-#include "Domain/Mpi/Device.h"
 
 struct RunnerConfig {
     std::unique_ptr<Test> worker = nullptr;

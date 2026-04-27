@@ -6,24 +6,24 @@
 
 namespace Domain::Measurement {
     struct Sample {
-        qint64 systemTime = 0;
+        double systemTime = 0;
         qint64 testTime = 0;
 
-        qreal dac = 0.0;
+        double dac = 0.0;
 
-        qreal taskPercent = 0.0;
+        double taskPercent = 0.0;
 
-        qreal positionValue = 0.0;
-        qreal positionPercent = 0.0;
+        double positionValue = 0.0;
+        double positionPercent = 0.0;
 
         quint8 diMask = 0;
         quint8 doMask = 0;
 
-        qreal pressure1 = qQNaN();
-        qreal pressure2 = qQNaN();
-        qreal pressure3 = qQNaN();
+        double pressure1 = qQNaN();
+        double pressure2 = qQNaN();
+        double pressure3 = qQNaN();
 
-        qreal feedbackCurrent = qQNaN();
+        double feedbackCurrent = qQNaN();
 
         QString positionUnit;
     };

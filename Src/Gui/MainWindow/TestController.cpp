@@ -1,9 +1,10 @@
 #include "TestController.h"
 
-TestController::TestController(QObject* parent)
-    : QObject(parent)
-{
-}
+#include "Domain/Program.h"
+#include "Domain/Tests/Main/Params.h"
+#include "Domain/Tests/Cyclic/Params.h"
+#include "Domain/Tests/Option/Step/Params.h"
+#include "Domain/Tests/Option/Params.h"
 
 void TestController::setProgram(Domain::Program* program)
 {

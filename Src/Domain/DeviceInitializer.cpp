@@ -1,4 +1,5 @@
 #include "DeviceInitializer.h"
+#include "Domain/Measurement/Sensor.h"
 #include <QtMath>
 
 static QString formatPosition(qreal value, StrokeMovement movement)

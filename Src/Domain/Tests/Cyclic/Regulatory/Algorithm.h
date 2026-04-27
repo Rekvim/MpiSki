@@ -23,11 +23,9 @@ namespace Domain::Tests::Cyclic::Regulatory {
         void run() override;
 
     signals:
-        void errorOccured(const QString& text);
+        void result();
         void cycleCompleted(int completedCycles);
 
-        void stepMeasured(int cycle, int step, bool forward);
-        void results();
 
     private:
         Task m_task;

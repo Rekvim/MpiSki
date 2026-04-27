@@ -1,6 +1,13 @@
 #include "Device.h"
-#include <utility>
+
+#include "Domain/Measurement/Sensor.h"
+#include "Domain/Uart/Reader.h"
 #include "Domain/Mpi/Settings.h"
+
+#include <QDebug>
+#include <QEventLoop>
+#include <QThread>
+#include <QTimer>
 
 namespace Domain::Mpi {
 namespace {

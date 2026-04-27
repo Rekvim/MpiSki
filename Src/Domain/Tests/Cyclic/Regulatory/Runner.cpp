@@ -1,7 +1,6 @@
 #include "Runner.h"
 #include "Algorithm.h"
 
-#include "Domain/Program.h"
 #include "Utils/SignalUtils.h"
 
 namespace Domain::Tests::Cyclic::Regulatory {
@@ -30,18 +29,13 @@ RunnerConfig Runner::buildConfig()
 
 void Runner::wireSpecificSignals(Test& base) {
     auto& t = static_cast<Algorithm&>(base);
-    auto owner = qobject_cast<Program*>(parent());
 
-    // connect(&t, &CyclicTestsRegulatory::StepMeasured,
-    //         owner, &Program::onCyclicStepMeasured,
-    //         Qt::QueuedConnection);
-
-    connect(&t, &Algorithm::results,
-            owner, &Program::results_cyclicRegulatoryTests,
+    connect(&t, &Algorithm::result,
+            this, &Runner::result,
             Qt::QueuedConnection);
 
     connect(&t, &Algorithm::cycleCompleted,
-            owner, &Program::cyclicCycleCompleted,
+            this, &Runner::cycleCompleted,
             Qt::QueuedConnection);
 }
 }

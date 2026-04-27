@@ -1,6 +1,5 @@
 #include "Runner.h"
 #include "Algorithm.h"
-#include "Domain/Program.h"
 
 namespace Domain::Tests::Stroke {
     RunnerConfig Runner::buildConfig()
@@ -12,10 +11,9 @@ namespace Domain::Tests::Stroke {
 
     void Runner::wireSpecificSignals(Test& base) {
         auto& t = static_cast<Algorithm&>(base);
-        auto owner = qobject_cast<Program*>(parent());
 
-        connect(&t, &Algorithm::results,
-                owner, &Program::results_strokeTest,
+        connect(&t, &Algorithm::result,
+                this, &Runner::result,
                 Qt::QueuedConnection);
     }
 }

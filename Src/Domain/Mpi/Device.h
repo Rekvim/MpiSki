@@ -1,83 +1,98 @@
 #pragma once
 
 #include <QObject>
-#include <QDebug>
-#include <QEventLoop>
-#include <QThread>
+#include <QString>
+#include <QVector>
+#include <QSerialPort>
 
-#include "Domain/Measurement/Sensor.h"
-#include "Domain/Uart/Reader.h"
+#include <array>
+
+namespace Domain::Measurement {
+class Sensor;
+}
+
+namespace Domain::Uart {
+class Reader;
+}
+
+
+class QThread;
 
 namespace Domain::Mpi {
-    class Device : public QObject
-    {
-        Q_OBJECT
 
-    public:
-        explicit Device(QObject* parent = nullptr);
-        ~Device();
+class Device : public QObject
+{
+    Q_OBJECT
 
-        bool initialize();
-        bool isConnect();
-        const QString &portName() const;
+public:
+    explicit Device(QObject* parent = nullptr);
+    ~Device();
 
-        quint8 version();
+    bool initialize();
+    bool isConnect();
+    const QString& portName() const;
 
-        quint8 digitalOutputs() const;
-        quint8 digitalInputs() const;
+    quint8 version();
 
-        void setDacRaw(quint16 value);
-        void setDacValue(qreal value);
-        quint16 dacMin();
-        quint16 dacMax();
+    quint8 digitalOutputs() const;
+    quint8 digitalInputs() const;
 
-        quint8 sensorCount() const;
+    void setDacRaw(quint16 value);
+    void setDacValue(qreal value);
+    quint16 dacMin();
+    quint16 dacMax();
 
-        Domain::Measurement::Sensor* operator[](quint8 n);
+    quint8 sensorCount() const;
 
-        Domain::Measurement::Sensor* dac() const;
-        Domain::Measurement::Sensor* sensorByAdc(quint8 adc) const;
+    Domain::Measurement::Sensor* operator[](quint8 n);
 
-        void setDiscreteOutput(quint8 index, bool state);
+    Domain::Measurement::Sensor* dac() const;
+    Domain::Measurement::Sensor* sensorByAdc(quint8 adc) const;
 
-    public slots:
-        void onAdcData(const QVector<quint16>& adc);
-        void onUartConnected(const QString portName);
-        void onUartDisconnected();
-        void onUartError(QSerialPort::SerialPortError err);
+    void setDiscreteOutput(quint8 index, bool state);
 
-    signals:
-        void errorOccured(const QString& message);
+public slots:
+    void onAdcData(const QVector<quint16>& adc);
+    void onUartConnected(QString portName);
+    void onUartDisconnected();
+    void onUartError(QSerialPort::SerialPortError err);
 
-        void requestConnect();
-        void requestVersion(quint8& version);
-        void requestSetDac(quint16 value);
+signals:
+    void errorOccured(const QString& message);
 
-        void requestSetAdcPolling(bool enable, quint16 interval);
-        void requestSetAdcChannelMask(quint8 channels);
-        void requestSetAdcTimerArr(quint16 timer);
-        void requestAdcRead(QVector<quint16>& adc);
-        void requestEnableAdc();
-        void requestDisableAdc();
+    void requestConnect();
+    void requestVersion(quint8& version);
+    void requestSetDac(quint16 value);
 
-        void setDigitalOutput(quint8 index, bool state);
-        void requestDigitalOutputs(quint8& DO) const;
-        void requestDigitalInputs(quint8& DI) const;
+    void requestSetAdcPolling(bool enable, quint16 interval);
+    void requestSetAdcChannelMask(quint8 channels);
+    void requestSetAdcTimerArr(quint16 timer);
+    void requestAdcRead(QVector<quint16>& adc);
+    void requestEnableAdc();
+    void requestDisableAdc();
 
-    private:
-        std::array<Domain::Measurement::Sensor*, 6> m_sensorByAdc { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+    void setDigitalOutput(quint8 index, bool state);
+    void requestDigitalOutputs(quint8& DO) const;
+    void requestDigitalInputs(quint8& DI) const;
 
-        Domain::Uart::Reader *m_uartReader;
-        QThread *m_uartThread;
-        bool m_isConnected = false;
-        QString m_portName;
-
-        QVector<Domain::Measurement::Sensor*> m_sensors;
-        Domain::Measurement::Sensor *m_dac = nullptr;
-
-        quint16 m_dacMin = 65536 * 3 / 24;
-        quint16 m_dacMax = 65536 * 21 / 24;
-
-        void sleep(quint16 msecs);
+private:
+    std::array<Domain::Measurement::Sensor*, 6> m_sensorByAdc {
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
     };
+
+    Domain::Uart::Reader* m_uartReader = nullptr;
+    QThread* m_uartThread = nullptr;
+
+    bool m_isConnected = false;
+    QString m_portName;
+
+    QVector<Domain::Measurement::Sensor*> m_sensors;
+    Domain::Measurement::Sensor* m_dac = nullptr;
+
+    quint16 m_dacMin = 65536 * 3 / 24;
+    quint16 m_dacMax = 65536 * 21 / 24;
+
+    void sleep(quint16 msecs);
+};
+
 }

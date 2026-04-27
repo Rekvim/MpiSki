@@ -2,6 +2,7 @@
 
 #include "Domain/Tests/BaseRunner.h"
 #include "Domain/Tests/Option/Step/Params.h"
+#include "Result.h"
 
 namespace Domain::Tests::Option::Step {
     class Runner : public BaseRunner
@@ -11,6 +12,10 @@ namespace Domain::Tests::Option::Step {
         Runner(Mpi::Device& device, bool normalOpen, const Params& params,
                QObject* parent = nullptr)
             : BaseRunner(device, normalOpen, parent), m_params(params) {}
+
+    signals:
+        void getPoints(QVector<QVector<QPointF>>& points);
+        void results(const Domain::Tests::Option::Step::Result& result);
 
     protected:
         RunnerConfig buildConfig() override;

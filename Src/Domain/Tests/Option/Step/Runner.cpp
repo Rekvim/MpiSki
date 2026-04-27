@@ -1,12 +1,11 @@
 #include "Runner.h"
 #include "Algorithm.h"
 
-#include "Domain/Program.h"
-#include "Utils/SignalUtils.h"
+#include "Domain/Measurement/Sensor.h"
+#include "Domain/Mpi/Device.h"
 
 namespace Domain::Tests::Option::Step {
-static QVector<quint16> buildSequence(const Params& p,
-                                      Mpi::Device& device, bool normalOpen)
+static QVector<quint16> buildSequence(const Params& p, Mpi::Device& device, bool normalOpen)
 {
     QVector<quint16> seq;
     auto rawFromPct = [&](quint16 pct){
@@ -48,16 +47,16 @@ RunnerConfig Runner::buildConfig() {
     return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Step);
 }
 
-void Runner::wireSpecificSignals(Test& base) {
+void Runner::wireSpecificSignals(Test& base)
+{
     auto& t = static_cast<Algorithm&>(base);
-    auto owner = qobject_cast<Program*>(parent());
 
     connect(&t, &Algorithm::getPoints,
-            owner, &Program::receivedPoints_stepTest,
+            this, &Runner::getPoints,
             Qt::BlockingQueuedConnection);
 
     connect(&t, &Algorithm::results,
-            owner, &Program::results_stepTest,
+            this, &Runner::results,
             Qt::QueuedConnection);
 }
 }

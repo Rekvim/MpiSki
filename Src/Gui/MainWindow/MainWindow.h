@@ -23,7 +23,10 @@
 #include "Storage/Registry.h"
 #include "Storage/Telemetry.h"
 #include "Widgets/Chart/Manager.h"
-#include "Widgets/Chart/ImageService.h"
+
+namespace Widgets::Chart {
+class ImageService;
+}
 
 #include "TestController.h"
 

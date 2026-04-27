@@ -8,6 +8,8 @@ namespace Domain::Tests::Stroke {
     public:
         using BaseRunner::BaseRunner;
 
+    signals:
+        void result();
     protected:
         RunnerConfig buildConfig() override;
         void wireSpecificSignals(Test& t) override;

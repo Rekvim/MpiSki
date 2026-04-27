@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QApplication>
-#include <QSettings>
 
 namespace Domain::Mpi {
     class Settings : public QObject

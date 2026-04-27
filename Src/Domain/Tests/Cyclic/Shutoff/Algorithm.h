@@ -26,7 +26,7 @@ namespace Domain::Tests::Cyclic::Shutoff {
 
     signals:
         void cycleCompleted(int completedCycles);
-        void results(Result results);
+        void result(const Domain::Tests::Cyclic::Shutoff::Result& results);
         void SetMultipleDO(const QVector<bool>& states);
 
         void GetDI(quint8& di);

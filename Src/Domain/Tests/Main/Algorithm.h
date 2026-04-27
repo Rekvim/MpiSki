@@ -79,6 +79,6 @@ namespace Domain::Tests::Main {
         void getPoints(QVector<QVector<QPointF>> &points);
         void addRegression(const QVector<QPointF> &points);
         void addFriction(const QVector<QPointF> &points);
-        void results(TestResults results);
+        void results(const Domain::Tests::Main::Algorithm::TestResults& results);
     };
 }

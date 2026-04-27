@@ -13,7 +13,7 @@ public:
     void run() override;
 
 private:
-    QTimer *m_cyclicGraphTimer;
+    QTimer* m_cyclicGraphTimer;
 signals:
     void updateCyclicTred();
 };

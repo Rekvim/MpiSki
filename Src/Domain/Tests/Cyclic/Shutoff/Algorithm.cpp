@@ -97,7 +97,7 @@ namespace Domain::Tests::Cyclic::Shutoff {
         r.switch3to0Count = quint16(s3to0);
         r.switch0to3Count = quint16(s0to3);
 
-        emit results(r);
+        emit result(r);
         emit executionStarted();
     }
 }

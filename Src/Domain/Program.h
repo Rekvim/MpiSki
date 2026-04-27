@@ -10,13 +10,9 @@
 #include "Domain/Mpi/Device.h"
 
 #include "Widgets/Chart/ChartType.h"
+#include "Widgets/Chart/Point.h"
 
-#include "Domain/Tests/Main/Params.h"
-#include "Domain/Tests/Cyclic/Params.h"
-#include "Domain/Tests/Option/Step/Params.h"
-#include "Domain/Tests/Option/Params.h"
 
-#include "Storage/Registry.h"
 #include "Storage/Telemetry.h"
 
 #include "Domain/Measurement/Sample.h"
@@ -25,8 +21,51 @@
 
 #include "Domain/Tests/BaseRunner.h"
 
-#include "Domain/Tests/Main/Algorithm.h"
 #include "Gui/Setup/SelectTests.h"
+#include "DeviceConfig.h"
+
+namespace Domain::Tests {
+class TestScenario;
+}
+
+namespace Domain::Tests {
+class TestContext;
+}
+namespace Domain::Tests::Cyclic {
+struct Params;
+}
+
+namespace Domain::Tests::Cyclic::Regulatory {
+class Runner;
+struct Params;
+}
+
+namespace Domain::Tests::Cyclic::Shutoff {
+class Runner;
+struct Result;
+struct Params;
+}
+
+
+namespace Domain::Tests::Main {
+struct Params;
+}
+
+namespace Domain::Tests::Option {
+struct Params;
+}
+
+namespace Domain::Tests::Option::Step {
+struct Params;
+struct Result;
+}
+
+
+
+
+namespace Widgets::Chart {
+struct Point;
+}
 
 enum class TextObjects
 {
@@ -43,21 +82,10 @@ class Program : public QObject
 {
     Q_OBJECT
 public:
+
     explicit Program(QObject *parent = nullptr);
 
-    struct Config {
-        SafePosition safePosition;
-        qreal driveDiameter = 0.0;
-        QString valveStroke;
-        CrossingLimits crossingLimits;
-        StrokeMovement strokeMovement = StrokeMovement::Linear;
-        double diameterPulley = 0.0;
-        double driveRangeLow = 0.0;
-        double driveRangeHigh = 0.0;
-        double dinamicErrorRecomend = 0.0;
-    };
-
-    void setConfig(const Config& config) { m_config = config; }
+    void setConfig(const Domain::DeviceConfig& deviceConfig) { m_deviceConfig = deviceConfig; }
 
     quint8 getDIStatus() { return m_device.digitalInputs(); }
     quint8 getDOStatus() { return m_device.digitalOutputs(); }
@@ -88,7 +116,7 @@ signals:
 
     void setSensorsMask(quint8 adcMask);
 
-    void setText(const TextObjects object, const QString &text);
+    void setText(const TextObjects object, const QString& text);
     void setTextColor(const TextObjects object, const QColor color);
     void setTask(qreal task);
     void setSensorNumber(quint8 num);
@@ -108,7 +136,7 @@ signals:
     void getPoints_stepTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
     void getPoints_cyclicTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
 
-    void addPoints(Widgets::Chart::ChartType chartType, const QVector<Widgets::Chart::Point> &points);
+    void addPoints(Widgets::Chart::ChartType chartType, const QVector<Widgets::Chart::Point>& points);
     void clearPoints(Widgets::Chart::ChartType chartType);
 
     void stopTheTest();
@@ -121,9 +149,10 @@ signals:
     void testFinished();
 
     void totalTestTimeMs(quint64 totalMs);
+    void runnerFinished();
 
 private:
-    Config m_config;
+    DeviceConfig m_deviceConfig;
     SelectTests::PatternType m_patternType;
 
     // Sample
@@ -133,6 +162,7 @@ private:
 
     std::unique_ptr<IAnalyzer> m_analyzer;
     TestWorker m_testWorker = TestWorker::None;
+    std::unique_ptr<Domain::Tests::TestScenario> m_currentScenario;
     //
 
 
@@ -175,29 +205,33 @@ private:
         m_activeRunner->start();
     }
 
-    void updateCrossingStatus();
-
     // init
     void waitForDacCycle();
     void finalizeInitialization();
 
-    template<typename Runner, typename... Args>
-    void runTest(Args&&... args);
-    void prepareShutoffTelemetry(const Tests::Cyclic::Params& params);
-    void prepareRegulatoryTelemetry(const Tests::Cyclic::Params& params);
+    void prepareShutoffTelemetry(const Tests::Cyclic::Params &params);
+    void prepareRegulatoryTelemetry(const Tests::Cyclic::Params &params);
+    bool m_suppressPublicTestFinished = false;
 
-    QVector<quint16> makeRawValues(const QVector<quint16> &seq, bool normalOpen);
-    QString seqToString(const QVector<quint16> &seq);
+    void startScenario(std::unique_ptr<Domain::Tests::TestScenario> scenario);
+    void connectScenario(Domain::Tests::TestScenario* scenario);
 
-    Registry *m_registry;
+    Tests::TestContext makeTestContext();
+    void startCyclicRegulatoryScenario(const Tests::Cyclic::Regulatory::Params& params);
+    void startCyclicShutoffScenario(const Tests::Cyclic::Shutoff::Params& params);
+
+    QVector<quint16> makeRawValues(const QVector<quint16>& seq, bool normalOpen);
+    QString seqToString(const QVector<quint16>& seq);
+
+    Registry* m_registry;
 
     Domain::Mpi::Device m_device;
 
     Telemetry m_telemetry;
-    QTimer *m_diPollTimer = nullptr;
+    QTimer* m_diPollTimer = nullptr;
     quint8 m_lastDiStatus = 0;
-    QTimer *m_timerSensors;
-    QTimer *m_timerDI;
+    QTimer* m_timerSensors;
+    QTimer* m_timerDI;
 
     quint64 m_cyclicStartTimeMs = 0;
     quint64 m_startTime;
@@ -230,13 +264,6 @@ public slots:
     void updateMainCharts(const Domain::Measurement::Sample& s);
     void updateCyclicChart(const Domain::Measurement::Sample& s, Widgets::Chart::ChartType chartType);
     void updateTimeChart(const Domain::Measurement::Sample& s, Widgets::Chart::ChartType chartType, qint64 time);
-    //
-    void results_strokeTest();
-    void results_mainTest(const Domain::Tests::Main::Algorithm::TestResults& results);
-    void results_stepTest(const Domain::Tests::Option::Step::Result& result);
-    void results_cyclicRegulatoryTests();
-    void results_cyclicShutoffTests(const Domain::Tests::Cyclic::Shutoff::Result& result);
-    void results_cyclicCombinedTests(const Domain::Tests::Cyclic::Shutoff::Result& shutoffResult);
 
     void setInitDoStates(const QVector<bool>& states);
     void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
@@ -244,7 +271,6 @@ public slots:
     void addRegression(const QVector<QPointF>& points);
     void addFriction(const QVector<QPointF>& points);
 
-    void receivedPoints_strokeTest(QVector<QVector<QPointF>>& points);
     void receivedPoints_mainTest(QVector<QVector<QPointF>>& points);
     void receivedPoints_stepTest(QVector<QVector<QPointF>>& points);
     void receivedPoints_cyclicTest(QVector<QVector<QPointF>>& points);

@@ -2,7 +2,6 @@
 
 #include <QObject>
 #include <functional>
-#include "Domain/Program.h"
 
 enum class TestState {
     Idle,
@@ -12,12 +11,40 @@ enum class TestState {
     Canceled
 };
 
+namespace Domain {
+class Program;
+}
+
+namespace Domain::Tests::Main {
+struct Params;
+}
+
+namespace Domain::Tests::Option {
+struct Params;
+}
+
+namespace Domain::Tests::Option::Step {
+struct Params;
+}
+
+namespace Domain::Tests::Cyclic {
+struct Params;
+}
+
+namespace Domain::Tests::Cyclic::Shutoff {
+struct Result;
+}
+
+namespace Widgets::Chart {
+struct Point;
+}
+
 class TestController : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit TestController(QObject* parent = nullptr);
+    explicit TestController(QObject* parent = nullptr) : QObject(parent) { }
 
     void setProgram(Domain::Program* program);
 

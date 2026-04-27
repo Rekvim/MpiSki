@@ -1,7 +1,8 @@
 #include "BaseRunner.h"
-#include "Test.h"
 
 #include <QMetaObject>
+#include <QThread>
+#include "Domain/Mpi/Device.h"
 
 BaseRunner::~BaseRunner()
 {

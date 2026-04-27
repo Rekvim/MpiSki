@@ -1,7 +1,6 @@
 #include "Runner.h"
 #include "Algorithm.h"
 
-#include "Domain/Program.h"
 #include "Utils/SignalUtils.h"
 
 namespace Domain::Tests::Cyclic::Shutoff {
@@ -32,27 +31,25 @@ namespace Domain::Tests::Cyclic::Shutoff {
 
     void Runner::wireSpecificSignals(Test& base) {
         auto& t = static_cast<Algorithm&>(base);
-        auto owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
 
-        connect(&t, &Algorithm::results,
-                owner, &Program::results_cyclicShutoffTests,
+        connect(&t, &Algorithm::result,
+                this, &Runner::result,
                 Qt::QueuedConnection);
 
         connect(&t, &Algorithm::cycleCompleted,
-                owner, &Program::cyclicCycleCompleted,
+                this, &Runner::cycleCompleted,
                 Qt::QueuedConnection);
 
         connect(&t, &Algorithm::SetMultipleDO,
-                owner, &Program::setMultipleDO,
+                this, &Runner::SetMultipleDO,
                 Qt::QueuedConnection);
 
-        // НОВОЕ: Blocking-опрос DI/DO из воркера
-        connect(&t, &Algorithm::GetDI,
-                owner, [owner](quint8& di){ di = owner->getDIStatus(); },
-                Qt::DirectConnection);
-
         connect(&t, &Algorithm::GetDO,
-                owner, [owner](quint8& m){ m = owner->getDOStatus(); },
-                Qt::DirectConnection);
+                this, &Runner::GetDO,
+                Qt::QueuedConnection);
+
+        connect(&t, &Algorithm::GetDI,
+                this, &Runner::GetDI,
+                Qt::QueuedConnection);
     }
 }

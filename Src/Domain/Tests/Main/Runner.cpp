@@ -1,7 +1,7 @@
 #include "Runner.h"
-#include "Algorithm.h"
 
-#include "Domain/Program.h"
+#include "Domain/Measurement/Sensor.h"
+#include "Domain/Mpi/Device.h"
 
 namespace Domain::Tests::Main {
     RunnerConfig Runner::buildConfig() {
@@ -24,32 +24,24 @@ namespace Domain::Tests::Main {
 
     void Runner::wireSpecificSignals(Test& base) {
         auto& t = static_cast<Algorithm&>(base);
-        auto owner = qobject_cast<Program*>(parent());
 
         connect(&t, &Algorithm::getPoints,
-                owner, &Program::receivedPoints_mainTest,
+                this, &Runner::receivedPoints_mainTest,
                 Qt::BlockingQueuedConnection);
 
         connect(&t, &Algorithm::dublSeries,
-                owner, [owner]{ emit owner->duplicateMainChartsSeries(); });
+                this, &Runner::dublSeries);
 
         connect(&t, &Algorithm::addRegression,
-                owner, &Program::addRegression,
+                this, &Runner::addRegression,
                 Qt::QueuedConnection);
 
         connect(&t, &Algorithm::addFriction,
-                owner, &Program::addFriction,
+                this, &Runner::addFriction,
                 Qt::QueuedConnection);
 
         connect(&t, &Algorithm::results,
-                owner, &Program::results_mainTest,
+                this, &Runner::results,
                 Qt::QueuedConnection);
-
-        // connect(&t, &MainTest::clearGraph, owner, [owner]{
-        //     emit owner->clearPoints(Charts::Task);
-        //     emit owner->clearPoints(Charts::Pressure);
-        //     emit owner->clearPoints(Charts::Friction);
-        //     emit owner->setRegressionEnable(false);
-        // });
     }
 }

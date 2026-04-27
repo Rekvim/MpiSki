@@ -10,7 +10,7 @@ void Algorithm::run()
     }
     QVector<QVector<QPointF>> points;
     emit getPoints(points);
-    emit results(calculateResult(points), m_TValue);
+    emit results(calculateResult(points));
     emit finished();
 }
 

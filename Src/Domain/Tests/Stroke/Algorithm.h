@@ -11,6 +11,6 @@ namespace Domain::Tests::Stroke {
         void run() override;
 
     signals:
-        void results();
+        void result();
     };
 }

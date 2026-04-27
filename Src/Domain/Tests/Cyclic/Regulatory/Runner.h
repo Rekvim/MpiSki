@@ -10,6 +10,9 @@ namespace Domain::Tests::Cyclic::Regulatory {
         Runner(Mpi::Device& device, bool normalOpen, const Params& params,
                QObject* parent = nullptr)
             : BaseRunner(device, normalOpen, parent), m_params(params) {}
+    signals:
+        void result();
+        void cycleCompleted(int completedCycles);
 
     protected:
         RunnerConfig buildConfig() override;

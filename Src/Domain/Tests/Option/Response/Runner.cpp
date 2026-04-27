@@ -1,6 +1,8 @@
 #include "Runner.h"
-#include "Domain/Program.h"
 #include "Domain/Tests/Option/Algorithm.h"
+
+#include "Domain/Measurement/Sensor.h"
+#include "Domain/Mpi/Device.h"
 
 namespace Domain::Tests::Option::Response {
 RunnerConfig Runner::buildConfig()
@@ -52,7 +54,6 @@ RunnerConfig Runner::buildConfig()
 }
 
 void Runner::wireSpecificSignals(Test& base) {
-    auto& t = static_cast<Algorithm&>(base);
-    auto* owner = qobject_cast<Program*>(parent()); Q_ASSERT(owner);
+    Q_UNUSED(base)
 }
 }

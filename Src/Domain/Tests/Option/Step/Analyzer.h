@@ -14,10 +14,7 @@ public:
         qreal T_value = 86;
     };
 
-    void setConfig(const Config& cfg)
-    {
-        m_cfg = cfg;
-    }
+    void setConfig(const Config& cfg) { m_cfg = cfg; }
 
     void start() override;
     void onSample(const Domain::Measurement::Sample& s) override;

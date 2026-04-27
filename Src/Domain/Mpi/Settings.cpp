@@ -1,5 +1,8 @@
 #include "Settings.h"
 
+#include <QApplication>
+#include <QSettings>
+
 namespace Domain::Mpi {
     Settings::Settings(QObject *parent)
         : QObject{parent}

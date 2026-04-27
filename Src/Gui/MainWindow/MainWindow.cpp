@@ -10,6 +10,8 @@
 #include "Report/BuilderFactory.h"
 #include "Widgets/Chart/ChartView.h"
 
+#include "Widgets/Chart/ImageService.h"
+
 namespace {
 constexpr auto kArrowButtonStyle =
     "QToolButton {"
@@ -687,7 +689,7 @@ void MainWindow::setRegistry(Registry* registry)
 
     m_reportSaver->setBasePath(basePath);
 
-    Domain::Program::Config cfg;
+    Domain::DeviceConfig cfg;
     cfg.safePosition = valveInfo.safePosition;
     cfg.driveDiameter = valveInfo.driveDiameter;
     cfg.valveStroke = valveInfo.valveStroke;

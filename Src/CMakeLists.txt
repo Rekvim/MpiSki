@@ -186,6 +186,17 @@ add_library(Domain STATIC
     ${DOMAIN_CPP}
     ${DOMAIN_HEADERS}
     Report/Blocks/CyclicRegulatoryRanges.h
+    Domain/DeviceConfig.h
+    Domain/TestContext.h
+    Domain/Tests/TestScenario.h Domain/Tests/TestScenario.cpp
+    Domain/Tests/Option/Step/Scenario.h Domain/Tests/Option/Step/Scenario.cpp
+    Domain/Tests/Stroke/Scenario.h Domain/Tests/Stroke/Scenario.cpp
+    Domain/Tests/Option/Resolution/Scenario.h Domain/Tests/Option/Resolution/Scenario.cpp
+    Domain/Tests/Option/Response/Scenario.h Domain/Tests/Option/Response/Scenario.cpp
+    Domain/Tests/Main/Scenario.h Domain/Tests/Main/Scenario.cpp
+    Domain/Tests/Cyclic/Regulatory/Scenario.h Domain/Tests/Cyclic/Regulatory/Scenario.cpp
+    Domain/Tests/Cyclic/Shutoff/Scenario.h Domain/Tests/Cyclic/Shutoff/Scenario.cpp
+    Domain/TestScenarioFactory.h Domain/TestScenarioFactory.cpp
 )
 
 target_include_directories(Domain

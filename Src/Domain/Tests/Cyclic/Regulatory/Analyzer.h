@@ -1,8 +1,12 @@
 #pragma once
 
 #include "Domain/Tests/IAnalyzer.h"
-#include "Params.h"
 #include "Result.h"
+#include <optional>
+
+namespace Domain::Tests::Cyclic::Regulatory {
+struct Params;
+}
 
 namespace Domain::Tests::Cyclic::Regulatory {
     class Analyzer : public IAnalyzer
@@ -20,7 +24,7 @@ namespace Domain::Tests::Cyclic::Regulatory {
         int m_step = -1;
         int m_cycle = 0;
         bool m_isForward = true;
-        double m_prevTask = NAN;
+        std::optional<double> m_prevTask;
 
         int findStep(double task) const;
         void updateRange(double pos);
