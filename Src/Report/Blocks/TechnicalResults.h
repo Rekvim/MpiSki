@@ -7,11 +7,11 @@ namespace Report::Blocks {
     public:
         struct Layout {
             QString sheet;
-            quint16 rowStart;
-            quint16 colFact;
-            quint16 colNorm;
-            quint16 colResult;
-            quint16 rowStrokeTime;
+            int rowStart;
+            int colFact;
+            int colNorm;
+            int colResult;
+            int rowStrokeTime;
         };
 
         explicit TechnicalResults(Layout layout) : m_layout(std::move(layout)) {}

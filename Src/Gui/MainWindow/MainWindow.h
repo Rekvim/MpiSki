@@ -22,6 +22,8 @@
 #include "Domain/Program.h"
 #include "Storage/Registry.h"
 #include "Storage/Telemetry.h"
+#include "Storage/ChartImageStorage.h"
+
 #include "Widgets/Chart/Manager.h"
 
 namespace Widgets::Chart {
@@ -29,8 +31,6 @@ class ImageService;
 }
 
 #include "TestController.h"
-
-using ChartType = Widgets::Chart::ChartType;
 
 // QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -149,7 +149,9 @@ private:
     bool m_isInitialized = false;
     bool m_chartsInitialized = false;
 
-    void saveChart(ChartType chart);
+    void saveChart(Widgets::Chart::ChartType chart);
+    QLabel* previewLabelForChart(Widgets::Chart::ChartType chart) const;
+
     bool tryStartTest();
 
     void setupShortcuts();
@@ -187,6 +189,7 @@ private:
     OtherTestSettings *m_resolutionTestSettings;
     CyclicTestSettings *m_cyclicTestSettings;
 
+    ChartImageStorage m_chartImageStorage;
     QImage m_imageChartTask;
     QImage m_imageChartPressure;
     QImage m_imageChartFriction;
@@ -197,8 +200,7 @@ private:
 
     void initCharts();
 
-    void getImage(QLabel* label, QImage* image);
-
+    void getImage(QLabel* label, Widgets::Chart::ChartType chart);
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 };

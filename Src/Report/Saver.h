@@ -5,6 +5,7 @@
 #include <QImage>
 
 #include "Widgets/Chart/ChartView.h"
+#include "Widgets/Chart/ChartType.h"
 
 namespace Report {
 class Saver : public QObject
@@ -44,7 +45,9 @@ public:
 
     void setBasePath(const QString& basePath);
 
-    void saveImage(Widgets::Chart::ChartView* chart);
+    void saveChartSnapshot(Widgets::Chart::ChartType chart,
+                           const QImage& image,
+                           Widgets::Chart::ChartView* chartView);
     bool saveReport(const Report& report, const QString& templatePath);
 
 private:

@@ -3,6 +3,7 @@
 #include "Saver.h"
 #include "Storage/Telemetry.h"
 #include "Storage/Registry.h"
+#include "Storage/ChartImageStorage.h"
 
 namespace Report {
     struct Context {
@@ -10,25 +11,19 @@ namespace Report {
         const ObjectInfo& object;
         const ValveInfo& valve;
         const OtherParameters& params;
-        const QImage& chartTask;
-        const QImage& chartPressure;
-        const QImage& chartFriction;
-        const QImage& chartStep;
+        const ChartImageStorage& chartImages;
     };
 
     class Builder {
     public:
         virtual ~Builder() = default;
-        virtual void buildReport(
+        virtual void build(
             Saver::Report& report,
             const Telemetry& telemetryStore,
             const ObjectInfo& objectInfo,
             const ValveInfo& valveInfo,
             const OtherParameters& otherParams,
-            const QImage& imageChartTask = QImage(),
-            const QImage& imageChartPressure = QImage(),
-            const QImage& imageChartFriction = QImage(),
-            const QImage& imageChartStep = QImage()
+            const ChartImageStorage& chartImages
         ) = 0;
 
         virtual QString templatePath() const = 0;

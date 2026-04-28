@@ -12,6 +12,6 @@ namespace Domain::Tests::Stroke {
         void result();
     protected:
         RunnerConfig buildConfig() override;
-        void wireSpecificSignals(Test& t) override;
+        void wireSpecificSignals(AbstractTestAlgorithm& t) override;
     };
 }

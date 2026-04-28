@@ -1,31 +1,17 @@
 #pragma once
 
+#include <QtGlobal>
+
 #include "Saver.h"
 
 namespace Report {
     class Writer {
     public:
-        explicit Writer(Saver::Report& report)
-            : m_report(report) {}
+        explicit Writer(Saver::Report& report);
 
-        void cell(const QString& sheet, quint16 row, quint16 col, const QVariant& value)
-        {
-            m_report.data.push_back({sheet, row, col, value.toString()});
-        }
-
-        void image(const QString& sheet,
-                   quint16 row,
-                   quint16 col,
-                   const QImage& img)
-        {
-            m_report.images.push_back({sheet, row, col, img});
-        }
-
-        void validation(const QString& formula,
-                        const QString& range)
-        {
-            m_report.validation.push_back({formula, range});
-        }
+        void cell(const QString& sheet, quint16 row, quint16 col, const QVariant& value);
+        void image(const QString& sheet, quint16 row, quint16 col, const QImage& img);
+        void validation(const QString& formula, const QString& range);
 
     private:
         Saver::Report& m_report;

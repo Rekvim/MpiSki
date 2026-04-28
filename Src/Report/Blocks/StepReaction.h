@@ -8,22 +8,23 @@ namespace Report::Blocks {
         struct Layout {
             QString sheet;
 
-            quint16 imageRow;
-            quint16 imageCol;
+            int imageRow;
+            int imageCol;
 
-            quint16 startRow;
-            quint16 firstBaseCol;
-            quint16 secondBaseCol;
+            int startRow;
+            int firstBaseCol;
+            int secondBaseCol;
         };
 
         explicit StepReaction(Layout layout) : m_layout(std::move(layout)) {}
 
         void build(Writer& writer, const Context& ctx) override
         {
-            writer.image(m_layout.sheet, m_layout.imageRow, m_layout.imageCol, ctx.chartStep);
+            writer.image(m_layout.sheet, m_layout.imageRow, m_layout.imageCol,
+                         ctx.chartImages.get(Widgets::Chart::ChartType::Step));
             if (const auto& result = ctx.telemetry.testStep) {
                 const auto& steps = result->steps;
-                auto writeRow = [&](quint16 row, quint16 baseCol, const auto& sr)
+                auto writeRow = [&](int row, int baseCol, const auto& sr)
                 {
                     writer.cell(m_layout.sheet, row, baseCol++,
                                 QString("%1->%2").arg(sr.from).arg(sr.to));
@@ -36,14 +37,14 @@ namespace Report::Blocks {
                     writer.cell(m_layout.sheet, row, baseCol++, sr.overshoot);
                 };
 
-                for (int i = 0; i < steps.size() && i < 20; ++i)
+                for (int step = 0; step < steps.size() && step < 20; ++step)
                 {
-                    const bool firstBlock = i < 10;
-                    const quint16 baseCol = firstBlock ? m_layout.firstBaseCol
-                                                       : m_layout.secondBaseCol;
+                    const bool firstBlock = step < 10;
+                    const int baseCol = firstBlock ? m_layout.firstBaseCol
+                                                   : m_layout.secondBaseCol;
 
-                    quint16 currentRow = m_layout.startRow + (firstBlock ? i : i - 10);
-                    writeRow(currentRow, baseCol, steps.at(i));
+                    int currentRow = m_layout.startRow + (firstBlock ? step : step - 10);
+                    writeRow(currentRow, baseCol, steps.at(step));
                 }
             } else {
                 qWarning() << "Report block skipped: ctx.telemetry.testStep";

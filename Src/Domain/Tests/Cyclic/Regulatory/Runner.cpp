@@ -27,7 +27,7 @@ RunnerConfig Runner::buildConfig()
     return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Cyclic);;
 }
 
-void Runner::wireSpecificSignals(Test& base) {
+void Runner::wireSpecificSignals(AbstractTestAlgorithm& base) {
     auto& t = static_cast<Algorithm&>(base);
 
     connect(&t, &Algorithm::result,

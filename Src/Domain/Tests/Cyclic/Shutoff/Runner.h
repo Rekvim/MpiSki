@@ -20,7 +20,7 @@ namespace Domain::Tests::Cyclic::Shutoff {
         void GetDO(quint8& doMask);
     protected:
         RunnerConfig buildConfig() override;
-        void wireSpecificSignals(Test& t) override;
+        void wireSpecificSignals(AbstractTestAlgorithm& t) override;
 
     private:
         Params m_params;

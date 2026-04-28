@@ -3,7 +3,7 @@
 #include <QObject>
 #include <memory>
 
-class Test;
+#include "AbstractTestAlgorithm.h"
 class QThread;
 
 namespace Domain::Mpi {
@@ -11,10 +11,9 @@ class Device;
 }
 
 #include "Widgets/Chart/ChartType.h"
-#include "AbstractTestAlgorithm.h"
 
 struct RunnerConfig {
-    std::unique_ptr<Test> worker = nullptr;
+    std::unique_ptr<AbstractTestAlgorithm> worker = nullptr;
     quint64 totalMs = 0;
     Widgets::Chart::ChartType chartToClear = Widgets::Chart::ChartType::None;
 };
@@ -43,10 +42,10 @@ signals:
 
 protected:
     virtual RunnerConfig buildConfig() = 0;
-    virtual void wireSpecificSignals(Test& t) = 0;
+    virtual void wireSpecificSignals(AbstractTestAlgorithm& t) = 0;
 
 protected:
-    RunnerConfig makeConfig(std::unique_ptr<Test> worker,
+    RunnerConfig makeConfig(std::unique_ptr<AbstractTestAlgorithm> worker,
                             quint64 totalMs,
                             Widgets::Chart::ChartType chart)
     {
@@ -65,5 +64,5 @@ private:
 
 private:
     QThread* m_thread = nullptr;
-    Test* m_worker = nullptr;
+    AbstractTestAlgorithm* m_worker = nullptr;
 };

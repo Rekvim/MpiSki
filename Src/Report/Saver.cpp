@@ -3,14 +3,45 @@
 #include <QCoreApplication>
 #include <QDate>
 #include <QFile>
-#include <QOpenGLWidget>
-#include <QPainter>
 #include <QDataStream>
 #include <QDebug>
 #include <QDirIterator>
 
 #include "xlsxdocument.h"
 #include "xlsxdatavalidation.h"
+
+namespace {
+
+QString chartTypeToFileName(Widgets::Chart::ChartType chart)
+{
+    using Widgets::Chart::ChartType;
+
+    switch (chart) {
+    case ChartType::Task:
+        return QStringLiteral("Task");
+    case ChartType::Pressure:
+        return QStringLiteral("Pressure");
+    case ChartType::Friction:
+        return QStringLiteral("Friction");
+    case ChartType::Response:
+        return QStringLiteral("Response");
+    case ChartType::Resolution:
+        return QStringLiteral("Resolution");
+    case ChartType::Stroke:
+        return QStringLiteral("Stroke");
+    case ChartType::Step:
+        return QStringLiteral("Step");
+    case ChartType::Trend:
+        return QStringLiteral("Trend");
+    case ChartType::Cyclic:
+        return QStringLiteral("Cyclic");
+    case ChartType::None:
+    default:
+        return QStringLiteral("Chart");
+    }
+}
+
+}
 
 using namespace QXlsx;
 
@@ -131,44 +162,40 @@ bool Saver::chooseDirectoryManually()
     return true;
 }
 
-void Saver::saveImage(Widgets::Chart::ChartView* chart)
+void Saver::saveChartSnapshot(Widgets::Chart::ChartType chart,
+                              const QImage& image,
+                              Widgets::Chart::ChartView* chartView)
 {
-    if (!chart)
+    if (image.isNull())
+        return;
+
+    if (!chartView)
         return;
 
     if (!ensureDirectory())
         return;
 
-    const QString name = chart->getname();
+    const QString name = chartTypeToFileName(chart);
     const quint16 index = ++m_chartCounter[name];
-
-    QPixmap pixmap = chart->grab();
-
-    if (auto* glWidget = chart->findChild<QOpenGLWidget*>()) {
-        QPainter painter(&pixmap);
-        const QPoint delta =
-            glWidget->mapToGlobal(QPoint()) - chart->mapToGlobal(QPoint());
-        painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-        painter.drawImage(delta, glWidget->grabFramebuffer());
-    }
 
     const QString baseName =
         QStringLiteral("%1_%2").arg(name).arg(index);
 
     const QString bmpPath =
         m_dir.filePath(baseName + QStringLiteral(".bmp"));
-    pixmap.save(bmpPath);
+
+    image.save(bmpPath);
 
     QFile out(m_dir.filePath(baseName + QStringLiteral(".data")));
+
     if (out.open(QIODevice::WriteOnly)) {
         QDataStream stream(&out);
         stream.setVersion(QDataStream::Qt_6_2);
-        chart->saveToStream(stream);
+        chartView->saveToStream(stream);
         out.flush();
         out.close();
     }
 }
-
 bool Saver::saveReport(const Report& report, const QString& templatePath)
 {
     if (!ensureDirectory())

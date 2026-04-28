@@ -8,8 +8,8 @@ namespace Report::Blocks {
     public:
         struct Layout {
             QString sheet;
-            quint16 rowStart;
-            quint16 column;
+            int rowStart;
+            int column;
             bool positionerModel = false;
             bool includeSolenoid = false;
         };
@@ -18,7 +18,7 @@ namespace Report::Blocks {
 
         void build(Writer& writer, const Context& ctx) override
         {
-            quint16 row = m_layout.rowStart;
+            int row = m_layout.rowStart;
             const auto& valve = ctx.valve;
             const auto& telemetry = ctx.telemetry;
             const auto& params = ctx.params;

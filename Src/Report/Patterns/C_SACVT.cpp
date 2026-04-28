@@ -9,16 +9,13 @@
 #include "Report/Blocks/CyclicRegulatoryRanges.h"
 
 namespace Report::Patterns {
-    void C_SACVT::buildReport(
+    void C_SACVT::build(
         Saver::Report& report,
         const Telemetry& telemetryStore,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,
-        const QImage& imageChartTask,
-        const QImage& imageChartPressure,
-        const QImage& imageChartFriction,
-        const QImage& imageChartStep
+        const ChartImageStorage& chartImages
         )
     {
         Writer writer(report);
@@ -28,10 +25,7 @@ namespace Report::Patterns {
             objectInfo,
             valveInfo,
             otherParams,
-            imageChartTask,
-            imageChartPressure,
-            imageChartFriction,
-            imageChartStep
+            chartImages
         };
 
         writer.cell(m_sheetCyclicTests, 1, 9, ctx.valve.positionNumber);
@@ -105,14 +99,19 @@ namespace Report::Patterns {
                                   8, // colNorm
                                   11, // colResult
                                   50 // rowStrokeTime
-                              }).build(writer, ctx);
+                                 }).build(writer, ctx);
 
         writer.cell(m_sheetTechnicalInspection, 64, 12, ctx.params.date);
         writer.cell(m_sheetTechnicalInspection, 72, 4, ctx.object.FIO);
 
-        writer.image(m_sheetTechnicalInspection, 82, 1, ctx.chartTask);
-        writer.image(m_sheetTechnicalInspection, 110, 1, ctx.chartPressure);
-        writer.image(m_sheetTechnicalInspection, 138, 1, ctx.chartFriction);
+        writer.image(m_sheetTechnicalInspection, 82, 1,
+                     ctx.chartImages.get(Widgets::Chart::ChartType::Task));
+
+        writer.image(m_sheetTechnicalInspection, 110, 1,
+                     ctx.chartImages.get(Widgets::Chart::ChartType::Pressure));
+
+        writer.image(m_sheetTechnicalInspection, 138, 1,
+                     ctx.chartImages.get(Widgets::Chart::ChartType::Friction));
 
         writer.cell(m_sheetTechnicalInspection, 164, 12, ctx.params.date);
 

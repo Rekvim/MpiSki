@@ -14,11 +14,11 @@ int main(int argc, char *argv[])
 
     int status = 0;
 
-    StepTestAnalyzerTest test;
-    // StrokeTestAnalyzerTest test;
-    // CyclicRegulatoryAnalyzerTest test;
+    StepTestAnalyzerTest stepTestAnalyzer;
+    StrokeTestAnalyzerTest strokeTestAnalyzer;
+    CyclicRegulatoryAnalyzerTest сyclicRegulatoryAnalyzer;
 
-    status = QTest::qExec(&test, argc, argv);
+    status = QTest::qExec(&stepTestAnalyzer, argc, argv);
 
     if (status == 0) {
         qDebug() << "\n========================================";

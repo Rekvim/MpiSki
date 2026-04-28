@@ -25,10 +25,9 @@ namespace
         qDebug().noquote() << "\n---" << title << "---";
     }
 
-    void printResults(const QVector<Domain::Tests::Option::Step::Result>& results)
+    void printResults(const QVector<Domain::Tests::Option::Step::StepResult>& results)
     {
         qDebug() << "Количество результатов:" << results.size();
-
         for (int i = 0; i < results.size(); ++i)
         {
             const auto& r = results[i];
@@ -62,12 +61,12 @@ void StepTestAnalyzerTest::testSingleUpStep_TValue()
     analyzer.finish();
 
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 1);
-    QCOMPARE(r[0].from, 0);
-    QCOMPARE(r[0].to, 100);
-    QCOMPARE(r[0].T_value, quint64(300));
+    QCOMPARE(r.steps.size(), 1);
+    QCOMPARE(r.steps[0].from, 0);
+    QCOMPARE(r.steps[0].to, 100);
+    QCOMPARE(r.steps[0].T_value, quint64(300));
 }
 
 // Проверка времени достижения 86% на шаге вниз.
@@ -90,12 +89,12 @@ void StepTestAnalyzerTest::testSingleDownStep_TValue()
     analyzer.finish();
 
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 1);
-    QCOMPARE(r[0].from, 100);
-    QCOMPARE(r[0].to, 0);
-    QCOMPARE(r[0].T_value, quint64(300));
+    QCOMPARE(r.steps.size(), 1);
+    QCOMPARE(r.steps[0].from, 100);
+    QCOMPARE(r.steps[0].to, 0);
+    QCOMPARE(r.steps[0].T_value, quint64(300));
 }
 
 // Проверка перерегулирования на шаге вверх.
@@ -118,12 +117,12 @@ void StepTestAnalyzerTest::testOvershootUp()
     analyzer.finish();
 
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 1);
-    QCOMPARE(r[0].from, 0);
-    QCOMPARE(r[0].to, 100);
-    QCOMPARE(r[0].overshoot, 10.0);
+    QCOMPARE(r.steps.size(), 1);
+    QCOMPARE(r.steps[0].from, 0);
+    QCOMPARE(r.steps[0].to, 100);
+    QCOMPARE(r.steps[0].overshoot, 10.0);
 }
 
 // Проверка перерегулирования на шаге вниз.
@@ -146,12 +145,12 @@ void StepTestAnalyzerTest::testOvershootDown()
     analyzer.finish();
 
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 1);
-    QCOMPARE(r[0].from, 100);
-    QCOMPARE(r[0].to, 0);
-    QCOMPARE(r[0].overshoot, 10.0);
+    QCOMPARE(r.steps.size(), 1);
+    QCOMPARE(r.steps[0].from, 100);
+    QCOMPARE(r.steps[0].to, 0);
+    QCOMPARE(r.steps[0].overshoot, 10.0);
 }
 
 // Проверка случая, когда порог 86% не достигнут.
@@ -174,12 +173,12 @@ void StepTestAnalyzerTest::testNoThresholdReached()
     analyzer.finish();
 
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 1);
-    QCOMPARE(r[0].from, 0);
-    QCOMPARE(r[0].to, 100);
-    QCOMPARE(r[0].T_value, quint64(0));
+    QCOMPARE(r.steps.size(), 1);
+    QCOMPARE(r.steps[0].from, 0);
+    QCOMPARE(r.steps[0].to, 100);
+    QCOMPARE(r.steps[0].T_value, quint64(0));
 }
 
 // Проверка нескольких шагов подряд.
@@ -210,17 +209,17 @@ void StepTestAnalyzerTest::testTwoSteps()
     analyzer.finish();
 
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 2);
+    QCOMPARE(r.steps.size(), 2);
 
-    QCOMPARE(r[0].from, 0);
-    QCOMPARE(r[0].to, 50);
-    QCOMPARE(r[0].T_value, quint64(300));
+    QCOMPARE(r.steps[0].from, 0);
+    QCOMPARE(r.steps[0].to, 50);
+    QCOMPARE(r.steps[0].T_value, quint64(300));
 
-    QCOMPARE(r[1].from, 50);
-    QCOMPARE(r[1].to, 100);
-    QCOMPARE(r[1].T_value, quint64(300));
+    QCOMPARE(r.steps[1].from, 50);
+    QCOMPARE(r.steps[1].to, 100);
+    QCOMPARE(r.steps[1].T_value, quint64(300));
 }
 
 // Проверка, что NaN-точки игнорируются.
@@ -245,12 +244,12 @@ void StepTestAnalyzerTest::testNaNInputIgnored()
     analyzer.finish();
 
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 1);
-    QCOMPARE(r[0].from, 0);
-    QCOMPARE(r[0].to, 100);
-    QCOMPARE(r[0].T_value, quint64(200));
+    QCOMPARE(r.steps.size(), 1);
+    QCOMPARE(r.steps[0].from, 0);
+    QCOMPARE(r.steps[0].to, 100);
+    QCOMPARE(r.steps[0].T_value, quint64(200));
 }
 
 // Проверка finish() без активного шага.
@@ -263,7 +262,7 @@ void StepTestAnalyzerTest::testFinishWithoutActiveStep()
     analyzer.start();
     analyzer.finish();
     const auto& r = analyzer.result();
-    printResults(r);
+    printResults(r.steps);
 
-    QCOMPARE(r.size(), 0);
+    QCOMPARE(r.steps.size(), 0);
 }

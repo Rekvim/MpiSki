@@ -36,6 +36,13 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Widgets
 )
 
+option(MPISKI_BUILD_TESTS "Build tests" OFF)
+
+if(MPISKI_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(Tests)
+endif()
+
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 include(GNUInstallDirs)

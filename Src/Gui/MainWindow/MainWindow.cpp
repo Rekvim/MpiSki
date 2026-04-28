@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 
 #include <QDebug>
+#include <QImage>
 
 #include "Gui/Setup/ValveWindow/ValveWindow.h"
 #include "Gui/TestSettings/BaseSequenceSettingsDialog.h"
@@ -11,6 +12,8 @@
 #include "Widgets/Chart/ChartView.h"
 
 #include "Widgets/Chart/ImageService.h"
+
+using ChartType = Widgets::Chart::ChartType;
 
 namespace {
 constexpr auto kArrowButtonStyle =
@@ -322,25 +325,25 @@ MainWindow::MainWindow(QWidget *parent)
             });
 
     // bindImage
-    auto bindImage = [this](QPushButton* btn, QLabel* label, QImage* img)
+    auto bindImage = [this](QPushButton* btn, QLabel* label, ChartType chart)
     {
-        connect(btn, &QPushButton::clicked, this, [this, label, img]
+        connect(btn, &QPushButton::clicked, this, [this, label, chart]
                 {
-                    getImage(label, img);
+                    getImage(label, chart);
                 });
     };
 
     bindImage(ui->pushButton_imageChartTask,
               ui->label_imageChartTask,
-              &m_imageChartTask);
+              ChartType::Task);
 
     bindImage(ui->pushButton_imageChartPressure,
               ui->label_imageChartPressure,
-              &m_imageChartPressure);
+              ChartType::Pressure);
 
     bindImage(ui->pushButton_imageChartFriction,
               ui->label_imageChartFriction,
-              &m_imageChartFriction);
+              ChartType::Friction);
 }
 
 MainWindow::~MainWindow()
@@ -1523,18 +1526,34 @@ void MainWindow::initCharts()
             Qt::BlockingQueuedConnection);
 }
 
-void MainWindow::getImage(QLabel *label, QImage *image)
+void MainWindow::getImage(QLabel* label, ChartType chart)
 {
-    QString imgPath = QFileDialog::getOpenFileName(this,
-                                                   tr("Выберите файл"),
-                                                   m_reportSaver->directory().absolutePath(),
-                                                   tr("Изображения (*.jpg *.png *.bmp)"));
+    QString imgPath = QFileDialog::getOpenFileName(
+        this,
+        tr("Выберите файл"),
+        m_reportSaver->directory().absolutePath(),
+        tr("Изображения (*.jpg *.png *.bmp)")
+        );
 
-    if (!imgPath.isEmpty()) {
-        QImage img(imgPath);
-        *image = img.scaled(1000, 430, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        label->setPixmap(QPixmap::fromImage(img));
-    }
+    if (imgPath.isEmpty())
+        return;
+
+    QImage img(imgPath);
+
+    if (img.isNull())
+        return;
+
+    QImage scaled = img.scaled(
+        1000,
+        430,
+        Qt::IgnoreAspectRatio,
+        Qt::SmoothTransformation
+        );
+
+    m_chartImageStorage.set(chart, scaled);
+
+    if (label)
+        label->setPixmap(QPixmap::fromImage(scaled));
 }
 
 void MainWindow::initClicked()
@@ -1571,31 +1590,38 @@ void MainWindow::restoreSeries(ChartType chart, const SeriesVisibilityBackup& b)
 
 void MainWindow::saveChart(ChartType chart)
 {
+    auto* chartView = m_chartManager->chart(chart);
+
+    if (!chartView)
+        return;
+
+    const QImage image = m_chartImages->captureChart(chart);
+
+    if (image.isNull())
+        return;
+
+    m_chartImageStorage.set(chart, image);
+
+    if (auto* label = previewLabelForChart(chart)) {
+        label->setPixmap(QPixmap::fromImage(image));
+    }
+
+    if (m_reportSaver) {
+        m_reportSaver->saveChartSnapshot(chart, image, chartView);
+    }
+}
+
+QLabel* MainWindow::previewLabelForChart(ChartType chart) const
+{
     switch (chart) {
     case ChartType::Task:
-        m_chartImages->saveChart(
-            chart,
-            ui->label_imageChartTask,
-            m_imageChartTask);
-        break;
+        return ui->label_imageChartTask;
     case ChartType::Pressure:
-        m_chartImages->saveChart(
-            chart,
-            ui->label_imageChartPressure,
-            m_imageChartPressure);
-        break;
+        return ui->label_imageChartPressure;
     case ChartType::Friction:
-        m_chartImages->saveChart(
-            chart,
-            ui->label_imageChartFriction,
-            m_imageChartFriction);
-        break;
-    case ChartType::Step:
-        m_imageChartStep = m_chartImages->captureChart(chart);
-        break;
+        return ui->label_imageChartFriction;
     default:
-        m_chartImages->saveChart(chart);
-        break;
+        return nullptr;
     }
 }
 
@@ -1664,17 +1690,17 @@ void MainWindow::generateReportClicked()
     auto reportBuilder = Report::BuilderFactory::create(m_patternType);
 
     if (!reportBuilder) {
-        QMessageBox::warning(this, tr("Ошибка"), tr("Не выбран корректный паттерн отчёта!"));
+        qDebug("Не выбран корректный паттерн отчёта!");
         return;
     }
 
     Report::Saver::Report report;
-    reportBuilder->buildReport(report,
-                               m_telemetry,
-                               m_registry->objectInfo(),
-                               m_registry->valveInfo(),
-                               m_registry->otherParameters(),
-                               m_imageChartTask, m_imageChartPressure, m_imageChartFriction, m_imageChartStep);
+    reportBuilder->build(report,
+                         m_telemetry,
+                         m_registry->objectInfo(),
+                         m_registry->valveInfo(),
+                         m_registry->otherParameters(),
+                         m_chartImageStorage);
 
     bool saved = m_reportSaver->saveReport(report, reportBuilder->templatePath());
     ui->pushButton_report_open->setEnabled(saved);

@@ -43,7 +43,7 @@ void BaseRunner::start()
         emit requestClearChart(cfg.chartToClear);
 
     QThread* thread = new QThread();
-    Test* worker = cfg.worker.release();
+    AbstractTestAlgorithm* worker = cfg.worker.release();
 
     m_thread = thread;
     m_worker = worker;
@@ -51,21 +51,21 @@ void BaseRunner::start()
     worker->moveToThread(thread);
 
     connect(thread, &QThread::started,
-            worker, &Test::run);
+            worker, &AbstractTestAlgorithm::run);
 
-    connect(worker, &Test::executionStarted,
+    connect(worker, &AbstractTestAlgorithm::executionStarted,
             this, &BaseRunner::testActuallyStarted,
             Qt::QueuedConnection);
 
-    connect(worker, &Test::dacCommandRequested,
+    connect(worker, &AbstractTestAlgorithm::dacCommandRequested,
             this, &BaseRunner::requestSetDAC,
             Qt::QueuedConnection);
 
-    connect(worker, &Test::finished,
+    connect(worker, &AbstractTestAlgorithm::finished,
             thread, &QThread::quit,
             Qt::QueuedConnection);
 
-    connect(worker, &Test::finished,
+    connect(worker, &AbstractTestAlgorithm::finished,
             this, &BaseRunner::endTest,
             Qt::QueuedConnection);
 

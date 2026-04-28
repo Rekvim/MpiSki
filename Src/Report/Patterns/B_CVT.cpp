@@ -6,16 +6,13 @@
 #include "Report/Blocks/CyclicRanges.h"
 
 namespace Report::Patterns {
-void B_CVT::buildReport(
+void B_CVT::build(
     Saver::Report& report,
     const Telemetry& telemetryStore,
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
-    const QImage& imageChartTask,
-    const QImage& imageChartPressure,
-    const QImage& imageChartFriction,
-    const QImage& imageChartStep
+    const ChartImageStorage& chartImages
     )
 {
     Writer writer(report);
@@ -25,10 +22,7 @@ void B_CVT::buildReport(
         objectInfo,
         valveInfo,
         otherParams,
-        imageChartTask,
-        imageChartPressure,
-        imageChartFriction,
-        imageChartStep
+        chartImages
     };
 
     writer.cell(m_sheetCyclicTests, 1, 9, ctx.valve.positionNumber);

@@ -8,8 +8,6 @@ namespace Report::Blocks {
     public:
         virtual ~IBlock() = default;
 
-        virtual void build(
-            Writer& writer,
-            const Context& ctx) = 0;
+        virtual void build(Writer& writer, const Context& ctx) = 0;
     };
 }

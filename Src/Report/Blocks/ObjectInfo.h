@@ -7,8 +7,8 @@ namespace Report::Blocks {
     public:
         struct Layout {
             QString sheet;
-            quint16 rowStart;
-            quint16 column;
+            int rowStart;
+            int column;
         };
 
         explicit ObjectInfo(Layout layout) : m_layout(std::move(layout)) {}

@@ -13,9 +13,9 @@ public:
 
     struct Layout {
         QString sheet;
-        quint16 rowStart;
-        quint16 column;
-        quint16 rowStep;
+        int rowStart;
+        int column;
+        int rowStep;
     };
 
     CyclicSummary(Layout layout, CyclicMode mode)
@@ -25,14 +25,11 @@ public:
 
     void build(Writer& writer, const Context& ctx) override
     {
-        quint16 row = m_layout.rowStart;
+        int row = m_layout.rowStart;
 
         if (const auto& stroke = ctx.telemetry.testStroke) {
             writer.cell(m_layout.sheet, row, m_layout.column,
                         stroke->timeForwardMs);
-        } else {
-            qWarning() << "Report field skipped:"
-                       << "CyclicSummary - missing ctx.telemetry.testStroke.timeForwardMs";
         }
 
         row += m_layout.rowStep;
@@ -40,9 +37,6 @@ public:
         if (const auto& stroke = ctx.telemetry.testStroke) {
             writer.cell(m_layout.sheet, row, m_layout.column,
                         stroke->timeBackwardMs);
-        } else {
-            qWarning() << "Report field skipped:"
-                       << "CyclicSummary - missing ctx.telemetry.testStroke.timeBackwardMs";
         }
 
         row += m_layout.rowStep;
@@ -52,72 +46,33 @@ public:
             const auto& cyclic = ctx.telemetry.testСyclicRegulatory;
 
             if (cyclic) {
-                writer.cell(m_layout.sheet, row, m_layout.column,
-                            cyclic->numCycles);
-            } else {
-                qWarning() << "Report field skipped:"
-                           << "CyclicSummary Regulatory - missing numCycles";
-            }
+                writer.cell(m_layout.sheet, row, m_layout.column, cyclic->numCycles);
 
-            row += m_layout.rowStep;
+                row += m_layout.rowStep;
+                writer.cell(m_layout.sheet, row, m_layout.column, cyclic->sequence);
 
-            if (cyclic) {
-                writer.cell(m_layout.sheet, row, m_layout.column,
-                            cyclic->sequence);
-            } else {
-                qWarning() << "Report field skipped:"
-                           << "CyclicSummary Regulatory - missing sequence";
-            }
-
-            row += m_layout.rowStep;
-
-            if (cyclic) {
+                row += m_layout.rowStep;
                 writer.cell(m_layout.sheet, row, m_layout.column,
                             QTime(0, 0)
                                 .addSecs(cyclic->totalTimeSec)
                                 .toString("mm:ss.zzz"));
-            } else {
-                qWarning() << "Report field skipped:"
-                           << "CyclicSummary Regulatory - missing totalTimeSec";
-            }
-
-            break;
+            } break;
         }
-
         case CyclicMode::Shutoff: {
             const auto& cyclic = ctx.telemetry.testСyclicShutoff;
 
             if (cyclic) {
-                writer.cell(m_layout.sheet, row, m_layout.column,
-                            cyclic->numCycles);
-            } else {
-                qWarning() << "Report field skipped:"
-                           << "CyclicSummary Shutoff - missing numCycles";
-            }
+                writer.cell(m_layout.sheet, row, m_layout.column, cyclic->numCycles);
+                row += m_layout.rowStep;
 
-            row += m_layout.rowStep;
+                writer.cell(m_layout.sheet, row, m_layout.column, cyclic->sequence);
+                row += m_layout.rowStep;
 
-            if (cyclic) {
-                writer.cell(m_layout.sheet, row, m_layout.column,
-                            cyclic->sequence);
-            } else {
-                qWarning() << "Report field skipped:"
-                           << "CyclicSummary Shutoff - missing sequence";
-            }
-
-            row += m_layout.rowStep;
-
-            if (cyclic) {
                 writer.cell(m_layout.sheet, row, m_layout.column,
                             QTime(0, 0)
                                 .addSecs(cyclic->totalTimeSec)
                                 .toString("mm:ss.zzz"));
-            } else {
-                qWarning() << "Report field skipped:"
-                           << "CyclicSummary Shutoff - missing totalTimeSec";
-            }
-
-            break;
+            } break;
         }
         }
     }

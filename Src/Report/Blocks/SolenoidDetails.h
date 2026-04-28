@@ -8,14 +8,14 @@ namespace Report::Blocks {
         struct Layout {
             QString sheet;
 
-            quint16 rowBase;
-            quint16 colCount;
-            quint16 colOn;
-            quint16 colOff;
-            quint16 rowStep;
+            int rowBase;
+            int colCount;
+            int colOn;
+            int colOff;
+            int rowStep;
 
-            quint16 rowSwitch1;
-            quint16 rowSwitch2;
+            int rowSwitch1;
+            int rowSwitch2;
         };
 
         explicit SolenoidDetails(Layout layout) : m_layout(std::move(layout)) {}
@@ -29,11 +29,11 @@ namespace Report::Blocks {
                 const auto& ons = cyclic->doOnCounts;
                 const auto& offs = cyclic->doOffCounts;
 
-                for (int i = 0; i < ons.size(); ++i) {
+                for (quint16 i = 0; i < ons.size(); ++i) {
                     if (ons[i] == 0 && offs.value(i, 0) == 0)
                         continue;
 
-                    quint16 row = m_layout.rowBase + quint16(i) * m_layout.rowStep;
+                    int row = m_layout.rowBase + i * m_layout.rowStep;
 
                     w.cell(m_layout.sheet, row, m_layout.colOn,  ons[i]);
                     w.cell(m_layout.sheet, row, m_layout.colOff, offs.value(i, 0));

@@ -19,7 +19,7 @@ namespace Domain::Tests::Option::Step {
 
     protected:
         RunnerConfig buildConfig() override;
-        void wireSpecificSignals(Test& t) override;
+        void wireSpecificSignals(AbstractTestAlgorithm& t) override;
 
     private:
         Params m_params;

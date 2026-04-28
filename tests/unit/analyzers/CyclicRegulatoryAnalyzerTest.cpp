@@ -4,6 +4,8 @@
 #include <QDebug>
 
 #include "Domain/Tests/Cyclic/Regulatory/Analyzer.h"
+#include "Domain/Tests/Cyclic/Regulatory/Params.h"
+
 #include "SampleGenerator.h"
 
 

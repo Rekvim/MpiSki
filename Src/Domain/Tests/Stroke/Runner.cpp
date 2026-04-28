@@ -9,7 +9,7 @@ namespace Domain::Tests::Stroke {
         return makeConfig(std::move(worker), 0, Widgets::Chart::ChartType::Stroke);
     }
 
-    void Runner::wireSpecificSignals(Test& base) {
+    void Runner::wireSpecificSignals(AbstractTestAlgorithm& base) {
         auto& t = static_cast<Algorithm&>(base);
 
         connect(&t, &Algorithm::result,

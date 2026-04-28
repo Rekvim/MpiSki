@@ -1,33 +1,34 @@
 #pragma once
 
+#include <QObject>
 #include <QImage>
 #include <optional>
-#include "Report/Saver.h"
-#include "ChartView.h"
-#include "Manager.h"
+
+#include "Widgets/Chart/ChartType.h"
 
 namespace Widgets::Chart {
-class ImageService
-{
-public:
-    struct SeriesVisibilityBackup
-    {
-        QVector<bool> visible;
-    };
 
-    ImageService(Manager* charts, Report::Saver* saver)
-        : m_charts(charts), m_saver(saver) {}
+class Manager;
+
+class ImageService : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit ImageService(Manager* charts, QObject* parent = nullptr);
 
     QImage captureChart(ChartType chart);
 
-    void saveChart(ChartType chart, QLabel* previewLabel, QImage& targetImage);
-    void saveChart(ChartType chart);
-
 private:
+    struct SeriesVisibilityBackup {
+        QVector<bool> visible;
+    };
+
     std::optional<SeriesVisibilityBackup> hideAuxSeries(ChartType chart);
     void restoreSeries(ChartType chart, const SeriesVisibilityBackup& backup);
 
-    Manager* m_charts;
-    Report::Saver* m_saver;
+private:
+    Manager* m_charts = nullptr;
 };
+
 }

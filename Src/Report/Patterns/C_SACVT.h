@@ -6,16 +6,13 @@ namespace Report::Patterns {
     class C_SACVT : public Builder
     {
     public:
-        void buildReport(
+        void build(
             Saver::Report& report,
             const Telemetry& telemetryStore,
             const ObjectInfo& objectInfo,
             const ValveInfo& valveInfo,
             const OtherParameters& otherParams,
-            const QImage& imageChartTask = QImage(),
-            const QImage& imageChartPressure = QImage(),
-            const QImage& imageChartFriction = QImage(),
-            const QImage& imageChartStep = QImage()
+            const ChartImageStorage& chartImages
             ) override;
         QString templatePath() const override { return ":/excel/Reports/SKI_C_SACVT.xlsx"; }
     };

@@ -27,11 +27,23 @@ set(DOMAIN_CPP
     Domain/Tests/CyclicPositioner/CyclicTestPositioner.cpp
     Domain/Tests/Option/Response/Runner.cpp
     Domain/Tests/Option/Resolution/Runner.cpp
+    Domain/Tests/Option/Resolution/Scenario.cpp
+    Domain/Tests/Cyclic/Regulatory/Scenario.cpp
+    Domain/Tests/Cyclic/Shutoff/Scenario.cpp
+    Domain/Tests/Option/Response/Scenario.cpp
+    Domain/Tests/Option/Step/Scenario.cpp
+    Domain/Tests/Main/Scenario.cpp
+    Domain/Tests/Stroke/Scenario.cpp
+
+    Domain/Tests/ScenarioFactory.cpp
     Domain/Program.cpp
 
     Storage/AppSettings.cpp
     Storage/Registry.cpp
+    Storage/ChartImageStorage.cpp
+
     Utils/NumberUtils.cpp
+
     ValidatorFactory/ValidatorFactory.cpp
 )
 
@@ -85,26 +97,21 @@ set(DOMAIN_HEADERS
 
 
     Domain/Tests/Option/Step/Scenario.h
-    Domain/Tests/Option/Step/Scenario.cpp
     Domain/Tests/Stroke/Scenario.h
-    Domain/Tests/Stroke/Scenario.cpp
     Domain/Tests/Option/Resolution/Scenario.h
-    Domain/Tests/Option/Resolution/Scenario.cpp
     Domain/Tests/Option/Response/Scenario.h
-    Domain/Tests/Option/Response/Scenario.cpp
     Domain/Tests/Main/Scenario.h
-    Domain/Tests/Main/Scenario.cpp
     Domain/Tests/Cyclic/Regulatory/Scenario.h
-    Domain/Tests/Cyclic/Regulatory/Scenario.cpp
     Domain/Tests/Cyclic/Shutoff/Scenario.h
-    Domain/Tests/Cyclic/Shutoff/Scenario.cpp
     Domain/Tests/ScenarioFactory.h
-    Domain/Tests/ScenarioFactory.cpp
+    Domain/Tests/AbstractScenario.h
 
     Storage/AppSettings.h
     Storage/Registry.h
     Storage/SettingsGroup.h
     Storage/Telemetry.h
+    Storage/ChartImageStorage.h
+
 
     Utils/NumberUtils.h
     Utils/SignalUtils.h
@@ -121,8 +128,16 @@ set(REPORT_CPP
     Report/Patterns/C_CVT.cpp
     Report/Patterns/C_SACVT.cpp
     Report/Patterns/C_SOVT.cpp
+
+    Report/Pages/CyclicRegulatory.cpp
+    Report/Pages/CyclicShutoffPage.cpp
+    Report/Pages/SolenoidShutoff.cpp
+    Report/Pages/TechnicalInspection.cpp
+    Report/Pages/StepReaction.cpp
+
     Report/Blocks/TechnicalResults.cpp
     Report/Saver.cpp
+    Report/Writer.cpp
 )
 
 set(REPORT_HEADERS
@@ -133,6 +148,11 @@ set(REPORT_HEADERS
     Report/Patterns/C_CVT.h
     Report/Patterns/C_SACVT.h
     Report/Patterns/C_SOVT.h
+    Report/Pages/CyclicRegulatory.h
+    Report/Pages/CyclicShutoffPage.h
+    Report/Pages/TechnicalInspection.h
+    Report/Pages/SolenoidShutoff.h
+    Report/Pages/StepReaction.h
     Report/Blocks/CyclicRanges.h
     Report/Blocks/CyclicSummary.h
     Report/Blocks/IBlock.h
@@ -207,7 +227,6 @@ set(GUI_UI
 add_library(Domain STATIC
     ${DOMAIN_CPP}
     ${DOMAIN_HEADERS}
-    Domain/Tests/AbstractScenario.h
 )
 
 target_include_directories(Domain
@@ -218,8 +237,6 @@ target_include_directories(Domain
 target_link_libraries(Domain
     PUBLIC
         Qt6::Core
-        Qt6::Gui
-        Qt6::Widgets
         Qt6::Charts
         Qt6::SerialPort
 )

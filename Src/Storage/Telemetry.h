@@ -23,32 +23,6 @@ struct InitState {
     QColor finalPositionColor = QColor();
 };
 
-struct RangeDeviationRecord {
-    qint16 rangePercent = 0;
-    double maxForwardValue = 0.0;
-    qint16 maxForwardCycle = 0;
-    double maxReverseValue = 0.0;
-    qint16 maxReverseCycle = 0;
-};
-
-struct CyclicTestRecord {
-    QString sequenceRegulatory = "";
-    QString sequenceShutoff = "";
-
-    quint16 numCyclesRegulatory = 0;
-    quint16 numCyclesShutoff = 0;
-
-    double totalTimeSecRegulatory = 0.0;
-    double totalTimeSecShutoff = 0.0;
-
-    Domain::Tests::Cyclic::Regulatory::Result regulatoryResult;
-    int switch3to0Count = 0;
-    int switch0to3Count = 0;
-
-    QVector<quint16> doOnCounts = {};
-    QVector<quint16> doOffCounts = {};
-};
-
 struct CrossingStatus {
     enum class State {
         Unknown,
@@ -75,14 +49,12 @@ struct SupplyRecord {
 class Telemetry {
 public:
     InitState init;
-    // CyclicTestRecord cyclicTestRecord;
     ValveStrokeRecord valveStrokeRecord;
     SupplyRecord supplyRecord;
     CrossingStatus crossingStatus;
 
     std::optional<Domain::Tests::Stroke::Result> testStroke;
     std::optional<Domain::Tests::Main::Result> testMain;
-    // TODO: После проверки Анализатра сделать результат уже готовым вектором
     std::optional<Domain::Tests::Option::Step::Result> testStep;
 
     std::optional<Domain::Tests::Cyclic::Regulatory::Result> testСyclicRegulatory;

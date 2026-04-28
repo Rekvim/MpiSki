@@ -10,16 +10,13 @@
 #include "Report/Blocks/CyclicRegulatoryRanges.h"
 
 namespace Report::Patterns {
-void C_CVT::buildReport(
+void C_CVT::build(
     Saver::Report& report,
     const Telemetry& telemetryStore,
     const ObjectInfo& objectInfo,
     const ValveInfo& valveInfo,
     const OtherParameters& otherParams,
-    const QImage& imageChartTask,
-    const QImage& imageChartPressure,
-    const QImage& imageChartFriction,
-    const QImage& imageChartStep
+    const ChartImageStorage& chartImages
     )
 {
     Writer writer(report);
@@ -29,10 +26,7 @@ void C_CVT::buildReport(
         objectInfo,
         valveInfo,
         otherParams,
-        imageChartTask,
-        imageChartPressure,
-        imageChartFriction,
-        imageChartStep
+        chartImages
     };
 
     // Страница: 1;
@@ -83,9 +77,9 @@ void C_CVT::buildReport(
     writer.cell(m_sheetTechnicalInspection, 62, 12, ctx.params.date);
     writer.cell(m_sheetTechnicalInspection, 70, 4, ctx.object.FIO);
 
-    writer.image(m_sheetTechnicalInspection, 80, 1, imageChartTask);
-    writer.image(m_sheetTechnicalInspection, 108, 1, imageChartPressure);
-    writer.image(m_sheetTechnicalInspection, 136, 1, imageChartFriction);
+    writer.image(m_sheetTechnicalInspection, 80, 1, ctx.chartImages.get(Widgets::Chart::ChartType::Task));
+    writer.image(m_sheetTechnicalInspection, 108, 1, ctx.chartImages.get(Widgets::Chart::ChartType::Pressure));
+    writer.image(m_sheetTechnicalInspection, 136, 1, ctx.chartImages.get(Widgets::Chart::ChartType::Friction));
 
     writer.cell( m_sheetTechnicalInspection, 162, 12, ctx.params.date);
 

@@ -7,16 +7,13 @@
 #include "Report/Blocks/CyclicRegulatoryRanges.h"
 
 namespace Report::Patterns {
-    void B_SACVT::buildReport(
+    void B_SACVT::build(
         Saver::Report& report,
         const Telemetry& telemetryStore,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,
         const OtherParameters& otherParams,
-        const QImage& imageChartTask,
-        const QImage& imageChartPressure,
-        const QImage& imageChartFriction,
-        const QImage& imageChartStep
+        const ChartImageStorage& chartImages
         )
     {
         Writer writer(report);
@@ -26,21 +23,15 @@ namespace Report::Patterns {
             objectInfo,
             valveInfo,
             otherParams,
-            imageChartTask,
-            imageChartPressure,
-            imageChartFriction,
-            imageChartStep
+            chartImages
         };
         // Страница: 1;
         writer.cell(m_sheetCyclicTests, 1, 9, ctx.valve.positionNumber);
 
         Blocks::ObjectInfo({m_sheetCyclicTests, 4, 4 }).build(writer, ctx);
         Blocks::ValveSpec({m_sheetCyclicTests, 4, 13, true, true}).build(writer, ctx);
-        Blocks::CyclicSummary({m_sheetCyclicTests,
-                               21,
-                               8,
-                               2
-                           }, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
+        Blocks::CyclicSummary({m_sheetCyclicTests, 21, 8, 2
+                              }, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
 
         Report::Blocks::CyclicRegulatoryRanges({m_sheetCyclicTests,
                                                    35, 2, 2, 8, 11, 12, 15
@@ -53,7 +44,7 @@ namespace Report::Patterns {
         Blocks::ObjectInfo({m_sheetCyclicTests, 68, 4 }).build(writer, ctx);
         Blocks::ValveSpec({m_sheetCyclicTests, 68, 13, true, true}).build(writer, ctx);
         Blocks::CyclicSummary({m_sheetCyclicTests, 85, 8, 2 },
-                             Blocks::CyclicSummary::CyclicMode::Shutoff).build(writer, ctx);
+                              Blocks::CyclicSummary::CyclicMode::Shutoff).build(writer, ctx);
 
         writer.cell(m_sheetCyclicTests, 122, 4, objectInfo.FIO);
         writer.cell(m_sheetCyclicTests, 126, 12, otherParams.date);
@@ -62,7 +53,7 @@ namespace Report::Patterns {
         Blocks::ObjectInfo({m_sheetCyclicTests, 131, 4 }).build(writer, ctx);
         Blocks::ValveSpec({m_sheetCyclicTests, 131, 13, true, true}).build(writer, ctx);
         Blocks::CyclicSummary({m_sheetCyclicTests, 148, 8, 2},
-                             Blocks::CyclicSummary::CyclicMode::Shutoff).build(writer, ctx);
+                              Blocks::CyclicSummary::CyclicMode::Shutoff).build(writer, ctx);
 
         Blocks::SolenoidDetails({m_sheetCyclicTests,
                                  164, // rowBase

@@ -53,7 +53,7 @@ RunnerConfig Runner::buildConfig()
     return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Response);
 }
 
-void Runner::wireSpecificSignals(Test& base) {
+void Runner::wireSpecificSignals(AbstractTestAlgorithm& base) {
     Q_UNUSED(base)
 }
 }
