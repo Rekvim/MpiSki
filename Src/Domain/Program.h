@@ -138,11 +138,6 @@ signals:
 
     void points(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
 
-    void getPoints_strokeTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
-    void getPoints_mainTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
-    void getPoints_stepTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
-    void getPoints_cyclicTest(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
-
     void addPoints(Widgets::Chart::ChartType chartType, const QVector<Widgets::Chart::Point>& points);
     void clearPoints(Widgets::Chart::ChartType chartType);
 
@@ -173,12 +168,7 @@ private:
     TestWorker m_testWorker = TestWorker::None;
     std::unique_ptr<Domain::Tests::AbstractScenario> m_currentScenario;
     //
-
-
-    std::unique_ptr<BaseRunner> m_activeRunner;
     void onRunnerActuallyStarted();
-
-    void startRunner(std::unique_ptr<BaseRunner> r);
 
     // init
     void waitForDacCycle();
@@ -189,7 +179,7 @@ private:
     bool m_suppressPublicTestFinished = false;
 
     void startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> scenario);
-    void connectScenario(Domain::Tests::AbstractScenario* scenario);
+    void connectScenarioRuntime(Domain::Tests::AbstractScenario* scenario);
 
     Tests::Context makeContext();
     void startCyclicRegulatoryScenario(const Tests::Cyclic::Regulatory::Params& params);

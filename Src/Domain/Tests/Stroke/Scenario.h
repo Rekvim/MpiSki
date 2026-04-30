@@ -4,31 +4,32 @@
 #include "Domain/Tests/Context.h"
 
 namespace Domain::Tests::Stroke {
-    class Runner;
-    class Analyzer;
+class Runner;
+class Analyzer;
 
-    class Scenario : public Tests::AbstractScenario
-    {
-        Q_OBJECT
+class Scenario : public Tests::AbstractScenario
+{
+    Q_OBJECT
 
-    public:
-        Scenario(Tests::Context context,
-                 QObject* parent = nullptr);
+public:
+    Scenario(Tests::Context context, QObject* parent = nullptr);
+    ~Scenario() override;
 
-        ~Scenario() override;
+    void onSample(const Measurement::Sample& sample) override;
 
-        std::unique_ptr<BaseRunner> createRunner(QObject* parent) override;
-        void startAnalyzer() override;
-        void onSample(const Measurement::Sample& sample) override;
+signals:
+    void telemetryUpdated(const Telemetry& telemetry);
 
-    signals:
-        void telemetryUpdated(const Telemetry& telemetry);
+protected:
+    void beforeStart() override;
+    std::unique_ptr<BaseRunner> createRunner() override;
+    void afterRunnerCreated(BaseRunner& runner) override;
 
-    private slots:
-        void onResult();
+private slots:
+    void onResult();
 
-    private:
-        Tests::Context m_context;
-        std::unique_ptr<Analyzer> m_analyzer;
-    };
+private:
+    Tests::Context m_context;
+    std::unique_ptr<Analyzer> m_analyzer;
+};
 }

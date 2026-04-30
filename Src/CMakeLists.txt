@@ -239,6 +239,7 @@ set(GUI_UI
 add_library(Domain STATIC
     ${DOMAIN_CPP}
     ${DOMAIN_HEADERS}
+    Domain/Tests/AbstractScenario.cpp
 )
 
 target_include_directories(Domain

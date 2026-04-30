@@ -171,41 +171,41 @@ Program::makeSample() const
     return s;
 }
 
-void Program::startRunner(std::unique_ptr<BaseRunner> r)
-{
-    m_activeRunner.reset();
+// void Program::startRunner(std::unique_ptr<BaseRunner> r)
+// {
+//     m_activeRunner.reset();
 
-    connect(r.get(), &BaseRunner::requestClearChart,
-            this, [this](Widgets::Chart::ChartType chartType) {
-                emit clearPoints(chartType);
-            });
+//     connect(r.get(), &BaseRunner::requestClearChart,
+//             this, [this](Widgets::Chart::ChartType chartType) {
+//                 emit clearPoints(chartType);
+//             });
 
-    connect(r.get(), &BaseRunner::testActuallyStarted,
-            this, &Program::onRunnerActuallyStarted);
+//     connect(r.get(), &BaseRunner::testActuallyStarted,
+//             this, &Program::onRunnerActuallyStarted);
 
-    connect(r.get(), &BaseRunner::requestSetDAC,
-            this, &Program::setDacRaw);
+//     connect(r.get(), &BaseRunner::requestSetDAC,
+//             this, &Program::setDacRaw);
 
-    connect(this, &Program::releaseBlock,
-            r.get(), &BaseRunner::releaseBlock);
+//     connect(this, &Program::releaseBlock,
+//             r.get(), &BaseRunner::releaseBlock);
 
-    connect(r.get(), &BaseRunner::totalTestTimeMs,
-            this, &Program::totalTestTimeMs);
+//     connect(r.get(), &BaseRunner::totalTestTimeMs,
+//             this, &Program::totalTestTimeMs);
 
-    connect(r.get(), &BaseRunner::endTest,
-            this, &Program::endTest);
+//     connect(r.get(), &BaseRunner::endTest,
+//             this, &Program::endTest);
 
-    connect(this, &Program::stopTheTest,
-            r.get(), &BaseRunner::stop);
+//     connect(this, &Program::stopTheTest,
+//             r.get(), &BaseRunner::stop);
 
-    emit setButtonInitEnabled(false);
-    emit setTaskControlsEnabled(false);
+//     emit setButtonInitEnabled(false);
+//     emit setTaskControlsEnabled(false);
 
-    setDacRaw(0, 5000, true);
+//     setDacRaw(0, 5000, true);
 
-    m_activeRunner = std::move(r);
-    m_activeRunner->start();
-}
+//     m_activeRunner = std::move(r);
+//     m_activeRunner->start();
+// }
 
 void Program::startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> scenario)
 {
@@ -219,20 +219,16 @@ void Program::startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> sce
         return;
     }
 
-    auto runner = scenario->createRunner(this);
-
-    if (!runner) {
-        failToStartTest("Нельзя запустить тест: runner не создан.");
-        return;
-    }
-
-    connectScenario(scenario.get());
-
-    scenario->startAnalyzer();
-
     m_currentScenario = std::move(scenario);
 
-    startRunner(std::move(runner));
+    connectScenarioRuntime(m_currentScenario.get());
+
+    emit setButtonInitEnabled(false);
+    emit setTaskControlsEnabled(false);
+
+    setDacRaw(0, 5000, true);
+
+    m_currentScenario->start();
 }
 
 void Program::updateRealtimeTexts(const Domain::Measurement::Sample& s)
@@ -374,13 +370,8 @@ void Program::updateSensors()
 
     emit sampleReady(s);
 
-    if (m_isTestRunning) {
-        if (m_currentScenario) {
-            m_currentScenario->onSample(s);
-        } else if (m_analyzer) {
-            m_analyzer->onSample(s);
-        }
-    }
+    if (m_isTestRunning && m_currentScenario)
+        m_currentScenario->onSample(s);
 
     updateRealtimeTexts(s);
     updateChartsFromSample(s);
@@ -445,7 +436,6 @@ void Program::endTest()
 
     emit setTask(m_device.dac()->value());
 
-    m_activeRunner.reset();
     m_currentScenario.reset();
 
     m_isCyclicTestRunning = false;
@@ -678,7 +668,6 @@ void Program::failToStartTest(const QString& reason)
     m_testWorker = TestWorker::None;
 
     m_currentScenario.reset();
-    m_activeRunner.reset();
 
     emit setTaskControlsEnabled(true);
     emit setButtonInitEnabled(true);
@@ -880,9 +869,35 @@ void Program::startCyclicTest(const Tests::Cyclic::Params& params)
     emit telemetryUpdated(m_telemetry);
 }
 
-void Program::connectScenario(Domain::Tests::AbstractScenario* scenario)
+void Program::connectScenarioRuntime(Domain::Tests::AbstractScenario* scenario)
 {
     Q_ASSERT(scenario);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::requestClearChart,
+            this, [this](Widgets::Chart::ChartType chartType) {
+                emit clearPoints(chartType);
+            });
+
+    connect(scenario, &Domain::Tests::AbstractScenario::started,
+            this, &Program::onRunnerActuallyStarted);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::requestSetDAC,
+            this, &Program::setDacRaw);
+
+    connect(this, &Program::releaseBlock,
+            scenario, &Domain::Tests::AbstractScenario::releaseBlock);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::totalTestTimeMs,
+            this, &Program::totalTestTimeMs);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::finished,
+            this, &Program::endTest);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::failedToStart,
+            this, &Program::failToStartTest);
+
+    connect(this, &Program::stopTheTest,
+            scenario, &Domain::Tests::AbstractScenario::stop);
 
     connect(scenario, &Domain::Tests::AbstractScenario::telemetryUpdated,
             this, &Program::telemetryUpdated,

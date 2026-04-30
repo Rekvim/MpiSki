@@ -17,13 +17,11 @@ public:
              const Option::Params& params,
              QObject* parent = nullptr);
 
-    ~Scenario() override;
-
-    std::unique_ptr<BaseRunner> createRunner(QObject* parent) override;
+protected:
+    std::unique_ptr<BaseRunner> createRunner() override;
 
 private:
     Tests::Context m_context;
-    Option::Params m_params;
+    Params m_params;
 };
-
 }

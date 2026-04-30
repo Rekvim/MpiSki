@@ -16,7 +16,7 @@ Scenario::Scenario(Tests::Context context,
 
 Scenario::~Scenario() = default;
 
-void Scenario::startAnalyzer()
+void Scenario::beforeStart()
 {
     m_analyzer = std::make_unique<Analyzer>();
 
@@ -34,22 +34,25 @@ void Scenario::onSample(const Measurement::Sample& sample)
         m_analyzer->onSample(sample);
 }
 
-std::unique_ptr<BaseRunner> Scenario::createRunner(QObject* parent)
+std::unique_ptr<BaseRunner> Scenario::createRunner()
 {
     const bool normalOpen =
         m_context.config.safePosition == SafePosition::NormallyOpen;
 
-    auto runner = std::make_unique<Runner>(
+    return std::make_unique<Runner>(
         m_context.device,
         normalOpen,
-        parent
-        );
+        this
+    );
+}
 
-    connect(runner.get(), &Runner::result,
+void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
+{
+    auto& runner = static_cast<Runner&>(baseRunner);
+
+    connect(&runner, &Runner::result,
             this, &Scenario::onResult,
             Qt::QueuedConnection);
-
-    return runner;
 }
 
 void Scenario::onResult()

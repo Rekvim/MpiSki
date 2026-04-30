@@ -6,71 +6,80 @@
 #include <QDebug>
 
 namespace Domain::Tests::Option::Step {
-    Scenario::Scenario(Tests::Context context, const Params& params, QObject* parent)
-            : Tests::AbstractScenario(parent), m_context(context), m_params(params) {};
 
-    Scenario::~Scenario() = default;
+Scenario::Scenario(Tests::Context context,
+                   const Params& params,
+                   QObject* parent)
+    : Tests::AbstractScenario(parent)
+    , m_context(context)
+    , m_params(params)
+{
+}
 
-    void Scenario::startAnalyzer()
-    {
-        m_analyzer = std::make_unique<Analyzer>();
-        m_analyzer->setConfig({m_params.testValue});
-        m_analyzer->start();
-    }
+Scenario::~Scenario() = default;
 
-    void Scenario::onSample(const Measurement::Sample& sample)
-    {
-        if (m_analyzer)
-            m_analyzer->onSample(sample);
-    }
+void Scenario::beforeStart()
+{
+    m_analyzer = std::make_unique<Analyzer>();
+    m_analyzer->setConfig({m_params.testValue});
+    m_analyzer->start();
+}
 
-    std::unique_ptr<BaseRunner> Scenario::createRunner(QObject* parent)
-    {
-        const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
+std::unique_ptr<BaseRunner> Scenario::createRunner()
+{
+    const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
 
-        auto runner = std::make_unique<Runner>(
-            m_context.device,
-            normalOpen,
-            m_params,
-            parent
-        );
+    return std::make_unique<Runner>(
+        m_context.device,
+        normalOpen,
+        m_params,
+        this
+    );
+}
 
-        connect(runner.get(), &Runner::points,
-                this, [this](QVector<QVector<QPointF>>& points) {
-                    emit pointsRequested(
-                        points, Widgets::Chart::ChartType::Step
-                        );
-                }, Qt::DirectConnection);
+void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
+{
+    auto& runner = static_cast<Runner&>(baseRunner);
 
-        connect(runner.get(), &Runner::results,
-                this, &Scenario::onResults,
-                Qt::QueuedConnection);
+    connect(&runner, &Runner::points,
+            this, [this](QVector<QVector<QPointF>>& points) {
+                emit pointsRequested(points, Widgets::Chart::ChartType::Step);
+            }, Qt::DirectConnection);
 
-        return runner;
-    }
+    connect(&runner, &Runner::results,
+            this, &Scenario::onResults,
+            Qt::QueuedConnection);
+}
 
-    void Scenario::onResults(const Result& result)
-    {
-        if (m_analyzer) {
-            m_analyzer->finish();
+void Scenario::onSample(const Measurement::Sample& sample)
+{
+    if (m_analyzer)
+        m_analyzer->onSample(sample);
+}
 
-            const auto& analyzerResult = m_analyzer->result();
+void Scenario::onResults(const Result& result)
+{
+    if (m_analyzer) {
+        m_analyzer->finish();
 
-            qDebug() << "\n===== STEP TEST ANALYZER =====";
+        const auto& analyzerResult = m_analyzer->result();
 
-            for (const auto& r : analyzerResult.steps) {
-                qDebug() << "from:" << r.from
-                         << "to:" << r.to
-                         << "T:" << r.T_value
-                         << "overshoot:" << r.overshoot;
-            }
+        qDebug() << "\n===== STEP TEST ANALYZER =====";
 
-            qDebug() << "=============================\n";
+        for (const auto& r : analyzerResult.steps) {
+            qDebug() << "from:" << r.from
+                     << "to:" << r.to
+                     << "T:" << r.T_value
+                     << "overshoot:" << r.overshoot;
         }
 
-        m_context.telemetry.testStep = result;
-
-        emit stepResultUpdated(result);
-        emit telemetryUpdated(m_context.telemetry);
+        qDebug() << "=============================\n";
     }
+
+    m_context.telemetry.testStep = result;
+
+    emit stepResultUpdated(result);
+    emit telemetryUpdated(m_context.telemetry);
+}
+
 }

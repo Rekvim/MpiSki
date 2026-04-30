@@ -16,12 +16,10 @@ Scenario::Scenario(Tests::Context context,
 
 Scenario::~Scenario() = default;
 
-void Scenario::startAnalyzer()
+void Scenario::beforeStart()
 {
     m_analyzer = std::make_unique<Analyzer>();
 
-    // У тебя раньше было configure(params.shutoff.numCycles, 2)
-    // 2 оставляю как есть, потому что не знаю точный смысл второго параметра.
     m_analyzer->configure(m_params.numCycles, 2);
     m_analyzer->start();
 }
@@ -32,38 +30,37 @@ void Scenario::onSample(const Measurement::Sample& sample)
         m_analyzer->onSample(sample);
 }
 
-std::unique_ptr<BaseRunner> Scenario::createRunner(QObject* parent)
+std::unique_ptr<BaseRunner> Scenario::createRunner()
 {
     const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
 
-    auto runner = std::make_unique<Runner>(
+    return std::make_unique<Runner>(
         m_context.device,
         normalOpen,
         m_params,
-        parent
-    );
+        this
+        );
+}
 
-    connect(runner.get(), &Runner::SetMultipleDO,
-            this, &Scenario::setMultipleDORequested,
-            Qt::BlockingQueuedConnection);
+void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
+{
+    auto& runner = static_cast<Runner&>(baseRunner);
 
-    connect(runner.get(), &Runner::cycleCompleted,
+    connect(&runner, &Runner::cycleCompleted,
             this, &Scenario::cyclicCycleCompleted,
             Qt::BlockingQueuedConnection);
 
-    connect(runner.get(), &Runner::GetDI,
+    connect(&runner, &Runner::GetDI,
             this, &Scenario::diRequested,
             Qt::DirectConnection);
 
-    connect(runner.get(), &Runner::GetDO,
+    connect(&runner, &Runner::GetDO,
             this, &Scenario::doRequested,
             Qt::DirectConnection);
 
-    connect(runner.get(), &Runner::result,
+    connect(&runner, &Runner::result,
             this, &Scenario::onResult,
             Qt::QueuedConnection);
-
-    return runner;
 }
 
 void Scenario::onResult(const Result& result)

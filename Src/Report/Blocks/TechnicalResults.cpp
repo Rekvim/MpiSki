@@ -40,12 +40,12 @@ namespace Report::Blocks {
                        << "TechnicalResults will write only available fields";
         }
 
-        const quint16 dynamicError = m_layout.rowStart;
-        const quint16 stroke = m_layout.rowStart + 2;
-        const quint16 spring = m_layout.rowStart + 4;
-        const quint16 pressure = m_layout.rowStart + 6;
-        const quint16 frictionPercent = m_layout.rowStart + 8;
-        const quint16 frictionForce = m_layout.rowStart + 10;
+        const int dynamicError = m_layout.rowStart;
+        const int stroke = m_layout.rowStart + 2;
+        const int spring = m_layout.rowStart + 4;
+        const int pressure = m_layout.rowStart + 6;
+        const int frictionPercent = m_layout.rowStart + 8;
+        const int frictionForce = m_layout.rowStart + 10;
 
         if (v.dinamicErrorRecomend == "Без позиционера") {
             writer.cell(m_layout.sheet, dynamicError, m_layout.colResult, v.dinamicErrorRecomend);

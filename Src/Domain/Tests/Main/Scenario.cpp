@@ -1,5 +1,6 @@
 #include "Scenario.h"
 
+#include "Domain/Tests/BaseRunner.h"
 #include "Runner.h"
 #include "Analyzer.h"
 
@@ -98,7 +99,7 @@ Scenario::Scenario(Tests::Context context,
 
 Scenario::~Scenario() = default;
 
-void Scenario::startAnalyzer()
+void Scenario::beforeStart()
 {
     m_analyzer = std::make_unique<Analyzer>();
 
@@ -109,46 +110,49 @@ void Scenario::startAnalyzer()
     m_analyzer->start();
 }
 
+std::unique_ptr<BaseRunner> Scenario::createRunner()
+{
+    const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
+
+    return std::make_unique<Runner>(
+        m_context.device,
+        normalOpen,
+        m_params,
+        this
+    );
+}
+
+void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
+{
+    auto& runner = static_cast<Runner&>(baseRunner);
+
+    connect(&runner, &Runner::dublSeries,
+            this, &Scenario::duplicateMainChartsSeriesRequested,
+            Qt::QueuedConnection);
+
+    connect(&runner, &Runner::addRegression,
+            this, &Scenario::addRegressionRequested,
+            Qt::QueuedConnection);
+
+    connect(&runner, &Runner::addFriction,
+            this, &Scenario::addFrictionRequested,
+            Qt::QueuedConnection);
+
+    connect(&runner, &Runner::results,
+            this, &Scenario::onResults,
+            Qt::QueuedConnection);
+
+    connect(&runner, &Runner::points,
+            this, [this](QVector<QVector<QPointF>>& points) {
+                emit pointsRequested(
+                    points, Widgets::Chart::ChartType::Task);
+            }, Qt::DirectConnection);
+}
+
 void Scenario::onSample(const Measurement::Sample& sample)
 {
     if (m_analyzer)
         m_analyzer->onSample(sample);
-}
-
-std::unique_ptr<BaseRunner> Scenario::createRunner(QObject* parent)
-{
-    const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
-
-    auto runner = std::make_unique<Runner>(
-        m_context.device,
-        normalOpen,
-        m_params,
-        parent
-    );
-
-    connect(runner.get(), &Runner::dublSeries,
-            this, &Scenario::duplicateMainChartsSeriesRequested,
-            Qt::QueuedConnection);
-
-    connect(runner.get(), &Runner::addRegression,
-            this, &Scenario::addRegressionRequested,
-            Qt::QueuedConnection);
-
-    connect(runner.get(), &Runner::addFriction,
-            this, &Scenario::addFrictionRequested,
-            Qt::QueuedConnection);
-
-    connect(runner.get(), &Runner::results,
-            this, &Scenario::onResults);
-
-    connect(runner.get(), &Runner::points,
-            this, [this](QVector<QVector<QPointF>>& points) {
-                emit pointsRequested(
-                    points, Widgets::Chart::ChartType::Task
-                    );
-            }, Qt::DirectConnection);
-
-    return runner;
 }
 
 void Scenario::onResults(const Algorithm::TestResults& results)
@@ -267,11 +271,9 @@ void Scenario::updateCrossingStatus()
         const double highLo = recHigh - highD;
         const double highHi = recHigh + highD;
 
-        const bool okLow =
-            inRange(ts.testMain->springLow, lowLo, lowHi);
+        const bool okLow = inRange(ts.testMain->springLow, lowLo, lowHi);
 
-        const bool okHigh =
-            inRange(ts.testMain->springHigh, highLo, highHi);
+        const bool okHigh = inRange(ts.testMain->springHigh, highLo, highHi);
 
         ts.crossingStatus.spring =
             (okLow && okHigh) ? State::Ok : State::Fail;

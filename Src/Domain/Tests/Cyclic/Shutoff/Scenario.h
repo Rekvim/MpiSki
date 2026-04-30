@@ -24,17 +24,19 @@ public:
 
     ~Scenario() override;
 
-    std::unique_ptr<BaseRunner> createRunner(QObject* parent) override;
-    void startAnalyzer() override;
     void onSample(const Measurement::Sample& sample) override;
 
+protected:
+    void beforeStart() override;
+    std::unique_ptr<BaseRunner> createRunner() override;
+    void afterRunnerCreated(BaseRunner& runner) override;
 private slots:
     void onResult(const Result& result);
 
 private:
     Tests::Context m_context;
     Params m_params;
+
     std::unique_ptr<Analyzer> m_analyzer;
 };
-
 }
