@@ -117,8 +117,7 @@ void Scenario::onSample(const Measurement::Sample& sample)
 
 std::unique_ptr<BaseRunner> Scenario::createRunner(QObject* parent)
 {
-    const bool normalOpen =
-        m_context.config.safePosition == SafePosition::NormallyOpen;
+    const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
 
     auto runner = std::make_unique<Runner>(
         m_context.device,
@@ -138,6 +137,9 @@ std::unique_ptr<BaseRunner> Scenario::createRunner(QObject* parent)
     connect(runner.get(), &Runner::addFriction,
             this, &Scenario::addFrictionRequested,
             Qt::QueuedConnection);
+
+    connect(runner.get(), &Runner::results,
+            this, &Scenario::onResults);
 
     connect(runner.get(), &Runner::points,
             this, [this](QVector<QVector<QPointF>>& points) {

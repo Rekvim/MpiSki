@@ -3,21 +3,27 @@
 #include <QString>
 
 namespace Report {
+
 class Writer;
 struct Context;
-namespace Pages {
-class CyclicShutoffPage final {
+
+namespace Blocks {
+class StepReactionTable final {
 public:
     struct Layout {
         QString sheet;
-        int rowStart;
-        bool includeSolenoid = false;
+
+        int imageRow;
+        int imageCol;
+
+        int startRow;
+        int firstBaseCol;
+        int secondBaseCol;
     };
 
-    explicit CyclicShutoffPage(Layout layout);
+    explicit StepReactionTable(Layout layout);
 
     void build(Writer& writer, const Context& ctx);
-
 private:
     Layout m_layout;
 };

@@ -2,6 +2,9 @@
 
 #include "Gui/Setup/ValveWindow/ValveEnums.h"
 
+#include "Report/Writer.h"
+#include "Report/Builder.h"
+
 namespace Report::Blocks {
     static QString f2(qreal v) { return QString::number(v, 'f', 2); }
     static QString f3(qreal v) { return QString::number(v, 'f', 3); }

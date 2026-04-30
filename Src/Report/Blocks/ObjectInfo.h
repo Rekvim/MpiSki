@@ -1,25 +1,30 @@
 #pragma once
 
-#include "IBlock.h"
+#include <QString>
 
-namespace Report::Blocks {
-    class ObjectInfo : public IBlock {
-    public:
-        struct Layout {
-            QString sheet;
-            int rowStart;
-            int column;
-        };
+namespace Report {
 
-        explicit ObjectInfo(Layout layout) : m_layout(std::move(layout)) {}
+class Writer;
+struct Context;
 
-        void build(Writer& writer, const Context& ctx) override
-        {
-            writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.object);
-            writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.manufactory);
-            writer.cell(m_layout.sheet, m_layout.rowStart++, m_layout.column, ctx.object.department);
-        }
-    private:
-        Layout m_layout;
+namespace Blocks {
+
+class ObjectInfo final {
+public:
+    struct Layout {
+        QString sheet;
+        int rowStart;
+        int column;
     };
+
+    explicit ObjectInfo(Layout layout);
+
+    void build(Writer& writer, const Context& ctx);
+
+private:
+    Layout m_layout;
+};
+
+}
+
 }

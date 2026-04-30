@@ -1,11 +1,12 @@
 #include "B_CVT.h"
+
 #include "Report/Writer.h"
-#include "Report/Blocks/ObjectInfo.h"
-#include "Report/Blocks/ValveSpec.h"
-#include "Report/Blocks/CyclicSummary.h"
-#include "Report/Blocks/CyclicRanges.h"
+
+#include "Report/Pages/CyclicRegulatory.h"
+#include "Report/Pages/CyclicDeviation.h"
 
 namespace Report::Patterns {
+
 void B_CVT::build(
     Saver::Report& report,
     const Telemetry& telemetryStore,
@@ -25,116 +26,50 @@ void B_CVT::build(
         chartImages
     };
 
-    writer.cell(m_sheetCyclicTests, 1, 9, ctx.valve.positionNumber);
-
-    Blocks::ObjectInfo({m_sheetCyclicTests, 4, 4}).build(writer, ctx);
-    Blocks::ValveSpec({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
-    Blocks::CyclicSummary({m_sheetCyclicTests, 19, 8, 2}, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
-
-    if (!ctx.telemetry.testСyclicRegulatory) {
-        qWarning() << "Report block skipped: ctx.telemetry.testСyclicRegulatory";
-        return;
-    }
-
-    const auto& ranges = telemetryStore.testСyclicRegulatory->ranges;
-
-    struct Agg {
-        qreal rangePercent;
-
-        qreal maxFwdVal = std::numeric_limits<qreal>::lowest();
-        int   maxFwdCycle = -1;
-
-        qreal minRevVal = std::numeric_limits<qreal>::max();
-        int   minRevCycle = -1;
-    };
-
-    QMap<qreal, Agg> aggMap;
-
-    // --- агрегация ---
-    for (const auto& r : ranges)
     {
-        auto it = aggMap.find(r.rangePercent);
+        Pages::CyclicRegulatory::Layout layout;
+        layout.sheet = m_sheetCyclicTests;
 
-        if (it == aggMap.end())
-        {
-            Agg a;
-            a.rangePercent = r.rangePercent;
+        layout.positionRow = 1;
 
-            if (r.maxForwardCycle >= 0) {
-                a.maxFwdVal = r.maxForwardPosition;
-                a.maxFwdCycle = r.maxForwardCycle;
-            }
+        layout.objectInfoRow = 4;
+        layout.valveSpecRow = 4;
 
-            if (r.minBackwardCycle >= 0) {
-                a.minRevVal = r.minBackwardPosition;
-                a.minRevCycle = r.minBackwardCycle;
-            }
+        layout.summaryRow = 19;
 
-            aggMap.insert(r.rangePercent, a);
-        }
-        else
-        {
-            Agg& a = it.value();
-            if (r.maxForwardCycle >= 0 &&
-                r.maxForwardPosition > a.maxFwdVal)
-            {
-                a.maxFwdVal = r.maxForwardPosition;
-                a.maxFwdCycle = r.maxForwardCycle;
-            }
-            if (r.minBackwardCycle >= 0 &&
-                r.minBackwardPosition < a.minRevVal)
-            {
-                a.minRevVal = r.minBackwardPosition;
-                a.minRevCycle = r.minBackwardCycle;
-            }
-        }
+        layout.rangesRow = 33;
+
+        layout.fioRow = 56;
+        layout.dateRow = 60;
+
+        layout.positionerModel = true;
+        layout.includeSolenoid = false;
+
+        Pages::CyclicRegulatory(layout).build(writer, ctx);
     }
 
-    constexpr quint16 rowStart = 33, rowStep = 2;
-
-    int i = 0;
-    for (auto it = aggMap.begin(); it != aggMap.end(); ++it, ++i)
     {
-        quint16 row = rowStart + i * rowStep;
-        const Agg& a = it.value();
+        Pages::CyclicDeviation::Layout layout;
+        layout.sheet = m_sheetCyclicTests;
 
-        writer.cell(m_sheetCyclicTests, row, 2,
-                    QString::number(a.rangePercent));
+        layout.objectInfoRow = 66;
+        layout.valveSpecRow = 66;
 
-        // forward
-        if (a.maxFwdVal != std::numeric_limits<qreal>::lowest()) {
-            writer.cell(m_sheetCyclicTests, row, 8,
-                        QString::number(a.maxFwdVal, 'f', 2));
-            writer.cell(m_sheetCyclicTests, row, 11,
-                        QString::number(a.maxFwdCycle + 1));
-        } else {
-            writer.cell(m_sheetCyclicTests, row, 8, "");
-            writer.cell(m_sheetCyclicTests, row, 11, "");
-        }
+        layout.summaryRow = 81;
 
-        // reverse
-        if (a.minRevVal != std::numeric_limits<qreal>::max()) {
-            writer.cell(m_sheetCyclicTests, row, 12,
-                        QString::number(a.minRevVal, 'f', 2));
-            writer.cell(m_sheetCyclicTests, row, 15,
-                        QString::number(a.minRevCycle + 1));
-        } else {
-            writer.cell(m_sheetCyclicTests, row, 12, "");
-            writer.cell(m_sheetCyclicTests, row, 15, "");
-        }
+        layout.deviationRangesRow = 95;
+        layout.deviationRangesRow = 99;
+
+        layout.fioRow = 118;
+        layout.dateRow = 122;
+
+        layout.mode = Blocks::CyclicSummary::CyclicMode::Regulatory;
+
+        layout.positionerModel = false;
+        layout.includeSolenoid = false;
+
+        Pages::CyclicDeviation(layout).build(writer, ctx);
     }
-
-    // CyclicRangesBlock({m_sheetCyclicTests, 33, 2}).build(writer, ctx);
-
-    writer.cell(m_sheetCyclicTests, 56, 4, ctx.object.FIO);
-    writer.cell(m_sheetCyclicTests, 60, 12, ctx.params.date);
-
-    // Страница 2
-    Blocks::ObjectInfo({m_sheetCyclicTests, 66, 4}).build(writer, ctx);
-    Blocks::ValveSpec({m_sheetCyclicTests, 66, 13, false, false}).build(writer, ctx);
-    Blocks::CyclicSummary({m_sheetCyclicTests, 81, 8, 2 }, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
-
-    writer.cell(m_sheetCyclicTests, 118, 4, ctx.object.FIO);
-    writer.cell(m_sheetCyclicTests, 122, 12, ctx.params.date);
 }
+
 }

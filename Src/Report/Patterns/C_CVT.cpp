@@ -1,13 +1,13 @@
 #include "C_CVT.h"
 
 #include "Report/Writer.h"
-#include "Report/Blocks/ObjectInfo.h"
-#include "Report/Blocks/ValveSpec.h"
+
 #include "Report/Blocks/CyclicSummary.h"
-#include "Report/Blocks/CyclicRanges.h"
-#include "Report/Blocks/StepReaction.h"
-#include "Report/Blocks/TechnicalResults.h"
-#include "Report/Blocks/CyclicRegulatoryRanges.h"
+
+#include "Report/Pages/CyclicRegulatory.h"
+#include "Report/Pages/CyclicDeviation.h"
+#include "Report/Pages/TechnicalInspection.h"
+#include "Report/Pages/StepReaction.h"
 
 namespace Report::Patterns {
 void C_CVT::build(
@@ -29,74 +29,98 @@ void C_CVT::build(
         chartImages
     };
 
-    // Страница: 1;
-    writer.cell(m_sheetCyclicTests, 1, 9, ctx.valve.positionNumber);
+    {
+        Pages::CyclicRegulatory::Layout layout;
+        layout.sheet = m_sheetCyclicTests;
 
-    Blocks::ObjectInfo({m_sheetCyclicTests, 4, 4}).build(writer, ctx);
-    Blocks::ValveSpec({m_sheetCyclicTests, 4, 13, true, false}).build(writer, ctx);
-    Blocks::CyclicSummary({m_sheetCyclicTests, 19, 8, 2 },
-                       Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
+        layout.positionRow = 1;
 
-    Report::Blocks::CyclicRegulatoryRanges({m_sheetCyclicTests,
-                                               33, 2, 2, 8, 11, 12, 15
-                                           }).build(writer, ctx);
+        layout.objectInfoRow = 4;
+        layout.valveSpecRow = 4;
 
-    // Blocks::CyclicRanges({m_sheetCyclicTests,
-    //                              33,
-    //                              2
-    //                          }).build(writer, ctx);
+        layout.summaryRow = 19;
 
-    writer.cell(m_sheetCyclicTests, 56, 4, ctx.object.FIO);
-    writer.cell(m_sheetCyclicTests, 60, 12, ctx.params.date);
+        layout.rangesRow = 33;
 
-    // Страница: 2;
-    Blocks::ObjectInfo({m_sheetCyclicTests, 66, 4}).build(writer, ctx);
-    Blocks::ValveSpec({m_sheetCyclicTests, 66, 13, true, false}).build(writer, ctx);
-    Blocks::CyclicSummary({m_sheetCyclicTests,
-                           81,
-                           8,
-                           2
-                       }, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
+        layout.fioRow = 56;
+        layout.dateRow = 60;
 
-    writer.cell(m_sheetCyclicTests, 118, 4, ctx.object.FIO);
-    writer.cell(m_sheetCyclicTests, 122, 12, ctx.params.date);
+        layout.positionerModel = true;
+        layout.includeSolenoid = false;
 
-    // Страница: 1;
-    writer.cell(m_sheetTechnicalInspection, 1, 9, valveInfo.positionNumber);
-    Blocks::ObjectInfo({m_sheetTechnicalInspection, 5, 4}).build(writer, ctx);
-    Blocks::ValveSpec({m_sheetTechnicalInspection, 5, 13, true, false}).build(writer, ctx);
+        Pages::CyclicRegulatory(layout).build(writer, ctx);
+    }
 
-    Blocks::TechnicalResults({m_sheetTechnicalInspection,
-                              26, // rowStart
-                              5, // colFact
-                              8, // colNorm
-                              11, // colResult
-                              48 // rowStrokeTime
-                             }).build(writer, ctx);
+    {
+        Pages::CyclicDeviation::Layout layout;
+        layout.sheet = m_sheetCyclicTests;
 
-    writer.cell(m_sheetTechnicalInspection, 62, 12, ctx.params.date);
-    writer.cell(m_sheetTechnicalInspection, 70, 4, ctx.object.FIO);
+        layout.positionRow = 0;
 
-    writer.image(m_sheetTechnicalInspection, 80, 1, ctx.chartImages.get(Widgets::Chart::ChartType::Task));
-    writer.image(m_sheetTechnicalInspection, 108, 1, ctx.chartImages.get(Widgets::Chart::ChartType::Pressure));
-    writer.image(m_sheetTechnicalInspection, 136, 1, ctx.chartImages.get(Widgets::Chart::ChartType::Friction));
+        layout.objectInfoRow = 66;
+        layout.valveSpecRow = 66;
 
-    writer.cell( m_sheetTechnicalInspection, 162, 12, ctx.params.date);
+        layout.summaryRow = 81;
 
-    // Страница: 1;
-    writer.cell(m_sheetStepReactionTest, 1, 9, valveInfo.positionNumber);
+        layout.deviationRangesRow = 95;
 
-    Blocks::ObjectInfo({m_sheetStepReactionTest, 4, 4}).build(writer, ctx);
-    Blocks::ValveSpec({m_sheetStepReactionTest, 4, 13, true, false}).build(writer, ctx);
-    Blocks::StepReaction({m_sheetStepReactionTest,
-                          18,  // imageRow
-                          2,   // imageCol
-                          55,  // startRow
-                          3,   // firstBaseCol
-                          10   // secondBaseCol
-                      }).build(writer, ctx);
+        layout.fioRow = 118;
+        layout.dateRow = 122;
 
-    writer.cell(m_sheetStepReactionTest, 67, 12, ctx.params.date);
+        layout.mode = Blocks::CyclicSummary::CyclicMode::Regulatory;
+
+        layout.positionerModel = true;
+        layout.includeSolenoid = false;
+
+        Pages::CyclicDeviation(layout).build(writer, ctx);
+    }
+
+    {
+        Pages::TechnicalInspection::Layout layout;
+        layout.sheet = m_sheetTechnicalInspection;
+
+        layout.positionRow = 1;
+
+        layout.objectInfoRow = 5;
+        layout.valveSpecRow = 5;
+
+        layout.technicalResultsRow = 26;
+        layout.strokeTimeRow = 48;
+
+        layout.firstDateRow = 62;
+        layout.fioRow = 70;
+
+        layout.taskImageRow = 80;
+        layout.pressureImageRow = 108;
+        layout.frictionImageRow = 136;
+
+        layout.secondDateRow = 162;
+
+        layout.positionerModel = true;
+        layout.includeSolenoid = false;
+
+        Pages::TechnicalInspection(layout).build(writer, ctx);
+    }
+
+    {
+        Pages::StepReaction::Layout layout;
+        layout.sheet = m_sheetStepReactionTest;
+
+        layout.positionRow = 1;
+
+        layout.objectInfoRow = 4;
+        layout.valveSpecRow = 4;
+
+        layout.imageRow = 17;
+        layout.tableStartRow = 55;
+
+        layout.dateRow = 67;
+
+        layout.positionerModel = true;
+        layout.includeSolenoid = false;
+
+        Pages::StepReaction(layout).build(writer, ctx);
+    }
 
     writer.validation("=ЗИП!$A$1:$A$37", "J50:J59");
     writer.validation("=Заключение!$B$1:$B$4", "E36");

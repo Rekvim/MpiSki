@@ -3,32 +3,29 @@
 #include <QString>
 
 namespace Report {
-
 class Writer;
 struct Context;
-
 namespace Blocks {
-class CyclicSummary final {
-public:
-    enum class CyclicMode {
-        Regulatory,
-        Shutoff
-    };
 
+class PositionSensorDeviationRanges final {
+public:
     struct Layout {
         QString sheet;
         int rowStart;
-        int column;
+        int rangeColumn;
         int rowStep;
+        int forwardValueColumn;
+        int forwardCycleColumn;
+        int backwardValueColumn;
+        int backwardCycleColumn;
     };
 
-    CyclicSummary(Layout layout, CyclicMode mode);
+    explicit PositionSensorDeviationRanges(Layout layout);
 
     void build(Writer& writer, const Context& ctx);
+
 private:
     Layout m_layout;
-    CyclicMode m_mode;
 };
-
 }
 }

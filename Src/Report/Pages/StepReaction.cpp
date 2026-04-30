@@ -5,7 +5,7 @@
 
 #include "Report/Blocks/ObjectInfo.h"
 #include "Report/Blocks/ValveSpec.h"
-#include "Report/Blocks/StepReaction.h"
+#include "Report/Blocks/StepReactionTable.h"
 
 #include <utility>
 
@@ -18,42 +18,46 @@ StepReaction::StepReaction(Layout layout)
 
 void StepReaction::build(Writer& writer, const Context& ctx)
 {
-    writer.cell(
-        m_layout.sheet,
-        m_layout.rowStart,
-        9,
-        ctx.valve.positionNumber
-    );
+    if (m_layout.positionRow > 0) {
+        writer.cell(
+            m_layout.sheet,
+            m_layout.positionRow,
+            m_layout.positionColumn,
+            ctx.valve.positionNumber
+        );
+    }
 
     Blocks::ObjectInfo({
         m_layout.sheet,
-        m_layout.rowStart + 3,
-        4
+        m_layout.objectInfoRow,
+        m_layout.objectInfoColumn
     }).build(writer, ctx);
 
     Blocks::ValveSpec({
         m_layout.sheet,
-        m_layout.rowStart + 3,
-        13,
-        true,
+        m_layout.valveSpecRow,
+        m_layout.valveSpecColumn,
+        m_layout.positionerModel,
         m_layout.includeSolenoid
     }).build(writer, ctx);
 
-    Blocks::StepReaction({
+    Blocks::StepReactionTable({
         m_layout.sheet,
-        m_layout.rowStart + 19,
-        2,
-        m_layout.rowStart + 56,
-        3,
-        10
+        m_layout.imageRow,
+        m_layout.imageColumn,
+        m_layout.tableStartRow,
+        m_layout.firstBaseColumn,
+        m_layout.secondBaseColumn
     }).build(writer, ctx);
 
-    writer.cell(
-        m_layout.sheet,
-        m_layout.rowStart + 68,
-        12,
-        ctx.params.date
-    );
+    if (m_layout.dateRow > 0) {
+        writer.cell(
+            m_layout.sheet,
+            m_layout.dateRow,
+            m_layout.dateColumn,
+            ctx.params.date
+        );
+    }
 }
 
 }

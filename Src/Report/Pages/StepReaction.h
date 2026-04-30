@@ -11,7 +11,27 @@ class StepReaction final {
 public:
     struct Layout {
         QString sheet;
-        int rowStart;
+
+        int positionRow = 0;
+        int positionColumn = 9;
+
+        int objectInfoRow = 0;
+        int objectInfoColumn = 4;
+
+        int valveSpecRow = 0;
+        int valveSpecColumn = 13;
+
+        int imageRow = 0;
+        int imageColumn = 2;
+
+        int tableStartRow = 0;
+        int firstBaseColumn = 3;
+        int secondBaseColumn = 10;
+
+        int dateRow = 0;
+        int dateColumn = 12;
+
+        bool positionerModel = true;
         bool includeSolenoid = false;
     };
 

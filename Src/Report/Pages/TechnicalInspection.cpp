@@ -20,77 +20,49 @@ TechnicalInspection::TechnicalInspection(Layout layout)
 
 void TechnicalInspection::build(Writer& writer, const Context& ctx)
 {
-    writer.cell(
-        m_layout.sheet,
-        m_layout.rowStart,
-        9,
-        ctx.valve.positionNumber
-    );
+    writer.cell(m_layout.sheet, m_layout.positionRow, m_layout.positionColumn,
+                ctx.valve.positionNumber);
 
     Blocks::ObjectInfo({
         m_layout.sheet,
-        m_layout.rowStart + 4,
-        4
+        m_layout.objectInfoRow,
+        m_layout.objectInfoColumn
     }).build(writer, ctx);
 
     Blocks::ValveSpec({
         m_layout.sheet,
-        m_layout.rowStart + 4,
-        13,
-        true,
+        m_layout.valveSpecRow,
+        m_layout.valveSpecColumn,
+        m_layout.positionerModel,
         m_layout.includeSolenoid
     }).build(writer, ctx);
 
     Blocks::TechnicalResults({
         m_layout.sheet,
-        m_layout.rowStart + 27,
-        5,
-        8,
-        11,
-        m_layout.rowStart + 49
+        m_layout.technicalResultsRow,
+        m_layout.factColumn,
+        m_layout.normColumn,
+        m_layout.resultColumn,
+        m_layout.strokeTimeRow
     }).build(writer, ctx);
 
-    writer.cell(
-        m_layout.sheet,
-        m_layout.rowStart + 63,
-        12,
-        ctx.params.date
-    );
+    writer.cell(m_layout.sheet, m_layout.firstDateRow, m_layout.firstDateColumn,
+                ctx.params.date);
 
-    writer.cell(
-        m_layout.sheet,
-        m_layout.rowStart + 71,
-        4,
-        ctx.object.FIO
-    );
+    writer.cell(m_layout.sheet, m_layout.fioRow, m_layout.fioColumn,
+                ctx.object.FIO);
 
-    writer.image(
-        m_layout.sheet,
-        m_layout.rowStart + 81,
-        1,
-        ctx.chartImages.get(Widgets::Chart::ChartType::Task)
-    );
+    writer.image(m_layout.sheet, m_layout.taskImageRow, m_layout.taskImageColumn,
+                 ctx.chartImages.get(Widgets::Chart::ChartType::Task));
 
-    writer.image(
-        m_layout.sheet,
-        m_layout.rowStart + 109,
-        1,
-        ctx.chartImages.get(Widgets::Chart::ChartType::Pressure)
-    );
+    writer.image(m_layout.sheet, m_layout.pressureImageRow, m_layout.pressureImageColumn,
+                 ctx.chartImages.get(Widgets::Chart::ChartType::Pressure));
 
-    writer.image(
-        m_layout.sheet,
-        m_layout.rowStart + 137,
-        1,
-        ctx.chartImages.get(Widgets::Chart::ChartType::Friction)
-    );
+    writer.image(m_layout.sheet, m_layout.frictionImageRow, m_layout.frictionImageColumn,
+                 ctx.chartImages.get(Widgets::Chart::ChartType::Friction));
 
-    writer.cell(
-        m_layout.sheet,
-        m_layout.rowStart + 163,
-        12,
-        ctx.params.date
-    );
+    writer.cell(m_layout.sheet, m_layout.secondDateRow, m_layout.secondDateColumn,
+                ctx.params.date);
 }
 
 }

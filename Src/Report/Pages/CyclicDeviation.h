@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Report/Blocks/CyclicSummary.h"
+
 #include <QString>
 
 namespace Report {
@@ -9,7 +11,7 @@ struct Context;
 
 namespace Pages {
 
-class SolenoidShutoff final {
+class CyclicDeviation final {
 public:
     struct Layout {
         QString sheet;
@@ -27,13 +29,13 @@ public:
         int summaryColumn = 8;
         int summaryRowStep = 2;
 
-        int solenoidDetailsRow = 0;
-        int solenoidCountColumn = 8;
-        int solenoidOnColumn = 10;
-        int solenoidOffColumn = 13;
-        int solenoidRowStep = 2;
-        int solenoidSwitch1Row = 0;
-        int solenoidSwitch2Row = 0;
+        int deviationRangesRow = 0;
+        int deviationRangeColumn = 2;
+        int deviationRowStep = 2;
+        int deviationForwardValueColumn = 8;
+        int deviationForwardCycleColumn = 11;
+        int deviationBackwardValueColumn = 12;
+        int deviationBackwardCycleColumn = 15;
 
         int fioRow = 0;
         int fioColumn = 4;
@@ -41,11 +43,14 @@ public:
         int dateRow = 0;
         int dateColumn = 12;
 
+        Blocks::CyclicSummary::CyclicMode mode =
+            Blocks::CyclicSummary::CyclicMode::Regulatory;
+
         bool positionerModel = true;
-        bool includeSolenoid = true;
+        bool includeSolenoid = false;
     };
 
-    explicit SolenoidShutoff(Layout layout);
+    explicit CyclicDeviation(Layout layout);
 
     void build(Writer& writer, const Context& ctx);
 

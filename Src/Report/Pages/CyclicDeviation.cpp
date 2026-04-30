@@ -1,25 +1,25 @@
-#include "CyclicRegulatory.h"
+#include "CyclicDeviation.h"
+
+#include "Report/Writer.h"
+#include "Report/Builder.h"
 
 #include "Report/Blocks/ObjectInfo.h"
 #include "Report/Blocks/ValveSpec.h"
 #include "Report/Blocks/CyclicSummary.h"
-#include "Report/Blocks/CyclicRegulatoryRanges.h"
-
-#include "Report/Writer.h"
-#include "Report/Builder.h"
+#include "Report/Blocks/PositionSensorDeviationRanges.h"
 
 #include <utility>
 
 namespace Report::Pages {
 
-CyclicRegulatory::CyclicRegulatory(Layout layout)
+CyclicDeviation::CyclicDeviation(Layout layout)
     : m_layout(std::move(layout))
 {
 }
 
-void CyclicRegulatory::build(Writer& writer, const Context& ctx)
+void CyclicDeviation::build(Writer& writer, const Context& ctx)
 {
-    writer.cell(m_layout.sheet, m_layout.positionRow, m_layout.positionColumn, ctx.valve.positionNumber);
+    writer.cell(m_layout.sheet,m_layout.positionRow, m_layout.positionColumn, ctx.valve.positionNumber);
 
     Blocks::ObjectInfo({
         m_layout.sheet,
@@ -40,21 +40,21 @@ void CyclicRegulatory::build(Writer& writer, const Context& ctx)
         m_layout.summaryRow,
         m_layout.summaryColumn,
         m_layout.summaryRowStep
-    }, Blocks::CyclicSummary::CyclicMode::Regulatory).build(writer, ctx);
+    }, m_layout.mode).build(writer, ctx);
 
-    Blocks::CyclicRegulatoryRanges({
+    Blocks::PositionSensorDeviationRanges({
         m_layout.sheet,
-        m_layout.rangesRow,
-        m_layout.rangesRangeColumn,
-        m_layout.rangesRowStep,
-        m_layout.rangesForwardValueColumn,
-        m_layout.rangesForwardCycleColumn,
-        m_layout.rangesBackwardValueColumn,
-        m_layout.rangesBackwardCycleColumn
+        m_layout.deviationRangesRow,
+        m_layout.deviationRangeColumn,
+        m_layout.deviationRowStep,
+        m_layout.deviationForwardValueColumn,
+        m_layout.deviationForwardCycleColumn,
+        m_layout.deviationBackwardValueColumn,
+        m_layout.deviationBackwardCycleColumn
     }).build(writer, ctx);
 
-    writer.cell(m_layout.sheet, m_layout.fioRow, m_layout.dateColumn, ctx.params.date);
+    writer.cell(m_layout.sheet, m_layout.fioRow, m_layout.fioColumn, ctx.object.FIO);
     writer.cell(m_layout.sheet, m_layout.dateRow, m_layout.dateColumn, ctx.params.date);
-
 }
+
 }

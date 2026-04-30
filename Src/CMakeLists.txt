@@ -130,10 +130,20 @@ set(REPORT_CPP
     Report/Patterns/C_SOVT.cpp
 
     Report/Pages/CyclicRegulatory.cpp
-    Report/Pages/CyclicShutoffPage.cpp
+
     Report/Pages/SolenoidShutoff.cpp
     Report/Pages/TechnicalInspection.cpp
     Report/Pages/StepReaction.cpp
+    Report/Pages/CyclicDeviation.cpp
+
+    Report/Blocks/StepReactionTable.cpp
+
+    Report/Blocks/PositionSensorDeviationRanges.cpp
+    Report/Blocks/ObjectInfo.cpp
+    Report/Blocks/CyclicRegulatoryRanges.cpp
+    Report/Blocks/SolenoidDetails.cpp
+    Report/Blocks/CyclicSummary.cpp
+    Report/Blocks/ValveSpec.cpp
 
     Report/Blocks/TechnicalResults.cpp
     Report/Saver.cpp
@@ -148,17 +158,19 @@ set(REPORT_HEADERS
     Report/Patterns/C_CVT.h
     Report/Patterns/C_SACVT.h
     Report/Patterns/C_SOVT.h
+
     Report/Pages/CyclicRegulatory.h
-    Report/Pages/CyclicShutoffPage.h
+
     Report/Pages/TechnicalInspection.h
     Report/Pages/SolenoidShutoff.h
     Report/Pages/StepReaction.h
-    Report/Blocks/CyclicRanges.h
+    Report/Pages/CyclicDeviation.h
+
+    Report/Blocks/PositionSensorDeviationRanges.h
     Report/Blocks/CyclicSummary.h
-    Report/Blocks/IBlock.h
     Report/Blocks/ObjectInfo.h
     Report/Blocks/SolenoidDetails.h
-    Report/Blocks/StepReaction.h
+    Report/Blocks/StepReactionTable.h
     Report/Blocks/TechnicalResults.h
     Report/Blocks/ValveSpec.h
     Report/Blocks/CyclicRegulatoryRanges.h
