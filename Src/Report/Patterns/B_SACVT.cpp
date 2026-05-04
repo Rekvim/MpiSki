@@ -9,7 +9,7 @@
 
 namespace Report::Patterns {
     void B_SACVT::build(
-        Saver::Report& report,
+        ReportData& report,
         const Telemetry& telemetryStore,
         const ObjectInfo& objectInfo,
         const ValveInfo& valveInfo,

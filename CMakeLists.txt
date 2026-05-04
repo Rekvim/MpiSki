@@ -10,6 +10,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options(-ftime-report)
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS
     Core
     Gui

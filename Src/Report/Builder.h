@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Saver.h"
+#include "Data.h"
 #include "Storage/Telemetry.h"
 #include "Storage/Registry.h"
 #include "Storage/ChartImageStorage.h"
@@ -18,7 +18,7 @@ namespace Report {
     public:
         virtual ~Builder() = default;
         virtual void build(
-            Saver::Report& report,
+            ReportData& report,
             const Telemetry& telemetryStore,
             const ObjectInfo& objectInfo,
             const ValveInfo& valveInfo,

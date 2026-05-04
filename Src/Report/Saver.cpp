@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QDirIterator>
 
+#include "Widgets/Chart/ChartView.h"
+
 #include "xlsxdocument.h"
 #include "xlsxdatavalidation.h"
 
@@ -196,7 +198,7 @@ void Saver::saveChartSnapshot(Widgets::Chart::ChartType chart,
         out.close();
     }
 }
-bool Saver::saveReport(const Report& report, const QString& templatePath)
+bool Saver::saveReport(const ReportData& report, const QString& templatePath)
 {
     if (!ensureDirectory())
         return false;

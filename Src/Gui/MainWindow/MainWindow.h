@@ -19,6 +19,7 @@
 #include "Gui/TestSettings/BaseSequenceSettingsDialog.h"
 
 #include "Report/Saver.h"
+
 #include "Domain/Program.h"
 #include "Storage/Registry.h"
 #include "Storage/Telemetry.h"
@@ -140,7 +141,7 @@ private:
     QElapsedTimer m_elapsedTimer;
     quint64 m_totalTestMs;
 
-    Report::Saver::Report m_report;
+    Report::ReportData m_report;
     Report::Saver* m_reportSaver = nullptr;
 
     QPlainTextEdit* m_logOutput = nullptr;

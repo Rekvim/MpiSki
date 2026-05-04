@@ -7,7 +7,7 @@ namespace Report::Patterns {
     {
     public:
         void build(
-            Saver::Report& report,
+            ReportData& report,
             const Telemetry& telemetryStore,
             const ObjectInfo& objectInfo,
             const ValveInfo& valveInfo,

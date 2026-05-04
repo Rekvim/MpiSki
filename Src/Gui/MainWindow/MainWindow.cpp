@@ -1690,7 +1690,7 @@ void MainWindow::generateReportClicked()
         return;
     }
 
-    Report::Saver::Report report;
+    Report::ReportData report;
     reportBuilder->build(report,
                          m_telemetry,
                          m_registry->objectInfo(),

@@ -1,7 +1,10 @@
 #include "StepReactionTable.h"
 
+#include <QTime>
+
 #include "Report/Writer.h"
 #include "Report/Builder.h"
+#include "Widgets/Chart/ChartType.h"
 
 namespace Report::Blocks {
 

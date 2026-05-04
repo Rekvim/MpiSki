@@ -1,5 +1,4 @@
 #include "ChartView.h"
-#include <utility>
 
 namespace Widgets::Chart {
 ChartView::ChartView(QWidget *parent)
@@ -60,11 +59,11 @@ ChartView::ChartView(QWidget *parent)
     QOpenGLWidget *glWidget = this->findChild<QOpenGLWidget *>();
     glWidget->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    m_axisTimer.setInterval(100); // 10 Hz, можно 50..200
+    m_axisTimer.setInterval(100); // 10 Hz
     connect(&m_axisTimer, &QTimer::timeout, this, &ChartView::updateAxes);
     m_axisTimer.start();
 
-    m_markerTimer.start(); // для троттлинга маркеров
+    m_markerTimer.start();
 }
 
 int ChartView::seriesCount() const

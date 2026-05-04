@@ -241,6 +241,7 @@ set(GUI_UI
 add_library(Domain STATIC
     ${DOMAIN_CPP}
     ${DOMAIN_HEADERS}
+    Report/Data.h
 )
 
 target_include_directories(Domain

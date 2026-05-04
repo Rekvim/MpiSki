@@ -1,5 +1,7 @@
 #include "CyclicSummary.h"
 
+#include <QTime>
+
 #include "Report/Writer.h"
 #include "Report/Builder.h"
 

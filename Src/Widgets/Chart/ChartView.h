@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QObject>
 #include <QtCharts>
 
 #include "Widgets/Chart/Series.h"

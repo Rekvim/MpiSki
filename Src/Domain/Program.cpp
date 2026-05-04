@@ -171,53 +171,17 @@ Program::makeSample() const
     return s;
 }
 
-// void Program::startRunner(std::unique_ptr<BaseRunner> r)
-// {
-//     m_activeRunner.reset();
-
-//     connect(r.get(), &BaseRunner::requestClearChart,
-//             this, [this](Widgets::Chart::ChartType chartType) {
-//                 emit clearPoints(chartType);
-//             });
-
-//     connect(r.get(), &BaseRunner::testActuallyStarted,
-//             this, &Program::onRunnerActuallyStarted);
-
-//     connect(r.get(), &BaseRunner::requestSetDAC,
-//             this, &Program::setDacRaw);
-
-//     connect(this, &Program::releaseBlock,
-//             r.get(), &BaseRunner::releaseBlock);
-
-//     connect(r.get(), &BaseRunner::totalTestTimeMs,
-//             this, &Program::totalTestTimeMs);
-
-//     connect(r.get(), &BaseRunner::endTest,
-//             this, &Program::endTest);
-
-//     connect(this, &Program::stopTheTest,
-//             r.get(), &BaseRunner::stop);
-
-//     emit setButtonInitEnabled(false);
-//     emit setTaskControlsEnabled(false);
-
-//     setDacRaw(0, 5000, true);
-
-//     m_activeRunner = std::move(r);
-//     m_activeRunner->start();
-// }
-
 void Program::startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> scenario)
 {
-    // if (!isDeviceReadyForTest()) {
-    //     failToStartTest("Нельзя запустить тест: устройство не инициализировано или не найдены датчики.");
-    //     return;
-    // }
+    if (!isDeviceReadyForTest()) {
+        failToStartTest("Нельзя запустить тест: устройство не инициализировано или не найдены датчики.");
+        return;
+    }
 
-    // if (!scenario) {
-    //     failToStartTest("Нельзя запустить тест: сценарий не создан.");
-    //     return;
-    // }
+    if (!scenario) {
+        failToStartTest("Нельзя запустить тест: сценарий не создан.");
+        return;
+    }
 
     m_currentScenario = std::move(scenario);
 

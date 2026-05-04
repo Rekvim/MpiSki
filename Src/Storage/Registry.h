@@ -1,8 +1,6 @@
 #pragma once
 
-#include <QObject>
 #include <QSettings>
-#include <QColor>
 
 #include "Gui/Setup/ValveWindow/ValveEnums.h"
 

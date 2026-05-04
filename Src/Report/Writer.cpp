@@ -1,8 +1,7 @@
 #include "Writer.h"
 
-
 namespace Report {
-Writer::Writer(Saver::Report& report) : m_report(report) {}
+Writer::Writer(ReportData& report) : m_report(report) {}
 
 void Writer::cell(const QString& sheet, quint16 row, quint16 col, const QVariant& value)
 {
