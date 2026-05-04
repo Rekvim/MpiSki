@@ -80,7 +80,6 @@ private slots:
     void onCrossingStatusUpdated(const CrossingStatus& status);
     void setSensorsNumber(quint8 sensorCount);
 
-    void setButtonInitEnabled(bool enabled);
     void setRegressionEnabled(bool enabled);
 
     void setDoButtonsChecked(quint8 bitmask);

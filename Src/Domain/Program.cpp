@@ -209,22 +209,19 @@ Program::makeSample() const
 
 void Program::startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> scenario)
 {
-    if (!isDeviceReadyForTest()) {
-        failToStartTest("Нельзя запустить тест: устройство не инициализировано или не найдены датчики.");
-        return;
-    }
+    // if (!isDeviceReadyForTest()) {
+    //     failToStartTest("Нельзя запустить тест: устройство не инициализировано или не найдены датчики.");
+    //     return;
+    // }
 
-    if (!scenario) {
-        failToStartTest("Нельзя запустить тест: сценарий не создан.");
-        return;
-    }
+    // if (!scenario) {
+    //     failToStartTest("Нельзя запустить тест: сценарий не создан.");
+    //     return;
+    // }
 
     m_currentScenario = std::move(scenario);
 
     connectScenarioRuntime(m_currentScenario.get());
-
-    emit setButtonInitEnabled(false);
-    emit setTaskControlsEnabled(false);
 
     setDacRaw(0, 5000, true);
 
@@ -431,9 +428,6 @@ void Program::endTest()
     m_isTestRunning = false;
     m_testWorker = TestWorker::None;
 
-    emit setTaskControlsEnabled(true);
-    emit setButtonInitEnabled(true);
-
     emit setTask(m_device.dac()->value());
 
     m_currentScenario.reset();
@@ -475,8 +469,6 @@ void Program::initialization()
     m_timerSensors->stop();
     m_timerDI->stop();
 
-    emit setButtonInitEnabled(false);
-
     QString positionUnit = (m_deviceConfig.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
 
     DeviceInitializer initializer(
@@ -491,13 +483,11 @@ void Program::initialization()
 
     if (!initializer.connectAndInitDevice()) {
         emit telemetryUpdated(m_telemetry);
-        emit setButtonInitEnabled(true);
         return;
     } emit telemetryUpdated(m_telemetry);
 
     if (!initializer.detectSensors()) {
         emit telemetryUpdated(m_telemetry);
-        emit setButtonInitEnabled(true);
         return;
     } emit telemetryUpdated(m_telemetry);
 
@@ -584,7 +574,6 @@ void Program::finalizeInitialization()
 
     emit setSensorsMask(mask);
     emit setSensorNumber(m_device.sensorCount());
-    emit setButtonInitEnabled(true);
     m_isInitialized = true;
     m_timerSensors->start();
 }
@@ -668,9 +657,6 @@ void Program::failToStartTest(const QString& reason)
     m_testWorker = TestWorker::None;
 
     m_currentScenario.reset();
-
-    emit setTaskControlsEnabled(true);
-    emit setButtonInitEnabled(true);
 }
 
 QVector<quint16> Program::makeRawValues(const QVector<quint16> &seq, bool normalOpen)

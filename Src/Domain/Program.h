@@ -120,7 +120,6 @@ signals:
     void setTextColor(const TextObjects object, const QColor color);
     void setTask(qreal task);
     void setSensorNumber(quint8 num);
-    void setButtonInitEnabled(bool enable);
     void setGroupDOVisible(bool visible);
     void setVisible(Widgets::Chart::ChartType chart, quint16 series, bool visible);
     void setRegressionEnable(bool enable);
@@ -142,7 +141,6 @@ signals:
     void clearPoints(Widgets::Chart::ChartType chartType);
 
     void stopTheTest();
-    void setTaskControlsEnabled(bool enable);
     void duplicateMainChartsSeries();
     void releaseBlock();
 

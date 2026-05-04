@@ -239,12 +239,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Domain::Program::setSensorsMask,
             this, &MainWindow::setSensorsMask);
 
-    connect(m_program, &Domain::Program::setButtonInitEnabled,
-            this, &MainWindow::setButtonInitEnabled);
-
-    connect(m_program, &Domain::Program::setTaskControlsEnabled,
-            this, &MainWindow::setTaskControlsEnabled);
-
     connect(m_program, &Domain::Program::mainResultUpdated,
             this, &MainWindow::onMainResultUpdated,
             Qt::QueuedConnection);
@@ -924,11 +918,9 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
     ui->doubleSpinBox_task->setEnabled(hasSensors);
     ui->verticalSlider_task->setEnabled(hasSensors);
 
+    setTaskControlsEnabled(true);
+    ui->pushButton_init->setEnabled(true);
     displayDependingPattern();
-}
-void MainWindow::setButtonInitEnabled(bool enable)
-{
-    ui->pushButton_init->setEnabled(enable);
 }
 
 void MainWindow::onPointsRequested(QVector<QVector<QPointF>>& points,
@@ -1151,23 +1143,21 @@ void MainWindow::applyTestStateToUi(TestState state)
         break;
     case TestState::Running:
         ui->statusbar->showMessage(tr("Тест выполняется"));
+        setTaskControlsEnabled(false);
         break;
     case TestState::Canceled:
         ui->statusbar->showMessage(tr("Тест остановлен"));
+        setTaskControlsEnabled(true);
         break;
     case TestState::Finished:
         ui->statusbar->showMessage(tr("Сохранение результатов..."));
+        setTaskControlsEnabled(true);
         QTimer::singleShot(1500, this, [this]{
             if (m_testState == TestState::Finished)
                 showIdleState();
         });
         break;
     }
-}
-
-void MainWindow::showInitializingState()
-{
-    ui->statusbar->showMessage(tr("Инициализация устройства..."));
 }
 
 void MainWindow::showIdleState()
@@ -1556,8 +1546,14 @@ void MainWindow::getImage(QLabel* label, ChartType chart)
         label->setPixmap(QPixmap::fromImage(scaled));
 }
 
+void MainWindow::showInitializingState()
+{
+    ui->statusbar->showMessage(tr("Инициализация устройства..."));
+}
+
 void MainWindow::initClicked()
 {
+    setTaskControlsEnabled(true);
     showInitializingState();
 
     QVector<bool> states = {

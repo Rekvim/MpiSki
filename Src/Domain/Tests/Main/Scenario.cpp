@@ -114,6 +114,12 @@ std::unique_ptr<BaseRunner> Scenario::createRunner()
 {
     const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
 
+    qDebug() << "Параметры:"
+        << m_params.signal_min
+        << m_params.dac_max
+        << m_params.delay
+        << m_params.signal_min ;
+
     return std::make_unique<Runner>(
         m_context.device,
         normalOpen,

@@ -159,7 +159,7 @@ void Registry::saveValveInfo()
     setValue("positionSensorModel", v.positionSensorModel);
     setValue("dinamicErrorRecomend", v.dinamicErrorRecomend);
     setValue("strokeMovement", static_cast<int>(v.strokeMovement));
-    setValue("strokValve", v.valveStroke);
+    setValue("valveStroke", v.valveStroke);
     setValue("driveModel", v.driveModel);
     setValue("safePosition", static_cast<int>(v.safePosition));
     setValue("driveType", static_cast<int>(v.driveType));

@@ -1,11 +1,13 @@
 #include "Analyzer.h"
 #include <algorithm>
+#include <qDebug>
 
 namespace Domain::Tests::Main {
 void Analyzer::start()
 {
     m_samples.clear();
     m_result = {};
+    qDebug() << "Domain::Tests::Main: Analyzer запущен";
 }
 
 void Analyzer::onSample(const Domain::Measurement::Sample& s)

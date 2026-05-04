@@ -34,6 +34,8 @@ set(DOMAIN_CPP
     Domain/Tests/Option/Step/Scenario.cpp
     Domain/Tests/Main/Scenario.cpp
     Domain/Tests/Stroke/Scenario.cpp
+    Domain/Tests/AbstractScenario.cpp
+
 
     Domain/Tests/ScenarioFactory.cpp
     Domain/Program.cpp
@@ -239,7 +241,6 @@ set(GUI_UI
 add_library(Domain STATIC
     ${DOMAIN_CPP}
     ${DOMAIN_HEADERS}
-    Domain/Tests/AbstractScenario.cpp
 )
 
 target_include_directories(Domain

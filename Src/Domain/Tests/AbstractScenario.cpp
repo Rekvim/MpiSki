@@ -1,4 +1,5 @@
 #include "AbstractScenario.h"
+#include <qDebug>
 
 namespace Domain::Tests {
 
@@ -23,6 +24,8 @@ void AbstractScenario::start()
     if (!runner) {
         emit failedToStart("Runner не создан.");
         return;
+    } else {
+        qDebug() << "Runner created";
     }
 
     connectCommonRunnerSignals(*runner);
