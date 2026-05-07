@@ -2,6 +2,8 @@
 
 #include "Gui/Setup/ValveWindow/ValveEnums.h"
 
+#include <QTime>
+
 #include "Report/Writer.h"
 #include "Report/Builder.h"
 
@@ -92,10 +94,10 @@ namespace Report::Blocks {
 
         if (t.testStroke) {
             writer.cell(m_layout.sheet, m_layout.rowStrokeTime, 5,
-                        t.testStroke->timeForwardMs);
+                        QTime(0, 0).addMSecs(t.testStroke->forwardTimeMs).toString("mm:ss.zzz"));
 
             writer.cell(m_layout.sheet, m_layout.rowStrokeTime, 8,
-                        t.testStroke->timeBackwardMs);
+                        QTime(0, 0).addMSecs(t.testStroke->backwardTimeMs).toString("mm:ss.zzz"));
         } else {
             qWarning() << "Report: missing ctx.telemetry.testStroke";
         }

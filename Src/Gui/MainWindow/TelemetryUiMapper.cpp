@@ -29,11 +29,11 @@ void TelemetryUiMapper::updateInit(const InitState& init)
 
 void TelemetryUiMapper::updateStrokeTest(const Domain::Tests::Stroke::Result& r)
 {
-    m_ui->lineEdit_strokeTest_forwardTime->setText(r.timeForwardMs);
-    m_ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(r.timeForwardMs);
+    m_ui->lineEdit_strokeTest_forwardTime->setText(QTime(0, 0).addMSecs(r.forwardTimeMs).toString("mm:ss.zzz"));
+    m_ui->lineEdit_resultsTable_strokeTest_forwardTime->setText(QTime(0, 0).addMSecs(r.forwardTimeMs).toString("mm:ss.zzz"));
 
-    m_ui->lineEdit_strokeTest_backwardTime->setText(r.timeBackwardMs);
-    m_ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(r.timeBackwardMs);
+    m_ui->lineEdit_strokeTest_backwardTime->setText(QTime(0, 0).addMSecs(r.forwardTimeMs).toString("mm:ss.zzz"));
+    m_ui->lineEdit_resultsTable_strokeTest_backwardTime->setText(QTime(0, 0).addMSecs(r.forwardTimeMs).toString("mm:ss.zzz"));
 }
 
 void TelemetryUiMapper::updateMainTest(

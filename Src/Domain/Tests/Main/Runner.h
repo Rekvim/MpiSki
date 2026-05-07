@@ -12,11 +12,11 @@ public:
     Runner(Mpi::Device& device, bool normalOpen, const Params& params, QObject* parent = nullptr)
         : BaseRunner(device, normalOpen, parent), m_params(params) {}
 signals:
+
+    void startBackwardStroke();
     void dublSeries();
-    void points(QVector<QVector<QPointF>> &points);
-    void addRegression(const QVector<QPointF> &points);
-    void addFriction(const QVector<QPointF> &points);
-    void results(const Domain::Tests::Main::Algorithm::TestResults& results);
+
+    void processCompleted();
 
 protected:
     RunnerConfig buildConfig() override;

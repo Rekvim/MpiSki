@@ -18,14 +18,14 @@ void CyclicSummary::build(Writer& writer, const Context& ctx)
 
     if (const auto& stroke = ctx.telemetry.testStroke) {
         writer.cell(m_layout.sheet, row, m_layout.column,
-                    stroke->timeForwardMs);
+                    QTime(0, 0).addMSecs(stroke->forwardTimeMs).toString("mm:ss.zzz"));
     }
 
     row += m_layout.rowStep;
 
     if (const auto& stroke = ctx.telemetry.testStroke) {
         writer.cell(m_layout.sheet, row, m_layout.column,
-                    stroke->timeBackwardMs);
+                    QTime(0, 0).addMSecs(stroke->backwardTimeMs).toString("mm:ss.zzz"));
     }
 
     row += m_layout.rowStep;

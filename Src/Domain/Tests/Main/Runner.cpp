@@ -4,44 +4,53 @@
 #include "Domain/Mpi/Device.h"
 
 namespace Domain::Tests::Main {
-    RunnerConfig Runner::buildConfig() {
-        auto p = m_params;
-        if (p.delay == 0) return {};
 
-        const quint64 N = static_cast<quint64>(p.pointNumbers);
-        const quint64 upMs = p.delay + N * p.response;
-        const quint64 downMs = p.delay + N * p.response;
-        const quint64 totalMs = 10000ULL + upMs + downMs + 10000ULL;
+RunnerConfig Runner::buildConfig()
+{
+    auto p = m_params;
 
-        p.dac_min = qMax(m_device.dac()->rawFromValue(p.signal_min), m_device.dacMin());
-        p.dac_max = qMin(m_device.dac()->rawFromValue(p.signal_max), m_device.dacMax());
+    if (p.delay == 0)
+        return {};
 
-        auto worker = std::make_unique<Algorithm>();
-        worker->setParameters(p);
+    const quint64 N = static_cast<quint64>(p.pointNumbers);
 
-        return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Task);
-    }
+    const quint64 upMs = p.delay + N * p.response;
+    const quint64 downMs = p.delay + N * p.response;
+    const quint64 totalMs = 10000ULL + upMs + downMs + 10000ULL;
 
-    void Runner::wireSpecificSignals(AbstractTestAlgorithm& base) {
-        auto& t = static_cast<Algorithm&>(base);
+    p.dac_min =
+        qMax(m_device.dac()->rawFromValue(p.signal_min),
+             m_device.dacMin());
 
-        connect(&t, &Algorithm::getPoints,
-                this, &Runner::points,
-                Qt::BlockingQueuedConnection);
+    p.dac_max =
+        qMin(m_device.dac()->rawFromValue(p.signal_max),
+             m_device.dacMax());
 
-        connect(&t, &Algorithm::dublSeries,
-                this, &Runner::dublSeries);
+    auto worker = std::make_unique<Algorithm>();
+    worker->setParameters(p);
 
-        connect(&t, &Algorithm::addRegression,
-                this, &Runner::addRegression,
-                Qt::QueuedConnection);
+    return makeConfig(
+        std::move(worker),
+        totalMs,
+        Widgets::Chart::ChartType::Task
+        );
+}
 
-        connect(&t, &Algorithm::addFriction,
-                this, &Runner::addFriction,
-                Qt::QueuedConnection);
+void Runner::wireSpecificSignals(AbstractTestAlgorithm& base)
+{
+    auto& t = static_cast<Algorithm&>(base);
 
-        connect(&t, &Algorithm::results,
-                this, &Runner::results,
-                Qt::QueuedConnection);
-    }
+    connect(&t, &Algorithm::backwardStrokeStarted,
+            this, &Runner::startBackwardStroke,
+            Qt::QueuedConnection);
+
+    connect(&t, &Algorithm::dublSeries,
+            this, &Runner::dublSeries,
+            Qt::QueuedConnection);
+
+    connect(&t, &Algorithm::processCompleted,
+            this, &Runner::processCompleted,
+            Qt::QueuedConnection);
+}
+
 }

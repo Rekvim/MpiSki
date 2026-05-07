@@ -13,7 +13,6 @@ namespace Test = Domain::Tests::Cyclic::Regulatory;
 
 namespace
 {
-// Создание одной точки измерения.
 Domain::Measurement::Sample makeSample(double task, double position)
 {
     Domain::Measurement::Sample s{};
@@ -22,13 +21,11 @@ Domain::Measurement::Sample makeSample(double task, double position)
     return s;
 }
 
-// Заголовок сценария.
 void printCaseHeader(const QString& title)
 {
     qDebug().noquote() << "\n---" << title << "---";
 }
 
-// Краткий вывод по всем диапазонам результата.
 void printRanges(const Test::Result& result)
 {
     qDebug() << "Количество диапазонов:" << result.ranges.size();
@@ -46,7 +43,6 @@ void printRanges(const Test::Result& result)
     }
 }
 
-// Краткий вывод по входным данным.
 template<typename Container>
 void printSamplesInfo(const Container& samples)
 {
@@ -64,7 +60,6 @@ void printSamplesInfo(const Container& samples)
 }
 }
 
-// Проверка работы на большом числе точек.
 void CyclicRegulatoryAnalyzerTest::testWithManyPoints()
 {
     printCaseHeader("Много точек");
@@ -94,7 +89,6 @@ void CyclicRegulatoryAnalyzerTest::testWithManyPoints()
 
     QCOMPARE(result.ranges.size(), 3);
 
-    // проверка: диапазоны реально существуют.
     QCOMPARE(result.ranges[0].rangePercent, 0.0);
     QCOMPARE(result.ranges[1].rangePercent, 50.0);
     QCOMPARE(result.ranges[2].rangePercent, 100.0);

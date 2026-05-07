@@ -90,7 +90,8 @@ Device::Device(QObject *parent) : QObject{parent}
             Qt::BlockingQueuedConnection);
 
     connect(m_uartReader, &Domain::Uart::Reader::adcDataReady,
-            this, &Domain::Mpi::Device::onAdcData);
+            this, &Domain::Mpi::Device::onAdcData,
+            Qt::QueuedConnection);
 
     connect(m_uartReader, &Domain::Uart::Reader::portOpened,
             this, &Domain::Mpi::Device::onUartConnected,
@@ -172,6 +173,8 @@ Device::sensorByAdc(quint8 adc) const
 
 bool Device::initialize()
 {
+    qDebug() << "Device thread:" << this->thread();
+    qDebug() << "Current thread:" << QThread::currentThread();
     emit requestSetAdcPolling(false, kDefaultAdcPollingMs);
 
     if (!m_isConnected) return false;

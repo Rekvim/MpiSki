@@ -52,7 +52,7 @@ void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
 
     connect(&runner, &Runner::result,
             this, &Scenario::onResult,
-            Qt::QueuedConnection);
+            Qt::DirectConnection);
 }
 
 void Scenario::onResult()
@@ -64,11 +64,8 @@ void Scenario::onResult()
 
     auto result = m_analyzer->result();
 
-    result.timeForwardMs =
-        QTime(0, 0).addMSecs(result.forwardTimeMs).toString("mm:ss.zzz");
-
-    result.timeBackwardMs =
-        QTime(0, 0).addMSecs(result.backwardTimeMs).toString("mm:ss.zzz");
+    result.forwardTimeMs = result.forwardTimeMs;
+    result.backwardTimeMs = result.backwardTimeMs;
 
     m_context.telemetry.testStroke = result;
 

@@ -34,6 +34,10 @@ qt_add_executable(${PROJECT_NAME}
     translations.qrc
 )
 
+set_target_properties(MpiSki PROPERTIES
+    WIN32_EXECUTABLE TRUE
+)
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         Gui

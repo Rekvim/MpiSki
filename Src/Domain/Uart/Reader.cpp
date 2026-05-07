@@ -43,8 +43,8 @@ QByteArray Reader::sendMessage(const Message& message)
         emit writeAndRead(message.toByteArray(), readData);
 
         if (readData.isEmpty()) {
-            qDebug() << "Port empty reply cmd" << int(message.command())
-            << "attempt" << attempt;
+            // qDebug() << "Port empty reply cmd" << int(message.command())
+            // << "attempt" << attempt;
             QThread::msleep(20);
             continue;
         }
@@ -52,23 +52,23 @@ QByteArray Reader::sendMessage(const Message& message)
         Message response(readData);
 
         if (!response.checkCrc()) {
-            qDebug() << "Port CRC fail cmd" << int(message.command())
-            << "attempt" << attempt;
+            // qDebug() << "Port CRC fail cmd" << int(message.command())
+            // << "attempt" << attempt;
             continue;
         }
 
         if (!(response.command() == Command::OK ||
               response.command() == message.command())) {
-            qDebug() << "UART unexpected cmd" << int(response.command())
-            << "expected" << int(message.command());
+            // qDebug() << "UART unexpected cmd" << int(response.command())
+            // << "expected" << int(message.command());
             continue;
         }
 
         return response.data();
     }
 
-    qDebug() << "UART failed cmd" << int(message.command())
-             << "after attempts" << m_maxAttempts;
+    // qDebug() << "UART failed cmd" << int(message.command())
+    //          << "after attempts" << m_maxAttempts;
 
     return {};
 }
@@ -188,7 +188,7 @@ void Reader::onPortError(QSerialPort::SerialPortError error)
     if (error == QSerialPort::NoError || error == QSerialPort::TimeoutError)
         return;
 
-    qWarning() << "UART error:" << error;
+    // qWarning() << "UART error:" << error;
 
     switch (error) {
     case QSerialPort::WriteError:

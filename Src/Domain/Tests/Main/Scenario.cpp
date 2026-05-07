@@ -7,7 +7,6 @@
 #include "Utils/NumberUtils.h"
 
 #include <QDebug>
-#include <QtMath>
 
 namespace Domain::Tests::Main {
 
@@ -20,72 +19,6 @@ static bool inRange(double value, double lower, double upper)
 
     return value >= lower && value <= upper;
 }
-
-static void debugCompareMainTest(
-    const Result& algorithmResult,
-    const Result& analyzerResult)
-{
-    qDebug() << "\n Результаты основного теста";
-
-    qDebug() << "pressureDiff:"
-             << "algorithm =" << algorithmResult.pressureDiff
-             << "analyzer =" << analyzerResult.pressureDiff;
-
-    qDebug() << "frictionForce:"
-             << "algorithm =" << algorithmResult.frictionForce
-             << "analyzer =" << analyzerResult.frictionForce;
-
-    qDebug() << "frictionPercent:"
-             << "algorithm =" << algorithmResult.frictionPercent
-             << "analyzer =" << analyzerResult.frictionPercent;
-
-    qDebug() << "dynamicErrorMean:"
-             << "algorithm =" << algorithmResult.dynamicErrorMean
-             << "analyzer =" << analyzerResult.dynamicErrorMean;
-
-    qDebug() << "dynamicErrorMeanPercent:"
-             << "algorithm =" << algorithmResult.dynamicErrorMeanPercent
-             << "analyzer =" << analyzerResult.dynamicErrorMeanPercent;
-
-    qDebug() << "dynamicErrorMax:"
-             << "algorithm =" << algorithmResult.dynamicErrorMax
-             << "analyzer =" << analyzerResult.dynamicErrorMax;
-
-    qDebug() << "dynamicErrorMaxPercent:"
-             << "algorithm =" << algorithmResult.dynamicErrorMaxPercent
-             << "analyzer =" << analyzerResult.dynamicErrorMaxPercent;
-
-    qDebug() << "dynamicErrorReal:"
-             << "algorithm =" << algorithmResult.dynamicErrorReal
-             << "analyzer =" << analyzerResult.dynamicErrorReal;
-
-    qDebug() << "lowLimitPressure:"
-             << "algorithm =" << algorithmResult.lowLimitPressure
-             << "analyzer =" << analyzerResult.lowLimitPressure;
-
-    qDebug() << "highLimitPressure:"
-             << "algorithm =" << algorithmResult.highLimitPressure
-             << "analyzer =" << analyzerResult.highLimitPressure;
-
-    qDebug() << "springLow:"
-             << "algorithm =" << algorithmResult.springLow
-             << "analyzer =" << analyzerResult.springLow;
-
-    qDebug() << "springHigh:"
-             << "algorithm =" << algorithmResult.springHigh
-             << "analyzer =" << analyzerResult.springHigh;
-
-    qDebug() << "linearityError:"
-             << "algorithm =" << algorithmResult.linearityError
-             << "analyzer =" << analyzerResult.linearityError;
-
-    qDebug() << "linearity:"
-             << "algorithm =" << algorithmResult.linearity
-             << "analyzer =" << analyzerResult.linearity;
-
-    qDebug() << "===============================\n";
-}
-
 }
 
 Scenario::Scenario(Tests::Context context,
@@ -114,12 +47,6 @@ std::unique_ptr<BaseRunner> Scenario::createRunner()
 {
     const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
 
-    qDebug() << "Параметры:"
-        << m_params.signal_min
-        << m_params.dac_max
-        << m_params.delay
-        << m_params.signal_min ;
-
     return std::make_unique<Runner>(
         m_context.device,
         normalOpen,
@@ -136,23 +63,16 @@ void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
             this, &Scenario::duplicateMainChartsSeriesRequested,
             Qt::QueuedConnection);
 
-    connect(&runner, &Runner::addRegression,
-            this, &Scenario::addRegressionRequested,
-            Qt::QueuedConnection);
+    connect(&runner, &Runner::startBackwardStroke,
+            this, [this]() {
+                if (m_analyzer)
+                    m_analyzer->startBackwardStroke();
+            },
+            Qt::DirectConnection);
 
-    connect(&runner, &Runner::addFriction,
-            this, &Scenario::addFrictionRequested,
-            Qt::QueuedConnection);
-
-    connect(&runner, &Runner::results,
-            this, &Scenario::onResults,
-            Qt::QueuedConnection);
-
-    connect(&runner, &Runner::points,
-            this, [this](QVector<QVector<QPointF>>& points) {
-                emit pointsRequested(
-                    points, Widgets::Chart::ChartType::Task);
-            }, Qt::DirectConnection);
+    connect(&runner, &Runner::processCompleted,
+            this, &Scenario::onProcessCompleted,
+            Qt::DirectConnection);
 }
 
 void Scenario::onSample(const Measurement::Sample& sample)
@@ -161,44 +81,45 @@ void Scenario::onSample(const Measurement::Sample& sample)
         m_analyzer->onSample(sample);
 }
 
-void Scenario::onResults(const Algorithm::TestResults& results)
+void Scenario::onProcessCompleted()
 {
-    auto& main = m_context.telemetry.testMain.emplace();
-
-    const qreal k = 5 * M_PI * m_context.config.driveDiameter
-                    * m_context.config.driveDiameter / 4;
-
-    main.pressureDiff = results.pressureDiff;
-
-    main.frictionForce = results.pressureDiff * k;
-    main.frictionPercent = results.friction;
-
-    main.dynamicErrorMean = results.dynamicErrorMean;
-    main.dynamicErrorMeanPercent = results.dynamicErrorMean / 0.16;
-
-    main.dynamicErrorMax = results.dynamicErrorMax;
-    main.dynamicErrorMaxPercent = results.dynamicErrorMax / 0.16;
-
-    main.dynamicErrorReal = results.dynamicErrorMean / 0.16;
-
-    main.lowLimitPressure = results.lowLimitPressure;
-    main.highLimitPressure = results.highLimitPressure;
-
-    main.springLow = results.springLow;
-    main.springHigh = results.springHigh;
-
-    main.linearityError = results.linearityError;
-    main.linearity = results.linearity;
-
-    if (m_analyzer) {
-        m_analyzer->finish();
-
-        const auto& analyzerResult = m_analyzer->result();
-
-        debugCompareMainTest(*m_context.telemetry.testMain, analyzerResult);
+    if (!m_analyzer) {
+        qWarning() << "[Main::Scenario] Analyzer is null";
+        return;
     }
 
+    m_analyzer->finish();
+
+    const Result& analyzerResult = m_analyzer->result();
+
+    auto& main = m_context.telemetry.testMain.emplace();
+
+    main.pressureDiff = analyzerResult.pressureDiff;
+
+    main.frictionForce = analyzerResult.frictionForce;
+    main.frictionPercent = analyzerResult.frictionPercent;
+
+    main.dynamicErrorMean = analyzerResult.dynamicErrorMean;
+    main.dynamicErrorMeanPercent = analyzerResult.dynamicErrorMeanPercent;
+
+    main.dynamicErrorMax = analyzerResult.dynamicErrorMax;
+    main.dynamicErrorMaxPercent = analyzerResult.dynamicErrorMaxPercent;
+
+    main.dynamicErrorReal = analyzerResult.dynamicErrorReal;
+
+    main.lowLimitPressure = analyzerResult.lowLimitPressure;
+    main.highLimitPressure = analyzerResult.highLimitPressure;
+
+    main.springLow = analyzerResult.springLow;
+    main.springHigh = analyzerResult.springHigh;
+
+    main.linearityError = analyzerResult.linearityError;
+    main.linearity = analyzerResult.linearity;
+
     updateCrossingStatus();
+
+    emit addRegressionRequested(m_analyzer->regressionChartPoints());
+    emit addFrictionRequested(m_analyzer->frictionChartPoints());
 
     emit mainResultUpdated(main);
     emit crossingStatusUpdated(m_context.telemetry.crossingStatus);
@@ -281,8 +202,7 @@ void Scenario::updateCrossingStatus()
 
         const bool okHigh = inRange(ts.testMain->springHigh, highLo, highHi);
 
-        ts.crossingStatus.spring =
-            (okLow && okHigh) ? State::Ok : State::Fail;
+        ts.crossingStatus.spring = (okLow && okHigh) ? State::Ok : State::Fail;
     } else {
         ts.crossingStatus.spring = State::Unknown;
     }

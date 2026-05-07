@@ -4,10 +4,6 @@
 #include "Domain/Tests/Context.h"
 
 #include "Params.h"
-#include "Algorithm.h"
-
-#include <QPointF>
-#include <QVector>
 
 namespace Domain::Tests::Main {
 
@@ -32,14 +28,16 @@ protected:
     std::unique_ptr<BaseRunner> createRunner() override;
     void afterRunnerCreated(BaseRunner& runner) override;
 
-private slots:
-    void onResults(const Domain::Tests::Main::Algorithm::TestResults& results);
+private:
+    void onProcessCompleted();
 
 private:
     Tests::Context m_context;
     Params m_params;
 
     std::unique_ptr<Analyzer> m_analyzer;
+
     void updateCrossingStatus();
 };
+
 }

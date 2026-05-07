@@ -48,7 +48,7 @@ void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
 
     connect(&runner, &Runner::results,
             this, &Scenario::onResults,
-            Qt::QueuedConnection);
+            Qt::DirectConnection);
 }
 
 void Scenario::onSample(const Measurement::Sample& sample)
@@ -59,7 +59,10 @@ void Scenario::onSample(const Measurement::Sample& sample)
 
 void Scenario::onResults(const Result& result)
 {
+    qDebug() << "=== Scenario::onResults START ===";
+
     if (m_analyzer) {
+        qDebug() << "Finishing analyzer...";
         m_analyzer->finish();
 
         const auto& analyzerResult = m_analyzer->result();

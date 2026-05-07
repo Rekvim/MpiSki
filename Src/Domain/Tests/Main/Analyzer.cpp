@@ -1,58 +1,125 @@
 #include "Analyzer.h"
+
 #include <algorithm>
 #include <qDebug>
+#include <QVector>
+#include <QPointF>
 
 namespace Domain::Tests::Main {
-void Analyzer::start()
-{
-    m_samples.clear();
-    m_result = {};
-    qDebug() << "Domain::Tests::Main: Analyzer запущен";
-}
-
-void Analyzer::onSample(const Domain::Measurement::Sample& s)
-{
-    m_samples.push_back(s);
-}
 
 void Analyzer::setConfig(const Config& cfg)
 {
     m_cfg = cfg;
 }
 
-Analyzer::Limits
-Analyzer::computeLimits(const MotionData& data) const
+void Analyzer::start()
+{
+    m_result = {};
+
+    m_direction = StrokeDirection::Forward;
+
+    m_linearSeriesFirst.clear();
+    m_linearSeriesSecond.clear();
+
+    m_pressureSeriesFirst.clear();
+    m_pressureSeriesSecond.clear();
+
+    m_regressionChartPoints.clear();
+    m_frictionChartPoints.clear();
+}
+
+void Analyzer::startBackwardStroke()
+{
+    m_direction = StrokeDirection::Backward;
+}
+
+bool Analyzer::isValidSample(const Domain::Measurement::Sample& s)
+{
+    return !qIsNaN(s.dac)
+        && !qIsNaN(s.positionValue)
+        && !qIsNaN(s.pressure1);
+}
+
+void Analyzer::onSample(const Domain::Measurement::Sample& s)
+{
+    if (!isValidSample(s))
+        return;
+
+    LinearPoint linearPoint;
+    linearPoint.dac = s.dac;
+    linearPoint.position = s.positionValue;
+
+    PressurePoint pressurePoint;
+    pressurePoint.pressure = s.pressure1;
+    pressurePoint.position = s.positionValue;
+
+    if (m_direction == StrokeDirection::Forward) {
+        m_linearSeriesSecond.push_back(linearPoint);
+        m_pressureSeriesSecond.push_back(pressurePoint);
+    } else {
+        m_linearSeriesFirst.push_back(linearPoint);
+        m_pressureSeriesFirst.push_back(pressurePoint);
+    }
+}
+
+Analyzer::Limits Analyzer::computePressureLimits(
+    const QVector<PressurePoint>& forward,
+    const QVector<PressurePoint>& backward) const
 {
     Limits result;
 
-    if (data.forward.isEmpty() || data.backward.isEmpty())
+    if (forward.isEmpty() || backward.isEmpty())
         return result;
 
-    auto initByFirst = [&](const PPPoint& p) {
-        result.minX = result.maxX = p.pressure;
-        result.minY = result.maxY = p.position;
-    };
+    result.minX = result.maxX = forward.first().pressure;
+    result.minY = result.maxY = forward.first().position;
 
-    initByFirst(data.forward.first());
-
-    auto update = [&](const QVector<PPPoint>& points) {
-        for (const PPPoint& p : points) {
+    auto update = [&](const QVector<PressurePoint>& points) {
+        for (const PressurePoint& p : points) {
             result.minX = std::min(result.minX, p.pressure);
             result.maxX = std::max(result.maxX, p.pressure);
+
             result.minY = std::min(result.minY, p.position);
             result.maxY = std::max(result.maxY, p.position);
         }
     };
 
-    update(data.forward);
-    update(data.backward);
+    update(forward);
+    update(backward);
 
     return result;
 }
 
-Analyzer::Regression
-Analyzer::regression(
-    const QVector<PPPoint>& points,
+Analyzer::Limits Analyzer::computeTaskLimits(
+    const QVector<LinearPoint>& forward,
+    const QVector<LinearPoint>& backward) const
+{
+    Limits result;
+
+    if (forward.isEmpty() || backward.isEmpty())
+        return result;
+
+    result.minX = result.maxX = forward.first().dac;
+    result.minY = result.maxY = forward.first().position;
+
+    auto update = [&](const QVector<LinearPoint>& points) {
+        for (const LinearPoint& p : points) {
+            result.minX = std::min(result.minX, p.dac);
+            result.maxX = std::max(result.maxX, p.dac);
+
+            result.minY = std::min(result.minY, p.position);
+            result.maxY = std::max(result.maxY, p.position);
+        }
+    };
+
+    update(forward);
+    update(backward);
+
+    return result;
+}
+
+Analyzer::Regression Analyzer::calculateRegression(
+    const QVector<PressurePoint>& points,
     const Limits& limits) const
 {
     Regression result;
@@ -60,13 +127,13 @@ Analyzer::regression(
     if (points.isEmpty())
         return result;
 
-    const double rangeFrac = 0.10;
+    const double range = 0.10;
 
     const double minY =
-        (limits.maxY - limits.minY) * rangeFrac + limits.minY;
+        (limits.maxY - limits.minY) * range + limits.minY;
 
     const double maxY =
-        limits.maxY - (limits.maxY - limits.minY) * rangeFrac;
+        limits.maxY - (limits.maxY - limits.minY) * range;
 
     double xy = 0.0;
     double x = 0.0;
@@ -74,86 +141,93 @@ Analyzer::regression(
     double x2 = 0.0;
     int n = 0;
 
-    for (const PPPoint& p : points)
-    {
-        if (p.position < minY || p.position > maxY)
-            continue;
+    for (const PressurePoint& p : points) {
+        if (p.position >= minY && p.position <= maxY) {
+            ++n;
 
-        ++n;
-        xy += p.pressure * p.position;
-        x += p.pressure;
-        y += p.position;
-        x2 += p.pressure * p.pressure;
+            xy += p.pressure * p.position;
+            x += p.pressure;
+            y += p.position;
+            x2 += p.pressure * p.pressure;
+        }
     }
 
     if (n < 2)
         return result;
 
-    const double denom = n * x2 - x * x;
+    const double denominator = n * x2 - x * x;
 
-    if (qFuzzyIsNull(denom))
+    if (qFuzzyIsNull(denominator))
         return result;
 
-    result.k = (n * xy - x * y) / denom;
+    result.k = (n * xy - x * y) / denominator;
     result.b = (y - result.k * x) / n;
-    result.valid = std::isfinite(result.k) && std::isfinite(result.b);
+
+    result.valid =
+        std::isfinite(result.k) &&
+        std::isfinite(result.b);
 
     return result;
 }
 
-double Analyzer::computeLinearity(
-    const QVector<PPPoint>& points,
-    const Regression& reg,
+double Analyzer::computeLinearityError(
+    const QVector<PressurePoint>& points,
+    const Regression& regression,
     const Limits& limits) const
 {
-    if (!reg.valid || points.isEmpty())
+    if (!regression.valid || points.isEmpty())
         return 0.0;
 
     const double frac = 0.10;
 
-    const double minY =
+    const double pMin =
         limits.minY + (limits.maxY - limits.minY) * frac;
 
-    const double maxY =
+    const double pMax =
         limits.maxY - (limits.maxY - limits.minY) * frac;
 
-    const double yRange = maxY - minY;
+    const double pRange = pMax - pMin;
 
-    if (yRange <= 0.0)
+    if (pRange <= 0.0)
         return 0.0;
 
     double maxDiff = 0.0;
 
-    for (const PPPoint& p : points)
-    {
-        if (p.position < minY || p.position > maxY)
+    for (const PressurePoint& p : points) {
+        if (p.position < pMin || p.position > pMax)
             continue;
 
-        const double yLin = reg.k * p.pressure + reg.b;
-        const double diff = qAbs(p.position - yLin);
+        const double pLin = regression.k * p.pressure + regression.b;
+        const double diff = qAbs(p.position - pLin);
 
         if (diff > maxDiff)
             maxDiff = diff;
     }
 
-    return (maxDiff / yRange) * 100.0;
+    return (maxDiff / pRange) * 100.0;
 }
 
 double Analyzer::computePressureDiff(
-    const Regression& regForward,
-    const Regression& regBackward,
+    const Regression& regressionForward,
+    const Regression& regressionBackward,
     const Limits& limits) const
 {
-    if (!regForward.valid || !regBackward.valid)
+    if (!regressionForward.valid || !regressionBackward.valid)
         return 0.0;
 
-    if (qFuzzyIsNull(regForward.k) || qFuzzyIsNull(regBackward.k))
+    if (qFuzzyIsNull(regressionForward.k) ||
+        qFuzzyIsNull(regressionBackward.k)) {
         return 0.0;
+    }
 
-    const double yMean = (limits.maxY + limits.minY) / 2.0;
+    const double yMean =
+        (limits.maxY + limits.minY) / 2.0;
 
-    const double xForward = (yMean - regForward.b) / regForward.k;
-    const double xBackward = (yMean - regBackward.b) / regBackward.k;
+    const double xForward =
+        (yMean - regressionForward.b) / regressionForward.k;
+
+    const double xBackward =
+        (yMean - regressionBackward.b) / regressionBackward.k;
 
     if (!std::isfinite(xForward) || !std::isfinite(xBackward))
         return 0.0;
@@ -161,62 +235,22 @@ double Analyzer::computePressureDiff(
     return qAbs(xForward - xBackward);
 }
 
-Analyzer::MotionData Analyzer::buildMotionData() const
-{
-    MotionData data;
-
-    if (m_samples.size() < 3)
-        return data;
-
-    int peakIdx = 0;
-    double peakDac = m_samples.first().dac;
-
-    for (int i = 1; i < m_samples.size(); ++i) {
-        if (m_samples[i].dac > peakDac) {
-            peakDac = m_samples[i].dac;
-            peakIdx = i;
-        }
-    }
-
-    auto appendSample = [&](const Domain::Measurement::Sample& s, QVector<PPPoint>& pp, QVector<TimePoint>& dyn) {
-        if (qIsNaN(s.pressure1) || qIsNaN(s.positionPercent) || qIsNaN(s.taskPercent))
-            return;
-
-        PPPoint ppPoint;
-        ppPoint.pressure = s.pressure1;
-        ppPoint.position = s.positionPercent;
-        pp.push_back(ppPoint);
-
-        TimePoint tp;
-        tp.task = s.taskPercent;
-        tp.position = s.positionPercent;
-        dyn.push_back(tp);
-    };
-
-    for (int i = 0; i <= peakIdx; ++i)
-        appendSample(m_samples[i], data.forward, data.forwardDyn);
-
-    for (int i = peakIdx; i < m_samples.size(); ++i)
-        appendSample(m_samples[i], data.backward, data.backwardDyn);
-
-    return data;
-}
-
 double Analyzer::computeFrictionPercent(
-    const Regression& regForward,
+    const Regression& regressionForward,
     const Limits& limits,
     double pressureDiff) const
 {
-    if (!regForward.valid || qFuzzyIsNull(regForward.k))
+    if (!regressionForward.valid || qFuzzyIsNull(regressionForward.k))
         return 0.0;
 
     const double xMin =
-        (limits.minY - regForward.b) / regForward.k;
+        (limits.minY - regressionForward.b) / regressionForward.k;
 
     const double xMax =
-        (limits.maxY - regForward.b) / regForward.k;
+        (limits.maxY - regressionForward.b) / regressionForward.k;
 
-    const double range = qAbs(xMin - xMax);
+    const double range =
+        qAbs(xMin - xMax);
 
     if (range <= 0.0 || !std::isfinite(range))
         return 0.0;
@@ -225,206 +259,462 @@ double Analyzer::computeFrictionPercent(
 }
 
 QPair<double, double> Analyzer::computeDynamicErrorMeanMax(
-    const QVector<TimePoint>& forward,
-    const QVector<TimePoint>& backward) const
+    const QVector<LinearPoint>& forward,
+    const QVector<LinearPoint>& backward) const
 {
     if (forward.isEmpty() || backward.isEmpty())
         return qMakePair(0.0, 0.0);
 
-    double minY = forward.first().position;
-    double maxY = forward.first().position;
+    qreal minY = forward.first().position;
+    qreal maxY = forward.first().position;
 
-    auto updateMinMax = [&](const QVector<TimePoint>& pts) {
-        for (const TimePoint& p : pts) {
-            minY = std::min(minY, p.position);
-            maxY = std::max(maxY, p.position);
+    auto updateLimits = [&](const QVector<LinearPoint>& points) {
+        for (const LinearPoint& p : points) {
+            minY = qMin(minY, qreal(p.position));
+            maxY = qMax(maxY, qreal(p.position));
         }
     };
 
-    updateMinMax(forward);
-    updateMinMax(backward);
+    updateLimits(forward);
+    updateLimits(backward);
 
-    if (maxY <= minY)
+    const quint16 Sections =
+        qMin(forward.size(), backward.size()) / 3;
+
+    if (Sections == 0)
         return qMakePair(0.0, 0.0);
 
-    const int minSize = int(std::min(forward.size(), backward.size()));
-    const int sections = std::max(1, minSize / 3);
+    const qreal step = (maxY - minY) / Sections;
 
-    const double step = (maxY - minY) / sections;
-
-    if (step <= 0.0)
+    if (qFuzzyIsNull(step))
         return qMakePair(0.0, 0.0);
 
-    QVector<int> numF(sections, 0);
-    QVector<int> numB(sections, 0);
+    QVector<quint16> pointsNumForward(Sections);
+    QVector<quint16> pointsNumBackward(Sections);
 
-    QVector<double> sumF(sections, 0.0);
-    QVector<double> sumB(sections, 0.0);
+    QVector<qreal> pointsValueForward(Sections);
+    QVector<qreal> pointsValueBackward(Sections);
 
-    auto sectionIndex = [&](double y) -> int
-    {
-        int idx = qFloor((y - minY) / step);
-        idx = std::clamp(idx, 0, sections - 1);
-        return idx;
-    };
+    for (const LinearPoint& point : forward) {
+        quint16 sectionNum =
+            qFloor((qreal(point.position) - minY) / step);
 
-    for (const TimePoint& p : forward)
-    {
-        const int idx = sectionIndex(p.position);
-        ++numF[idx];
-        sumF[idx] += p.task;
+        sectionNum =
+            qMin(sectionNum, quint16(Sections - 1));
+
+        ++pointsNumForward[sectionNum];
+        pointsValueForward[sectionNum] += qreal(point.dac);
     }
 
-    for (const TimePoint& p : backward)
-    {
-        const int idx = sectionIndex(p.position);
-        ++numB[idx];
-        sumB[idx] += p.task;
+    for (const LinearPoint& point : backward) {
+        quint16 sectionNum =
+            qFloor((qreal(point.position) - minY) / step);
+
+        sectionNum =
+            qMin(sectionNum, quint16(Sections - 1));
+
+        ++pointsNumBackward[sectionNum];
+        pointsValueBackward[sectionNum] += qreal(point.dac);
     }
 
-    double sum = 0.0;
-    int count = 0;
-    double maxDiff = 0.0;
+    qreal sum = 0;
+    quint16 num = 0;
+    qreal max = 0;
 
-    const int begin = int(sections * 0.05);
-    const int end   = int(sections * 0.95);
-
-    for (int i = begin; i < end; ++i)
-    {
-        if (numF[i] == 0 || numB[i] == 0)
+    for (quint16 i = Sections * 0.05; i < Sections * 0.95; ++i) {
+        if (pointsNumForward[i] == 0 || pointsNumBackward[i] == 0)
             continue;
 
-        const double meanF = sumF[i] / numF[i];
-        const double meanB = sumB[i] / numB[i];
-
-        const double diff = qAbs(meanF - meanB);
+        const qreal diff =
+            qAbs(pointsValueForward[i] / pointsNumForward[i]
+                 - pointsValueBackward[i] / pointsNumBackward[i]);
 
         sum += diff;
-        ++count;
-        maxDiff = std::max<double>(maxDiff, diff);
+        ++num;
+        max = qMax(max, diff);
     }
 
-    if (count == 0)
+    if (num == 0)
         return qMakePair(0.0, 0.0);
 
-    return qMakePair(sum / count, maxDiff);
-}
-
-QPair<double, double> Analyzer::computeSpringLimits(
-    const Regression& reg1,
-    const Regression& reg2,
-    const Limits& limits) const
-{
-    if (!reg1.valid || !reg2.valid)
-        return qMakePair(0.0, 0.0);
-
-    if (qFuzzyIsNull(reg1.k) || qFuzzyIsNull(reg2.k))
-        return qMakePair(0.0, 0.0);
-
-    auto xVal = [](const Regression& reg, double y)
-    {
-        return (y - reg.b) / reg.k;
-    };
-
-    const double x1 = xVal(reg1, limits.minY);
-    const double x2 = xVal(reg1, limits.maxY);
-    const double x3 = xVal(reg2, limits.minY);
-    const double x4 = xVal(reg2, limits.maxY);
-
-    const double minX =
-        (std::min(x1, x2) + std::min(x3, x4)) / 2.0;
-
-    const double maxX =
-        (std::max(x1, x2) + std::max(x3, x4)) / 2.0;
-
-    if (!std::isfinite(minX) || !std::isfinite(maxX))
-        return qMakePair(0.0, 0.0);
-
-    return qMakePair(minX, maxX);
+    return qMakePair(double(sum / num), double(max));
 }
 
 QPair<double, double> Analyzer::computeRangeLimits(
-    const Regression& reg1,
-    const Regression& reg2,
+    const Regression& regressionForward,
+    const Regression& regressionBackward,
     const Limits& limits) const
 {
-    if (!reg1.valid || !reg2.valid)
+    if (!regressionForward.valid || !regressionBackward.valid)
         return qMakePair(0.0, 0.0);
 
-    if (qFuzzyIsNull(reg1.k) || qFuzzyIsNull(reg2.k))
+    if (qFuzzyIsNull(regressionForward.k) ||
+        qFuzzyIsNull(regressionBackward.k)) {
         return qMakePair(0.0, 0.0);
+    }
 
-    auto xVal = [](const Regression& reg, double y)
-    {
-        return (y - reg.b) / reg.k;
+    auto xVal = [](const Regression& regression, double y) {
+        return (y - regression.b) / regression.k;
     };
 
-    const double x1 = xVal(reg1, limits.minY);
-    const double x2 = xVal(reg1, limits.maxY);
-    const double x3 = xVal(reg2, limits.minY);
-    const double x4 = xVal(reg2, limits.maxY);
+    const double x1 = xVal(regressionForward, limits.minY);
+    const double x2 = xVal(regressionForward, limits.maxY);
+    const double x3 = xVal(regressionBackward, limits.minY);
+    const double x4 = xVal(regressionBackward, limits.maxY);
 
-    const double minX = std::min(std::min(x1, x2), std::min(x3, x4));
-    const double maxX = std::max(std::max(x1, x2), std::max(x3, x4));
+    const double minX =
+        qMin(qMin(x1, x2), qMin(x3, x4));
+
+    const double maxX =
+        qMax(qMax(x1, x2), qMax(x3, x4));
 
     if (!std::isfinite(minX) || !std::isfinite(maxX))
         return qMakePair(0.0, 0.0);
 
     return qMakePair(minX, maxX);
+}
+
+QPair<double, double> Analyzer::computeSpringLimits(
+    const Regression& regressionForward,
+    const Regression& regressionBackward,
+    const Limits& limits) const
+{
+    if (!regressionForward.valid || !regressionBackward.valid)
+        return qMakePair(0.0, 0.0);
+
+    if (qFuzzyIsNull(regressionForward.k) ||
+        qFuzzyIsNull(regressionBackward.k)) {
+        return qMakePair(0.0, 0.0);
+    }
+
+    auto xVal = [](const Regression& regression, double y) {
+        return (y - regression.b) / regression.k;
+    };
+
+    const double x1 = xVal(regressionForward, limits.minY);
+    const double x2 = xVal(regressionForward, limits.maxY);
+    const double x3 = xVal(regressionBackward, limits.minY);
+    const double x4 = xVal(regressionBackward, limits.maxY);
+
+    const double minX =
+        (qMin(x1, x2) + qMin(x3, x4)) / 2.0;
+
+    const double maxX =
+        (qMax(x1, x2) + qMax(x3, x4)) / 2.0;
+
+    if (!std::isfinite(minX) || !std::isfinite(maxX))
+        return qMakePair(0.0, 0.0);
+
+    return qMakePair(minX, maxX);
+}
+
+QVector<QPointF> Analyzer::toPressureQPoints(
+    const QVector<PressurePoint>& points) const
+{
+    QVector<QPointF> result;
+    result.reserve(points.size());
+
+    for (const PressurePoint& p : points) {
+        result.push_back(QPointF(p.pressure, p.position));
+    }
+
+    return result;
+}
+
+QVector<QPointF> Analyzer::buildRegressionLinePoints(
+    const Regression& regression,
+    const Limits& limits) const
+{
+    const QPointF point_minX(
+        limits.minX,
+        regression.k * limits.minX + regression.b
+        );
+
+    const QPointF point_maxX(
+        limits.maxX,
+        regression.k * limits.maxX + regression.b
+        );
+
+    const QPointF point_minY(
+        (limits.minY - regression.b) / regression.k,
+        limits.minY
+        );
+
+    const QPointF point_maxY(
+        (limits.maxY - regression.b) / regression.k,
+        limits.maxY
+        );
+
+    auto pointInLimits = [limits](const QPointF& point) {
+        return (point.x() >= limits.minX) &&
+               (point.x() <= limits.maxX) &&
+               (point.y() >= limits.minY) &&
+               (point.y() <= limits.maxY);
+    };
+
+    const bool minX_InLimits = pointInLimits(point_minX);
+    const bool maxX_InLimits = pointInLimits(point_maxX);
+    const bool minY_InLimits = pointInLimits(point_minY);
+    const bool maxY_InLimits = pointInLimits(point_maxY);
+
+    QVector<QPointF> result;
+
+    if (minX_InLimits && maxX_InLimits) {
+        result.push_back(point_minX);
+        result.push_back(point_maxX);
+        return result;
+    }
+
+    if (minX_InLimits && minY_InLimits) {
+        result.push_back(point_minX);
+        result.push_back(point_minY);
+        result.push_back({limits.maxX, limits.minY});
+        return result;
+    }
+
+    if (minX_InLimits && maxY_InLimits) {
+        result.push_back(point_minX);
+        result.push_back(point_maxY);
+        result.push_back({limits.maxX, limits.maxY});
+        return result;
+    }
+
+    if (maxX_InLimits && minY_InLimits) {
+        result.push_back({limits.minX, limits.minY});
+        result.push_back(point_minY);
+        result.push_back(point_maxX);
+        return result;
+    }
+
+    if (maxX_InLimits && maxY_InLimits) {
+        result.push_back({limits.minX, limits.maxY});
+        result.push_back(point_maxY);
+        result.push_back(point_maxX);
+        return result;
+    }
+
+    if (minY_InLimits && maxY_InLimits) {
+        if (point_minY.x() < point_maxY.x()) {
+            result.push_back({limits.minX, limits.minY});
+            result.push_back(point_minY);
+            result.push_back(point_maxY);
+            result.push_back({limits.maxX, limits.maxY});
+        } else {
+            result.push_back({limits.minX, limits.maxY});
+            result.push_back(point_maxY);
+            result.push_back(point_minY);
+            result.push_back({limits.maxX, limits.minY});
+        }
+    }
+
+    return result;
+}
+
+QVector<QPointF> Analyzer::buildRegressionChartPoints(
+    const Regression& regressionFirst,
+    const Regression& regressionSecond,
+    const Limits& limits) const
+{
+    QVector<QPointF> pointsFirst =
+        buildRegressionLinePoints(regressionFirst, limits);
+
+    QVector<QPointF> pointsSecond =
+        buildRegressionLinePoints(regressionSecond, limits);
+
+    pointsFirst.append({pointsSecond.rbegin(), pointsSecond.rend()});
+
+    if (!pointsFirst.isEmpty())
+        pointsFirst.push_back(pointsFirst.first());
+
+    return pointsFirst;
+}
+
+QVector<QPointF> Analyzer::buildFrictionChartPoints(
+    const QVector<PressurePoint>& first,
+    const QVector<PressurePoint>& second,
+    const Limits& limits) const
+{
+    const QVector<QPointF> pointsForward = toPressureQPoints(first);
+    const QVector<QPointF> pointsBackward = toPressureQPoints(second);
+
+    const quint16 Sections =
+        qMin(pointsForward.size(), pointsBackward.size()) / 3;
+
+    if (Sections == 0)
+        return {};
+
+    const qreal step =
+        (limits.maxY - limits.minY) / Sections;
+
+    if (qFuzzyIsNull(step))
+        return {};
+
+    QVector<quint16> pointsNumForward(Sections);
+    QVector<quint16> pointsNumBackward(Sections);
+
+    QVector<qreal> pointsValueForward(Sections);
+    QVector<qreal> pointsValueBackward(Sections);
+
+    for (const QPointF& point : pointsForward) {
+        quint16 sectionNum =
+            qFloor((point.y() - limits.minY) / step);
+
+        sectionNum =
+            qMin(sectionNum, quint16(Sections - 1));
+
+        ++pointsNumForward[sectionNum];
+        pointsValueForward[sectionNum] += point.x();
+    }
+
+    for (const QPointF& point : pointsBackward) {
+        quint16 sectionNum =
+            qFloor((point.y() - limits.minY) / step);
+
+        sectionNum =
+            qMin(sectionNum, quint16(Sections - 1));
+
+        ++pointsNumBackward[sectionNum];
+        pointsValueBackward[sectionNum] += point.x();
+    }
+
+    QVector<QPointF> result;
+
+    for (quint16 i = Sections * 0.05; i < Sections * 0.95; ++i) {
+        if (pointsNumForward[i] == 0 || pointsNumBackward[i] == 0)
+            continue;
+
+        result.push_back({
+            step * i + limits.minY,
+            qAbs(pointsValueForward[i] / pointsNumForward[i]
+                 - pointsValueBackward[i] / pointsNumBackward[i])
+        });
+    }
+
+    return result;
+}
+
+const QVector<QPointF>& Analyzer::regressionChartPoints() const
+{
+    return m_regressionChartPoints;
+}
+
+const QVector<QPointF>& Analyzer::frictionChartPoints() const
+{
+    return m_frictionChartPoints;
 }
 
 void Analyzer::finish()
 {
     m_result = {};
 
-    if (m_samples.isEmpty())
+    if (m_pressureSeriesFirst.isEmpty() ||
+        m_pressureSeriesSecond.isEmpty() ||
+        m_linearSeriesFirst.isEmpty() ||
+        m_linearSeriesSecond.isEmpty()) {
+        qWarning() << "Domain::Tests::Main: Analyzer недостаточно данных";
         return;
+    }
 
-    const MotionData data = buildMotionData();
+    const Limits pressureLimits =
+        computePressureLimits(m_pressureSeriesFirst, m_pressureSeriesSecond);
 
-    if (data.forward.isEmpty() || data.backward.isEmpty())
+    const Regression regressionFirst =
+        calculateRegression(m_pressureSeriesFirst, pressureLimits);
+
+    const Regression regressionSecond =
+        calculateRegression(m_pressureSeriesSecond, pressureLimits);
+
+    if (!regressionFirst .valid || !regressionSecond .valid) {
+        qWarning() << "Domain::Tests::Main: Analyzer не смог построить регрессию";
         return;
+    }
 
-    const Limits limits = computeLimits(data);
+    const double linearityForward =
+        computeLinearityError(m_pressureSeriesFirst, regressionFirst , pressureLimits);
 
-    const Regression regForward = regression(data.forward, limits);
-    const Regression regBackward = regression(data.backward, limits);
+    const double linearityBackward =
+        computeLinearityError(m_pressureSeriesSecond, regressionSecond , pressureLimits);
 
-    if (!regForward.valid || !regBackward.valid)
-        return ;
+    m_result.linearityError =
+        qMax(linearityForward, linearityBackward);
 
-    m_result.linearityError = std::max<double>(
-        computeLinearity(data.forward, regForward, limits),
-        computeLinearity(data.backward, regBackward, limits));
+    m_result.linearity =
+        100.0 - m_result.linearityError;
 
-    m_result.linearity = 100.0 - m_result.linearityError;
+    m_result.pressureDiff =
+        computePressureDiff(regressionFirst , regressionSecond , pressureLimits);
 
-    m_result.pressureDiff = computePressureDiff(regForward, regBackward, limits);
-
-    const qreal forceCoef =
+    const double forceCoef =
         5.0 * M_PI * m_cfg.driveDiameter * m_cfg.driveDiameter / 4.0;
 
-    m_result.frictionForce = m_result.pressureDiff * forceCoef;
-    m_result.frictionPercent = computeFrictionPercent(regForward, limits, m_result.pressureDiff);
+    m_result.frictionForce =
+        m_result.pressureDiff * forceCoef;
 
-    QPair<double, double> dyn = computeDynamicErrorMeanMax(data.forwardDyn, data.backwardDyn);
+    m_result.frictionPercent =
+        computeFrictionPercent(
+            regressionFirst,
+            pressureLimits,
+            m_result.pressureDiff);
 
-    m_result.dynamicErrorMean = dyn.first;
-    m_result.dynamicErrorMax = dyn.second;
+    const QPair<double, double> dynamic =
+        computeDynamicErrorMeanMax(m_linearSeriesFirst, m_linearSeriesSecond);
 
-    QPair<double, double> range = computeRangeLimits(regForward, regBackward, limits);
+    m_result.dynamicErrorMean =
+        dynamic.first / 2.0;
 
-    m_result.lowLimitPressure = range.first;
-    m_result.highLimitPressure = range.second;
+    m_result.dynamicErrorMax =
+        dynamic.second;
 
-    QPair<double, double> spring = computeSpringLimits(regForward, regBackward, limits);
+    m_result.dynamicErrorMeanPercent =
+        m_result.dynamicErrorMean / 0.16;
 
-    m_result.springLow = spring.first;
-    m_result.springHigh = spring.second;
+    m_result.dynamicErrorMaxPercent =
+        m_result.dynamicErrorMax / 0.16;
+
+    m_result.dynamicErrorReal =
+        m_result.dynamicErrorMean / 0.16;
+
+    const QPair<double, double> range =
+        computeRangeLimits(
+            regressionFirst,
+            regressionSecond,
+            pressureLimits);
+
+    m_result.lowLimitPressure =
+        range.first;
+
+    m_result.highLimitPressure =
+        range.second;
+
+    const QPair<double, double> spring =
+        computeSpringLimits(
+            regressionFirst,
+            regressionSecond,
+            pressureLimits);
+
+    m_result.springLow =
+        spring.first;
+
+    m_result.springHigh =
+        spring.second;
+
+    m_regressionChartPoints =
+        buildRegressionChartPoints(
+            regressionFirst,
+            regressionSecond,
+            pressureLimits);
+
+    m_frictionChartPoints =
+        buildFrictionChartPoints(
+            m_pressureSeriesFirst,
+            m_pressureSeriesSecond,
+            pressureLimits);
+
 }
 
 const Result& Analyzer::result() const
 {
     return m_result;
 }
+
 }

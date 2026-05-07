@@ -97,7 +97,6 @@ private slots:
 
     void onPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onStrokeTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
-    void onMainTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onStepTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
 
@@ -161,7 +160,6 @@ private:
     TestState m_testState = TestState::Idle;
     void applyTestStateToUi(TestState  state);
     void setTestState(TestState state);
-    void showInitializingState();
     void showIdleState();
     void collectRegistryOverrides(ObjectInfo& objectInfo, ValveInfo& valveInfo, OtherParameters& otherParameters);
 

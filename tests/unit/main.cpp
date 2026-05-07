@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     StrokeTestAnalyzerTest strokeTestAnalyzer;
     CyclicRegulatoryAnalyzerTest сyclicRegulatoryAnalyzer;
 
-    status = QTest::qExec(&stepTestAnalyzer, argc, argv);
+    status = QTest::qExec(&сyclicRegulatoryAnalyzer, argc, argv);
 
     if (status == 0) {
         qDebug() << "\n========================================";

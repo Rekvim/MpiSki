@@ -23,7 +23,6 @@
 namespace Domain {
 constexpr quint8 VersionFlag = 0x40;
 
-
 using ChartType = Widgets::Chart::ChartType;
 
 Program::Program(QObject *parent)
@@ -433,15 +432,16 @@ void Program::initialization()
     m_timerSensors->stop();
     m_timerDI->stop();
 
-    QString positionUnit = (m_deviceConfig.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
+    QString positionUnit =
+        (m_deviceConfig.strokeMovement == StrokeMovement::Rotary) ? "°" : "мм";
 
     DeviceInitializer initializer(
         m_device,
         m_telemetry,
         {
-            .normalClosed = m_deviceConfig.safePosition == SafePosition::NormallyClosed,
-            .strokeMovement = m_deviceConfig.strokeMovement,
-            .diameterPulley = m_deviceConfig.diameterPulley
+            m_deviceConfig.safePosition == SafePosition::NormallyClosed,
+            m_deviceConfig.strokeMovement,
+            m_deviceConfig.diameterPulley
         }
     );
 
@@ -564,22 +564,25 @@ void Program::addFriction(const QVector<QPointF> &points)
 {
     QVector<Widgets::Chart::Point> chartPoints;
 
-    qreal k = 5 * M_PI * m_deviceConfig.driveDiameter * m_deviceConfig.driveDiameter / 4;
+    qreal k = 5 * M_PI * m_deviceConfig.driveDiameter
+              * m_deviceConfig.driveDiameter / 4;
 
     for (QPointF point : points) {
         chartPoints.push_back({0, point.x(), point.y() * k});
     }
+
     emit addPoints(ChartType::Friction, chartPoints);
 }
 
 void Program::addRegression(const QVector<QPointF> &points)
 {
     QVector<Widgets::Chart::Point> chartPoints;
+
     for (QPointF point : points) {
         chartPoints.push_back({1, point.x(), point.y()});
     }
-    emit addPoints(ChartType::Pressure, chartPoints);
 
+    emit addPoints(ChartType::Pressure, chartPoints);
     emit setRegressionEnable(true);
 }
 
@@ -647,10 +650,10 @@ void Program::setMultipleDO(const QVector<bool>& states)
 
 Tests::Context Program::makeContext()
 {
-    return Tests::Context {
-        .device = m_device,
-        .telemetry = m_telemetry,
-        .config = m_deviceConfig
+    return Tests::Context{
+        m_device,
+        m_telemetry,
+        m_deviceConfig
     };
 }
 

@@ -1,4 +1,5 @@
 #include "Algorithm.h"
+#include <QDebug>
 
 namespace Domain::Tests::Option::Step {
 void Algorithm::run()
@@ -9,8 +10,14 @@ void Algorithm::run()
         return;
     }
     QVector<QVector<QPointF>> pointsF;
+    qDebug() << "=== Алгоритм взятие точек ===";
+
     emit points(pointsF);
+    qDebug() << "=== Точки взяты - подсчет результатов ===";
+
     emit results(calculateResult(pointsF));
+    qDebug() << "=== Сигнал на финиш";
+
     emit finished();
 }
 

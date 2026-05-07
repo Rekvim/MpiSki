@@ -901,24 +901,22 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 {
     const bool hasSensors = (sensorCount > 0);
 
-    if (hasSensors) m_isInitialized = true;
-
+    if (hasSensors) {
+        m_isInitialized = true;
+        setTaskControlsEnabled(true);
+    } else {
+        setTaskControlsEnabled(false);
+    }
     if (m_testState == TestState::Idle)
         showIdleState();
 
     updateAvailableTabs();
-
-    ui->groupBox_settingCurrentSignal->setEnabled(hasSensors);
 
     ui->pushButton_mainTest_start->setEnabled(sensorCount > 1);
     ui->pushButton_strokeTest_start->setEnabled(hasSensors);
     ui->pushButton_optionalTests_start->setEnabled(hasSensors);
     ui->pushButton_cyclicTest_start->setEnabled(hasSensors);
 
-    ui->doubleSpinBox_task->setEnabled(hasSensors);
-    ui->verticalSlider_task->setEnabled(hasSensors);
-
-    setTaskControlsEnabled(true);
     ui->pushButton_init->setEnabled(true);
     displayDependingPattern();
 }
@@ -930,10 +928,6 @@ void MainWindow::onPointsRequested(QVector<QVector<QPointF>>& points,
     {
     case ChartType::Stroke:
         onStrokeTestPointsRequested(points, chart);
-        break;
-
-    case ChartType::Task:
-        onMainTestPointsRequested(points, chart);
         break;
 
     case ChartType::Step:
@@ -960,18 +954,6 @@ void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, 
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
 
-void MainWindow::onMainTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
-{
-    points.clear();
-
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsPressure = m_chartManager->getPoints(ChartType::Pressure, 0);
-
-    points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-    points.push_back({pointsLinear.second.begin(), pointsLinear.second.end()});
-    points.push_back({pointsPressure.first.begin(), pointsPressure.first.end()});
-    points.push_back({pointsPressure.second.begin(), pointsPressure.second.end()});
-}
 void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
 {
     points.clear();
@@ -979,7 +961,6 @@ void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, Ch
     QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
     QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_chartManager->getPoints(chart, 0);
 
-    points.clear();
     points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
     points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
@@ -1519,8 +1500,7 @@ void MainWindow::initCharts()
 void MainWindow::getImage(QLabel* label, ChartType chart)
 {
     QString imgPath = QFileDialog::getOpenFileName(
-        this,
-        tr("Выберите файл"),
+        this, tr("Выберите файл"),
         m_reportSaver->directory().absolutePath(),
         tr("Изображения (*.jpg *.png *.bmp)")
         );
@@ -1534,8 +1514,7 @@ void MainWindow::getImage(QLabel* label, ChartType chart)
         return;
 
     QImage scaled = img.scaled(
-        1000,
-        430,
+        1000, 430,
         Qt::IgnoreAspectRatio,
         Qt::SmoothTransformation
         );
@@ -1546,15 +1525,10 @@ void MainWindow::getImage(QLabel* label, ChartType chart)
         label->setPixmap(QPixmap::fromImage(scaled));
 }
 
-void MainWindow::showInitializingState()
-{
-    ui->statusbar->showMessage(tr("Инициализация устройства..."));
-}
-
 void MainWindow::initClicked()
 {
     setTaskControlsEnabled(true);
-    showInitializingState();
+    ui->statusbar->showMessage(tr("Инициализация устройства..."));
 
     QVector<bool> states = {
         ui->pushButton_DO0->isChecked(),
@@ -1649,10 +1623,10 @@ void MainWindow::collectReportOverrides()
 
     // Stroke test
     if (m_telemetry.testStroke) {
-        m_telemetry.testStroke->timeForwardMs =
-            ui->lineEdit_resultsTable_strokeTest_forwardTime->text();
-        m_telemetry.testStroke->timeBackwardMs =
-            ui->lineEdit_resultsTable_strokeTest_backwardTime->text();
+        m_telemetry.testStroke->forwardTimeMs =
+            ui->lineEdit_resultsTable_strokeTest_forwardTime->text().toUInt();
+        m_telemetry.testStroke->backwardTimeMs =
+            ui->lineEdit_resultsTable_strokeTest_backwardTime->text().toUInt();
     }
 
     // SupplyRecord

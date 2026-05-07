@@ -24,8 +24,6 @@ void AbstractScenario::start()
     if (!runner) {
         emit failedToStart("Runner не создан.");
         return;
-    } else {
-        qDebug() << "Runner created";
     }
 
     connectCommonRunnerSignals(*runner);
