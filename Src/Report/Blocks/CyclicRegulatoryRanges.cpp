@@ -43,9 +43,9 @@ void CyclicRegulatoryRanges::build(Writer& writer, const Context& ctx)
                     a.maxFwdCycle = r.maxForwardCycle;
                 }
 
-                if (r.minBackwardCycle >= 0) {
-                    a.minRevVal = r.minBackwardPosition;
-                    a.minRevCycle = r.minBackwardCycle;
+                if (r.maxBackwardCycle >= 0) {
+                    a.minRevVal = r.maxBackwardPosition;
+                    a.minRevCycle = r.maxBackwardCycle;
                 }
 
                 aggMap.insert(r.rangePercent, a);
@@ -61,11 +61,11 @@ void CyclicRegulatoryRanges::build(Writer& writer, const Context& ctx)
                     a.maxFwdCycle = r.maxForwardCycle;
                 }
 
-                if (r.minBackwardCycle >= 0 &&
-                    r.minBackwardPosition < a.minRevVal)
+                if (r.maxBackwardCycle >= 0 &&
+                    r.maxBackwardPosition < a.minRevVal)
                 {
-                    a.minRevVal = r.minBackwardPosition;
-                    a.minRevCycle = r.minBackwardCycle;
+                    a.minRevVal = r.maxBackwardPosition;
+                    a.minRevCycle = r.maxBackwardCycle;
                 }
             }
         }

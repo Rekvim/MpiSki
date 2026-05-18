@@ -7,7 +7,6 @@
 
 BaseRunner::~BaseRunner()
 {
-    stop();
     cleanupThread();
 }
 
@@ -16,14 +15,16 @@ void BaseRunner::cleanupThread()
     if (!m_thread)
         return;
 
-    m_thread->requestInterruption();
-    m_thread->quit();
-    m_thread->wait();
+    QThread* thread = m_thread;
+
+    if (thread->isRunning()) {
+        thread->quit();
+        thread->wait();
+    }
 
     m_thread = nullptr;
     m_worker = nullptr;
 }
-
 void BaseRunner::start()
 {
     if (m_thread || m_worker)

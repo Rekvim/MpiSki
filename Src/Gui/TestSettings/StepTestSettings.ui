@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>254</width>
-    <height>368</height>
+    <width>312</width>
+    <height>499</height>
    </rect>
   </property>
   <property name="font">
@@ -23,6 +23,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Время удержания&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -30,6 +35,14 @@
      </item>
      <item>
       <widget class="QTimeEdit" name="timeEdit">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 5px 5px;</string>
+       </property>
        <property name="currentSection">
         <enum>QDateTimeEdit::Section::SecondSection</enum>
        </property>
@@ -54,6 +67,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Тест</string>
        </property>
@@ -61,6 +79,14 @@
      </item>
      <item>
       <widget class="QSpinBox" name="spinBox_T_value">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 5px 5px;</string>
+       </property>
        <property name="minimum">
         <number>0</number>
        </property>
@@ -76,6 +102,11 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_2">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="title">
       <string>Значения для тестирования</string>
      </property>
@@ -91,6 +122,9 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QPushButton" name="pushButton_add_value">
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Добавить</string>
           </property>
@@ -98,6 +132,14 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_delete_value">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Удалить</string>
           </property>
@@ -105,6 +147,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_change_value">
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Изменить</string>
           </property>
@@ -145,6 +190,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_2">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 5px 5px;</string>
+       </property>
        <property name="text">
         <string>Отмена</string>
        </property>
@@ -152,6 +205,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 5px 5px;</string>
+       </property>
        <property name="text">
         <string>Начать тест</string>
        </property>

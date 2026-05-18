@@ -1,5 +1,5 @@
 #include "Runner.h"
-#include "Algorithm.h"
+#include "Domain/Tests/Option/Algorithm.h"
 
 #include "Domain/Measurement/Sensor.h"
 #include "Domain/Mpi/Device.h"
@@ -42,21 +42,11 @@ RunnerConfig Runner::buildConfig() {
 
     task.value = buildSequence(p, m_device, m_normalOpen);
     worker->setTask(task);
-    worker->setTValue(p.testValue);
 
     return makeConfig(std::move(worker), totalMs, Widgets::Chart::ChartType::Step);
 }
 
 void Runner::wireSpecificSignals(AbstractTestAlgorithm& base)
 {
-    auto& t = static_cast<Algorithm&>(base);
-
-    connect(&t, &Algorithm::points,
-            this, &Runner::points,
-            Qt::BlockingQueuedConnection);
-
-    connect(&t, &Algorithm::results,
-            this, &Runner::results,
-            Qt::QueuedConnection);
 }
 }

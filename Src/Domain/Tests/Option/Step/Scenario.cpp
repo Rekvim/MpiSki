@@ -3,16 +3,10 @@
 #include "Runner.h"
 #include "Analyzer.h"
 
-#include <QDebug>
-
 namespace Domain::Tests::Option::Step {
 
-Scenario::Scenario(Tests::Context context,
-                   const Params& params,
-                   QObject* parent)
-    : Tests::AbstractScenario(parent)
-    , m_context(context)
-    , m_params(params)
+Scenario::Scenario(Tests::Context context, const Params& params, QObject* parent)
+    : Tests::AbstractScenario(parent), m_context(context), m_params(params)
 {
 }
 
@@ -41,13 +35,15 @@ void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
 {
     auto& runner = static_cast<Runner&>(baseRunner);
 
-    connect(&runner, &Runner::points,
-            this, [this](QVector<QVector<QPointF>>& points) {
-                emit pointsRequested(points, Widgets::Chart::ChartType::Step);
-            }, Qt::DirectConnection);
+    disconnect(&runner, &BaseRunner::endTest,
+               this, &AbstractScenario::finished);
 
-    connect(&runner, &Runner::results,
+    connect(&runner, &BaseRunner::endTest,
             this, &Scenario::onResults,
+            Qt::DirectConnection);
+
+    connect(&runner, &BaseRunner::endTest,
+            this, &AbstractScenario::finished,
             Qt::DirectConnection);
 }
 
@@ -57,31 +53,16 @@ void Scenario::onSample(const Measurement::Sample& sample)
         m_analyzer->onSample(sample);
 }
 
-void Scenario::onResults(const Result& result)
+void Scenario::onResults()
 {
-    qDebug() << "=== Scenario::onResults START ===";
+    if (!m_analyzer) return;
 
-    if (m_analyzer) {
-        qDebug() << "Finishing analyzer...";
-        m_analyzer->finish();
-
-        const auto& analyzerResult = m_analyzer->result();
-
-        qDebug() << "\n===== STEP TEST ANALYZER =====";
-
-        for (const auto& r : analyzerResult.steps) {
-            qDebug() << "from:" << r.from
-                     << "to:" << r.to
-                     << "T:" << r.T_value
-                     << "overshoot:" << r.overshoot;
-        }
-
-        qDebug() << "=============================\n";
-    }
-
-    m_context.telemetry.testStep = result;
+    m_analyzer->finish();
+    auto result = m_analyzer->result();
 
     emit stepResultUpdated(result);
+    m_context.telemetry.testStep = result;
+
     emit telemetryUpdated(m_context.telemetry);
 }
 

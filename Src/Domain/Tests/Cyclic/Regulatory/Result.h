@@ -10,8 +10,8 @@ struct Range
     qint16 rangePercent = 0;
     qreal maxForwardPosition = std::numeric_limits<qreal>::lowest();
     int maxForwardCycle = -1;
-    qreal minBackwardPosition = std::numeric_limits<qreal>::max();
-    int minBackwardCycle = -1;
+    qreal maxBackwardPosition = std::numeric_limits<qreal>::max();
+    int maxBackwardCycle = -1;
 };
 struct Result
 {

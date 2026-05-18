@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>293</width>
-    <height>459</height>
+    <width>321</width>
+    <height>506</height>
    </rect>
   </property>
   <property name="font">
@@ -23,6 +23,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Время удержания&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -30,6 +35,11 @@
      </item>
      <item>
       <widget class="QTimeEdit" name="timeEdit">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="currentSection">
         <enum>QDateTimeEdit::Section::SecondSection</enum>
        </property>
@@ -54,8 +64,8 @@
     <widget class="QGroupBox" name="groupBox_2">
      <property name="font">
       <font>
-       <family>HoloLens MDL2 Assets</family>
-       <pointsize>10</pointsize>
+       <family>Segoe UI</family>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="title">
@@ -64,6 +74,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QListWidget" name="listWidget_value">
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
         <property name="editTriggers">
          <set>QAbstractItemView::EditTrigger::CurrentChanged|QAbstractItemView::EditTrigger::DoubleClicked|QAbstractItemView::EditTrigger::EditKeyPressed</set>
         </property>
@@ -73,6 +89,15 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QPushButton" name="pushButton_add_value">
+          <property name="font">
+           <font>
+            <family>HoloLens MDL2 Assets</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Добавить</string>
           </property>
@@ -83,6 +108,15 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_delete_value">
+          <property name="font">
+           <font>
+            <family>HoloLens MDL2 Assets</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Удалить</string>
           </property>
@@ -90,6 +124,15 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_change_value">
+          <property name="font">
+           <font>
+            <family>HoloLens MDL2 Assets</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Изменить</string>
           </property>
@@ -117,8 +160,8 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
-       <family>HoloLens MDL2 Assets</family>
-       <pointsize>10</pointsize>
+       <family>Segoe UI</family>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="title">
@@ -127,6 +170,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QListWidget" name="listWidget_step">
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
         <item>
          <property name="text">
           <string>3.0</string>
@@ -148,6 +197,15 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QPushButton" name="pushButton_add_step">
+          <property name="font">
+           <font>
+            <family>HoloLens MDL2 Assets</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Добавить</string>
           </property>
@@ -155,6 +213,15 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_delete_step">
+          <property name="font">
+           <font>
+            <family>HoloLens MDL2 Assets</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Удалить</string>
           </property>
@@ -162,6 +229,15 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_change_step">
+          <property name="font">
+           <font>
+            <family>HoloLens MDL2 Assets</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 5px;</string>
+          </property>
           <property name="text">
            <string>Изменить</string>
           </property>
@@ -202,6 +278,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_2">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 5px 10px;</string>
+       </property>
        <property name="text">
         <string>Отмена</string>
        </property>
@@ -209,6 +293,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 5px 10px;</string>
+       </property>
        <property name="text">
         <string>Начать тест</string>
        </property>

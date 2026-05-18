@@ -285,13 +285,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_stepResults->resizeColumnsToContents();
 
     setupArrowButton(ui->toolButton_arrowUp,
-                     ":Img/arrowUp.png",
-                     ":Img/arrowUpHover.png",
+                     ":/Src/Img/arrowUp.png",
+                     ":/Src/Img/arrowUpHover.png",
                      +0.05);
 
     setupArrowButton(ui->toolButton_arrowDown,
-                     ":Img/arrowDown.png",
-                     ":Img/arrowDownHover.png",
+                     ":/Src/Img/arrowDown.png",
+                     ":/Src/Img/arrowDownHover.png",
                      -0.05);
 
     connect(m_program, &Domain::Program::telemetryUpdated,
@@ -338,6 +338,15 @@ MainWindow::MainWindow(QWidget *parent)
     bindImage(ui->pushButton_imageChartFriction,
               ui->label_imageChartFriction,
               ChartType::Friction);
+
+    // ===== comments =====
+    connect(ui->pushButton_commentMainTest,
+            &QPushButton::clicked,
+            this, [this] {
+                editTestComment(
+                    QStringLiteral("mainTest"),
+                    tr("Основной тест") );
+            });
 }
 
 MainWindow::~MainWindow()
@@ -451,11 +460,11 @@ void MainWindow::setupUiConnections()
 
 void MainWindow::lockTabsForPreInit()
 {
-    // ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
-    // ui->tabWidget_main->setTabEnabled(1, false);
-    // ui->tabWidget_main->setTabEnabled(2, false);
-    // ui->tabWidget_main->setTabEnabled(3, false);
-    // ui->tabWidget_main->setTabEnabled(4, false);
+    ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
+    ui->tabWidget_main->setTabEnabled(1, false);
+    ui->tabWidget_main->setTabEnabled(2, false);
+    ui->tabWidget_main->setTabEnabled(3, false);
+    ui->tabWidget_main->setTabEnabled(4, false);
 }
 
 void MainWindow::updateAvailableTabs()
@@ -536,9 +545,18 @@ void MainWindow::setupPrimaryActions()
 
 void MainWindow::onCountdownTimeout()
 {
+    if (m_testState != TestState::Running &&
+        m_testState != TestState::Starting) {
+        if (m_durationTimer)
+            m_durationTimer->stop();
+
+        return;
+    }
+
     const qint64 elapsed = m_elapsedTimer.elapsed();
     qint64 remaining = static_cast<qint64>(m_totalTestMs) - elapsed;
-    if (remaining < 0) remaining = 0;
+    if (remaining < 0)
+        remaining = 0;
 
     ui->statusbar->showMessage(
         tr("Тест в процессе. До завершения теста осталось: %1 (прошло %2 из %3)")
@@ -553,6 +571,12 @@ void MainWindow::onCountdownTimeout()
 
 void MainWindow::onTotalTestTimeMs(quint64 totalMs)
 {
+    if (m_testState != TestState::Starting &&
+        m_testState != TestState::Running) {
+        qDebug() << "MainWindow::onTotalTestTimeMs ignored, state =" << static_cast<int>(m_testState);
+        return;
+    }
+
     m_totalTestMs = totalMs;
     m_elapsedTimer.restart();
 
@@ -562,6 +586,7 @@ void MainWindow::onTotalTestTimeMs(quint64 totalMs)
 
     m_durationTimer->setInterval(1000);
     m_durationTimer->start();
+
     onCountdownTimeout();
 }
 
@@ -696,6 +721,7 @@ void MainWindow::appendLog(const QString& text) {
 // !!!
 void MainWindow::setTaskControlsEnabled(bool enabled)
 {
+    ui->pushButton_init->setEnabled(enabled);
     ui->verticalSlider_task->setEnabled(enabled);
     ui->doubleSpinBox_task->setEnabled(enabled);
     ui->groupBox_DO->setEnabled(enabled);
@@ -926,13 +952,6 @@ void MainWindow::onPointsRequested(QVector<QVector<QPointF>>& points,
 {
     switch (chart)
     {
-    case ChartType::Stroke:
-        onStrokeTestPointsRequested(points, chart);
-        break;
-
-    case ChartType::Step:
-        onStepTestPointsRequested(points, chart);
-        break;
 
     case ChartType::Cyclic:
         onCyclicTestPointsRequested(points, chart);
@@ -943,27 +962,7 @@ void MainWindow::onPointsRequested(QVector<QVector<QPointF>>& points,
         break;
     }
 }
-void MainWindow::onStrokeTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
-{
-    points.clear();
 
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_chartManager->getPoints(chart, 0);
-
-    points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-    points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
-}
-
-void MainWindow::onStepTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
-{
-    points.clear();
-
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_chartManager->getPoints(chart, 0);
-
-    points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-    points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
-}
 void MainWindow::onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
 {
     points.clear();
@@ -998,6 +997,112 @@ static QString seqToString(const QVector<qreal>& seq)
     parts.reserve(seq.size());
     for (quint16 v : seq) parts << QString::number(v);
     return parts.join('-');
+}
+
+qint64 MainWindow::cyclicTotalTimeMs(
+    const Domain::Tests::Cyclic::Params& parameters) const
+{
+    qint64 totalMs = 0;
+
+    switch (parameters.type) {
+    case Domain::Tests::Cyclic::Params::Regulatory:
+    {
+        const auto& p = parameters.regulatory;
+
+        const quint64 steps =
+            static_cast<quint64>(p.sequence.size()) * p.numCycles;
+
+        totalMs = static_cast<qint64>(steps * (p.delayMs + p.holdMs));
+        break;
+    }
+
+    case Domain::Tests::Cyclic::Params::Shutoff:
+    {
+        const auto& p = parameters.shutoff;
+
+        const quint64 steps =
+            static_cast<quint64>(p.sequence.size()) * p.numCycles;
+
+        totalMs = static_cast<qint64>(steps * (p.delayMs + p.holdMs));
+        break;
+    }
+
+    case Domain::Tests::Cyclic::Params::Combined:
+    {
+        const auto& r = parameters.regulatory;
+        const auto& s = parameters.shutoff;
+
+        const quint64 regSteps =
+            static_cast<quint64>(r.sequence.size()) * r.numCycles;
+
+        const quint64 offSteps =
+            static_cast<quint64>(s.sequence.size()) * s.numCycles;
+
+        const qint64 regMs =
+            static_cast<qint64>(regSteps * (r.delayMs + r.holdMs));
+
+        const qint64 offMs =
+            static_cast<qint64>(offSteps * (s.delayMs + s.holdMs));
+
+        totalMs = regMs + offMs;
+        break;
+    }
+    }
+
+    return totalMs;
+}
+
+void MainWindow::updateCyclicLabels(
+    const Domain::Tests::Cyclic::Params& parameters)
+{
+    switch (parameters.type) {
+    case Domain::Tests::Cyclic::Params::Regulatory:
+    {
+        const auto& p = parameters.regulatory;
+
+        ui->label_cyclicTest_sequenceValue->setText(seqToString(p.sequence));
+        ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.numCycles));
+
+        break;
+    }
+
+    case Domain::Tests::Cyclic::Params::Shutoff:
+    {
+        const auto& p = parameters.shutoff;
+
+        ui->label_cyclicTest_sequenceValue->setText(seqToString(p.sequence));
+        ui->label_cyclicTest_specifiedCyclesValue->setText(QString::number(p.numCycles));
+
+        break;
+    }
+
+    case Domain::Tests::Cyclic::Params::Combined:
+    {
+        const auto& r = parameters.regulatory;
+        const auto& s = parameters.shutoff;
+
+        ui->label_cyclicTest_sequenceValue->setText(
+            QStringLiteral("Рег.: %1 | Отсеч.: %2")
+                .arg(seqToString(r.sequence),
+                     seqToString(s.sequence))
+            );
+
+        ui->label_cyclicTest_specifiedCyclesValue->setText(
+            QStringLiteral("Рег.: %1 | Отсеч.: %2")
+                .arg(r.numCycles)
+                .arg(s.numCycles)
+            );
+
+        break;
+    }
+    }
+
+    QTime t0(0, 0);
+    t0 = t0.addMSecs(cyclicTotalTimeMs(parameters));
+
+    ui->label_cyclicTest_totalTimeValue->setText(
+        t0.toString(QStringLiteral("hh:mm:ss.zzz"))
+        );
 }
 
 void MainWindow::onCyclicTestParametersRequested(Domain::Tests::Cyclic::Params &parameters)
@@ -1308,8 +1413,16 @@ void MainWindow::startCyclicTestClicked()
     if (m_cyclicTestSettings->exec() != QDialog::Accepted)
         return;
 
-    m_testController->runCyclicTest(
-        m_cyclicTestSettings->parameters());
+    const auto parameters = m_cyclicTestSettings->parameters();
+
+    updateCyclicLabels(parameters);
+
+    if (parameters.type == Domain::Tests::Cyclic::Params::Regulatory) {
+        if (parameters.regulatory.enable20mA)
+            ui->doubleSpinBox_task->setValue(20.0);
+    }
+
+    m_testController->runCyclicTest(parameters);
 }
 
 void MainWindow::saveCyclicChartClicked()
@@ -1527,7 +1640,10 @@ void MainWindow::getImage(QLabel* label, ChartType chart)
 
 void MainWindow::initClicked()
 {
-    setTaskControlsEnabled(true);
+    m_isInitialized = false;
+    setTaskControlsEnabled(false);
+    ui->doubleSpinBox_task->setValue(4.0);
+
     ui->statusbar->showMessage(tr("Инициализация устройства..."));
 
     QVector<bool> states = {
@@ -1595,6 +1711,18 @@ QLabel* MainWindow::previewLabelForChart(ChartType chart) const
     }
 }
 
+static quint32 timeTextToMs(const QString& text)
+{
+    const QTime time = QTime::fromString(text.trimmed(), "mm:ss.zzz");
+
+    if (!time.isValid())
+        return 0;
+
+    return static_cast<quint32>(
+        QTime(0, 0).msecsTo(time)
+        );
+}
+
 void MainWindow::collectReportOverrides()
 {
     // MainTestRecord
@@ -1624,9 +1752,10 @@ void MainWindow::collectReportOverrides()
     // Stroke test
     if (m_telemetry.testStroke) {
         m_telemetry.testStroke->forwardTimeMs =
-            ui->lineEdit_resultsTable_strokeTest_forwardTime->text().toUInt();
+            timeTextToMs(ui->lineEdit_resultsTable_strokeTest_forwardTime->text());
+
         m_telemetry.testStroke->backwardTimeMs =
-            ui->lineEdit_resultsTable_strokeTest_backwardTime->text().toUInt();
+            timeTextToMs(ui->lineEdit_resultsTable_strokeTest_backwardTime->text());
     }
 
     // SupplyRecord
@@ -1645,6 +1774,206 @@ void MainWindow::collectRegistryOverrides(
 
     valveInfo.dinamicErrorRecomend = ui->lineEdit_resultsTable_dynamicErrorRecomend->text();
     valveInfo.valveStroke = ui->lineEdit_resultsTable_strokeRecomend->text();
+}
+
+void MainWindow::editTestComment(const QString& testKey,
+                                 const QString& description)
+{
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Комментарий:"));
+
+    auto* layout = new QVBoxLayout(&dialog);
+
+    auto* descriptionLabel = new QLabel(description, &dialog);
+    descriptionLabel->setWordWrap(true);
+
+    auto* textEdit = new QTextEdit(&dialog);
+    textEdit->setPlainText(m_testComments.value(testKey));
+    textEdit->setMinimumSize(520, 260);
+
+    auto* buttons = new QDialogButtonBox(
+        QDialogButtonBox::Save | QDialogButtonBox::Cancel,
+        &dialog
+        );
+
+    layout->addWidget(descriptionLabel);
+    layout->addWidget(textEdit);
+    layout->addWidget(buttons);
+
+    connect(buttons, &QDialogButtonBox::accepted,
+            &dialog, &QDialog::accept);
+
+    connect(buttons, &QDialogButtonBox::rejected,
+            &dialog, &QDialog::reject);
+
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    const QString comment = textEdit->toPlainText().trimmed();
+
+    if (comment.isEmpty()) {
+        m_testComments.remove(testKey);
+    } else {
+        m_testComments[testKey] = comment;
+    }
+
+    saveCommentsPdfIfNeeded();
+}
+
+bool MainWindow::hasAnyTestComments() const
+{
+    for (auto it = m_testComments.constBegin(); it != m_testComments.constEnd(); ++it) {
+        if (!it.value().trimmed().isEmpty())
+            return true;
+    }
+
+    return false;
+}
+
+QString MainWindow::commentsPdfPath() const
+{
+    if (!m_reportSaver)
+        return QString();
+
+    return m_reportSaver->directory().filePath(tr("Комментарии.pdf"));
+}
+
+void MainWindow::saveCommentsPdfIfNeeded()
+{
+    if (!m_reportSaver)
+        return;
+
+    if (!m_reportSaver->ensureDirectory())
+        return;
+
+    const QString path = commentsPdfPath();
+
+    if (path.isEmpty())
+        return;
+
+    if (!hasAnyTestComments()) {
+        QFile::remove(path);
+        return;
+    }
+
+    QPdfWriter writer(path);
+    writer.setPageSize(QPageSize(QPageSize::A4));
+    writer.setResolution(300);
+    writer.setPageMargins(
+        QMarginsF(15, 15, 15, 15),
+        QPageLayout::Millimeter
+        );
+
+    QTextDocument document;
+    document.setHtml(buildCommentsHtml());
+    document.print(&writer);
+}
+
+QString MainWindow::buildCommentsHtml() const
+{
+    auto block = [this](const QString& key,
+                        const QString& title) -> QString
+    {
+        const QString comment = m_testComments.value(key).trimmed();
+
+        if (comment.isEmpty())
+            return QString();
+
+        return QString(R"(
+        <div class="card">
+            <h2>%1</h2>
+
+            <div class="comment-title">Комментарий</div>
+            <div class="comment-text">%2</div>
+        </div>
+    )")
+            .arg(title.toHtmlEscaped())
+            .arg(comment.toHtmlEscaped().replace(QStringLiteral("\n"), QStringLiteral("<br>")));
+    };
+
+    QString html;
+
+    html += QStringLiteral(R"(
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    color: #222222;
+}
+
+h1 {
+    font-size: 22pt;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 9pt;
+    color: #666666;
+    margin-bottom: 20px;
+}
+
+.card {
+    border: 1px solid #d0d0d0;
+    padding: 12px;
+    margin-bottom: 14px;
+}
+
+.card h2 {
+    font-size: 14pt;
+    margin: 0 0 4px 0;
+}
+
+.description {
+    font-size: 9pt;
+    color: #666666;
+    margin-bottom: 10px;
+}
+
+.comment-block {
+    border-left: 4px solid #fd7d13;
+    background-color: #f6f6f6;
+    padding: 8px 10px;
+}
+
+.comment-title {
+    font-size: 9pt;
+    font-weight: bold;
+    color: #444444;
+    margin-bottom: 4px;
+}
+
+.comment-text {
+    font-size: 10pt;
+    line-height: 1.4;
+}
+</style>
+</head>
+
+<body>
+)");
+
+    html += QStringLiteral("<h1>Комментарии к испытаниям</h1>");
+
+    html += QStringLiteral("<div class=\"subtitle\">Сформировано: %1</div>")
+                .arg(QDateTime::currentDateTime()
+                         .toString(QStringLiteral("dd.MM.yyyy HH:mm"))
+                         .toHtmlEscaped());
+
+    html += block(
+        QStringLiteral("mainTest"),
+        tr("Основной тест")
+        );
+
+    html += QStringLiteral(R"(
+</body>
+</html>
+)");
+
+    return html;
 }
 
 void MainWindow::generateReportClicked()

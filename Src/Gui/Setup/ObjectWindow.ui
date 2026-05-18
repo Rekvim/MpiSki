@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>592</width>
-    <height>276</height>
+    <height>306</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -30,7 +30,7 @@
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>11</pointsize>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="title">
@@ -50,7 +50,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -64,9 +64,12 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 10px;</string>
           </property>
          </widget>
         </item>
@@ -85,7 +88,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -99,9 +102,12 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 10px;</string>
           </property>
          </widget>
         </item>
@@ -120,7 +126,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -140,9 +146,12 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 10px;</string>
           </property>
           <property name="calendarPopup">
            <bool>true</bool>
@@ -164,7 +173,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -178,9 +187,12 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 10px;</string>
           </property>
          </widget>
         </item>
@@ -199,7 +211,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
           </property>
@@ -213,9 +225,12 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
             <bold>false</bold>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">padding: 5px 10px;</string>
           </property>
          </widget>
         </item>
@@ -253,7 +268,7 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
-         <pointsize>11</pointsize>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="text">

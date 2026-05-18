@@ -13,7 +13,7 @@ set(DOMAIN_CPP
     Domain/Tests/Main/Analyzer.cpp
     Domain/Tests/Main/Runner.cpp
     Domain/Tests/Option/Algorithm.cpp
-    Domain/Tests/Option/Step/Algorithm.cpp
+
     Domain/Tests/Option/Step/Analyzer.cpp
     Domain/Tests/Option/Step/Runner.cpp
     Domain/Tests/Stroke/Algorithm.cpp
@@ -75,7 +75,7 @@ set(DOMAIN_HEADERS
     Domain/Tests/Main/Result.h
     Domain/Tests/Main/Runner.h
     Domain/Tests/Option/Algorithm.h
-    Domain/Tests/Option/Step/Algorithm.h
+
     Domain/Tests/Option/Step/Analyzer.h
     Domain/Tests/Option/Step/Params.h
     Domain/Tests/Option/Step/Result.h

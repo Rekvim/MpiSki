@@ -1076,7 +1076,7 @@ border-radius: 6px;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">padding: 5px 10px;</string>
           </property>
           <property name="text">
            <string>Комплексные испытания Отсечной Арматуры</string>
@@ -1109,7 +1109,7 @@ border-radius: 6px;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">padding: 5px 10px;</string>
           </property>
           <property name="text">
            <string>Базовые испытания Запорно-Регулирующей Арматуры</string>
@@ -1142,7 +1142,7 @@ border-radius: 6px;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">padding: 5px 10px;</string>
           </property>
           <property name="text">
            <string>Комплексные испытания Запорно-Регулирующей Армитуры</string>
@@ -1175,7 +1175,7 @@ border-radius: 6px;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">padding: 5px 10px;</string>
           </property>
           <property name="text">
            <string>Базовые испытания Регулирующей Арматуры</string>
@@ -1208,7 +1208,7 @@ border-radius: 6px;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">padding: 5px 10px;</string>
           </property>
           <property name="text">
            <string>Комплексные испытания Регулирующей Арматуры</string>
@@ -1266,6 +1266,9 @@ border-radius: 6px;</string>
         <font>
          <pointsize>11</pointsize>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 5px 10px;</string>
        </property>
        <property name="text">
         <string>Далее</string>

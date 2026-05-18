@@ -26,7 +26,7 @@ protected:
     void afterRunnerCreated(BaseRunner& runner) override;
 
 private slots:
-    void onResults(const Result& result);
+    void onResults();
 
 private:
     Tests::Context m_context;

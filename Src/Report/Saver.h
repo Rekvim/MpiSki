@@ -30,11 +30,11 @@ public:
         Widgets::Chart::ChartType chart,
         const QImage& image,
         Widgets::Chart::ChartView* chartView);
+    bool ensureDirectory();
 
     bool saveReport(const ReportData& report, const QString& templatePath);
 
 private:
-    bool ensureDirectory();
     bool createAutoDirectory();
     bool chooseDirectoryManually();
     void cleanupEmptyDirectory();

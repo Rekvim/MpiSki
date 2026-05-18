@@ -14,8 +14,7 @@ namespace Domain::Tests::Option::Step {
             : BaseRunner(device, normalOpen, parent), m_params(params) {}
 
     signals:
-        void points(QVector<QVector<QPointF>>& points);
-        void results(const Domain::Tests::Option::Step::Result& result);
+        void results();
 
     protected:
         RunnerConfig buildConfig() override;

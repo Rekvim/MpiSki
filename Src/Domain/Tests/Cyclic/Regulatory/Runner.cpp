@@ -36,6 +36,6 @@ void Runner::wireSpecificSignals(AbstractTestAlgorithm& base) {
 
     connect(&t, &Algorithm::cycleCompleted,
             this, &Runner::cycleCompleted,
-            Qt::QueuedConnection);
+            Qt::DirectConnection);
 }
 }

@@ -96,10 +96,8 @@ private slots:
     void endTest();
 
     void onPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
-    void onStrokeTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
-    void onStepTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
-    void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
 
+    void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onCyclicTestParametersRequested(Domain::Tests::Cyclic::Params& parameters);
 
     void setupUiConnections();
@@ -156,6 +154,8 @@ private:
     void setupShortcuts();
     void setupPrimaryActions();
 
+    void updateCyclicLabels(const Domain::Tests::Cyclic::Params& parameters);
+    qint64 cyclicTotalTimeMs(const Domain::Tests::Cyclic::Params& parameters) const;
 
     TestState m_testState = TestState::Idle;
     void applyTestStateToUi(TestState  state);
@@ -188,10 +188,15 @@ private:
     CyclicTestSettings *m_cyclicTestSettings;
 
     ChartImageStorage m_chartImageStorage;
-    QImage m_imageChartTask;
-    QImage m_imageChartPressure;
-    QImage m_imageChartFriction;
-    QImage m_imageChartStep;
+
+    QHash<QString, QString> m_testComments;
+
+    void editTestComment(const QString& testKey, const QString& description);
+
+    bool hasAnyTestComments() const;
+    void saveCommentsPdfIfNeeded();
+    QString buildCommentsHtml() const;
+    QString commentsPdfPath() const;
 
     void syncTaskChartSeriesVisibility(quint8 sensorCount);
     void displayDependingPattern();

@@ -18,6 +18,8 @@
 
 #include <QDateTime>
 #include <QLocale>
+#include <QDebug>
+
 #include <utility>
 
 namespace Domain {
@@ -393,11 +395,11 @@ void Program::endTest()
 
     emit setTask(m_device.dac()->value());
 
+    emit runnerFinished();
+
     m_currentScenario.reset();
 
     m_isCyclicTestRunning = false;
-
-    emit runnerFinished();
 
     if (!m_suppressPublicTestFinished) {
         emit testFinished();
@@ -761,6 +763,7 @@ void Program::runCombinedCyclicTest(const Tests::Cyclic::Params& params)
 
 void Program::startCyclicTest(const Tests::Cyclic::Params& params)
 {
+    qDebug() << params.type;
     if (params.regulatory.sequence.isEmpty() &&
         params.shutoff.sequence.isEmpty()) {
         failToStartTest("Cyclic test: обе последовательности пустые.");

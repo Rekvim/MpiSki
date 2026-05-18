@@ -8,8 +8,8 @@ namespace Report {
 
 struct CellData {
     QString sheet;
-    quint16 row = 0;
-    quint16 col = 0;
+    int row = 0;
+    int col = 0;
     QString value;
 };
 

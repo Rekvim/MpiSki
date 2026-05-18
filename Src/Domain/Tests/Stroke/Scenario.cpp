@@ -64,9 +64,6 @@ void Scenario::onResult()
 
     auto result = m_analyzer->result();
 
-    result.forwardTimeMs = result.forwardTimeMs;
-    result.backwardTimeMs = result.backwardTimeMs;
-
     m_context.telemetry.testStroke = result;
 
     emit strokeResultUpdated(result);

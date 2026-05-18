@@ -1,6 +1,7 @@
 #include "CyclicSummary.h"
 
 #include <QTime>
+#include <QDebug>
 
 #include "Report/Writer.h"
 #include "Report/Builder.h"
@@ -16,7 +17,23 @@ void CyclicSummary::build(Writer& writer, const Context& ctx)
 {
     int row = m_layout.rowStart;
 
+    qDebug() << "Report has stroke:" << ctx.telemetry.testStroke.has_value();
+
+    if (ctx.telemetry.testStroke) {
+        qDebug() << "Report stroke:"
+                 << ctx.telemetry.testStroke->forwardTimeMs
+                 << ctx.telemetry.testStroke->backwardTimeMs;
+    }
+
+    qDebug() << "Report has cyclic regulatory:"
+             << ctx.telemetry.testСyclicRegulatory.has_value();
+
+    qDebug() << "Report has cyclic shutoff:"
+             << ctx.telemetry.testСyclicShutoff.has_value();
+
     if (const auto& stroke = ctx.telemetry.testStroke) {
+        qDebug() << stroke->forwardTimeMs;
+
         writer.cell(m_layout.sheet, row, m_layout.column,
                     QTime(0, 0).addMSecs(stroke->forwardTimeMs).toString("mm:ss.zzz"));
     }
@@ -24,6 +41,8 @@ void CyclicSummary::build(Writer& writer, const Context& ctx)
     row += m_layout.rowStep;
 
     if (const auto& stroke = ctx.telemetry.testStroke) {
+        qDebug() << stroke->backwardTimeMs;
+
         writer.cell(m_layout.sheet, row, m_layout.column,
                     QTime(0, 0).addMSecs(stroke->backwardTimeMs).toString("mm:ss.zzz"));
     }

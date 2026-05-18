@@ -2,15 +2,6 @@
 #include "Domain/Measurement/Sensor.h"
 #include <QtMath>
 
-static QString formatPosition(qreal value, StrokeMovement movement)
-{
-    const QString unit = (movement == StrokeMovement::Rotary)
-                             ? QStringLiteral("°")
-                             : QStringLiteral("мм");
-
-    return QString("%1 %2").arg(value, 0, 'f', 2).arg(unit);
-}
-
 // Подключение и инициализация устройства
 bool DeviceInitializer::connectAndInitDevice()
 {
@@ -66,7 +57,7 @@ void DeviceInitializer::measureStartPosition()
 
     const qreal value = m_device[0]->value();
 
-    m_telemetry.init.startingPositionText = formatPosition(value, m_config.strokeMovement);
+    m_telemetry.init.startingPositionText = QString("%1 мм").arg(value, 0, 'f', 2);
     m_telemetry.init.startingPositionColor = Qt::darkGreen;
 
     m_telemetry.init.finalPositionText = "Измерение";
@@ -82,8 +73,7 @@ void DeviceInitializer::measureEndPosition()
 
     const qreal value = m_device[0]->value();
 
-    m_telemetry.init.finalPositionText =
-        formatPosition(value, m_config.strokeMovement);
+    m_telemetry.init.finalPositionText = QString("%1 мм").arg(value, 0, 'f', 2);
 
     m_telemetry.init.finalPositionColor = Qt::darkGreen;
 }
@@ -109,8 +99,7 @@ void DeviceInitializer::measureStartPositionShutoff(
 
     const qreal value = m_device[0]->value();
 
-    m_telemetry.init.startingPositionText =
-        formatPosition(value, m_config.strokeMovement);
+    m_telemetry.init.startingPositionText = QString("%1 мм").arg(value, 0, 'f', 2);
 
     m_telemetry.init.startingPositionColor = Qt::darkGreen;
 }
@@ -136,7 +125,7 @@ void DeviceInitializer::measureEndPositionShutoff(
 
     const qreal value = m_device[0]->value();
 
-    m_telemetry.init.finalPositionText = formatPosition(value, m_config.strokeMovement);
+    m_telemetry.init.finalPositionText = QString("%1 мм").arg(value, 0, 'f', 2);
     m_telemetry.init.finalPositionColor = Qt::darkGreen;
 }
 
@@ -156,8 +145,7 @@ void DeviceInitializer::recordStrokeRange()
 {
     const qreal value = m_device[0]->value();
 
-    m_telemetry.valveStrokeRecord.range =
-        formatPosition(value, m_config.strokeMovement);
+    m_telemetry.valveStrokeRecord.range = QString("%1").arg(value, 0, 'f', 2);
 
     m_telemetry.valveStrokeRecord.real = value;
 }

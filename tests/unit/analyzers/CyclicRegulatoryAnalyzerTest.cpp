@@ -37,9 +37,9 @@ void printRanges(const Test::Result& result)
         qDebug() << "Диапазон" << i
                  << "| уставка =" << r.rangePercent
                  << "| maxForward =" << r.maxForwardPosition
-                 << "| minReverse =" << r.minBackwardPosition
-                 << "| цикл max =" << r.maxForwardCycle
-                 << "| цикл min =" << r.minBackwardCycle;
+                 << "| maxBackward =" << r.maxBackwardPosition
+                 << "| цикл maxForward =" << r.maxForwardCycle
+                 << "| цикл maxBackward =" << r.maxBackwardCycle;
     }
 }
 
@@ -125,25 +125,25 @@ void CyclicRegulatoryAnalyzerTest::testForwardMax()
 }
 
 // Проверка минимума на обратном ходе.
-void CyclicRegulatoryAnalyzerTest::testBackwardMin()
+void CyclicRegulatoryAnalyzerTest::testBackwardMax()
 {
-    printCaseHeader("Минимум на обратном ходе");
+    printCaseHeader("Максимум на обратном ходе");
 
     Test::Analyzer analyzer;
     Test::Params params;
 
-    params.sequence = {100, 50, 0};
+    params.sequence = {0, 50, 100};
 
     analyzer.start();
     analyzer.configure(params);
 
-    analyzer.onSample(makeSample(100, 100.0));
+    analyzer.onSample(makeSample(0, 0.0));
     analyzer.onSample(makeSample(50, 50.0));
-    analyzer.onSample(makeSample(0,0.0));
-
-    // новый цикл
     analyzer.onSample(makeSample(100, 100.0));
-    analyzer.onSample(makeSample(50, 48.8)); // новый минимум
+
+    // обратный ход
+    analyzer.onSample(makeSample(50, 48.8));
+    analyzer.onSample(makeSample(50, 50.7)); // максимум на обратном ходе
     analyzer.onSample(makeSample(0, 1.0));
 
     analyzer.finish();
@@ -152,7 +152,8 @@ void CyclicRegulatoryAnalyzerTest::testBackwardMin()
     printRanges(r);
 
     QVERIFY(r.ranges.size() > 1);
-    QCOMPARE(r.ranges[1].minBackwardPosition, 48.8);
+    QCOMPARE(r.ranges[1].maxBackwardPosition, 50.7);
+    QCOMPARE(r.ranges[1].maxBackwardCycle, 0);
 }
 
 // Проверка случая только прямого хода.
@@ -179,9 +180,9 @@ void CyclicRegulatoryAnalyzerTest::testOnlyForward()
 
     QVERIFY(r.ranges.size() == 3);
 
-    QCOMPARE(r.ranges[0].minBackwardPosition, std::numeric_limits<qreal>::max());
-    QCOMPARE(r.ranges[1].minBackwardPosition, std::numeric_limits<qreal>::max());
-    QCOMPARE(r.ranges[2].minBackwardPosition, std::numeric_limits<qreal>::max());
+    QCOMPARE(r.ranges[0].maxBackwardPosition, std::numeric_limits<qreal>::lowest());
+    QCOMPARE(r.ranges[1].maxBackwardPosition, std::numeric_limits<qreal>::lowest());
+    QCOMPARE(r.ranges[2].maxBackwardPosition, std::numeric_limits<qreal>::lowest());
 }
 
 // Проверка устойчивости экстремума.

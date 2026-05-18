@@ -16,23 +16,20 @@ void CrossingIndicatorsPresenter::setIndicatorByState(
     QWidget* widget,
     CrossingStatus::State state)
 {
-    using State = CrossingStatus::State;
-
     switch (state) {
-
-    case State::Unknown:
+    case CrossingStatus::State::Unknown:
         setIndicatorColor(widget,
                           "#A0A0A0",
                           "#505050");
         break;
 
-    case State::Ok:
+    case CrossingStatus::State::Ok:
         setIndicatorColor(widget,
                           "#4E8448",
                           "#16362B");
         break;
 
-    case State::Fail:
+    case CrossingStatus::State::Fail:
         setIndicatorColor(widget,
                           "#B80F0F",
                           "#510000");

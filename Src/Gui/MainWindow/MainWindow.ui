@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1219</width>
-    <height>959</height>
+    <width>1333</width>
+    <height>1065</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -52,10 +52,16 @@
         <pointsize>12</pointsize>
        </font>
       </property>
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::StrongFocus</enum>
+      </property>
       <property name="currentIndex">
        <number>1</number>
       </property>
       <widget class="QWidget" name="tab_manual">
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
+       </property>
        <attribute name="title">
         <string>Ручное управление</string>
        </attribute>
@@ -89,11 +95,14 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>10</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
           <property name="title">
            <string>Задание</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
@@ -199,11 +208,14 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>10</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
           <property name="title">
            <string>Датчики</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
@@ -211,7 +223,7 @@
              <property name="font">
               <font>
                <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="title">
@@ -228,6 +240,9 @@
                 </property>
                 <property name="focusPolicy">
                  <enum>Qt::FocusPolicy::NoFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 5px;</string>
                 </property>
                 <property name="text">
                  <string/>
@@ -248,6 +263,9 @@
                 <property name="focusPolicy">
                  <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 5px;</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -264,7 +282,7 @@
              <property name="font">
               <font>
                <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="title">
@@ -282,6 +300,9 @@
                 <property name="focusPolicy">
                  <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 5px;</string>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -295,7 +316,7 @@
              <property name="font">
               <font>
                <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="title">
@@ -313,6 +334,9 @@
                 <property name="focusPolicy">
                  <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 5px;</string>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -326,7 +350,7 @@
              <property name="font">
               <font>
                <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="title">
@@ -344,6 +368,9 @@
                 <property name="focusPolicy">
                  <enum>Qt::FocusPolicy::NoFocus</enum>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 5px;</string>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
@@ -357,7 +384,7 @@
              <property name="font">
               <font>
                <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="title">
@@ -374,6 +401,9 @@
                 </property>
                 <property name="focusPolicy">
                  <enum>Qt::FocusPolicy::NoFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 5px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -404,7 +434,7 @@
              <property name="font">
               <font>
                <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="title">
@@ -418,6 +448,15 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Segoe UI</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="text">
                  <string>Выход 1</string>
@@ -441,6 +480,15 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Segoe UI</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
+                </property>
                 <property name="text">
                  <string>Выход 2</string>
                 </property>
@@ -463,6 +511,15 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Segoe UI</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
+                </property>
                 <property name="text">
                  <string>Выход 3</string>
                 </property>
@@ -484,6 +541,15 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Segoe UI</family>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="text">
                  <string>Выход 4</string>
@@ -557,7 +623,7 @@
              <property name="font">
               <font>
                <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="title">
@@ -604,6 +670,15 @@
                <layout class="QVBoxLayout" name="verticalLayout_signalsButton">
                 <item>
                  <widget class="QPushButton" name="pushButton_signal_20mA">
+                  <property name="font">
+                   <font>
+                    <family>Segoe UI</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">padding: 5px 5px;</string>
+                  </property>
                   <property name="text">
                    <string>20 мА</string>
                   </property>
@@ -611,6 +686,15 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_signal_16mA">
+                  <property name="font">
+                   <font>
+                    <family>Segoe UI</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">padding: 5px 5px;</string>
+                  </property>
                   <property name="text">
                    <string>16 мА</string>
                   </property>
@@ -618,6 +702,15 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_signal_12mA">
+                  <property name="font">
+                   <font>
+                    <family>Segoe UI</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">padding: 5px 5px;</string>
+                  </property>
                   <property name="text">
                    <string>12 мА</string>
                   </property>
@@ -625,6 +718,15 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_signal_8mA">
+                  <property name="font">
+                   <font>
+                    <family>Segoe UI</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">padding: 5px 5px;</string>
+                  </property>
                   <property name="text">
                    <string>8 мА</string>
                   </property>
@@ -632,6 +734,12 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="pushButton_signal_4mA">
+                  <property name="font">
+                   <font>
+                    <family>Segoe UI</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
                   <property name="text">
                    <string>4 мА</string>
                   </property>
@@ -662,7 +770,7 @@
           <property name="font">
            <font>
             <family>Segoe UI</family>
-            <pointsize>11</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
           <property name="title">
@@ -676,7 +784,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -714,7 +822,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="layoutDirection">
@@ -740,7 +848,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -778,7 +886,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="layoutDirection">
@@ -801,7 +909,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -839,7 +947,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="layoutDirection">
@@ -862,7 +970,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -900,7 +1008,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="layoutDirection">
@@ -923,7 +1031,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -961,7 +1069,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="layoutDirection">
@@ -993,7 +1101,7 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -1018,8 +1126,11 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 10px;</string>
                </property>
                <property name="text">
                 <string>Задать положение</string>
@@ -1050,8 +1161,11 @@
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>11</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 10px;</string>
                </property>
                <property name="text">
                 <string>Инициализация</string>
@@ -1062,6 +1176,15 @@
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_back">
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">padding: 5px 10px;</string>
+             </property>
              <property name="text">
               <string>Назад</string>
              </property>
@@ -1075,6 +1198,9 @@
       <widget class="QWidget" name="tab_strokeTest">
        <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
        </property>
        <attribute name="title">
         <string>Тест полного хода</string>
@@ -1128,18 +1254,21 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_strokeTest_menu">
           <property name="spacing">
-           <number>15</number>
+           <number>10</number>
           </property>
           <item>
            <widget class="QGroupBox" name="groupBox_strokeTest_forwardTime">
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="title">
              <string>Время прямого хода</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_19">
              <property name="spacing">
@@ -1155,18 +1284,27 @@
               <number>10</number>
              </property>
              <property name="bottomMargin">
-              <number>5</number>
+              <number>8</number>
              </property>
              <item>
               <widget class="QLineEdit" name="lineEdit_strokeTest_forwardTime">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Segoe UI</family>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
                <property name="focusPolicy">
                 <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1184,11 +1322,14 @@
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="title">
              <string>Время обратного хода</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_20">
              <property name="spacing">
@@ -1204,18 +1345,27 @@
               <number>10</number>
              </property>
              <property name="bottomMargin">
-              <number>5</number>
+              <number>8</number>
              </property>
              <item>
               <widget class="QLineEdit" name="lineEdit_strokeTest_backwardTime">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Segoe UI</family>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
                <property name="focusPolicy">
                 <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1229,7 +1379,120 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_strokeTest_menu">
+           <widget class="QGroupBox" name="groupBox_5">
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::NoFocus</enum>
+            </property>
+            <property name="title">
+             <string>Отклик на реакцию прямого хода</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_16">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="topMargin">
+              <number>5</number>
+             </property>
+             <property name="rightMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>8</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="lineEdit_strokeTest_respondingReactionforwardTime">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Segoe UI</family>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_6">
+            <property name="title">
+             <string>Отклик на реакцию обратного хода</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="topMargin">
+              <number>5</number>
+             </property>
+             <property name="rightMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>8</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="lineEdit_strokeTest_respondingReactionbackwardTime">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Segoe UI</family>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_8">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
@@ -1252,8 +1515,14 @@
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::StrongFocus</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 10px;</string>
             </property>
             <property name="text">
              <string>Сохранить</string>
@@ -1274,8 +1543,14 @@
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::FocusPolicy::StrongFocus</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 10px;</string>
             </property>
             <property name="text">
              <string>Старт/Стоп</string>
@@ -1289,6 +1564,9 @@
       <widget class="QWidget" name="tab_mainTests">
        <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
        </property>
        <attribute name="title">
         <string>Основные тесты</string>
@@ -1314,7 +1592,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget_mainTests">
             <property name="currentIndex">
-             <number>3</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab_mainTests_task">
              <attribute name="title">
@@ -1391,7 +1669,7 @@
                   <property name="font">
                    <font>
                     <family>Segoe UI</family>
-                    <pointsize>10</pointsize>
+                    <pointsize>12</pointsize>
                    </font>
                   </property>
                   <property name="title">
@@ -1788,7 +2066,7 @@
                 </property>
                 <layout class="QGridLayout" name="gridLayout_4">
                  <property name="bottomMargin">
-                  <number>1</number>
+                  <number>9</number>
                  </property>
                  <property name="horizontalSpacing">
                   <number>15</number>
@@ -2027,15 +2305,15 @@
                  <property name="verticalSpacing">
                   <number>10</number>
                  </property>
-                 <item row="0" column="0">
-                  <widget class="QWidget" name="widget_crossingLimits_frictionForce" native="true">
+                 <item row="0" column="2">
+                  <widget class="QWidget" name="widget_crossingLimits_range" native="true">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
-                   <layout class="QHBoxLayout" name="horizontalLayout_29">
+                   <layout class="QHBoxLayout" name="horizontalLayout_33">
                     <property name="spacing">
                      <number>5</number>
                     </property>
@@ -2052,14 +2330,14 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QWidget" name="widget__crossingLimits_coefficientFriction_control" native="true">
+                     <widget class="QWidget" name="widget_crossingLimits_range_control" native="true">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
-                      <layout class="QVBoxLayout" name="verticalLayout_14">
+                      <layout class="QVBoxLayout" name="verticalLayout_48">
                        <property name="spacing">
                         <number>10</number>
                        </property>
@@ -2076,7 +2354,7 @@
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QLabel" name="label_crossingLimits_coefficientFriction">
+                        <widget class="QLabel" name="label_crossingLimits_range">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                            <horstretch>0</horstretch>
@@ -2090,7 +2368,7 @@
                           </font>
                          </property>
                          <property name="text">
-                          <string>Коэффицент трения</string>
+                          <string>Диапазон хода</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2098,33 +2376,30 @@
                         </widget>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_coefficientFriction_limits">
+                        <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits">
                          <property name="spacing">
                           <number>5</number>
                          </property>
-                         <property name="sizeConstraint">
-                          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                         </property>
                          <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_lowerLimit">
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit">
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
                            <property name="sizePolicy">
-                            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
                            </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2133,6 +2408,9 @@
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2146,19 +2424,25 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_value">
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value">
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2168,8 +2452,8 @@
                              <pointsize>8</pointsize>
                             </font>
                            </property>
-                           <property name="layoutDirection">
-                            <enum>Qt::LayoutDirection::LeftToRight</enum>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2183,19 +2467,25 @@
                           </widget>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_upperLimit">
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit">
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2204,6 +2494,9 @@
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2222,7 +2515,243 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QWidget" name="widget_crossingLimits_coefficientFriction_limitStatusIndicator" native="true">
+                     <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator" native="true">
+                      <property name="minimumSize">
+                       <size>
+                        <width>60</width>
+                        <height>60</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>60</width>
+                        <height>60</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background: #E1E1E1;
+
+Border: 4px solid #ADADAD ;
+Border-radius: 10px;
+
+</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_32">
+                    <property name="spacing">
+                     <number>5</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_control" native="true">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_45">
+                       <property name="spacing">
+                        <number>10</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_crossingLimits_linearCharacteristic">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="font">
+                          <font>
+                           <family>Segoe UI</family>
+                           <pointsize>10</pointsize>
+                          </font>
+                         </property>
+                         <property name="text">
+                          <string>Линейность характеристики</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignmentFlag::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits">
+                         <property name="spacing">
+                          <number>5</number>
+                         </property>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit">
+                           <property name="enabled">
+                            <bool>true</bool>
+                           </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>50</width>
+                             <height>0</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>80</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Segoe UI</family>
+                             <pointsize>8</pointsize>
+                            </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="alignment">
+                            <set>Qt::AlignmentFlag::AlignCenter</set>
+                           </property>
+                           <property name="readOnly">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value">
+                           <property name="enabled">
+                            <bool>true</bool>
+                           </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>50</width>
+                             <height>0</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>80</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Segoe UI</family>
+                             <pointsize>8</pointsize>
+                            </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="alignment">
+                            <set>Qt::AlignmentFlag::AlignCenter</set>
+                           </property>
+                           <property name="readOnly">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit">
+                           <property name="enabled">
+                            <bool>true</bool>
+                           </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>50</width>
+                             <height>0</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>80</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Segoe UI</family>
+                             <pointsize>8</pointsize>
+                            </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="alignment">
+                            <set>Qt::AlignmentFlag::AlignCenter</set>
+                           </property>
+                           <property name="readOnly">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator" native="true">
                       <property name="minimumSize">
                        <size>
                         <width>60</width>
@@ -2329,20 +2858,20 @@ Border-radius: 10px;
                             <bool>true</bool>
                            </property>
                            <property name="sizePolicy">
-                            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
                            </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2351,6 +2880,9 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2368,15 +2900,21 @@ Border-radius: 10px;
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2385,6 +2923,9 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2402,15 +2943,21 @@ Border-radius: 10px;
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2419,6 +2966,9 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2463,15 +3013,15 @@ Border-radius: 10px;
                    </layout>
                   </widget>
                  </item>
-                 <item row="0" column="2">
-                  <widget class="QWidget" name="widget_crossingLimits_range" native="true">
+                 <item row="0" column="0">
+                  <widget class="QWidget" name="widget_crossingLimits_frictionForce" native="true">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
-                   <layout class="QHBoxLayout" name="horizontalLayout_33">
+                   <layout class="QHBoxLayout" name="horizontalLayout_29">
                     <property name="spacing">
                      <number>5</number>
                     </property>
@@ -2488,14 +3038,14 @@ Border-radius: 10px;
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QWidget" name="widget_crossingLimits_range_control" native="true">
+                     <widget class="QWidget" name="widget__crossingLimits_coefficientFriction_control" native="true">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
-                      <layout class="QVBoxLayout" name="verticalLayout_48">
+                      <layout class="QVBoxLayout" name="verticalLayout_14">
                        <property name="spacing">
                         <number>10</number>
                        </property>
@@ -2512,7 +3062,7 @@ Border-radius: 10px;
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QLabel" name="label_crossingLimits_range">
+                        <widget class="QLabel" name="label_crossingLimits_coefficientFriction">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                            <horstretch>0</horstretch>
@@ -2526,7 +3076,7 @@ Border-radius: 10px;
                           </font>
                          </property>
                          <property name="text">
-                          <string>Диапазон хода</string>
+                          <string>Коэффицент трения</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2534,30 +3084,33 @@ Border-radius: 10px;
                         </widget>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_range_limits">
+                        <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_coefficientFriction_limits">
                          <property name="spacing">
                           <number>5</number>
                          </property>
+                         <property name="sizeConstraint">
+                          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                         </property>
                          <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_range_lowerLimit">
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_lowerLimit">
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
                            <property name="sizePolicy">
-                            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
                            </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2566,6 +3119,9 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2579,19 +3135,25 @@ Border-radius: 10px;
                           </widget>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_range_value">
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_value">
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2600,6 +3162,12 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="layoutDirection">
+                            <enum>Qt::LayoutDirection::LeftToRight</enum>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2613,19 +3181,25 @@ Border-radius: 10px;
                           </widget>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_range_upperLimit">
+                          <widget class="QLineEdit" name="lineEdit_crossingLimits_coefficientFriction_upperLimit">
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2634,6 +3208,9 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -2652,216 +3229,7 @@ Border-radius: 10px;
                      </widget>
                     </item>
                     <item>
-                     <widget class="QWidget" name="widget_crossingLimits_range_limitStatusIndicator" native="true">
-                      <property name="minimumSize">
-                       <size>
-                        <width>60</width>
-                        <height>60</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>60</width>
-                        <height>60</height>
-                       </size>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">background: #E1E1E1;
-
-Border: 4px solid #ADADAD ;
-Border-radius: 10px;
-
-</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic" native="true">
-                   <layout class="QHBoxLayout" name="horizontalLayout_32">
-                    <property name="spacing">
-                     <number>5</number>
-                    </property>
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_control" native="true">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <layout class="QVBoxLayout" name="verticalLayout_45">
-                       <property name="spacing">
-                        <number>10</number>
-                       </property>
-                       <property name="leftMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item>
-                        <widget class="QLabel" name="label_crossingLimits_linearCharacteristic">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Segoe UI</family>
-                           <pointsize>10</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>Линейность характеристики</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignmentFlag::AlignCenter</set>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_crossingLimits_linearCharacteristic_limits">
-                         <property name="spacing">
-                          <number>5</number>
-                         </property>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_lowerLimit">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>5</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>60</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <family>Segoe UI</family>
-                             <pointsize>8</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                           <property name="alignment">
-                            <set>Qt::AlignmentFlag::AlignCenter</set>
-                           </property>
-                           <property name="readOnly">
-                            <bool>true</bool>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_value">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>5</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>60</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <family>Segoe UI</family>
-                             <pointsize>8</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                           <property name="alignment">
-                            <set>Qt::AlignmentFlag::AlignCenter</set>
-                           </property>
-                           <property name="readOnly">
-                            <bool>true</bool>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_crossingLimits_linearCharacteristic_upperLimit">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>5</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>60</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <family>Segoe UI</family>
-                             <pointsize>8</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                           <property name="alignment">
-                            <set>Qt::AlignmentFlag::AlignCenter</set>
-                           </property>
-                           <property name="readOnly">
-                            <bool>true</bool>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QWidget" name="widget_crossingLimits_linearCharacteristic_limitStatusIndicator" native="true">
+                     <widget class="QWidget" name="widget_crossingLimits_coefficientFriction_limitStatusIndicator" native="true">
                       <property name="minimumSize">
                        <size>
                         <width>60</width>
@@ -2971,20 +3339,20 @@ Border-radius: 10px;
                             <bool>true</bool>
                            </property>
                            <property name="sizePolicy">
-                            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
                              <horstretch>0</horstretch>
                              <verstretch>0</verstretch>
                             </sizepolicy>
                            </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -2993,6 +3361,9 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -3010,15 +3381,21 @@ Border-radius: 10px;
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -3030,6 +3407,9 @@ Border-radius: 10px;
                            </property>
                            <property name="layoutDirection">
                             <enum>Qt::LayoutDirection::LeftToRight</enum>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -3047,15 +3427,21 @@ Border-radius: 10px;
                            <property name="enabled">
                             <bool>true</bool>
                            </property>
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="minimumSize">
                             <size>
-                             <width>5</width>
+                             <width>50</width>
                              <height>0</height>
                             </size>
                            </property>
                            <property name="maximumSize">
                             <size>
-                             <width>60</width>
+                             <width>80</width>
                              <height>16777215</height>
                             </size>
                            </property>
@@ -3064,6 +3450,9 @@ Border-radius: 10px;
                              <family>Segoe UI</family>
                              <pointsize>8</pointsize>
                             </font>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true">padding: 5px 5px;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -3121,6 +3510,19 @@ Border-radius: 10px;
                    </property>
                   </spacer>
                  </item>
+                 <item row="1" column="3">
+                  <spacer name="horizontalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                 </layout>
                </widget>
               </item>
@@ -3146,6 +3548,22 @@ Border-radius: 10px;
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_mainTestsMenu">
           <item>
+           <widget class="QPushButton" name="pushButton_commentMainTest">
+            <property name="font">
+             <font>
+              <family>Segoe UI</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 10px;</string>
+            </property>
+            <property name="text">
+             <string>Комментарий к тесту</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_mainTests">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
@@ -3169,8 +3587,11 @@ Border-radius: 10px;
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string>padding: 5px 10px;</string>
             </property>
             <property name="text">
              <string>Сохранить</string>
@@ -3188,8 +3609,11 @@ Border-radius: 10px;
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string>padding: 5px 10px;</string>
             </property>
             <property name="text">
              <string>Старт/Стоп</string>
@@ -3203,6 +3627,9 @@ Border-radius: 10px;
       <widget class="QWidget" name="tab_optionalTests">
        <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
        </property>
        <attribute name="title">
         <string>Опциональные тесты</string>
@@ -3223,7 +3650,7 @@ Border-radius: 10px;
         <item>
          <widget class="QTabWidget" name="tabWidget_optionalTests">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_optionalTests_response">
            <attribute name="title">
@@ -3393,6 +3820,15 @@ Border-radius: 10px;
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_optionalTests_save">
+            <property name="font">
+             <font>
+              <family>Segoe UI</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 10px;</string>
+            </property>
             <property name="text">
              <string>Сохранить</string>
             </property>
@@ -3403,6 +3839,15 @@ Border-radius: 10px;
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_optionalTests_start">
+            <property name="font">
+             <font>
+              <family>Segoe UI</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 10px;</string>
+            </property>
             <property name="text">
              <string>Старт/Стоп</string>
             </property>
@@ -3415,6 +3860,9 @@ Border-radius: 10px;
       <widget class="QWidget" name="tab_cyclicTests">
        <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
        </property>
        <attribute name="title">
         <string>Циклический тест</string>
@@ -3495,12 +3943,21 @@ Border-radius: 10px;
               <number>10</number>
              </property>
              <property name="bottomMargin">
-              <number>5</number>
+              <number>8</number>
              </property>
              <item>
               <widget class="QLineEdit" name="label_cyclicTest_sequenceValue">
+               <property name="font">
+                <font>
+                 <family>Segoe UI</family>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
                <property name="focusPolicy">
                 <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -3538,18 +3995,21 @@ Border-radius: 10px;
               <number>10</number>
              </property>
              <property name="bottomMargin">
-              <number>5</number>
+              <number>8</number>
              </property>
              <item>
               <widget class="QLineEdit" name="label_cyclicTest_totalTimeValue">
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>10</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -3587,18 +4047,21 @@ Border-radius: 10px;
               <number>10</number>
              </property>
              <property name="bottomMargin">
-              <number>5</number>
+              <number>8</number>
              </property>
              <item>
               <widget class="QLineEdit" name="label_cyclicTest_specifiedCyclesValue">
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>10</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -3636,18 +4099,21 @@ Border-radius: 10px;
               <number>10</number>
              </property>
              <property name="bottomMargin">
-              <number>5</number>
+              <number>8</number>
              </property>
              <item>
               <widget class="QLineEdit" name="label_cyclicTest_completedCyclesValue">
                <property name="font">
                 <font>
                  <family>Segoe UI</family>
-                 <pointsize>10</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
                 <enum>Qt::FocusPolicy::NoFocus</enum>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">padding: 5px 5px;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -3682,8 +4148,11 @@ Border-radius: 10px;
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 5px;</string>
             </property>
             <property name="text">
              <string>Сохранить</string>
@@ -3695,8 +4164,11 @@ Border-radius: 10px;
             <property name="font">
              <font>
               <family>Segoe UI</family>
-              <pointsize>10</pointsize>
+              <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 5px;</string>
             </property>
             <property name="text">
              <string>Старт/Стоп</string>
@@ -3708,6 +4180,9 @@ Border-radius: 10px;
        </layout>
       </widget>
       <widget class="QWidget" name="tab_reportGeneration">
+       <property name="focusPolicy">
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
+       </property>
        <attribute name="title">
         <string>Формирование отчета</string>
        </attribute>
@@ -3753,7 +4228,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>10</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="title">
@@ -3794,6 +4269,9 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -3837,6 +4315,15 @@ Border-radius: 10px;
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
+                     </property>
                      <property name="readOnly">
                       <bool>true</bool>
                      </property>
@@ -3878,6 +4365,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -3921,6 +4417,15 @@ Border-radius: 10px;
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
+                     </property>
                      <property name="readOnly">
                       <bool>true</bool>
                      </property>
@@ -3963,6 +4468,15 @@ Border-radius: 10px;
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
+                     </property>
                      <property name="readOnly">
                       <bool>true</bool>
                      </property>
@@ -4004,7 +4518,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>10</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="title">
@@ -4030,6 +4544,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Номер позиции</string>
                      </property>
@@ -4042,6 +4562,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4072,6 +4601,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Производитель</string>
                      </property>
@@ -4084,6 +4619,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4114,6 +4658,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Модель клапана</string>
                      </property>
@@ -4126,6 +4676,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4156,6 +4715,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Серийный номер</string>
                      </property>
@@ -4168,6 +4733,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4198,6 +4772,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>DN/PN (ANSI)</string>
                      </property>
@@ -4210,6 +4790,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="text">
                       <string/>
@@ -4256,6 +4845,15 @@ Border-radius: 10px;
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
+                     </property>
                      <property name="readOnly">
                       <bool>true</bool>
                      </property>
@@ -4285,6 +4883,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Модель позиционера</string>
                      </property>
@@ -4297,6 +4901,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4327,6 +4940,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Движение хода клапана</string>
                      </property>
@@ -4339,6 +4958,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4369,6 +4997,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Давление питания, бар</string>
                      </property>
@@ -4381,6 +5015,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>false</bool>
@@ -4411,6 +5054,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Безопасное положение привода</string>
                      </property>
@@ -4423,6 +5072,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4453,6 +5111,12 @@ Border-radius: 10px;
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
                       <string>Материал сальникового уплотнения</string>
                      </property>
@@ -4465,6 +5129,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
@@ -4508,7 +5181,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>10</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="title">
@@ -4537,6 +5210,12 @@ Border-radius: 10px;
                      <width>200</width>
                      <height>108</height>
                     </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Segoe UI</family>
+                     <pointsize>12</pointsize>
+                    </font>
                    </property>
                    <property name="text">
                     <string>TASK</string>
@@ -4575,6 +5254,15 @@ Border-radius: 10px;
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
+                     </property>
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -4590,7 +5278,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>10</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="title">
@@ -4616,6 +5304,12 @@ Border-radius: 10px;
                      <width>200</width>
                      <height>108</height>
                     </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Segoe UI</family>
+                     <pointsize>12</pointsize>
+                    </font>
                    </property>
                    <property name="text">
                     <string>PRESSURE</string>
@@ -4654,6 +5348,15 @@ Border-radius: 10px;
                        <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
+                     </property>
                      <property name="text">
                       <string>Обзор</string>
                      </property>
@@ -4669,7 +5372,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>10</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="title">
@@ -4689,6 +5392,12 @@ Border-radius: 10px;
                      <width>200</width>
                      <height>108</height>
                     </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Segoe UI</family>
+                     <pointsize>12</pointsize>
+                    </font>
                    </property>
                    <property name="text">
                     <string>FRICTION</string>
@@ -4726,6 +5435,15 @@ Border-radius: 10px;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Segoe UI</family>
+                       <pointsize>12</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">padding: 5px 10px;</string>
                      </property>
                      <property name="text">
                       <string>Обзор</string>
@@ -4765,22 +5483,22 @@ Border-radius: 10px;
                <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
               </property>
               <property name="leftMargin">
-               <number>0</number>
+               <number>5</number>
               </property>
               <property name="topMargin">
-               <number>0</number>
+               <number>5</number>
               </property>
               <property name="rightMargin">
-               <number>0</number>
+               <number>5</number>
               </property>
               <property name="bottomMargin">
-               <number>0</number>
+               <number>5</number>
               </property>
               <property name="horizontalSpacing">
                <number>15</number>
               </property>
               <property name="verticalSpacing">
-               <number>0</number>
+               <number>10</number>
               </property>
               <item row="0" column="1">
                <widget class="QLabel" name="label_resultsTable_titleValidValue">
@@ -4799,7 +5517,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4831,7 +5549,8 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
+                  <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
                 <property name="text">
@@ -4850,11 +5569,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -4872,11 +5594,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -4894,11 +5619,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -4922,7 +5650,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4949,7 +5677,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -4976,7 +5704,8 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
+                  <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
                 <property name="text">
@@ -4995,11 +5724,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5017,11 +5749,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5039,11 +5774,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5067,7 +5805,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -5088,7 +5826,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -5114,11 +5852,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5142,7 +5883,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -5168,11 +5909,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5196,7 +5940,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -5225,11 +5969,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5253,7 +6000,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -5274,11 +6021,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5296,11 +6046,14 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                  </font>
                 </property>
                 <property name="focusPolicy">
-                 <enum>Qt::FocusPolicy::StrongFocus</enum>
+                 <enum>Qt::FocusPolicy::ClickFocus</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">padding: 5px 10px;</string>
                 </property>
                 <property name="readOnly">
                  <bool>false</bool>
@@ -5324,7 +6077,7 @@ Border-radius: 10px;
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
-                  <pointsize>11</pointsize>
+                  <pointsize>12</pointsize>
                   <stylestrategy>PreferDefault</stylestrategy>
                  </font>
                 </property>
@@ -5399,7 +6152,7 @@ Border-radius: 10px;
           <item>
            <widget class="QPushButton" name="pushButton_report_generate">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -5410,6 +6163,9 @@ Border-radius: 10px;
               <pointsize>12</pointsize>
               <stylestrategy>PreferDefault</stylestrategy>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 10px;</string>
             </property>
             <property name="text">
              <string>Сформировать отчёт</string>
@@ -5422,10 +6178,19 @@ Border-radius: 10px;
              <bool>false</bool>
             </property>
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Segoe UI</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">padding: 5px 10px;</string>
             </property>
             <property name="text">
              <string>Открыть отчёт</string>
@@ -5504,7 +6269,6 @@ Border-radius: 10px;
   <tabstop>Chart_pressure</tabstop>
   <tabstop>Chart_friction</tabstop>
   <tabstop>Chart_response</tabstop>
-  <tabstop>tabWidget_main</tabstop>
   <tabstop>verticalSlider_task</tabstop>
   <tabstop>doubleSpinBox_task</tabstop>
   <tabstop>lineEdit_feedback_4_20mA</tabstop>

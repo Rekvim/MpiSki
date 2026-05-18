@@ -198,23 +198,16 @@ void Saver::saveChartSnapshot(Widgets::Chart::ChartType chart,
         out.close();
     }
 }
+
 bool Saver::saveReport(const ReportData& report, const QString& templatePath)
 {
     if (!ensureDirectory())
         return false;
 
-    const QString tempTemplatePath =
-        m_dir.filePath(QStringLiteral("_template_copy.xlsx"));
+    const QString reportPath =
+        m_dir.filePath(QStringLiteral("report.xlsx"));
 
-    QFile::remove(tempTemplatePath);
-
-    if (!QFile::copy(templatePath, tempTemplatePath)) {
-        qWarning() << "Не удалось скопировать шаблон:"
-                   << templatePath << "->" << tempTemplatePath;
-        return false;
-    }
-
-    Document xlsx(tempTemplatePath);
+    Document xlsx(templatePath);
 
     for (const auto& item : report.data) {
         if (!xlsx.selectSheet(item.sheet)) {
@@ -253,7 +246,8 @@ bool Saver::saveReport(const ReportData& report, const QString& templatePath)
             targetWidth,
             targetHeight,
             Qt::IgnoreAspectRatio,
-            Qt::SmoothTransformation);
+            Qt::SmoothTransformation
+            );
 
         xlsx.insertImage(img.row, img.col, scaled);
     }
@@ -262,17 +256,20 @@ bool Saver::saveReport(const ReportData& report, const QString& templatePath)
         DataValidation validation(
             DataValidation::List,
             DataValidation::Equal,
-            v.formula);
+            v.formula
+            );
+
         validation.addRange(v.range);
         xlsx.addDataValidation(validation);
     }
 
-    const QString reportPath =
-        m_dir.filePath(QStringLiteral("report.xlsx"));
-
     const bool ok = xlsx.saveAs(reportPath);
 
-    QFile::remove(tempTemplatePath);
+    if (!ok) {
+        qWarning() << "Не удалось сохранить отчёт:"
+                   << reportPath
+                   << "Возможно, report.xlsx открыт в Excel.";
+    }
 
     return ok && QFile::exists(reportPath);
 }

@@ -13,10 +13,9 @@ Scenario::~Scenario() = default;
 void Scenario::beforeStart()
 {
     m_analyzer = std::make_unique<Analyzer>();
-    m_analyzer->configure(m_params);
     m_analyzer->start();
+    m_analyzer->configure(m_params);
 }
-
 void Scenario::onSample(const Measurement::Sample& sample)
 {
     if (m_analyzer)
@@ -41,11 +40,11 @@ void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
 
     connect(&runner, &Runner::cycleCompleted,
             this, &Scenario::cyclicCycleCompleted,
-            Qt::BlockingQueuedConnection);
+            Qt::DirectConnection);
 
     connect(&runner, &Runner::result,
             this, &Scenario::onResult,
-            Qt::QueuedConnection);
+            Qt::DirectConnection);
 }
 
 void Scenario::onResult()
@@ -56,6 +55,14 @@ void Scenario::onResult()
     m_analyzer->finish();
 
     auto result = m_analyzer->result();
+
+    if (m_context.telemetry.testСyclicRegulatory) {
+        const auto prepared = *m_context.telemetry.testСyclicRegulatory;
+
+        result.sequence = prepared.sequence;
+        result.numCycles = prepared.numCycles;
+        result.totalTimeSec = prepared.totalTimeSec;
+    }
 
     m_context.telemetry.testСyclicRegulatory = result;
 

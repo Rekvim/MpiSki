@@ -1,117 +1,182 @@
 #include "Analyzer.h"
 #include "Params.h"
 
+#include <QtMath>
+#include <limits>
+
 namespace Domain::Tests::Cyclic::Regulatory {
-    void Analyzer::start()
-    {
-        m_result = {};
+
+void Analyzer::start()
+{
+    m_result = {};
+
+    m_step = -1;
+    m_cycle = 0;
+
+    m_isForward = true;
+    m_wasBackward = false;
+
+    m_prevTask.reset();
+
+    for (auto& r : m_result.ranges) {
+        r.maxForwardPosition = std::numeric_limits<qreal>::lowest();
+        r.maxBackwardPosition = std::numeric_limits<qreal>::lowest();
+
+        r.maxForwardCycle = -1;
+        r.maxBackwardCycle = -1;
     }
+}
 
-    void Analyzer::configure(const Params& params)
-    {
-        const auto& seq = params.sequence;
+void Analyzer::configure(const Params& params)
+{
+    const auto& seq = params.sequence;
 
-        m_ranges.clear();
-        m_result.ranges.clear();
-        m_prevTask.reset();
+    m_ranges.clear();
+    m_result.ranges.clear();
 
-        if (seq.empty())
-            return;
+    m_step = -1;
+    m_cycle = 0;
 
-        // Определение направления хода: прямой или обратный
-        bool isAscending = (seq.size() == 1) || (seq[1] > seq[0]);
+    m_isForward = true;
+    m_wasBackward = false;
 
-        for (int i = 0; i < seq.size(); ++i)
-        {
-            if (i > 0) {
-                if (isAscending && seq[i] < seq[i - 1])
-                    break;
-                if (!isAscending && seq[i] > seq[i - 1])
-                    break;
-            }
+    m_prevTask.reset();
 
-            m_ranges.push_back(seq[i]);
+    if (seq.empty())
+        return;
 
-            Range r;
+    /*
+     * Берём только уникальные уровни первой половины последовательности.
+     *
+     * Например:
+     * 0-50-100-50-0
+     *
+     * Рабочие диапазоны:
+     * 0, 50, 100
+     */
+    const bool isAscending = (seq.size() == 1) || (seq[1] > seq[0]);
 
-            r.rangePercent = seq[i];
-            r.maxForwardPosition = std::numeric_limits<qreal>::lowest();
-            r.minBackwardPosition = std::numeric_limits<qreal>::max();
-            r.maxForwardCycle = -1;
-            r.minBackwardCycle = -1;
+    for (int i = 0; i < seq.size(); ++i) {
+        if (i > 0) {
+            if (isAscending && seq[i] < seq[i - 1])
+                break;
 
-            m_result.ranges.push_back(r);
-        }
-    }
-
-    int Analyzer::findStep(double task) const
-    {
-        for (int i = 0; i < m_ranges.size(); ++i)
-        {
-            if (qFuzzyCompare(1.0 + m_ranges[i], 1.0 + task))
-                return i;
-        }
-        return -1;
-    }
-
-    void Analyzer::onSample(const Domain::Measurement::Sample& s)
-    {
-        const double task = s.taskPercent;
-        if (qIsNaN(task))
-            return;
-
-        if (!m_prevTask.has_value()) {
-            m_prevTask = task;
-            m_step = findStep(task);
-            return;
+            if (!isAscending && seq[i] > seq[i - 1])
+                break;
         }
 
-        if (!qFuzzyCompare(task, m_prevTask.value())) {
-            int newStep = findStep(task);
-            if (newStep < 0)
-                return;
+        m_ranges.push_back(seq[i]);
 
-            m_isForward = task > *m_prevTask;
+        Range r;
 
-            if (newStep < m_step)
-                ++m_cycle;
+        r.rangePercent = seq[i];
 
-            m_step = newStep;
-            m_prevTask = task;
+        r.maxForwardPosition = std::numeric_limits<qreal>::lowest();
+
+        /*
+         * ВАЖНО:
+         * Поле пока называется maxBackwardPosition,
+         * но по факту здесь теперь хранится МАКСИМУМ обратного хода.
+         *
+         * Лучше переименовать это поле в Result.h:
+         * maxBackwardPosition -> maxBackwardPosition
+         * maxBackwardCycle    -> maxBackwardCycle
+         */
+        r.maxBackwardPosition = std::numeric_limits<qreal>::lowest();
+
+        r.maxForwardCycle = -1;
+        r.maxBackwardCycle = -1;
+
+        m_result.ranges.push_back(r);
+    }
+}
+
+int Analyzer::findStep(double task) const
+{
+    /*
+     * qFuzzyCompare здесь опасен.
+     *
+     * Если task придёт как 49.999999 или 50.000001,
+     * старый код мог не найти шаг 50.
+     */
+    constexpr double eps = 0.5;
+
+    for (int i = 0; i < m_ranges.size(); ++i) {
+        if (qAbs(task - m_ranges[i]) <= eps)
+            return i;
+    }
+
+    return -1;
+}
+
+void Analyzer::onSample(const Domain::Measurement::Sample& s)
+{
+    const double task = s.taskPercent;
+    const double pos = s.positionPercent;
+
+    if (qIsNaN(task) || qIsNaN(pos))
+        return;
+
+    const int currentStep = findStep(task);
+
+    if (currentStep < 0)
+        return;
+
+    if (!m_prevTask.has_value()) {
+        m_prevTask = task;
+        m_step = currentStep;
+
+        updateRange(pos);
+        return;
+    }
+
+    if (currentStep != m_step) {
+        const bool newDirectionIsForward = currentStep > m_step;
+
+        if (newDirectionIsForward && m_wasBackward && m_step == 0) {
+            ++m_cycle;
+            m_wasBackward = false;
         }
 
-        updateRange(s.positionPercent);
+        m_isForward = newDirectionIsForward;
+
+        if (!m_isForward)
+            m_wasBackward = true;
+
+        m_step = currentStep;
+        m_prevTask = task;
     }
 
-    void Analyzer::updateRange(double pos)
-    {
-        if (m_step < 0 || m_step >= m_result.ranges.size())
-            return;
+    updateRange(pos);
+}
 
-        if (m_result.ranges.empty())
-            return;
+void Analyzer::updateRange(double pos)
+{
+    if (m_step < 0 || m_step >= m_result.ranges.size())
+        return;
 
-        auto& r = m_result.ranges[m_step];
+    auto& r = m_result.ranges[m_step];
 
-        if (m_isForward) {
-            if (pos > r.maxForwardPosition) {
-                r.maxForwardPosition = pos;
-                r.maxForwardCycle = m_cycle;
-            }
-        } else {
-            if (pos < r.minBackwardPosition) {
-                r.minBackwardPosition = pos;
-                r.minBackwardCycle = m_cycle;
-            }
+    if (m_isForward) {
+        if (pos > r.maxForwardPosition) {
+            r.maxForwardPosition = pos;
+            r.maxForwardCycle = m_cycle;
+        }
+    } else {
+        if (pos > r.maxBackwardPosition) {
+            r.maxBackwardPosition = pos;
+            r.maxBackwardCycle = m_cycle;
         }
     }
+}
 
-    void Analyzer::finish()
-    {
-    }
+void Analyzer::finish()
+{
+}
 
-    const Result& Analyzer::result() const
-    {
-        return m_result;
-    }
+const Result& Analyzer::result() const
+{
+    return m_result;
+}
+
 }

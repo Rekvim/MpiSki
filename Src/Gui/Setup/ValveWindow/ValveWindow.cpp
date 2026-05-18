@@ -19,6 +19,8 @@ ValveWindow::ValveWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->tabWidget->setCurrentIndex(0);
+
     setupWindowGeometry();
     setupTabs();
     setupValidators();
@@ -73,6 +75,8 @@ void ValveWindow::setupInitialUi()
 
     onDriveTypeChanged(ui->comboBox_driveType->currentIndex());
     onPositionerTypeChanged(ui->comboBox_positionerType->currentIndex());
+
+    applyFrictionLimitsFromStuffingBoxSeal();
 
     ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
 }
@@ -251,6 +255,7 @@ void ValveWindow::setRegistry(Registry *registry)
     if (!last.isEmpty() && m_registry->loadValveInfo(last)) {
         m_local = m_registry->valveInfo();
         Mapper::write(*this, m_local);
+        applyFrictionLimitsFromStuffingBoxSeal();
     }
 
     if (last == "") {
@@ -282,9 +287,10 @@ void ValveWindow::positionChanged(const QString &position)
     if (m_registry->loadValveInfo(position)) {
         m_local = m_registry->valveInfo();
         Mapper::write(*this, m_local);
+
+        applyFrictionLimitsFromStuffingBoxSeal();
     }
 }
-
 void ValveWindow::strokeChanged(quint16 n)
 {
     ui->comboBox_toolNumber->setEnabled(n == 1);
@@ -364,6 +370,8 @@ void ValveWindow::on_pushButton_clear_clicked()
 
     for (auto edit : findChildren<QComboBox*>())
         edit->setCurrentIndex(0);
+
+    applyFrictionLimitsFromStuffingBoxSeal();
 
     ui->lineEdit_pulleyDiameter->setText(m_diameter[0]);
 }

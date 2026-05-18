@@ -9,7 +9,7 @@ class CyclicRegulatoryAnalyzerTest : public QObject
 private slots:
     void testWithManyPoints();
     void testForwardMax();
-    void testBackwardMin();
+    void testBackwardMax();
     void testOnlyForward();
     void testExtremumStability();
 };
