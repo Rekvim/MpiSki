@@ -460,11 +460,11 @@ void MainWindow::setupUiConnections()
 
 void MainWindow::lockTabsForPreInit()
 {
-    ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
-    ui->tabWidget_main->setTabEnabled(1, false);
-    ui->tabWidget_main->setTabEnabled(2, false);
-    ui->tabWidget_main->setTabEnabled(3, false);
-    ui->tabWidget_main->setTabEnabled(4, false);
+    // ui->tabWidget_main->setTabEnabled(ui->tabWidget_main->indexOf(ui->tab_mainTests), false);
+    // ui->tabWidget_main->setTabEnabled(1, false);
+    // ui->tabWidget_main->setTabEnabled(2, false);
+    // ui->tabWidget_main->setTabEnabled(3, false);
+    // ui->tabWidget_main->setTabEnabled(4, false);
 }
 
 void MainWindow::updateAvailableTabs()

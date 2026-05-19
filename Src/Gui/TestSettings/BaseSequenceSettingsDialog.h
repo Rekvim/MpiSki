@@ -37,7 +37,7 @@ protected:
         QPushButton* editBtn,
         QPushButton* delBtn,
         const QString& defaultValue
-        );
+    );
 
     static QVector<qreal> readNumericList(QListWidget* list);
     static void fillNumericList(QListWidget* list, const QVector<qreal>& seq);

@@ -9,6 +9,5 @@ class Mapper
 public:
     static ValveInfo read(const ValveWindow& view);
 
-    static void write(ValveWindow& view,
-                      const ValveInfo& model);
+    static void write(ValveWindow& view, const ValveInfo& model);
 };
