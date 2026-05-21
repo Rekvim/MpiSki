@@ -5,7 +5,7 @@
 .qtc_clangd*
 .qt
 .cache
-
+.claude
 
 ALL_BUILD*
 INSTALL*

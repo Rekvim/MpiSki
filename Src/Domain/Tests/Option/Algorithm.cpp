@@ -16,7 +16,7 @@ namespace Domain::Tests::Option {
             return;
         }
 
-        for (const auto &value : m_task.value) {
+        for (const auto &value : std::as_const(m_task.value)) {
             setDacBlocked(value, m_task.delay);
 
             if (m_terminate) {

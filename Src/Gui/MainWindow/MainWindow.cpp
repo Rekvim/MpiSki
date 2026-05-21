@@ -1880,15 +1880,15 @@ QString MainWindow::buildCommentsHtml() const
             return QString();
 
         return QString(R"(
-        <div class="card">
-            <h2>%1</h2>
+            <div class="card">
+                <h2>%1</h2>
 
-            <div class="comment-title">Комментарий</div>
-            <div class="comment-text">%2</div>
-        </div>
-    )")
-            .arg(title.toHtmlEscaped())
-            .arg(comment.toHtmlEscaped().replace(QStringLiteral("\n"), QStringLiteral("<br>")));
+                <div class="comment-title">Комментарий</div>
+                <div class="comment-text">%2</div>
+            </div>
+        )").arg(title.toHtmlEscaped(),
+                 comment.toHtmlEscaped().replace(QStringLiteral("\n"),
+                                                 QStringLiteral("<br>")));
     };
 
     QString html;

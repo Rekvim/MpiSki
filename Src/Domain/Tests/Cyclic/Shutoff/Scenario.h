@@ -31,7 +31,7 @@ protected:
     std::unique_ptr<BaseRunner> createRunner() override;
     void afterRunnerCreated(BaseRunner& runner) override;
 private slots:
-    void onResult(const Result& result);
+    void onResult(const Domain::Tests::Cyclic::Shutoff::Result& result);
 
 private:
     Tests::Context m_context;

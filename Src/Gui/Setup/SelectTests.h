@@ -52,7 +52,6 @@ public:
 private slots:
     void onCheckBoxChanged();
     bool isValidPattern();
-    void setPattern(const PatternSetup& setup);
 
     void resetCheckBoxes();
 
@@ -67,8 +66,10 @@ private slots:
 private:
     Ui::SelectTests *ui;
     BlockCTS m_blockCts;
-    QList<QCheckBox*> allCheckBoxes() const;
     PatternType m_currentPattern = Pattern_None;
     PatternType detectCurrentPattern() const;
     bool m_suppressDebugOutput = false;
+
+    void setPattern(const PatternSetup& setup);
+    QList<QCheckBox*> allCheckBoxes() const;
 };
