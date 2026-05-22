@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1222</width>
-    <height>1045</height>
+    <height>1063</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -56,7 +56,7 @@
        <enum>Qt::FocusPolicy::StrongFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_manual">
        <property name="focusPolicy">
@@ -1478,7 +1478,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_mainTests">
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_mainTests_task">
            <attribute name="title">
@@ -4005,7 +4005,7 @@ Border-radius: 10px;
               <property name="title">
                <string>Спецификация на клапан</string>
               </property>
-              <layout class="QFormLayout" name="formLayout">
+              <layout class="QGridLayout" name="gridLayout_16">
                <item row="0" column="0">
                 <widget class="QLabel" name="label_positionNumber">
                  <property name="sizePolicy">
@@ -4260,50 +4260,6 @@ Border-radius: 10px;
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QLabel" name="label_driveModel">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>262</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Модель привода</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QLineEdit" name="lineEdit_driveModel">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Segoe UI</family>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">padding: 5px 10px;</string>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                 <property name="clearButtonEnabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
                 <widget class="QLabel" name="label_positionerModel">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -4328,7 +4284,7 @@ Border-radius: 10px;
                  </property>
                 </widget>
                </item>
-               <item row="6" column="1">
+               <item row="5" column="1">
                 <widget class="QLineEdit" name="lineEdit_positionerModel">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -4353,7 +4309,7 @@ Border-radius: 10px;
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0">
+               <item row="6" column="0">
                 <widget class="QLabel" name="label_strokeMovement">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -4378,7 +4334,7 @@ Border-radius: 10px;
                  </property>
                 </widget>
                </item>
-               <item row="7" column="1">
+               <item row="6" column="1">
                 <widget class="QLineEdit" name="lineEdit_strokeMovement">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -4403,8 +4359,8 @@ Border-radius: 10px;
                  </property>
                 </widget>
                </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_pressure">
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_driveModel">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -4417,19 +4373,13 @@ Border-radius: 10px;
                    <height>0</height>
                   </size>
                  </property>
-                 <property name="font">
-                  <font>
-                   <family>Segoe UI</family>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
                  <property name="text">
-                  <string>Давление питания, бар</string>
+                  <string>Модель привода</string>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="1">
-                <widget class="QLineEdit" name="lineEdit_supplyPressure">
+               <item row="7" column="1">
+                <widget class="QLineEdit" name="lineEdit_driveModel">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -4446,14 +4396,14 @@ Border-radius: 10px;
                   <string notr="true">padding: 5px 10px;</string>
                  </property>
                  <property name="readOnly">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="clearButtonEnabled">
                   <bool>false</bool>
                  </property>
                 </widget>
                </item>
-               <item row="9" column="0">
+               <item row="8" column="0">
                 <widget class="QLabel" name="label_safePosition">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -4478,7 +4428,7 @@ Border-radius: 10px;
                  </property>
                 </widget>
                </item>
-               <item row="9" column="1">
+               <item row="8" column="1">
                 <widget class="QLineEdit" name="lineEdit_safePosition">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -4497,6 +4447,56 @@ Border-radius: 10px;
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
+                 </property>
+                 <property name="clearButtonEnabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_pressure">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>262</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Segoe UI</family>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Давление питания, бар</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QLineEdit" name="lineEdit_supplyPressure">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Segoe UI</family>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">padding: 5px 10px;</string>
+                 </property>
+                 <property name="readOnly">
+                  <bool>false</bool>
                  </property>
                  <property name="clearButtonEnabled">
                   <bool>false</bool>
