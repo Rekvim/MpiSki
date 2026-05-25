@@ -41,19 +41,14 @@ SelectTests::SelectTests(QWidget *parent)
         QFrame* frame = it.value();
 
         connect(cb, &QCheckBox::toggled, this, [cb, frame](bool checked) {
-            // QFont font = cb->font();
-            // font.setWeight(checked ? QFont::DemiBold : QFont::Normal);
-            // cb->setFont(font);
-
             frame->setStyleSheet(checked
                                  ? "background-color: #E1E1E1; border-radius: 12px;"
                                  : "" );
         });
-
-        cb->setChecked(cb->isChecked());
     }
 
-    for (QCheckBox* cb : allCheckBoxes()) connect(cb, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
+    for (QCheckBox* cb : allCheckBoxes())
+        connect(cb, &QCheckBox::toggled, this, &SelectTests::onCheckBoxChanged);
 
     connect(ui->button_C_SOVT, &QPushButton::clicked,
             this, &SelectTests::ButtonClick_C_SOVT);
@@ -79,13 +74,6 @@ SelectTests::~SelectTests()
     delete ui;
 }
 
-void SelectTests::resetCheckBoxes() {
-    for (QCheckBox* cb : allCheckBoxes()) {
-        QSignalBlocker blocker(cb);
-        cb->setChecked(false);
-    }
-}
-
 void SelectTests::setPattern(const PatternSetup& setup) {
     for (QCheckBox* cb : allCheckBoxes()) {
         QSignalBlocker blocker(cb);
@@ -99,33 +87,11 @@ void SelectTests::setPattern(const PatternSetup& setup) {
         QSignalBlocker blocker(cb);
         cb->setChecked(false);
     }
-
     for (QCheckBox* cb : allCheckBoxes()) {
         emit cb->toggled(cb->isChecked());
     }
 
     onCheckBoxChanged();
-}
-
-bool SelectTests::isValidPattern() {
-    // Комплексных; Отсечной Арматуры; Тесты: полного хода, циклический
-    if (m_blockCts.usb && m_blockCts.imit_switch_0_3 && m_blockCts.imit_switch_3_0 &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)) return true;
-    // Базовых; Запорно-Регулирующей Арматуры; Тесты: полного хода, циклический
-    if (m_blockCts.usb && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA &&
-        m_blockCts.imit_switch_0_3 && m_blockCts.imit_switch_3_0 &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)) return true;
-    // Комплексных; Запорно-Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-    if (m_blockCts.usb && m_blockCts.pressure_1 && m_blockCts.pressure_2 && m_blockCts.pressure_3 &&
-        m_blockCts.moving && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA &&
-        m_blockCts.imit_switch_0_3 && m_blockCts.imit_switch_3_0 &&
-        (m_blockCts.do_1 || m_blockCts.do_2 || m_blockCts.do_3 || m_blockCts.do_4)) return true;
-    // Базовых; Регулирующей Арматуры; Тесты: полного хода, циклический
-    if (m_blockCts.usb && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA && m_blockCts.moving) return true;
-    // Комплексных; Регулирующей Арматуры; Тесты: основной, полного хода, опциональный, циклический
-    if (m_blockCts.usb && m_blockCts.pressure_1 && m_blockCts.pressure_2 && m_blockCts.pressure_3 &&
-        m_blockCts.moving && m_blockCts.input_4_20_mA && m_blockCts.output_4_20_mA) return true;
-    return false;
 }
 
 SelectTests::PatternType SelectTests::detectCurrentPattern() const
@@ -208,7 +174,7 @@ void SelectTests::onCheckBoxChanged()
 
     m_currentPattern = detectCurrentPattern();
 
-    if (isValidPattern()) {
+    if (m_currentPattern != Pattern_None) {
         ui->entry_testing->setEnabled(true);
     } else {
         ui->entry_testing->setEnabled(false);
@@ -217,7 +183,8 @@ void SelectTests::onCheckBoxChanged()
 
 void SelectTests::ButtonClick_C_SOVT() {
     setPattern({
-        {ui->check_box_usb, ui->check_box_moving, ui->check_box_imit_switch_3_0, ui->check_box_imit_switch_0_3, ui->check_box_do_1},
+        {ui->check_box_usb, ui->check_box_moving, ui->check_box_imit_switch_3_0,
+                 ui->check_box_imit_switch_0_3, ui->check_box_do_1},
         {}
     });
 }
@@ -260,6 +227,3 @@ SelectTests::PatternType SelectTests::currentPattern() const {
 void SelectTests::ButtonClick() {
     accept();
 }
-
-
-

@@ -41,7 +41,6 @@ void Algorithm::run()
 
     setDacBlocked(m_params.dac_max, 0, true);
 
-    // Важно: сначала Analyzer, потом график.
     emit backwardStrokeStarted();
     emit dublSeries();
 

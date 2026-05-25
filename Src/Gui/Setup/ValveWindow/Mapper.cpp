@@ -44,6 +44,7 @@ ValveInfo Mapper::read(const ValveWindow& view)
     v.valveStroke = text(ui->lineEdit_valveStroke);
     v.driveModel = text(ui->lineEdit_driveModel);
 
+    v.driveType = ValveEnums::driveTypeFromCombo(ui->comboBox_driveType);
     if (v.driveType == DriveType::DoubleActing) {
         v.driveRangeLow = 0.0;
         v.driveRangeHigh = 0.0;
@@ -60,7 +61,6 @@ ValveInfo Mapper::read(const ValveWindow& view)
 
     v.strokeMovement = ValveEnums::strokeMovementFromCombo(ui->comboBox_strokeMovement);
     v.safePosition = ValveEnums::safePositionFromCombo(ui->comboBox_safePosition);
-    v.driveType = ValveEnums::driveTypeFromCombo(ui->comboBox_driveType);
     v.materialStuffingBoxSeal = ValveEnums::stuffingBoxSealFromCombo(ui->comboBox_materialStuffingBoxSeal);
     v.toolNumber = ValveEnums::toolNumberFromCombo(ui->comboBox_toolNumber);
     v.positionerType = ValveEnums::positionerTypeFromCombo(ui->comboBox_positionerType);

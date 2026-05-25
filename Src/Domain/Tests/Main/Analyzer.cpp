@@ -659,11 +659,9 @@ void Analyzer::finish()
     const QPair<double, double> dynamic =
         computeDynamicErrorMeanMax(m_linearSeriesFirst, m_linearSeriesSecond);
 
-    m_result.dynamicErrorMean =
-        dynamic.first / 2.0;
+    m_result.dynamicErrorMean = dynamic.first / 2.0;
 
-    m_result.dynamicErrorMax =
-        dynamic.second;
+    m_result.dynamicErrorMax = dynamic.second;
 
     m_result.dynamicErrorMeanPercent =
         m_result.dynamicErrorMean / 0.16;
@@ -709,7 +707,6 @@ void Analyzer::finish()
             m_pressureSeriesFirst,
             m_pressureSeriesSecond,
             pressureLimits);
-
 }
 
 const Result& Analyzer::result() const

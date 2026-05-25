@@ -46,14 +46,15 @@ public:
         bool do_4;
     };
 
-    BlockCTS getCTS() const;
     PatternType currentPattern() const;
 
 private slots:
     void onCheckBoxChanged();
+<<<<<<< Updated upstream
     bool isValidPattern();
-
-    void resetCheckBoxes();
+=======
+    void setPattern(const PatternSetup& setup);
+>>>>>>> Stashed changes
 
     void ButtonClick_C_SOVT();
     void ButtonClick_B_SACVT();
@@ -68,8 +69,11 @@ private:
     BlockCTS m_blockCts;
     PatternType m_currentPattern = Pattern_None;
     PatternType detectCurrentPattern() const;
+<<<<<<< Updated upstream
     bool m_suppressDebugOutput = false;
 
     void setPattern(const PatternSetup& setup);
     QList<QCheckBox*> allCheckBoxes() const;
+=======
+>>>>>>> Stashed changes
 };
