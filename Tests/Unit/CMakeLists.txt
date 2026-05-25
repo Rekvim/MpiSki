@@ -4,8 +4,10 @@ qt_add_executable(AnalyzerTests
     analyzers/StepTestAnalyzerTest.cpp
     analyzers/StrokeTestAnalyzerTest.cpp
     analyzers/CyclicRegulatoryAnalyzerTest.cpp
+    analyzers/MainTestAnalyzerTest.cpp
 
     analyzers/CyclicRegulatoryAnalyzerTest.h
+    analyzers/MainTestAnalyzerTest.h
     analyzers/SampleGenerator.h
     analyzers/StepTestAnalyzerTest.h
     analyzers/StrokeTestAnalyzerTest.h
