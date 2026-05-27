@@ -10,7 +10,7 @@ class QListWidget;
 class QPushButton;
 class QTimeEdit;
 
-#include "Gui/Setup/SelectTests.h"
+#include "Domain/DeviceProfile.h"
 
 class BaseSequenceSettingsDialog : public QDialog
 {
@@ -21,7 +21,7 @@ public:
     ~BaseSequenceSettingsDialog() override;
 
     virtual void applyValveInfo(const ValveInfo&);
-    virtual void applyPattern(SelectTests::PatternType);
+    virtual void applyProfile(const Domain::DeviceProfile&);
 
 protected:
     virtual QVector<qreal>& sequence() = 0;

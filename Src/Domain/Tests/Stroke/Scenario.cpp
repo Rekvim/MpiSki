@@ -34,6 +34,10 @@ void Scenario::onSample(const Measurement::Sample& sample)
         m_analyzer->onSample(sample);
 }
 
+void Scenario::updateChart(const Measurement::Sample& s) {
+    emitTimePoints(Widgets::Chart::ChartType::Stroke, s, s.testTime);
+}
+
 std::unique_ptr<BaseRunner> Scenario::createRunner()
 {
     const bool normalOpen =

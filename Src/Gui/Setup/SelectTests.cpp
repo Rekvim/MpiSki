@@ -221,9 +221,37 @@ void SelectTests::ButtonClick_C_CVT() {
     });
 }
 
-SelectTests::PatternType SelectTests::currentPattern() const {
-    return m_currentPattern;
+Domain::DeviceProfile SelectTests::profile() const
+{
+    Domain::DeviceProfile p;
+
+    const bool hasAnyDo = m_blockCts.do_1 || m_blockCts.do_2
+                       || m_blockCts.do_3 || m_blockCts.do_4;
+
+    if (hasAnyDo && m_blockCts.output_4_20_mA)
+        p.valveType = Domain::ValveType::ShutoffControl;
+    else if (hasAnyDo)
+        p.valveType = Domain::ValveType::Shutoff;
+    else
+        p.valveType = Domain::ValveType::Control;
+
+    p.testLevel = m_blockCts.pressure_1
+        ? Domain::TestLevel::Complex
+        : Domain::TestLevel::Basic;
+
+    p.pressure1 = m_blockCts.pressure_1;
+    p.pressure2 = m_blockCts.pressure_2;
+    p.pressure3 = m_blockCts.pressure_3;
+    p.outputSignal = m_blockCts.output_4_20_mA;
+
+    p.do1 = m_blockCts.do_1;
+    p.do2 = m_blockCts.do_2;
+    p.do3 = m_blockCts.do_3;
+    p.do4 = m_blockCts.do_4;
+
+    return p;
 }
+
 void SelectTests::ButtonClick() {
     accept();
 }

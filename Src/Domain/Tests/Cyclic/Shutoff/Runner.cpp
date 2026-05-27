@@ -47,9 +47,5 @@ namespace Domain::Tests::Cyclic::Shutoff {
         connect(&t, &Algorithm::GetDO,
                 this, &Runner::GetDO,
                 Qt::QueuedConnection);
-
-        connect(&t, &Algorithm::GetDI,
-                this, &Runner::GetDI,
-                Qt::QueuedConnection);
     }
 }

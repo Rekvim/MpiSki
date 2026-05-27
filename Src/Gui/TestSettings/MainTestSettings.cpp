@@ -39,7 +39,6 @@ void MainTestSettings::applyValveInfo(const ValveInfo& info)
     Q_UNUSED(info);
 }
 
-void MainTestSettings::applyPattern(SelectTests::PatternType pattern)
+void MainTestSettings::applyProfile(const Domain::DeviceProfile&)
 {
-    Q_UNUSED(pattern);
 }

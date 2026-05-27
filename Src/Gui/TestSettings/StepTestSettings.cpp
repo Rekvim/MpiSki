@@ -68,7 +68,6 @@ void StepTestSettings::applyValveInfo(const ValveInfo& info)
         reverseSequence();
 }
 
-void StepTestSettings::applyPattern(SelectTests::PatternType pattern)
+void StepTestSettings::applyProfile(const Domain::DeviceProfile&)
 {
-    Q_UNUSED(pattern);
 }

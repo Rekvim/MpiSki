@@ -170,9 +170,9 @@ void ValveWindow::saveLinearRange()
     m_settings.setLinearRange(min, max);
 }
 
-void ValveWindow::setPatternType(SelectTests::PatternType pattern)
+void ValveWindow::setProfile(const Domain::DeviceProfile& profile)
 {
-    m_patternType = pattern;
+    m_profile = profile;
     applyPatternVisibility();
 }
 
@@ -195,30 +195,15 @@ void ValveWindow::onDriveTypeChanged(int)
 
 void ValveWindow::applyPatternVisibility()
 {
-    switch (m_patternType) {
-    case SelectTests::Pattern_B_CVT:
-        ui->widget_positionSensorModel->setVisible(false);
-        ui->widget_solenoidValveModel->setVisible(false);
-        ui->widget_limitSwitchModel->setVisible(false);
-        break;
-    case SelectTests::Pattern_C_CVT:
-        ui->widget_positionSensorModel->setVisible(false);
-        ui->widget_solenoidValveModel->setVisible(false);
-        ui->widget_limitSwitchModel->setVisible(false);
-        break;
-    case SelectTests::Pattern_B_SACVT:
-        break;
-    case SelectTests::Pattern_C_SACVT:
-        break;
-    case SelectTests::Pattern_C_SOVT:
-        ui->widget_positionerModel->setVisible(false);
-        ui->widget_dinamicError_positionerType->setVisible(false);
+    const bool hasShutoff = m_profile.hasShutoff();
+    const bool hasControl = m_profile.hasControl();
 
-        break;
-    default:
-        QMessageBox::warning(this, tr("Ошибка"), tr("Не выбран корректный паттерн!"));
-        return;
-    }
+    ui->widget_positionSensorModel->setVisible(hasShutoff);
+    ui->widget_solenoidValveModel->setVisible(hasShutoff);
+    ui->widget_limitSwitchModel->setVisible(hasShutoff);
+
+    ui->widget_positionerModel->setVisible(hasControl);
+    ui->widget_dinamicError_positionerType->setVisible(hasControl);
 }
 
 void ValveWindow::onPositionerTypeChanged(quint8)

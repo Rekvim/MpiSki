@@ -115,15 +115,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->checkBox_switch_3_0->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui->checkBox_switch_0_3->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    m_lineEdits = {
-        {TextObjects::LineEdit_linearSensor, ui->lineEdit_linearSensor},
-        {TextObjects::LineEdit_linearSensorPercent, ui->lineEdit_linearSensorPercent},
-        {TextObjects::LineEdit_pressureSensor_1, ui->lineEdit_pressureSensor_1},
-        {TextObjects::LineEdit_pressureSensor_2, ui->lineEdit_pressureSensor_2},
-        {TextObjects::LineEdit_pressureSensor_3, ui->lineEdit_pressureSensor_3},
-        {TextObjects::LineEdit_feedback_4_20mA, ui->lineEdit_feedback_4_20mA}
-    };
-
     m_program = new Domain::Program;
     m_programThread = new QThread(this);
     m_program->moveToThread(m_programThread);
@@ -196,20 +187,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_program, &Domain::Program::testFinished,
             this, &MainWindow::endTest);
 
-    connect(m_program, &Domain::Program::setText,
-            this, &MainWindow::setText);
-
     connect(m_program, &Domain::Program::setDoButtonsChecked,
             this, &MainWindow::setDoButtonsChecked);
 
     connect(m_program, &Domain::Program::setDiCheckboxesChecked,
             this, &MainWindow::setDiCheckboxesChecked);
 
+    connect(m_program, &Domain::Program::sampleReady,
+            this, &MainWindow::onSampleReady,
+            Qt::QueuedConnection);
+
     connect(this, &MainWindow::dacValueRequested,
             m_program, &Domain::Program::setDacReal);
 
-    connect(ui->doubleSpinBox_task,
-            qOverload<double>(&QDoubleSpinBox::valueChanged),
+    connect(ui->doubleSpinBox_task, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, [this](double value) {
                 if (qRound(value * 1000) != ui->verticalSlider_task->value()) {
                     if (ui->verticalSlider_task->isEnabled())
@@ -227,8 +218,8 @@ MainWindow::MainWindow(QWidget *parent)
                 }
             });
 
-    connect(this, &MainWindow::patternChanged,
-            m_program, &Domain::Program::setPattern);
+    connect(this, &MainWindow::profileChanged,
+            m_program, &Domain::Program::setProfile);
 
     connect(m_program, &Domain::Program::setTask,
             this, &MainWindow::setTask);
@@ -361,6 +352,33 @@ MainWindow::~MainWindow()
     m_programThread->wait();
 
     delete ui;
+}
+
+void MainWindow::onSampleReady(const Domain::Measurement::Sample& s)
+{
+    if (!qIsNaN(s.positionValue))
+        ui->lineEdit_linearSensor->setText(
+            QString("%1 %2").arg(s.positionValue, 0, 'f', 2).arg(s.positionUnit));
+
+    if (!qIsNaN(s.positionPercent))
+        ui->lineEdit_linearSensorPercent->setText(
+            QString("%1 %").arg(s.positionPercent, 0, 'f', 2));
+
+    if (!qIsNaN(s.pressure1))
+        ui->lineEdit_pressureSensor_1->setText(
+            QString("%1 bar").arg(s.pressure1, 0, 'f', 2));
+
+    if (!qIsNaN(s.pressure2))
+        ui->lineEdit_pressureSensor_2->setText(
+            QString("%1 bar").arg(s.pressure2, 0, 'f', 2));
+
+    if (!qIsNaN(s.pressure3))
+        ui->lineEdit_pressureSensor_3->setText(
+            QString("%1 bar").arg(s.pressure3, 0, 'f', 2));
+
+    if (!qIsNaN(s.feedbackCurrent))
+        ui->lineEdit_feedback_4_20mA->setText(
+            QString("%1 mA").arg(s.positionValue, 0, 'f', 2));
 }
 
 void MainWindow::setupArrowButton(QToolButton* button,
@@ -860,13 +878,6 @@ void MainWindow::setRegistry(Registry* registry)
     }
 }
 
-void MainWindow::setText(TextObjects object, const QString &text)
-{
-    if (m_lineEdits.contains(object)) {
-        m_lineEdits[object]->setText(text);
-    }
-}
-
 void MainWindow::setTask(qreal task)
 {
     quint16 i_task = qRound(task * 1000);
@@ -880,47 +891,34 @@ void MainWindow::setTask(qreal task)
     }
 }
 
-void MainWindow::displayDependingPattern() {
-    switch (m_patternType) {
-    case SelectTests::Pattern_B_CVT:
-        ui->groupBox_DO->setVisible(false);
-        ui->tabWidget_main->setTabEnabled(1, true);
-        ui->tabWidget_main->setTabEnabled(2, false);
-        ui->tabWidget_main->setTabEnabled(3, false);
-        ui->tabWidget_main->setTabEnabled(4, true);
-        break;
-    case SelectTests::Pattern_B_SACVT:
-        ui->groupBox_DO->setEnabled(true);
-        ui->tabWidget_main->setTabEnabled(1, true);
-        ui->tabWidget_main->setTabEnabled(2, false);
-        ui->tabWidget_main->setTabEnabled(3, false);
-        ui->tabWidget_main->setTabEnabled(4, true);
-        break;
-    case SelectTests::Pattern_C_CVT:
-        ui->groupBox_DO->setVisible(false);
-        ui->tabWidget_main->setTabEnabled(1, true);
-        ui->tabWidget_main->setTabEnabled(2, true);
-        ui->tabWidget_main->setTabEnabled(3, true);
-        ui->tabWidget_main->setTabEnabled(4, true);
-        break;
-    case SelectTests::Pattern_C_SACVT:
-        ui->groupBox_DO->setEnabled(true);
-        ui->tabWidget_main->setTabEnabled(1, true);
-        ui->tabWidget_main->setTabEnabled(2, true);
-        ui->tabWidget_main->setTabEnabled(3, true);
-        ui->tabWidget_main->setTabEnabled(4, true);
-        break;
-    case SelectTests::Pattern_C_SOVT:
-        ui->groupBox_settingCurrentSignal->setVisible(false);
-        ui->groupBox_DO->setEnabled(true);
-        ui->tabWidget_main->setTabEnabled(1, true);
-        ui->tabWidget_main->setTabEnabled(2, false);
-        ui->tabWidget_main->setTabEnabled(3, false);
-        ui->tabWidget_main->setTabEnabled(4, true);
-        break;
-    default:
-        break;
-    }
+void MainWindow::displayDependingPattern()
+{
+    const bool hasShutoff = m_deviceProfile.hasShutoff();
+    const bool hasControl = m_deviceProfile.hasControl();
+    const bool isComplex = m_deviceProfile.isComplex();
+
+    ui->groupBox_DO->setVisible(hasShutoff);
+    ui->groupBox_settingCurrentSignal->setVisible(hasControl);
+
+    ui->tabWidget_main->setTabEnabled(1, true);
+    ui->tabWidget_main->setTabEnabled(2, isComplex && hasControl);
+    ui->tabWidget_main->setTabEnabled(3, isComplex && hasControl);
+    ui->tabWidget_main->setTabEnabled(4, true);
+
+    applyProfileVisibility();
+}
+
+void MainWindow::applyProfileVisibility()
+{
+    ui->pushButton_DO0->setVisible(m_deviceProfile.do1);
+    ui->pushButton_DO1->setVisible(m_deviceProfile.do2);
+    ui->pushButton_DO2->setVisible(m_deviceProfile.do3);
+    ui->pushButton_DO3->setVisible(m_deviceProfile.do4);
+
+    ui->groupBox_pressureSensor_1->setVisible(m_deviceProfile.pressure1);
+    ui->groupBox_pressureSensor_2->setVisible(m_deviceProfile.pressure2);
+    ui->groupBox_pressureSensor_3->setVisible(m_deviceProfile.pressure3);
+    ui->groupBox_feedback_4_20mA->setVisible(m_deviceProfile.outputSignal);
 }
 
 void MainWindow::setSensorsNumber(quint8 sensorCount)
@@ -945,44 +943,6 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 
     ui->pushButton_init->setEnabled(true);
     displayDependingPattern();
-}
-
-void MainWindow::onPointsRequested(QVector<QVector<QPointF>>& points,
-                                   ChartType chart)
-{
-    switch (chart)
-    {
-
-    case ChartType::Cyclic:
-        onCyclicTestPointsRequested(points, chart);
-        break;
-
-    default:
-        points.clear();
-        break;
-    }
-}
-
-void MainWindow::onCyclicTestPointsRequested(QVector<QVector<QPointF>> &points, ChartType chart)
-{
-    points.clear();
-
-    if (m_patternType == SelectTests::Pattern_C_SOVT ||
-        m_patternType == SelectTests::Pattern_B_SACVT ||
-        m_patternType == SelectTests::Pattern_C_SACVT) {
-
-        QPair<QList<QPointF>, QList<QPointF>> opened = m_chartManager->getPoints(chart, 3);
-        QPair<QList<QPointF>, QList<QPointF>> closed = m_chartManager->getPoints(chart, 2);
-
-        points.push_back({opened.first.begin(), opened.first.end()});
-        points.push_back({closed.first.begin(), closed.first.end()});
-    }
-
-    QPair<QList<QPointF>, QList<QPointF>> pointsLinear = m_chartManager->getPoints(chart, 1);
-    QPair<QList<QPointF>, QList<QPointF>> pointsTask = m_chartManager->getPoints(chart, 0);
-
-    points.push_back({pointsLinear.first.begin(), pointsLinear.first.end()});
-    points.push_back({pointsTask.first.begin(), pointsTask.first.end()});
 }
 
 void MainWindow::setRegressionEnabled(bool enabled)
@@ -1408,7 +1368,7 @@ void MainWindow::startCyclicTestClicked()
     if (!tryStartTest())
         return;
 
-    m_cyclicTestSettings->applyPattern(m_patternType);
+    m_cyclicTestSettings->applyProfile(m_deviceProfile);
 
     if (m_cyclicTestSettings->exec() != QDialog::Accepted)
         return;
@@ -1549,10 +1509,7 @@ void MainWindow::initCharts()
         colors.linear
     );
 
-    if (m_patternType == SelectTests::Pattern_C_SOVT ||
-        m_patternType == SelectTests::Pattern_B_SACVT ||
-        m_patternType == SelectTests::Pattern_C_SACVT) {
-
+    if (m_deviceProfile.hasShutoff()) {
         cyclic->addSeries(0, tr("Кв закрыто →"), QColor(200, 200 ,0));
         cyclic->addSeries(0, tr("Кв открыто →"), QColor(0, 200, 0));
 
@@ -1604,10 +1561,6 @@ void MainWindow::initCharts()
             this, [&](int state) {
                 m_chartManager->chart(ChartType::Pressure)->visible(1, state != 0);
             });
-
-    connect(m_program, &Domain::Program::points,
-            this, &MainWindow::onPointsRequested,
-            Qt::BlockingQueuedConnection);
 }
 
 void MainWindow::getImage(QLabel* label, ChartType chart)
@@ -1655,7 +1608,7 @@ void MainWindow::initClicked()
 
     emit doInitStatesSelected(states);
     emit initialized();
-    emit patternChanged(m_patternType);
+    emit profileChanged(m_deviceProfile);
 }
 
 void MainWindow::restoreSeries(ChartType chart, const SeriesVisibilityBackup& b)
@@ -1986,7 +1939,7 @@ void MainWindow::generateReportClicked()
 
     collectRegistryOverrides(objectInfo, valveInfo, otherParameters);
 
-    auto reportBuilder = Report::BuilderFactory::create(m_patternType);
+    auto reportBuilder = Report::BuilderFactory::create(m_deviceProfile);
 
     if (!reportBuilder) {
         qDebug("Не выбран корректный паттерн отчёта!");
@@ -2024,7 +1977,7 @@ void MainWindow::backClicked()
 
     ValveWindow valveWindow(this);
     valveWindow.setRegistry(m_registry);
-    valveWindow.setPatternType(m_patternType);
+    valveWindow.setProfile(m_deviceProfile);
 
     if (valveWindow.exec() == QDialog::Accepted) {
         setRegistry(m_registry);

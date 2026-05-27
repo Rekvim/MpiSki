@@ -4,6 +4,7 @@
 #include "Runner.h"
 #include "Analyzer.h"
 
+#include "Domain/Measurement/Sensor.h"
 #include "Utils/NumberUtils.h"
 
 #include <QDebug>
@@ -79,6 +80,28 @@ void Scenario::onSample(const Measurement::Sample& sample)
 {
     if (m_analyzer)
         m_analyzer->onSample(sample);
+}
+
+void Scenario::updateChart(const Measurement::Sample& s)
+{
+    QVector<Widgets::Chart::Point> pts;
+    auto* linear = m_context.device.sensorByAdc(0);
+
+    using P = Widgets::Chart::Point;
+    if (linear) {
+        pts.push_back(P{0, s.dac, linear->valueFromPercent(s.taskPercent)});
+        pts.push_back(P{1, s.dac, linear->value()});
+    }
+    if (!qIsNaN(s.pressure1)) pts.push_back(P{2, s.dac, s.pressure1});
+    if (!qIsNaN(s.pressure2)) pts.push_back(P{3, s.dac, s.pressure2});
+    if (!qIsNaN(s.pressure3)) pts.push_back(P{4, s.dac, s.pressure3});
+
+    if (!pts.isEmpty())
+        emit addPointsRequested(Widgets::Chart::ChartType::Task, pts);
+
+    if (linear && !qIsNaN(s.pressure1))
+        emit addPointsRequested(Widgets::Chart::ChartType::Pressure,
+                                {P{0, s.pressure1, linear->value()}});
 }
 
 void Scenario::onProcessCompleted()

@@ -22,6 +22,7 @@ signals:
 
 protected:
     void beforeStart() override;
+    void updateChart(const Domain::Measurement::Sample& s) override;
     std::unique_ptr<BaseRunner> createRunner() override;
     void afterRunnerCreated(BaseRunner& runner) override;
 

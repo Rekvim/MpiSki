@@ -4,7 +4,6 @@
 #include <QTime>
 
 #include "BaseSequenceSettingsDialog.h"
-#include "Gui/Setup/SelectTests.h"
 #include "Domain/Tests/Cyclic/Params.h"
 
 namespace Ui {
@@ -19,7 +18,7 @@ public:
     explicit CyclicTestSettings(QWidget* parent = nullptr);
     ~CyclicTestSettings() override;
 
-    void applyPattern(SelectTests::PatternType pattern) override;
+    void applyProfile(const Domain::DeviceProfile& profile) override;
     void applyValveInfo(const ValveInfo& info) override;
 
     Domain::Tests::Cyclic::Params parameters() const { return m_params; }
@@ -43,14 +42,14 @@ private slots:
 private:
     Ui::CyclicTestSettings* ui = nullptr;
     Domain::Tests::Cyclic::Params m_params;
-    SelectTests::PatternType m_pattern = SelectTests::Pattern_None;
+    Domain::DeviceProfile m_profile;
 
 private:
     void initUi();
     void initConnections();
     void initDefaults();
 
-    void setPattern(SelectTests::PatternType pattern);
+    void updateTestSelectionCombo();
     void updateVisibilityBySelectedTest();
 
     void fillDefaultRegulatoryPresets();

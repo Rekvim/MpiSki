@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QLabel>
-#include <QLineEdit>
 #include <QMainWindow>
 #include <QPointF>
 #include <QThread>
@@ -44,13 +43,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void setRegistry(Registry *registry);
-    void setPatternType(SelectTests::PatternType pattern) {
-        m_patternType = pattern;
+    void setProfile(const Domain::DeviceProfile& profile) {
+        m_deviceProfile = profile;
         updateAvailableTabs();
     }
 signals:
     void initialized();
-    void patternChanged(SelectTests::PatternType pattern);
+    void profileChanged(const Domain::DeviceProfile& profile);
 
     void doInitStatesSelected(const QVector<bool> &states);
     void dacValueRequested(qreal value);
@@ -70,7 +69,6 @@ private slots:
 
     void directoryToSave(const QString &currentPath, QString &result);
 
-    void setText(TextObjects object, const QString &text);
     void setTask(qreal task);
 
     void onMainResultUpdated(const Domain::Tests::Main::Result& result);
@@ -85,6 +83,7 @@ private slots:
 
     void setDoButtonsChecked(quint8 bitmask);
     void setDiCheckboxesChecked(quint8 bitmask);
+    void onSampleReady(const Domain::Measurement::Sample& s);
 
     void setTaskControlsEnabled(bool enabled);
 
@@ -95,9 +94,6 @@ private slots:
 
     void endTest();
 
-    void onPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
-
-    void onCyclicTestPointsRequested(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chart);
     void onCyclicTestParametersRequested(Domain::Tests::Cyclic::Params& parameters);
 
     void setupUiConnections();
@@ -176,9 +172,7 @@ private:
 
     void restoreSeries(Widgets::Chart::ChartType chart, const SeriesVisibilityBackup& b);
 
-    SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
-
-    QHash<TextObjects, QLineEdit *> m_lineEdits;
+    Domain::DeviceProfile m_deviceProfile;
 
     QVector<BaseSequenceSettingsDialog*> m_testSettings;
     MainTestSettings *m_mainTestSettings;
@@ -201,6 +195,7 @@ private:
     void syncTaskChartSeriesVisibility(quint8 sensorCount);
     void displayDependingPattern();
 
+    void applyProfileVisibility();
     void initCharts();
 
     void getImage(QLabel* label, Widgets::Chart::ChartType chart);

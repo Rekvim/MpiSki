@@ -3,6 +3,8 @@
 #include "Runner.h"
 #include "Analyzer.h"
 
+#include <QStringList>
+
 namespace Domain::Tests::Cyclic::Shutoff {
 
 Scenario::Scenario(Tests::Context context,
@@ -19,15 +21,43 @@ Scenario::~Scenario() = default;
 void Scenario::beforeStart()
 {
     m_analyzer = std::make_unique<Analyzer>();
-
     m_analyzer->configure(m_params.numCycles, 2);
     m_analyzer->start();
+
+    m_context.telemetry.testСyclicShutoff.emplace();
 }
 
 void Scenario::onSample(const Measurement::Sample& sample)
 {
     if (m_analyzer)
         m_analyzer->onSample(sample);
+}
+
+void Scenario::updateChart(const Measurement::Sample& s)
+{
+    emitTimePoints(Widgets::Chart::ChartType::Cyclic, s, s.testTime);
+
+    if (!m_context.telemetry.testСyclicShutoff) return;
+
+    const quint8 di = m_context.device.digitalInputs();
+    if (di == m_lastDiStatus) return;
+
+    QVector<Widgets::Chart::Point> diPts;
+    const bool lastClosed = (m_lastDiStatus & 0x01);
+    const bool lastOpen   = (m_lastDiStatus & 0x02);
+    const bool nowClosed  = (di & 0x01);
+    const bool nowOpen    = (di & 0x02);
+
+    if (nowClosed && !lastClosed) diPts.push_back({2, qreal(s.testTime), 0.0});
+    else if (!nowClosed && lastClosed) diPts.push_back({2, qreal(s.testTime), 0.0});
+
+    if (nowOpen && !lastOpen)    diPts.push_back({3, qreal(s.testTime), 100.0});
+    else if (!nowOpen && lastOpen) diPts.push_back({3, qreal(s.testTime), 100.0});
+
+    if (!diPts.isEmpty())
+        emit addPointsRequested(Widgets::Chart::ChartType::Cyclic, diPts);
+
+    m_lastDiStatus = di;
 }
 
 std::unique_ptr<BaseRunner> Scenario::createRunner()
@@ -39,7 +69,7 @@ std::unique_ptr<BaseRunner> Scenario::createRunner()
         normalOpen,
         m_params,
         this
-        );
+    );
 }
 
 void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
@@ -50,12 +80,10 @@ void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
             this, &Scenario::cyclicCycleCompleted,
             Qt::BlockingQueuedConnection);
 
-    connect(&runner, &Runner::GetDI,
-            this, &Scenario::diRequested,
-            Qt::DirectConnection);
-
     connect(&runner, &Runner::GetDO,
-            this, &Scenario::doRequested,
+            this, [this](quint8& status) {
+                status = m_context.device.digitalOutputs();
+            },
             Qt::DirectConnection);
 
     connect(&runner, &Runner::result,
@@ -63,24 +91,25 @@ void Scenario::afterRunnerCreated(BaseRunner& baseRunner)
             Qt::QueuedConnection);
 }
 
-void Scenario::onResult(const Result& result)
+void Scenario::onResult(const Result& algorithmResult)
 {
-    if (m_analyzer)
-        m_analyzer->finish();
+    if (!m_analyzer) return;
 
-    if (!m_context.telemetry.testСyclicShutoff)
-        m_context.telemetry.testСyclicShutoff.emplace();
+    m_analyzer->finish();
+    auto result = m_analyzer->result();
 
-    auto& dst = *m_context.telemetry.testСyclicShutoff;
+    result.numCycles = algorithmResult.numCycles;
 
-    dst.numCycles = result.numCycles;
-    dst.doOnCounts = result.doOnCounts;
-    dst.doOffCounts = result.doOffCounts;
+    QStringList parts;
+    for (qreal v : m_params.sequence) parts << QString::number(v);
+    result.sequence     = parts.join('-');
+    result.totalTimeSec = static_cast<quint64>(m_params.sequence.size())
+                        * m_params.numCycles
+                        * static_cast<quint64>(m_params.delayMs + m_params.holdMs) / 1000.0;
 
-    dst.switch3to0Count = result.switch3to0Count;
-    dst.switch0to3Count = result.switch0to3Count;
+    m_context.telemetry.testСyclicShutoff = result;
 
-    emit cyclicShutoffResultUpdated(dst);
+    emit cyclicShutoffResultUpdated(result);
     emit telemetryUpdated(m_context.telemetry);
 }
 

@@ -16,7 +16,7 @@ public:
     ~OtherTestSettings() override;
 
     void applyValveInfo(const ValveInfo& info) override;
-    void applyPattern(SelectTests::PatternType pattern) override;
+    void applyProfile(const Domain::DeviceProfile& profile) override;
 
     Domain::Tests::Option::Params parameters() const;
 

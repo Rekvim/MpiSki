@@ -6,6 +6,8 @@
 #include "Domain/Tests/BaseRunner.h"
 #include "Domain/Measurement/Sample.h"
 #include "Widgets/Chart/ChartType.h"
+#include "Widgets/Chart/Point.h"
+
 #include "Storage/Telemetry.h"
 
 #include <QPointF>
@@ -26,6 +28,7 @@ public:
     void stop();
     void releaseBlock();
     virtual void onSample(const Domain::Measurement::Sample& sample);
+    virtual void updateChart(const Domain::Measurement::Sample& s) {}
 
 signals:
     void started();
@@ -38,6 +41,13 @@ signals:
                        bool waitForStart);
 
     void requestClearChart(Widgets::Chart::ChartType chartType);
+
+    void addPointsRequested(Widgets::Chart::ChartType chartType, const QVector<Widgets::Chart::Point>& points);
+    void addRegressionRequested(const QVector<QPointF>& points);
+    void addFrictionRequested(const QVector<QPointF>& points);
+
+    void duplicateMainChartsSeriesRequested();
+
     void totalTestTimeMs(quint64 totalMs);
 
     void telemetryUpdated(const Telemetry& telemetry);
@@ -47,26 +57,20 @@ signals:
     void stepResultUpdated(const Domain::Tests::Option::Step::Result& result);
     void cyclicRegulatoryResultUpdated(const Domain::Tests::Cyclic::Regulatory::Result& result);
     void cyclicShutoffResultUpdated(const Domain::Tests::Cyclic::Shutoff::Result& result);
-
     void crossingStatusUpdated(const CrossingStatus& status);
 
-    void pointsRequested(QVector<QVector<QPointF>>& points,
-                         Widgets::Chart::ChartType chartType);
-
-    void addRegressionRequested(const QVector<QPointF>& points);
-    void addFrictionRequested(const QVector<QPointF>& points);
-    void duplicateMainChartsSeriesRequested();
 
     void cyclicCycleCompleted(int completedCycles);
     void setMultipleDORequested(const QVector<bool>& states);
-
-    void diRequested(quint8& status);
-    void doRequested(quint8& status);
 
 protected:
     virtual void beforeStart();
     virtual void afterRunnerCreated(BaseRunner& runner);
     virtual std::unique_ptr<BaseRunner> createRunner() = 0;
+
+    void emitTimePoints(Widgets::Chart::ChartType chart,
+                        const Domain::Measurement::Sample& s,
+                        qint64 time);
 
 private:
     void connectCommonRunnerSignals(BaseRunner& runner);

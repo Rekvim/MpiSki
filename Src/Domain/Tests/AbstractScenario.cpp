@@ -33,6 +33,16 @@ void AbstractScenario::start()
     m_runner->start();
 }
 
+void AbstractScenario::emitTimePoints(Widgets::Chart::ChartType chart,
+                                      const Measurement::Sample& s,
+                                      qint64 time)
+{
+    emit addPointsRequested(chart, {
+        {0, qreal(time), s.taskPercent},
+        {1, qreal(time), s.positionPercent}
+    });
+}
+
 void AbstractScenario::stop()
 {
     if (m_runner)

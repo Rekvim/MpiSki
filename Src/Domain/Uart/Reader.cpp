@@ -187,8 +187,7 @@ void Reader::onPortError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::NoError || error == QSerialPort::TimeoutError)
         return;
-
-    // qWarning() << "UART error:" << error;
+    if (!m_isConnected) return;
 
     switch (error) {
     case QSerialPort::WriteError:

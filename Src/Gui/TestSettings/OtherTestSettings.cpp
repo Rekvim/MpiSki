@@ -100,9 +100,8 @@ void OtherTestSettings::applyValveInfo(const ValveInfo& info)
         reverseSequence();
 }
 
-void OtherTestSettings::applyPattern(SelectTests::PatternType pattern)
+void OtherTestSettings::applyProfile(const Domain::DeviceProfile&)
 {
-    Q_UNUSED(pattern);
 }
 
 QVector<qreal>&

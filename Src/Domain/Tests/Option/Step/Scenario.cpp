@@ -53,6 +53,10 @@ void Scenario::onSample(const Measurement::Sample& sample)
         m_analyzer->onSample(sample);
 }
 
+void Scenario::updateChart(const Measurement::Sample& s) {
+    emitTimePoints(Widgets::Chart::ChartType::Step, s, s.testTime);
+}
+
 void Scenario::onResults()
 {
     if (!m_analyzer) return;

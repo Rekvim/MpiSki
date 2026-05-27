@@ -16,7 +16,6 @@ namespace Domain::Tests::Cyclic::Shutoff {
         void result(const Domain::Tests::Cyclic::Shutoff::Result& results);
         void SetMultipleDO(const QVector<bool>& states);
 
-        void GetDI(quint8& di);
         void GetDO(quint8& doMask);
     protected:
         RunnerConfig buildConfig() override;

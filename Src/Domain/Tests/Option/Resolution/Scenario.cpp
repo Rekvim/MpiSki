@@ -18,4 +18,9 @@ std::unique_ptr<BaseRunner> Scenario::createRunner()
         this
     );
 }
+
+void Scenario::updateChart(const Measurement::Sample& s) {
+    emitTimePoints(Widgets::Chart::ChartType::Resolution, s, s.testTime);
+}
+
 }

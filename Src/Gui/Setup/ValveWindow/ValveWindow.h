@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "Storage/Registry.h"
-#include "Gui/Setup/SelectTests.h"
+#include "Domain/DeviceProfile.h"
 #include "Storage/AppSettings.h"
 
 class Mapper;
@@ -29,7 +29,7 @@ public:
     ~ValveWindow() = default;
 
     void setRegistry(Registry *registry);
-    void setPatternType(SelectTests::PatternType pattern);
+    void setProfile(const Domain::DeviceProfile& profile);
 
 private:
     Ui::ValveWindow *ui;
@@ -59,7 +59,7 @@ private:
         QStringLiteral("125.0")
     };
 
-    SelectTests::PatternType m_patternType = SelectTests::Pattern_None;
+    Domain::DeviceProfile m_profile;
 
     void saveValveInfo();
     void applyPatternVisibility();

@@ -30,6 +30,8 @@ protected:
     void beforeStart() override;
     std::unique_ptr<BaseRunner> createRunner() override;
     void afterRunnerCreated(BaseRunner& runner) override;
+    void updateChart(const Measurement::Sample& s) override;
+
 private slots:
     void onResult(const Domain::Tests::Cyclic::Shutoff::Result& result);
 
@@ -37,6 +39,7 @@ private:
     Tests::Context m_context;
     Params m_params;
 
+    quint8 m_lastDiStatus = 0;
     std::unique_ptr<Analyzer> m_analyzer;
 };
 }

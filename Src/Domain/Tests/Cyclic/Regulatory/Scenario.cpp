@@ -22,6 +22,10 @@ void Scenario::onSample(const Measurement::Sample& sample)
         m_analyzer->onSample(sample);
 }
 
+void Scenario::updateChart(const Measurement::Sample& s) {
+    emitTimePoints(Widgets::Chart::ChartType::Cyclic, s, s.testTime);
+}
+
 std::unique_ptr<BaseRunner> Scenario::createRunner()
 {
     const bool normalOpen = m_context.config.safePosition == SafePosition::NormallyOpen;
@@ -56,13 +60,15 @@ void Scenario::onResult()
 
     auto result = m_analyzer->result();
 
-    if (m_context.telemetry.testСyclicRegulatory) {
-        const auto prepared = *m_context.telemetry.testСyclicRegulatory;
+    QStringList parts;
 
-        result.sequence = prepared.sequence;
-        result.numCycles = prepared.numCycles;
-        result.totalTimeSec = prepared.totalTimeSec;
-    }
+    for (qreal v : m_params.sequence) parts << QString::number(v);
+
+    result.sequence = parts.join('-');
+    result.numCycles = m_params.numCycles;
+    result.totalTimeSec = static_cast<quint64>(m_params.sequence.size())
+                          * m_params.numCycles
+                          * static_cast<quint64>(m_params.delayMs + m_params.holdMs) / 1000.0;
 
     m_context.telemetry.testСyclicRegulatory = result;
 

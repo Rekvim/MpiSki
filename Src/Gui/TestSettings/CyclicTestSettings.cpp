@@ -125,9 +125,10 @@ void CyclicTestSettings::initDefaults()
     bindRegulatoryPresetEditor();
 }
 
-void CyclicTestSettings::applyPattern(SelectTests::PatternType pattern)
+void CyclicTestSettings::applyProfile(const Domain::DeviceProfile& profile)
 {
-    setPattern(pattern);
+    m_profile = profile;
+    updateTestSelectionCombo();
 }
 
 void CyclicTestSettings::applyValveInfo(const ValveInfo& info)
@@ -144,35 +145,23 @@ void CyclicTestSettings::applyValveInfo(const ValveInfo& info)
     }
 }
 
-void CyclicTestSettings::setPattern(SelectTests::PatternType pattern)
+void CyclicTestSettings::updateTestSelectionCombo()
 {
     ui->comboBox_testSelection->clear();
-    m_pattern = pattern;
 
     auto add = [&](const QString& label, Domain::Tests::Cyclic::Params::Type type)
     {
         ui->comboBox_testSelection->addItem(label, static_cast<int>(type));
     };
 
-    switch (m_pattern) {
-    case SelectTests::Pattern_B_CVT:
-    case SelectTests::Pattern_C_CVT:
-        add(QStringLiteral("Регулирующий"), Domain::Tests::Cyclic::Params::Regulatory);
-        break;
-
-    case SelectTests::Pattern_C_SOVT:
-        add(QStringLiteral("Отсечной"), Domain::Tests::Cyclic::Params::Shutoff);
-        break;
-
-    case SelectTests::Pattern_B_SACVT:
-    case SelectTests::Pattern_C_SACVT:
+    if (m_profile.hasControl() && m_profile.hasShutoff()) {
         add(QStringLiteral("Запорно-регулирующий"), Domain::Tests::Cyclic::Params::Combined);
+        add(QStringLiteral("Регулирующий"),         Domain::Tests::Cyclic::Params::Regulatory);
+        add(QStringLiteral("Отсечной"),             Domain::Tests::Cyclic::Params::Shutoff);
+    } else if (m_profile.hasControl()) {
         add(QStringLiteral("Регулирующий"), Domain::Tests::Cyclic::Params::Regulatory);
+    } else if (m_profile.hasShutoff()) {
         add(QStringLiteral("Отсечной"), Domain::Tests::Cyclic::Params::Shutoff);
-        break;
-
-    default:
-        break;
     }
 
     ui->comboBox_testSelection->setCurrentIndex(0);

@@ -342,6 +342,21 @@ void Device::onUartDisconnected()
 
 void Device::onUartError(QSerialPort::SerialPortError err)
 {
-    qDebug() << err << Qt::endl;
+    switch (err) {
+    case QSerialPort::ResourceError:
+    case QSerialPort::DeviceNotFoundError:
+    case QSerialPort::PermissionError:
+    case QSerialPort::WriteError:
+    case QSerialPort::ReadError:
+    case QSerialPort::UnknownError:
+        emit errorOccured("Порт отключён");
+        break;
+    case QSerialPort::TimeoutError:
+        emit errorOccured("Нет ответа от устройства");
+        break;
+    default:
+        emit errorOccured("Ошибка порта");
+        break;
+    }
 }
 }

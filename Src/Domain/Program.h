@@ -17,11 +17,9 @@
 
 #include "Domain/Measurement/Sample.h"
 #include "Domain/Measurement/TestDataBuffer.h"
-#include "Domain/Tests/IAnalyzer.h"
-
 #include "Domain/Tests/BaseRunner.h"
 
-#include "Gui/Setup/SelectTests.h"
+#include "Domain/DeviceProfile.h"
 #include "DeviceConfig.h"
 
 namespace Domain::Tests {
@@ -36,12 +34,11 @@ struct Params;
 }
 
 namespace Domain::Tests::Cyclic::Regulatory {
-class Runner;
 struct Params;
+struct Result;
 }
 
 namespace Domain::Tests::Cyclic::Shutoff {
-class Runner;
 struct Result;
 struct Params;
 }
@@ -60,22 +57,9 @@ struct Params;
 struct Result;
 }
 
-
-
-
 namespace Widgets::Chart {
 struct Point;
 }
-
-enum class TextObjects
-{
-    LineEdit_linearSensor,
-    LineEdit_linearSensorPercent,
-    LineEdit_pressureSensor_1,
-    LineEdit_pressureSensor_2,
-    LineEdit_pressureSensor_3,
-    LineEdit_feedback_4_20mA,
-};
 
 namespace Domain {
 class Program : public QObject
@@ -86,22 +70,6 @@ public:
     explicit Program(QObject *parent = nullptr);
 
     void setConfig(const Domain::DeviceConfig& deviceConfig) { m_deviceConfig = deviceConfig; }
-
-    quint8 getDIStatus() { return m_device.digitalInputs(); }
-    quint8 getDOStatus() { return m_device.digitalOutputs(); }
-
-    enum class TestWorker
-    {
-        None,
-        Stroke,
-        Main,
-        Response,
-        Resolution,
-        Step,
-        CyclicRegulatory,
-        CyclicShutOff
-    };
-
 
 signals:
     void sampleReady(const Domain::Measurement::Sample& sample);
@@ -116,8 +84,6 @@ signals:
 
     void setSensorsMask(quint8 adcMask);
 
-    void setText(const TextObjects object, const QString& text);
-    void setTextColor(const TextObjects object, const QColor color);
     void setTask(qreal task);
     void setSensorNumber(quint8 num);
     void setGroupDOVisible(bool visible);
@@ -134,8 +100,6 @@ signals:
     void setDoButtonsChecked(quint8 status);
 
     void setDiCheckboxesChecked(quint8 status);
-
-    void points(QVector<QVector<QPointF>>& points, Widgets::Chart::ChartType chartType);
 
     void addPoints(Widgets::Chart::ChartType chartType, const QVector<Widgets::Chart::Point>& points);
     void clearPoints(Widgets::Chart::ChartType chartType);
@@ -155,15 +119,12 @@ private:
     bool isDeviceReadyForTest() const;
     void failToStartTest(const QString& reason);
     DeviceConfig m_deviceConfig;
-    SelectTests::PatternType m_patternType;
+    Domain::DeviceProfile m_deviceProfile;
 
     // Sample
     Domain::Measurement::Sample makeSample() const;
-    void updateRealtimeTexts(const Domain::Measurement::Sample& s);
     Domain::Measurement::TestDataBuffer m_testDataBuffer;
 
-    std::unique_ptr<IAnalyzer> m_analyzer;
-    TestWorker m_testWorker = TestWorker::None;
     std::unique_ptr<Domain::Tests::AbstractScenario> m_currentScenario;
     //
     void onRunnerActuallyStarted();
@@ -172,8 +133,6 @@ private:
     void waitForDacCycle();
     void finalizeInitialization();
 
-    void prepareShutoffTelemetry(const Tests::Cyclic::Params &params);
-    void prepareRegulatoryTelemetry(const Tests::Cyclic::Params &params);
     bool m_suppressPublicTestFinished = false;
 
     void startScenario(std::unique_ptr<Domain::Tests::AbstractScenario> scenario);
@@ -183,16 +142,12 @@ private:
     void startCyclicRegulatoryScenario(const Tests::Cyclic::Regulatory::Params& params);
     void startCyclicShutoffScenario(const Tests::Cyclic::Shutoff::Params& params);
 
-    QVector<quint16> makeRawValues(const QVector<quint16>& seq, bool normalOpen);
-    QString seqToString(const QVector<quint16>& seq);
-
     Registry* m_registry;
 
     Domain::Mpi::Device m_device;
 
     Telemetry m_telemetry;
     QTimer* m_diPollTimer = nullptr;
-    quint8 m_lastDiStatus = 0;
     QTimer* m_timerSensors;
     QTimer* m_timerDI;
 
@@ -222,14 +177,8 @@ public slots:
 
     void initialization();
 
-    // updateCharts
-    void updateChartsFromSample(const Domain::Measurement::Sample& s);
-    void updateMainCharts(const Domain::Measurement::Sample& s);
-    void updateCyclicChart(const Domain::Measurement::Sample& s, Widgets::Chart::ChartType chartType);
-    void updateTimeChart(const Domain::Measurement::Sample& s, Widgets::Chart::ChartType chartType, qint64 time);
-
     void setInitDoStates(const QVector<bool>& states);
-    void setPattern(SelectTests::PatternType pattern) { m_patternType = pattern; }
+    void setProfile(const Domain::DeviceProfile& profile) { m_deviceProfile = profile; }
 
     void addRegression(const QVector<QPointF>& points);
     void addFriction(const QVector<QPointF>& points);

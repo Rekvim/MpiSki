@@ -7,6 +7,7 @@
 #include "Src/Gui/Setup/ObjectWindow.h"
 #include "Src/Storage/Registry.h"
 #include "Src/Gui/Setup/ValveWindow/ValveWindow.h"
+#include "Src/Domain/DeviceProfile.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,17 +29,17 @@ int main(int argc, char *argv[])
     if (selectTests.exec() == QDialog::Rejected)
         return 0;
 
-    auto selectedPattern = selectTests.currentPattern();
+    const Domain::DeviceProfile profile = selectTests.profile();
 
     ValveWindow valveWindow;
     valveWindow.setRegistry(&registry);
-    valveWindow.setPatternType(selectedPattern);
+    valveWindow.setProfile(profile);
 
     if (valveWindow.exec() == QDialog::Rejected)
         return 0;
 
     MainWindow mainWindow;
-    mainWindow.setPatternType(selectedPattern);
+    mainWindow.setProfile(profile);
     mainWindow.setRegistry(&registry);
     mainWindow.show();
     QTimer::singleShot(0, &mainWindow, [&]{ mainWindow.showMaximized(); });

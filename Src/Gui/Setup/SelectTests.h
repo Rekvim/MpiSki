@@ -3,6 +3,8 @@
 #include <QDialog>
 #include <QCheckBox>
 
+#include "Domain/DeviceProfile.h"
+
 namespace Ui {
 class SelectTests;
 }
@@ -15,6 +17,9 @@ public:
     explicit SelectTests(QWidget *parent = nullptr);
     ~SelectTests();
 
+    Domain::DeviceProfile profile() const;
+
+private:
     enum PatternType {
         Pattern_None,
         Pattern_C_SOVT,
@@ -31,30 +36,23 @@ public:
 
     struct BlockCTS
     {
-        bool pressure_1;
-        bool pressure_2;
-        bool pressure_3;
-        bool moving;
-        bool input_4_20_mA;
-        bool output_4_20_mA;
-        bool usb;
-        bool imit_switch_0_3;
-        bool imit_switch_3_0;
-        bool do_1;
-        bool do_2;
-        bool do_3;
-        bool do_4;
+        bool pressure_1 = false;
+        bool pressure_2 = false;
+        bool pressure_3 = false;
+        bool moving = false;
+        bool input_4_20_mA = false;
+        bool output_4_20_mA = false;
+        bool usb = false;
+        bool imit_switch_0_3 = false;
+        bool imit_switch_3_0 = false;
+        bool do_1 = false;
+        bool do_2 = false;
+        bool do_3 = false;
+        bool do_4 = false;
     };
-
-    PatternType currentPattern() const;
 
 private slots:
     void onCheckBoxChanged();
-<<<<<<< Updated upstream
-    bool isValidPattern();
-=======
-    void setPattern(const PatternSetup& setup);
->>>>>>> Stashed changes
 
     void ButtonClick_C_SOVT();
     void ButtonClick_B_SACVT();
@@ -69,11 +67,9 @@ private:
     BlockCTS m_blockCts;
     PatternType m_currentPattern = Pattern_None;
     PatternType detectCurrentPattern() const;
-<<<<<<< Updated upstream
+
     bool m_suppressDebugOutput = false;
 
     void setPattern(const PatternSetup& setup);
     QList<QCheckBox*> allCheckBoxes() const;
-=======
->>>>>>> Stashed changes
 };

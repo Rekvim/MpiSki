@@ -19,6 +19,7 @@ public:
 
 protected:
     std::unique_ptr<BaseRunner> createRunner() override;
+    void updateChart(const Domain::Measurement::Sample& s) override;
 
 private:
     Tests::Context m_context;
