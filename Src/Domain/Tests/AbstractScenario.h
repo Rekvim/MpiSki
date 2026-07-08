@@ -43,7 +43,8 @@ signals:
     void requestClearChart(Widgets::Chart::ChartType chartType);
 
     void addPointsRequested(Widgets::Chart::ChartType chartType, const QVector<Widgets::Chart::Point>& points);
-    void addRegressionRequested(const QVector<QPointF>& points);
+    void addRegressionForwardRequested(const QVector<QPointF>& points);
+    void addRegressionBackwardRequested(const QVector<QPointF>& points);
     void addFrictionRequested(const QVector<QPointF>& points);
 
     void duplicateMainChartsSeriesRequested();

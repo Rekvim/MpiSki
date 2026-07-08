@@ -3,6 +3,8 @@
 
 #include <QDebug>
 #include <QImage>
+#include <QtMath>
+#include <QRandomGenerator>
 
 #include "Gui/Setup/ValveWindow/ValveWindow.h"
 #include "Gui/TestSettings/BaseSequenceSettingsDialog.h"
@@ -12,6 +14,7 @@
 #include "Widgets/Chart/ChartView.h"
 
 #include "Widgets/Chart/ImageService.h"
+#include "Domain/Tests/Main/Result.h"
 
 using ChartType = Widgets::Chart::ChartType;
 
@@ -437,6 +440,9 @@ void MainWindow::setupUiConnections()
 
     connect(ui->pushButton_mainTest_save, &QPushButton::clicked,
             this, &MainWindow::saveMainTestChartClicked);
+
+    connect(ui->pushButton_fakePressureData, &QPushButton::clicked,
+            this, &MainWindow::generateFakePressureData);
 
     // ===== stroke test =====
     connect(ui->pushButton_strokeTest_start, &QPushButton::clicked,
@@ -936,6 +942,9 @@ void MainWindow::setSensorsNumber(quint8 sensorCount)
 
     updateAvailableTabs();
 
+    ui->label_valveStroke_range->setText(m_telemetry.valveStrokeRecord.range);
+    ui->lineEdit_crossingLimits_range_value->setText(m_telemetry.valveStrokeRecord.range);
+
     ui->pushButton_mainTest_start->setEnabled(sensorCount > 1);
     ui->pushButton_strokeTest_start->setEnabled(hasSensors);
     ui->pushButton_optionalTests_start->setEnabled(hasSensors);
@@ -949,6 +958,10 @@ void MainWindow::setRegressionEnabled(bool enabled)
 {
     ui->checkBox_regression->setEnabled(enabled);
     ui->checkBox_regression->setCheckState(enabled ? Qt::Checked : Qt::Unchecked);
+
+    auto* pressureChart = m_chartManager->chart(ChartType::Pressure);
+    if (pressureChart)
+        pressureChart->visible(2, enabled);
 }
 
 static QString seqToString(const QVector<qreal>& seq)
@@ -1559,8 +1572,15 @@ void MainWindow::initCharts()
 
     connect(ui->checkBox_regression, &QCheckBox::checkStateChanged,
             this, [&](int state) {
-                m_chartManager->chart(ChartType::Pressure)->visible(1, state != 0);
+                const bool on = (state != 0);
+                m_chartManager->chart(ChartType::Pressure)->visible(1, on);
+                m_chartManager->chart(ChartType::Pressure)->visible(2, on);
             });
+
+    connect(m_chartManager->chart(ChartType::Pressure),
+            &Widgets::Chart::ChartView::seriesDragged,
+            m_program,
+            &Domain::Program::applyManualMainRegression);
 }
 
 void MainWindow::getImage(QLabel* label, ChartType chart)
@@ -1622,8 +1642,9 @@ void MainWindow::restoreSeries(ChartType chart, const SeriesVisibilityBackup& b)
         ch->visible(4, b.visible[2]);
     }
 
-    if (chart == ChartType::Pressure && b.visible.size() == 1) {
-        ch->visible(1, b.visible[0]);
+    if (chart == ChartType::Pressure && !b.visible.isEmpty()) {
+        ch->visible(1, b.visible.value(0, false));
+        ch->visible(2, b.visible.value(1, false));
     }
 }
 
@@ -1984,4 +2005,107 @@ void MainWindow::backClicked()
     }
 
     this->show();
+}
+
+void MainWindow::generateFakePressureData()
+{
+    auto* chart = m_chartManager->chart(ChartType::Pressure);
+    if (!chart) return;
+
+    chart->clear();
+
+    // Параметры реального теста:
+    //   - kSteps ступеней позиции (0 → 100 мм и обратно)
+    //   - kSamplesPerStep семплов на каждой ступени (клуббинг точек)
+    //   - Трение = горизонтальный сдвиг между прямым и обратным ходом
+    constexpr int    kSteps          = 12;
+    constexpr int    kSamplesPerStep = 5;
+    constexpr double kPosMin         = 0.0;   // мм
+    constexpr double kPosMax         = 80.0;  // мм
+    constexpr double kPressMin       = 2.0;   // бар
+    constexpr double kPressMax       = 6.0;   // бар
+    // Трение: прямой ход — давление чуть выше, обратный — чуть ниже
+    constexpr double kFrictionBar    = 0.3;   // бар (горизонтальный сдвиг)
+
+    auto* rng = QRandomGenerator::global();
+    // Небольшой шум на давлении (±0.08 bar) и позиции (±0.3 мм)
+    auto nP = [&]() { return (rng->generateDouble() - 0.5) * 0.16; };
+    auto nY = [&]() { return (rng->generateDouble() - 0.5) * 0.6;  };
+
+    // Линейная зависимость: position = k * pressure + b
+    // Из условий: pos(pressMin) = posMin, pos(pressMax) = posMax
+    const double kTrue = (kPosMax - kPosMin) / (kPressMax - kPressMin);
+    const double bFwd  = kPosMin - kTrue * kPressMin + kFrictionBar * kTrue / 2.0;
+    const double bBwd  = kPosMin - kTrue * kPressMin - kFrictionBar * kTrue / 2.0;
+
+    QVector<QPointF> fwdScatter, bwdScatter;
+
+    // --- Прямой ход: position идёт ступеньками 0 → kPosMax ---
+    for (int step = 0; step <= kSteps; ++step) {
+        const double pos = kPosMin + (kPosMax - kPosMin) * step / kSteps;
+        // "правильное" давление для этой позиции (прямой ход чуть правее)
+        const double pressBase = (pos - bFwd) / kTrue;
+        for (int s = 0; s < kSamplesPerStep; ++s) {
+            const double p   = pressBase + nP();
+            const double y   = pos       + nY();
+            chart->addPoint(0, p, y);
+            fwdScatter.append({p, y});
+        }
+    }
+
+    // --- Обратный ход: position идёт ступеньками kPosMax → 0 ---
+    for (int step = kSteps; step >= 0; --step) {
+        const double pos = kPosMin + (kPosMax - kPosMin) * step / kSteps;
+        // обратный ход — давление сдвинуто влево (меньше при той же позиции)
+        const double pressBase = (pos - bBwd) / kTrue;
+        for (int s = 0; s < kSamplesPerStep; ++s) {
+            const double p   = pressBase + nP();
+            const double y   = pos       + nY();
+            chart->addPoint(0, p, y);
+            bwdScatter.append({p, y});
+        }
+    }
+
+    // --- Линейная регрессия по scatter-точкам ---
+    auto linReg = [](const QVector<QPointF>& pts, double& k, double& b) {
+        double sx = 0, sy = 0, sxy = 0, sx2 = 0;
+        const int n = pts.size();
+        for (const auto& pt : pts) {
+            sx  += pt.x(); sy  += pt.y();
+            sxy += pt.x() * pt.y();
+            sx2 += pt.x() * pt.x();
+        }
+        const double d = n * sx2 - sx * sx;
+        if (qFuzzyIsNull(d)) { k = 0; b = 0; return; }
+        k = (n * sxy - sx * sy) / d;
+        b = (sy - k * sx) / n;
+    };
+
+    double k1, b1, k2, b2;
+    linReg(fwdScatter, k1, b1);
+    linReg(bwdScatter, k2, b2);
+
+    // --- Добавляем линии регрессии как полилинии с несколькими точками управления ---
+    constexpr int kRegPts = 5;
+    for (int i = 0; i < kRegPts; ++i) {
+        const double t = double(i) / (kRegPts - 1);
+        const double p = kPressMin + (kPressMax - kPressMin) * t;
+        chart->addPoint(1, p, k1 * p + b1);
+        chart->addPoint(2, p, k2 * p + b2);
+    }
+
+    chart->visible(1, true);
+    chart->visible(2, true);
+    ui->checkBox_regression->setEnabled(true);
+    ui->checkBox_regression->setCheckState(Qt::Checked);
+
+    // --- Инициализируем контекст в Program для пересчёта при перетаскивании ---
+    Domain::Tests::Main::Result fakeResult;
+    auto& ctx        = fakeResult.regressionCtx;
+    ctx.k1 = k1; ctx.b1 = b1;
+    ctx.k2 = k2; ctx.b2 = b2;
+    ctx.limMinX = kPressMin; ctx.limMaxX = kPressMax;
+    ctx.limMinY = kPosMin;   ctx.limMaxY = kPosMax;
+    ctx.valid = true;
+    m_program->onMainResultReceived(fakeResult);
 }

@@ -149,8 +149,12 @@ ChartView* Manager::createPressureChart(
     chart->setLabelXformat(QStringLiteral("%.2f bar"));
     chart->addAxis(strokeAxisFormat);
     chart->addSeries(0, QObject::tr("Перемещение от давления"), linearColor);
-    chart->addSeries(0, QObject::tr("Линейная регрессия"), QColor::fromRgb(0, 0, 0));
+    chart->addSeries(0, QObject::tr("Прямой ход (регрессия)"), QColor(50, 100, 200));
+    chart->addSeries(0, QObject::tr("Обратный ход (регрессия)"), QColor(200, 80, 50));
     chart->visible(1, false);
+    chart->visible(2, false);
+    chart->setSeriesDraggable(1, true);
+    chart->setSeriesDraggable(2, true);
 
     return chart;
 }

@@ -152,6 +152,14 @@ void Mapper::write(ValveWindow& view, const ValveInfo& v)
     ui->comboBox_driveType->setCurrentIndex(static_cast<int>(v.driveType));
     ui->comboBox_strokeMovement->setCurrentIndex(static_cast<int>(v.strokeMovement));
     ui->comboBox_toolNumber->setCurrentIndex(static_cast<int>(v.toolNumber));
+
+    // setCurrentIndex() выше не эмитит currentIndexChanged(), если индекс не
+    // поменялся (например, у нового клапана тот же toolNumber, что уже был
+    // выставлен) — тогда toolChanged() не вызывается сам и в поле остаётся
+    // "сырое" v.diameterPulley (0, если оно никогда не заполнялось). Вызываем
+    // явно, чтобы поле всегда было согласовано с текущим выбором инструмента.
+    view.toolChanged(static_cast<quint16>(v.toolNumber));
+
     ui->comboBox_positionerType->setCurrentIndex(static_cast<int>(v.positionerType));
 
     auto& c = v.crossingLimits;

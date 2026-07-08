@@ -141,7 +141,8 @@ void Scenario::onProcessCompleted()
 
     updateCrossingStatus();
 
-    emit addRegressionRequested(m_analyzer->regressionChartPoints());
+    emit addRegressionForwardRequested(m_analyzer->regressionFirstPoints());
+    emit addRegressionBackwardRequested(m_analyzer->regressionSecondPoints());
     emit addFrictionRequested(m_analyzer->frictionChartPoints());
 
     emit mainResultUpdated(main);

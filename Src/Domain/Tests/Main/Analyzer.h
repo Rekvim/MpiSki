@@ -67,6 +67,9 @@ public:
     const QVector<QPointF>& regressionChartPoints() const;
     const QVector<QPointF>& frictionChartPoints() const;
 
+    QVector<QPointF> regressionFirstPoints() const;
+    QVector<QPointF> regressionSecondPoints() const;
+
 private:
     Config m_cfg;
     Result m_result;
@@ -81,6 +84,10 @@ private:
 
     QVector<QPointF> m_regressionChartPoints;
     QVector<QPointF> m_frictionChartPoints;
+
+    Limits m_savedLimits;
+    Regression m_savedRegressionFirst;
+    Regression m_savedRegressionSecond;
 
 private:
     static bool isValidSample(const Domain::Measurement::Sample& s);

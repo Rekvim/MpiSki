@@ -275,6 +275,31 @@ void ChartView::autoUpdate(bool update)
 void ChartView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
+        // Control point hit → drag that single point
+        int nearSeriesN = -1;
+        const int nearPtIdx = findNearestPointIndex(event->pos(), &nearSeriesN);
+        if (nearPtIdx >= 0) {
+            m_drag.active = true;
+            m_drag.seriesN = static_cast<quint8>(nearSeriesN);
+            m_drag.pointIdx = nearPtIdx;
+            m_drag.prevValue = chart()->mapToValue(event->pos(), m_mySeries[nearSeriesN]);
+            setCursor(Qt::ClosedHandCursor);
+            event->accept();
+            return;
+        }
+
+        // Line segment hit → drag entire series
+        const int nearLine = findNearestDraggableSeries(event->pos());
+        if (nearLine >= 0) {
+            m_drag.active = true;
+            m_drag.seriesN = static_cast<quint8>(nearLine);
+            m_drag.pointIdx = -1;
+            m_drag.prevValue = chart()->mapToValue(event->pos(), m_mySeries[nearLine]);
+            setCursor(Qt::ClosedHandCursor);
+            event->accept();
+            return;
+        }
+
         this->setRubberBand(QChartView::HorizontalRubberBand);
         QPointF curVal = this->chart()->mapToValue(event->pos());
         m_X1 = curVal.x();
@@ -285,6 +310,40 @@ void ChartView::mousePressEvent(QMouseEvent *event)
 
 void ChartView::mouseMoveEvent(QMouseEvent *event)
 {
+    if (m_drag.active) {
+        Series* s = m_mySeries[m_drag.seriesN];
+        const QPointF cur = chart()->mapToValue(event->pos(), s);
+
+        if (m_drag.pointIdx >= 0) {
+            QList<QPointF> pts = s->points();
+            if (m_drag.pointIdx < pts.size()) {
+                pts[m_drag.pointIdx] = cur;
+                s->replace(pts);
+            }
+        } else {
+            const QPointF delta = cur - m_drag.prevValue;
+            m_drag.prevValue = cur;
+            QList<QPointF> pts = s->points();
+            for (auto& p : pts)
+                p += delta;
+            s->replace(pts);
+        }
+
+        event->accept();
+        return;
+    }
+
+    if (!m_draggableSeries.isEmpty()) {
+        int nearSeriesN = -1;
+        const int nearPt = findNearestPointIndex(event->pos(), &nearSeriesN);
+        if (nearPt >= 0) {
+            setCursor(Qt::SizeAllCursor);
+        } else {
+            const int nearLine = findNearestDraggableSeries(event->pos());
+            setCursor(nearLine >= 0 ? Qt::SizeAllCursor : Qt::ArrowCursor);
+        }
+    }
+
     if (m_mySeries.count()) {
         if (allowMarkerUpdate()) {
             m_coordItem->setVisible(true);
@@ -297,17 +356,78 @@ void ChartView::mouseMoveEvent(QMouseEvent *event)
 
 void ChartView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_mySeries.count()) {
-        if (event->button() == Qt::LeftButton) {
-            QPointF curVal = this->chart()->mapToValue(event->pos());
-            m_X2 = curVal.x();
+    if (m_drag.active && event->button() == Qt::LeftButton) {
+        m_drag.active = false;
+        setCursor(Qt::ArrowCursor);
 
-            zoomIn(qMin(m_X1, m_X2), qMax(m_X1, m_X2));
+        const QList<QPointF> pts = m_mySeries[m_drag.seriesN]->points();
+        if (!pts.isEmpty())
+            emit seriesDragged(m_drag.seriesN, pts);
+
+        event->accept();
+        return;
+    }
+
+    if (event->button() == Qt::RightButton) {
+        auto dot = [](QPointF a, QPointF b) { return a.x()*b.x() + a.y()*b.y(); };
+
+        // Priority 1: right-click on control point → delete it
+        int nearSeriesN = -1;
+        const int nearPtIdx = findNearestPointIndex(event->pos(), &nearSeriesN);
+        if (nearPtIdx >= 0) {
+            Series* s = m_mySeries[nearSeriesN];
+            QList<QPointF> pts = s->points();
+            if (pts.size() > 2) {
+                pts.removeAt(nearPtIdx);
+                s->replace(pts);
+                emit seriesDragged(static_cast<quint8>(nearSeriesN), pts);
+            }
+            this->setRubberBand(QChartView::NoRubberBand);
+            event->accept();
+            return;
         }
 
-        if (event->button() == Qt::RightButton) {
+        // Priority 2: right-click on line segment → insert bend point
+        const int nearLine = findNearestDraggableSeries(event->pos());
+        if (nearLine >= 0) {
+            Series* s = m_mySeries[nearLine];
+            const QPointF newVal = chart()->mapToValue(event->pos(), s);
+            QList<QPointF> pts = s->points();
+
+            int insertIdx = pts.size();
+            qreal minDist = qInf();
+            for (int i = 0; i + 1 < pts.size(); ++i) {
+                const QPointF A = chart()->mapToPosition(pts[i], s);
+                const QPointF B = chart()->mapToPosition(pts[i+1], s);
+                const QPointF M = event->pos();
+                const QPointF AB = B - A;
+                const qreal len2 = dot(AB, AB);
+                if (qFuzzyIsNull(len2)) continue;
+                const qreal t = qBound(0.0, dot(M - A, AB) / len2, 1.0);
+                const qreal dist = QLineF(M, A + t * AB).length();
+                if (dist < minDist) { minDist = dist; insertIdx = i + 1; }
+            }
+
+            pts.insert(insertIdx, newVal);
+            s->replace(pts);
+            emit seriesDragged(static_cast<quint8>(nearLine), pts);
+            this->setRubberBand(QChartView::NoRubberBand);
+            event->accept();
+            return;
+        }
+
+        // Priority 3: no series hit → zoom out
+        if (m_mySeries.count())
             zoomOut();
-        }
+        this->setRubberBand(QChartView::NoRubberBand);
+        QChartView::mouseReleaseEvent(event);
+        return;
+    }
+
+    if (m_mySeries.count() && event->button() == Qt::LeftButton) {
+        QPointF curVal = this->chart()->mapToValue(event->pos());
+        m_X2 = curVal.x();
+        zoomIn(qMin(m_X1, m_X2), qMax(m_X1, m_X2));
     }
 
     this->setRubberBand(QChartView::NoRubberBand);
@@ -362,6 +482,88 @@ void ChartView::addAxis(QString format)
 
     m_marker_X.attachAxis(m_yaxis.last());
     m_marker_Y.attachAxis(m_yaxis.last());
+}
+
+void ChartView::setSeriesDraggable(quint8 seriesN, bool draggable)
+{
+    if (draggable) {
+        m_draggableSeries.insert(seriesN);
+        if (seriesN < m_mySeries.size())
+            m_mySeries[seriesN]->setPointsVisible(true);
+    } else {
+        m_draggableSeries.remove(seriesN);
+    }
+}
+
+int ChartView::findNearestDraggableSeries(QPoint mousePos) const
+{
+    constexpr qreal kHitPx = 8.0;
+
+    int nearest = -1;
+    qreal minDist = kHitPx + 1.0;
+
+    auto dot = [](QPointF a, QPointF b) {
+        return a.x() * b.x() + a.y() * b.y();
+    };
+
+    for (quint8 idx : m_draggableSeries) {
+        if (idx >= m_mySeries.size()) continue;
+        Series* s = m_mySeries.at(idx);
+        if (!s->isVisible()) continue;
+
+        const auto& pts = s->points();
+        for (int i = 0; i + 1 < pts.size(); ++i) {
+            const QPointF A = chart()->mapToPosition(pts[i], s);
+            const QPointF B = chart()->mapToPosition(pts[i + 1], s);
+            const QPointF M = mousePos;
+
+            const QPointF AB = B - A;
+            const qreal len2 = dot(AB, AB);
+            if (qFuzzyIsNull(len2)) continue;
+
+            const qreal t = qBound(0.0, dot(M - A, AB) / len2, 1.0);
+            const QPointF closest = A + t * AB;
+            const qreal dist = QLineF(M, closest).length();
+
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = static_cast<int>(idx);
+            }
+        }
+    }
+
+    return nearest;
+}
+
+int ChartView::findNearestPointIndex(QPoint mousePos, int* outSeriesN) const
+{
+    constexpr qreal kHitPx = 10.0;
+
+    int nearestPt = -1;
+    int nearestSeries = -1;
+    qreal minDist = kHitPx + 1.0;
+
+    for (quint8 idx : m_draggableSeries) {
+        if (idx >= m_mySeries.size()) continue;
+        Series* s = m_mySeries.at(idx);
+        if (!s->isVisible()) continue;
+
+        const auto& pts = s->points();
+        for (int i = 0; i < pts.size(); ++i) {
+            const QPointF screenPt = chart()->mapToPosition(pts[i], s);
+            const qreal dist = QLineF(QPointF(mousePos), screenPt).length();
+            if (dist < minDist) {
+                minDist = dist;
+                nearestPt = i;
+                nearestSeries = static_cast<int>(idx);
+            }
+        }
+    }
+
+    if (outSeriesN)
+        *outSeriesN = nearestSeries;
+
+    return nearestPt;
 }
 
 void ChartView::setSeriesMarkersOnly(quint8 seriesN, bool on)
@@ -496,11 +698,10 @@ void ChartView::visible(quint8 seriesN, bool visible)
 
 void ChartView::showDots(bool show)
 {
-    for (Series* s : std::as_const(m_mySeries)) {
-        if (s->isMarkersOnly())
-            s->setPointsVisible(true);
-        else
-            s->setPointsVisible(show);
+    for (int i = 0; i < m_mySeries.size(); ++i) {
+        Series* s = m_mySeries[i];
+        const bool keep = s->isMarkersOnly() || m_draggableSeries.contains(static_cast<quint8>(i));
+        s->setPointsVisible(keep || show);
     }
 
     for (Series* s : std::as_const(m_mySeriesDubl)) {

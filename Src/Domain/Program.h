@@ -18,6 +18,7 @@
 #include "Domain/Measurement/Sample.h"
 #include "Domain/Measurement/TestDataBuffer.h"
 #include "Domain/Tests/BaseRunner.h"
+#include "Domain/Tests/Main/Result.h"
 
 #include "Domain/DeviceProfile.h"
 #include "DeviceConfig.h"
@@ -126,6 +127,9 @@ private:
     Domain::Measurement::TestDataBuffer m_testDataBuffer;
 
     std::unique_ptr<Domain::Tests::AbstractScenario> m_currentScenario;
+    Domain::Tests::Main::Result m_lastMainResult;
+
+    void recomputeMainResult(Domain::Tests::Main::Result& r) const;
     //
     void onRunnerActuallyStarted();
 
@@ -180,8 +184,11 @@ public slots:
     void setInitDoStates(const QVector<bool>& states);
     void setProfile(const Domain::DeviceProfile& profile) { m_deviceProfile = profile; }
 
-    void addRegression(const QVector<QPointF>& points);
+    void addRegressionForward(const QVector<QPointF>& points);
+    void addRegressionBackward(const QVector<QPointF>& points);
     void addFriction(const QVector<QPointF>& points);
+    void applyManualMainRegression(quint8 seriesN, QList<QPointF> points);
+    void onMainResultReceived(const Domain::Tests::Main::Result& result);
 
     void setDacReal(qreal value);
 

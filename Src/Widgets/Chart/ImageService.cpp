@@ -52,8 +52,9 @@ void ImageService::restoreSeries(ChartType chart, const SeriesVisibilityBackup& 
         return;
     }
 
-    if (chart == ChartType::Pressure && b.visible.size() == 1) {
-        ch->visible(1, b.visible[0]);
+    if (chart == ChartType::Pressure && !b.visible.isEmpty()) {
+        ch->visible(1, b.visible.value(0, false));
+        ch->visible(2, b.visible.value(1, false));
         return;
     }
 }
@@ -90,10 +91,13 @@ ImageService::hideAuxSeries(ChartType chart)
             return std::nullopt;
 
         b.visible = {
-            ch->series()[1]->isVisible()
+            ch->series()[1]->isVisible(),
+            ch->series().size() > 2 ? ch->series()[2]->isVisible() : false
         };
 
         ch->visible(1, false);
+        if (ch->series().size() > 2)
+            ch->visible(2, false);
 
         return b;
     }

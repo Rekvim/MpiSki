@@ -21,6 +21,7 @@
 #include <QDebug>
 
 #include <utility>
+#include <cmath>
 
 namespace Domain {
 
@@ -30,7 +31,6 @@ constexpr quint16 kDacRawMax = 65535;
 constexpr quint8 VersionFlag = 0x40;
 
 }
-
 
 using ChartType = Widgets::Chart::ChartType;
 
@@ -401,16 +401,99 @@ void Program::addFriction(const QVector<QPointF> &points)
     emit addPoints(ChartType::Friction, chartPoints);
 }
 
-void Program::addRegression(const QVector<QPointF> &points)
+void Program::addRegressionForward(const QVector<QPointF>& points)
 {
     QVector<Widgets::Chart::Point> chartPoints;
-
-    for (QPointF point : points) {
-        chartPoints.push_back({1, point.x(), point.y()});
-    }
-
+    for (const QPointF& p : points)
+        chartPoints.push_back({1, p.x(), p.y()});
     emit addPoints(ChartType::Pressure, chartPoints);
     emit setRegressionEnable(true);
+}
+
+void Program::addRegressionBackward(const QVector<QPointF>& points)
+{
+    QVector<Widgets::Chart::Point> chartPoints;
+    for (const QPointF& p : points)
+        chartPoints.push_back({2, p.x(), p.y()});
+    emit addPoints(ChartType::Pressure, chartPoints);
+}
+
+void Program::onMainResultReceived(const Domain::Tests::Main::Result& result)
+{
+    m_lastMainResult = result;
+    emit mainResultUpdated(result);
+}
+
+void Program::recomputeMainResult(Domain::Tests::Main::Result& r) const
+{
+    const auto& ctx = r.regressionCtx;
+    if (!ctx.valid) return;
+
+    const double k1 = ctx.k1, b1 = ctx.b1;
+    const double k2 = ctx.k2, b2 = ctx.b2;
+
+    if (qFuzzyIsNull(k1) || qFuzzyIsNull(k2)) return;
+    if (!std::isfinite(k1) || !std::isfinite(b1)) return;
+    if (!std::isfinite(k2) || !std::isfinite(b2)) return;
+
+    const double yMean = (ctx.limMaxY + ctx.limMinY) / 2.0;
+    const double xF = (yMean - b1) / k1;
+    const double xB = (yMean - b2) / k2;
+    if (!std::isfinite(xF) || !std::isfinite(xB)) return;
+
+    r.pressureDiff = qAbs(xF - xB);
+
+    const double D = m_deviceConfig.driveDiameter;
+    r.frictionForce = r.pressureDiff * (5.0 * M_PI * D * D / 4.0);
+
+    const double xAtMin = (ctx.limMinY - b1) / k1;
+    const double xAtMax = (ctx.limMaxY - b1) / k1;
+    const double pressRange = qAbs(xAtMin - xAtMax);
+    r.frictionPercent = (pressRange > 0 && std::isfinite(pressRange))
+        ? (50.0 * r.pressureDiff / pressRange) : 0.0;
+
+    const double rx1 = (ctx.limMinY - b1) / k1;
+    const double rx2 = (ctx.limMaxY - b1) / k1;
+    const double rx3 = (ctx.limMinY - b2) / k2;
+    const double rx4 = (ctx.limMaxY - b2) / k2;
+    if (!std::isfinite(rx1) || !std::isfinite(rx2) ||
+        !std::isfinite(rx3) || !std::isfinite(rx4)) return;
+
+    r.lowLimitPressure  = qMin(qMin(rx1, rx2), qMin(rx3, rx4));
+    r.highLimitPressure = qMax(qMax(rx1, rx2), qMax(rx3, rx4));
+    r.springLow  = (qMin(rx1, rx2) + qMin(rx3, rx4)) / 2.0;
+    r.springHigh = (qMax(rx1, rx2) + qMax(rx3, rx4)) / 2.0;
+}
+
+void Program::applyManualMainRegression(quint8 seriesN, QList<QPointF> points)
+{
+    if (!m_lastMainResult.regressionCtx.valid) return;
+    if (points.size() < 2) return;
+
+    // Least-squares linear regression through all polyline control points
+    double sx = 0, sy = 0, sxy = 0, sx2 = 0;
+    const int n = points.size();
+    for (const QPointF& pt : points) {
+        sx  += pt.x(); sy  += pt.y();
+        sxy += pt.x() * pt.y();
+        sx2 += pt.x() * pt.x();
+    }
+    const double d = n * sx2 - sx * sx;
+    if (qFuzzyIsNull(d)) return;
+
+    const double k = (n * sxy - sx * sy) / d;
+    const double b = (sy - k * sx) / n;
+
+    Domain::Tests::Main::Result updated = m_lastMainResult;
+    auto& ctx = updated.regressionCtx;
+
+    if (seriesN == 1) { ctx.k1 = k; ctx.b1 = b; }
+    else if (seriesN == 2) { ctx.k2 = k; ctx.b2 = b; }
+    else return;
+
+    recomputeMainResult(updated);
+    m_lastMainResult = updated;
+    emit mainResultUpdated(updated);
 }
 
 bool Program::isDeviceReadyForTest() const
@@ -616,7 +699,7 @@ void Program::connectScenarioRuntime(Domain::Tests::AbstractScenario* scenario)
             Qt::QueuedConnection);
 
     connect(scenario, &Domain::Tests::AbstractScenario::mainResultUpdated,
-            this, &Program::mainResultUpdated,
+            this, &Program::onMainResultReceived,
             Qt::QueuedConnection);
 
     connect(scenario, &Domain::Tests::AbstractScenario::strokeResultUpdated,
@@ -639,8 +722,12 @@ void Program::connectScenarioRuntime(Domain::Tests::AbstractScenario* scenario)
             this, &Program::crossingStatusUpdated,
             Qt::QueuedConnection);
 
-    connect(scenario, &Domain::Tests::AbstractScenario::addRegressionRequested,
-            this, &Program::addRegression,
+    connect(scenario, &Domain::Tests::AbstractScenario::addRegressionForwardRequested,
+            this, &Program::addRegressionForward,
+            Qt::QueuedConnection);
+
+    connect(scenario, &Domain::Tests::AbstractScenario::addRegressionBackwardRequested,
+            this, &Program::addRegressionBackward,
             Qt::QueuedConnection);
 
     connect(scenario, &Domain::Tests::AbstractScenario::addFrictionRequested,

@@ -108,6 +108,7 @@ private slots:
     void initClicked();
     void generateReportClicked();
     void openReportClicked();
+    void generateFakePressureData();
     void backClicked();
     void setupArrowButton(QToolButton* button,
                           const QString& normalIcon,

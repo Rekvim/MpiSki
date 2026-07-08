@@ -24,6 +24,11 @@ public:
     void setSeriesMarkersOnly(quint8 seriesN, bool on);
     int seriesCount() const;
     bool isSeriesVisible(int series) const;
+    void setSeriesDraggable(quint8 seriesN, bool draggable);
+
+signals:
+    void seriesDragged(quint8 seriesN, QList<QPointF> points);
+
 public slots:
     void useTimeaxis(bool);
     void addAxis(QString);
@@ -93,6 +98,19 @@ private:
     void zoomOut();
 
     void autoScale(qreal min, qreal max);
+
+    int findNearestDraggableSeries(QPoint mousePos) const;
+    int findNearestPointIndex(QPoint mousePos, int* outSeriesN) const;
+
+    QSet<quint8> m_draggableSeries;
+
+    struct DragState {
+        bool active = false;
+        quint8 seriesN = 0;
+        int pointIdx = -1;  // -1 = whole-series drag, >=0 = single control point
+        QPointF prevValue;
+    };
+    DragState m_drag;
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;

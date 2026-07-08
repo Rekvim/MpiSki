@@ -696,6 +696,20 @@ void Analyzer::finish()
     m_result.springHigh =
         spring.second;
 
+    m_savedLimits = pressureLimits;
+    m_savedRegressionFirst = regressionFirst;
+    m_savedRegressionSecond = regressionSecond;
+
+    m_result.regressionCtx.k1 = regressionFirst.k;
+    m_result.regressionCtx.b1 = regressionFirst.b;
+    m_result.regressionCtx.k2 = regressionSecond.k;
+    m_result.regressionCtx.b2 = regressionSecond.b;
+    m_result.regressionCtx.limMinX = pressureLimits.minX;
+    m_result.regressionCtx.limMaxX = pressureLimits.maxX;
+    m_result.regressionCtx.limMinY = pressureLimits.minY;
+    m_result.regressionCtx.limMaxY = pressureLimits.maxY;
+    m_result.regressionCtx.valid = true;
+
     m_regressionChartPoints =
         buildRegressionChartPoints(
             regressionFirst,
@@ -712,6 +726,20 @@ void Analyzer::finish()
 const Result& Analyzer::result() const
 {
     return m_result;
+}
+
+QVector<QPointF> Analyzer::regressionFirstPoints() const
+{
+    if (!m_savedRegressionFirst.valid)
+        return {};
+    return buildRegressionLinePoints(m_savedRegressionFirst, m_savedLimits);
+}
+
+QVector<QPointF> Analyzer::regressionSecondPoints() const
+{
+    if (!m_savedRegressionSecond.valid)
+        return {};
+    return buildRegressionLinePoints(m_savedRegressionSecond, m_savedLimits);
 }
 
 }

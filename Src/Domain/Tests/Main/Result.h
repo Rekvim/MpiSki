@@ -3,6 +3,15 @@
 #include <QMetaType>
 
 namespace Domain::Tests::Main {
+
+    struct RegressionContext {
+        double k1 = 0, b1 = 0;  // прямой ход: position = k1 * pressure + b1
+        double k2 = 0, b2 = 0;  // обратный ход
+        double limMinX = 0, limMaxX = 0;
+        double limMinY = 0, limMaxY = 0;
+        bool valid = false;
+    };
+
     struct Result {
         qreal pressureDiff = 0.0; // бар
 
@@ -25,6 +34,8 @@ namespace Domain::Tests::Main {
 
         qreal linearityError = 0.0; // %
         qreal linearity = 0.0; // %
+
+        RegressionContext regressionCtx;
     };
 }
 Q_DECLARE_METATYPE(Domain::Tests::Main::Result)
